@@ -33,8 +33,8 @@ void              bdsm_context_close(bdsm_context_t *ctx)
   if (!ctx)
     return;
 
-  if (ctx->event_base)
-    event_base_free(ctx->event_base);
+  // if (ctx->event_base)
+  //   event_base_free(ctx->event_base);
 
   free(ctx);
 }

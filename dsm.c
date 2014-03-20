@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <assert.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -21,52 +21,59 @@
 
 int main(int ac, char **av)
 {
-  struct sockaddr_in  addr;
-  int                 sock;
-  int                 sock_opt = 1;
+  bdsm_context_t  *ctx;
+  uint32_t        ip;
 
-  netbios_name_t      nb_name;
-  char                test[64];
-  int                 res;
+  ctx = bdsm_context_new();
+  assert(ctx);
+  ip = netbios_ns_resolve(ctx->ns, av[1]);
+  printf("%s's IP addresse is : %lu\n", av[1], ip & 0xFF);
+  // struct sockaddr_in  addr;
+  // int                 sock;
+  // int                 sock_opt = 1;
 
-  nb_name = netbios_name_encode("Cerbere", 0, NETBIOS_WORKSTATION);
-  res = netbios_name_decode(nb_name, test, 0);
+  // netbios_name_t      nb_name;
+  // char                test[64];
+  // int                 res;
 
-  printf("Encoded: %s\n", (char *)nb_name + 1);
-  printf("Decoded: %s\n", (char *)test);
+  // nb_name = netbios_name_encode("Cerbere", 0, NETBIOS_WORKSTATION);
+  // res = netbios_name_decode(nb_name, test, 0);
 
-  if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-  {
-    printf("Unable to create socket: %s\n", strerror(errno));
-    exit(42);
-  }
+  // printf("Encoded: %s\n", (char *)nb_name + 1);
+  // printf("Decoded: %s\n", (char *)test);
 
-  if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *)&sock_opt, sizeof(sock_opt)) < 0)
-  {
-    printf("Unable to set broadcast opt on socket: %s\n", strerror(errno));
-    close(sock);
-    exit(42);
-  }
+  // if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+  // {
+  //   printf("Unable to create socket: %s\n", strerror(errno));
+  //   exit(42);
+  // }
 
-  sock_opt = 0;
-  if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void *)&sock_opt, sizeof(sock_opt)) < 0)
-  {
-    printf("Unable to set broadcast opt on socket: %s\n", strerror(errno));
-    close(sock);
-    exit(42);
-  }
+  // if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *)&sock_opt, sizeof(sock_opt)) < 0)
+  // {
+  //   printf("Unable to set broadcast opt on socket: %s\n", strerror(errno));
+  //   close(sock);
+  //   exit(42);
+  // }
 
-  addr.sin_family = AF_INET;
-  //addr.sin_port = htons(NBT_UDP_PORT);
-  addr.sin_port = htons(0);
-  addr.sin_addr.s_addr = 0;
+  // sock_opt = 0;
+  // if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void *)&sock_opt, sizeof(sock_opt)) < 0)
+  // {
+  //   printf("Unable to set broadcast opt on socket: %s\n", strerror(errno));
+  //   close(sock);
+  //   exit(42);
+  // }
 
-  if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-  {
-    printf("Unable to bind socket: %s\n", strerror(errno));
-    close(sock);
-    exit(42);
-  }
+  // addr.sin_family = AF_INET;
+  // //addr.sin_port = htons(NBT_UDP_PORT);
+  // addr.sin_port = htons(0);
+  // addr.sin_addr.s_addr = 0;
+
+  // if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+  // {
+  //   printf("Unable to bind socket: %s\n", strerror(errno));
+  //   close(sock);
+  //   exit(42);
+  // }
 
   // // Let's build a packet;
   // nbt_ns_packet_t     *packet = malloc(512);

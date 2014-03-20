@@ -19,18 +19,27 @@
 #define NETBIOS_FILESERVER    0x20
 #define NETBIOS_DOMAINMASTER  0x1b
 
-typedef struct              netbios_query_s {
-  uint16_t                    rtn_id;     // Transaction ID
+#define NETBIOS_FLAG_QUERY      (1 << 15)
+#define NETBIOS_FLAG_TRUNCATED  (1 << 9)
+#define NETBIOS_FLAG_RECURSIVE  (1 << 8)
+#define NETBIOS_FLAG_BROADCAST  (1 << 4)
+
+#define NETBIOS_OPCODE_NAME_QUERY   0
+
+typedef struct              netbios_query_packet_s {
+  uint16_t                    trn_id;     // Transaction ID
   uint16_t                    flags;      // Various flags
   uint16_t                    queries;    // Number of queries in this packet
   uint16_t                    answers;    // Number of answers
   uint16_t                    ns_count;   // Number of authorities (?)
   uint16_t                    ar_count;   // Additionnal (??)
   char                        payload[];
-} __attribute__((packed))   netbios_query_t;
+} __attribute__((packed))   netbios_query_packet_t;
 
-// Crazy encoded level 2 netbios name (null-terminated)
-typedef char  *netbios_name_t;
-
+typedef struct              netbios_query_s {
+  size_t                      payload_size;
+  size_t                      cursor;
+  netbios_query_packet_t      *packet;
+}                           netbios_query_t;
 
 #endif

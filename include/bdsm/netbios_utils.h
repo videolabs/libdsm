@@ -13,9 +13,9 @@ void  netbios_name_level1_encode(const char *name, char *encoded_name,
 void  netbios_name_level1_decode(const char *encoded_name, char *name);
 
 // XXX: domain support is not implemented
-netbios_name_t  netbios_name_encode(const char *name, char *domain,
-                                    unsigned type);
-int             netbios_name_decode(const netbios_name_t encoded_name,
-                                    char *name, char **domain);
+char  *netbios_name_encode(const char *name, char *domain,
+                           unsigned type);
+int   netbios_name_decode(const char *encoded_name,
+                          char *name, char **domain);
 
 #endif

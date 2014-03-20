@@ -67,8 +67,8 @@ void  netbios_name_level1_decode(const char *encoded_name, char *name)
 }
 
 
-netbios_name_t  netbios_name_encode(const char *name, char *domain,
-                                    unsigned type)
+char  *netbios_name_encode(const char *name, char *domain,
+                           unsigned type)
 {
   size_t    encoded_size = 34; // length byte + 32 bytes for encoded name + terminator
   char      *encoded_name;
@@ -76,14 +76,16 @@ netbios_name_t  netbios_name_encode(const char *name, char *domain,
   if (!name)
     return (0);
 
-  encoded_name = malloc(sizeof(encoded_size));
+  encoded_name = malloc(encoded_size);
   encoded_name[0] = 32; // length of the field;
   netbios_name_level1_encode(name, encoded_name + 1, type);
+
+  //printf("Encoded name (l2): %s.\n", encoded_name);
 
   return (encoded_name);
 }
 
-int             netbios_name_decode(const netbios_name_t encoded_name,
+int             netbios_name_decode(const char *encoded_name,
                                     char *name, char **domain)
 {
   size_t  encoded_length;
@@ -99,7 +101,6 @@ int             netbios_name_decode(const netbios_name_t encoded_name,
 
   netbios_name_level1_decode(encoded_name + 1, name);
   name[33] = '\0';
-
   return (32);
 }
 
