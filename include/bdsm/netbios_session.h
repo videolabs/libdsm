@@ -1,0 +1,54 @@
+// This file is part of libdsm
+// Author: Julien 'Lta' BALLET <contact@lta.io>
+// Copyright VideoLabs 2014
+// License: MIT License
+
+#ifndef __BDSM_NETBIOS_SESSION_H_
+#define __BDSM_NETBIOS_SESSION_H_
+
+#include <stdint.h>
+#include <stddef.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "bdsm/netbios_defs.h"
+
+#define NETBIOS_SESSION_NEW         0
+#define NETBIOS_SESSION_CONNECTING  1
+#define NETBIOS_SESSION_CONNECTED   2
+#define NETBIOS_SESSION_ERROR       -1
+#define NETBIOS_SESSION_REFUSED     -2
+
+#define NETBIOS_SESSION_BUFFER      2048
+#define NETBIOS_SESSION_PAYLOAD     NETBIOS_SESSION_BUFFER
+
+
+typedef struct              netbios_session_s {
+  // The address of the remote peer;
+  struct sockaddr_in          remote_addr;
+  // The socket of the TCP connection to the HOST'
+  int                         socket;
+  // The current sessions state; See macro before (eg. NETBIOS_SESSION_ERROR)
+  int                         state;
+  // What is the size of the allocated payload;
+  size_t                      packet_payload_size;
+  // Where is the write cursor relative to the beginning of the payload
+  size_t                      packet_cursor;
+  // Our allocated packet, this is where the magic happen :)
+  netbios_session_packet_t    *packet;
+  // Some buffer space to receive message from peer;
+  uint8_t                     recv_buffer[NETBIOS_SESSION_BUFFER];
+}                           netbios_session_t;
+
+netbios_session_t *netbios_session_new(uint32_t ip_addr);
+void              netbios_session_destroy(netbios_session_t *);
+int               netbios_session_connect(netbios_session_t *s, char *name);
+void              netbios_session_packet_init(netbios_session_t *s,
+                                              uint8_t opcode);
+int               netbios_session_packet_append(netbios_session_t *s,
+                                                char *data, size_t size);
+int               netbios_session_packet_send(netbios_session_t *s);
+ssize_t           netbios_session_packet_recv(netbios_session_t *s);
+
+#endif

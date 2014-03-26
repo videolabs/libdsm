@@ -18,16 +18,33 @@
 
 #include "bdsm.h"
 #include "bdsm/netbios_utils.h"
+#include "bdsm/netbios_session.h"
+#include "bdsm/smb_defs.h"
 
 int main(int ac, char **av)
 {
-  bdsm_context_t  *ctx;
-  uint32_t        ip;
+  struct sockaddr_in  addr;
+  bdsm_context_t      *ctx;
+
+  //printf("sizeof(smb_header_t) = %lu", sizeof(smb_header_t));
 
   ctx = bdsm_context_new();
   assert(ctx);
-  ip = netbios_ns_resolve(ctx->ns, av[1]);
-  printf("%s's IP addresse is : %lu\n", av[1], ip & 0xFF);
+  addr.sin_addr.s_addr = netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER);
+  printf("%s's IP address is : %s\n", av[1], inet_ntoa(addr.sin_addr));
+
+  netbios_ns_discover(ctx->ns);
+
+  exit(0);
+
+  netbios_session_t *session;
+  session = netbios_session_new(addr.sin_addr.s_addr);
+  if (netbios_session_connect(session, "Cerbere"))
+    printf("A NetBIOS session with %s has been established\n", av[1]);
+  else
+    printf("Unable to establish a NetBIOS session with %s\n", av[1]);
+  netbios_session_destroy(session);
+  bdsm_context_destroy(ctx);
   // struct sockaddr_in  addr;
   // int                 sock;
   // int                 sock_opt = 1;

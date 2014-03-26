@@ -16,6 +16,6 @@ typedef struct      bdsm_context_s {
 }                   bdsm_context_t;
 
 bdsm_context_t    *bdsm_context_new();
-void              bdsm_context_close(bdsm_context_t *ctx);
+void              bdsm_context_destroy(bdsm_context_t *ctx);
 
 #endif

@@ -11,7 +11,7 @@
 
 #include "bdsm/netbios_query.h"
 
-netbios_query_t   *netbios_query_new(uint16_t trn_id, size_t payload_size,
+netbios_query_t   *netbios_query_new(size_t payload_size,
                                      int is_query, char opcode)
 {
   netbios_query_t *q;
@@ -26,7 +26,6 @@ netbios_query_t   *netbios_query_new(uint16_t trn_id, size_t payload_size,
 
   q->payload_size = payload_size;
 
-  q->packet->trn_id = htons(trn_id);
   q->packet->flags  = htons(opcode << 11);
   netbios_query_set_flag(q, NETBIOS_FLAG_QUERY, !is_query);
 

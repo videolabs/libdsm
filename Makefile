@@ -7,10 +7,12 @@ CC          = clang
 UTIL				= dsm
 LIB					= libdsm.so
 
-UTIL_SRC		= dsm.c 							\
-							src/netbios_utils.c	\
-							src/netbios_ns.c		\
-							src/netbios_query.c \
+UTIL_SRC		= dsm.c 							    \
+							src/netbios_utils.c	    \
+							src/netbios_ns.c		    \
+							src/netbios_ns_entry.c	\
+							src/netbios_query.c     \
+							src/netbios_session.c		\
 							src/context.c
 
 UTIL_OBJS		= $(UTIL_SRC:.c=.o)

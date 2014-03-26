@@ -28,7 +28,7 @@ bdsm_context_t    *bdsm_context_new()
   return (ctx);
 }
 
-void              bdsm_context_close(bdsm_context_t *ctx)
+void              bdsm_context_destroy(bdsm_context_t *ctx)
 {
   if (!ctx)
     return;
