@@ -1,7 +1,7 @@
 # Makefile for libdsm
 
 CFLAGS      = -g3 -I include -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99
-LDFLAGS     = -levent
+LDFLAGS     = #-levent
 CC          = clang
 
 UTIL				= dsm
@@ -13,6 +13,7 @@ UTIL_SRC		= dsm.c 							    \
 							src/netbios_ns_entry.c	\
 							src/netbios_query.c     \
 							src/netbios_session.c		\
+							src/smb_message.c				\
 							src/context.c
 
 UTIL_OBJS		= $(UTIL_SRC:.c=.o)

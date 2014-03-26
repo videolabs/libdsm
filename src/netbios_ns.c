@@ -186,8 +186,8 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
   free(encoded_name);
 
   // Now wait for a reply and pray
-  timeout.tv_sec = 1;
-  timeout.tv_usec = 500;
+  timeout.tv_sec = 2;
+  timeout.tv_usec = 420;
   recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
 
   if (recv <= 0)

@@ -80,7 +80,7 @@ int               netbios_session_connect(netbios_session_t *s, char *name)
   encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
   netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
   free(encoded_name);
-  encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_FILESERVER);
+  encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
   netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
   free(encoded_name);
 
