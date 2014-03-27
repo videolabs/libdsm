@@ -11,10 +11,14 @@
 #define SMB_MAGIC               { 0xff, 0x53, 0x4d, 0x42 } // aka "\xffSMB"
 
 #define SMB_DIALECTS {          \
-  "\2PC NETWORK PROGRAM 1.0",   \
+  "\2Samba",                    \
   "\2NT LM 0.12",               \
   NULL                          \
 }
+
+// Dialect values must match position on SMB_DIALECTS array
+#define SMB_DIALECT_SAMBA       0
+#define SMB_DIALECT_NTLM        1
 
 #define SMB_CMD_CLOSE           0x04
 #define SMB_CMD_TRANS2          0x32
@@ -25,6 +29,33 @@
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
+
+#define SMB_SET_FLAG            0
+#define SMB_SET_FLAG2           0
+
+#define SMB_FLAG_RESPONSE       (1 << 7)
+#define SMB_FLAG_NOTIFY         (1 << 6)
+#define SMB_FLAG_OPLOCK         (1 << 5)
+#define SMB_FLAG_CANONIC        (1 << 4)
+#define SMB_FLAG_CASELESS       (1 << 3)
+#define SMB_FLAG_BUFFER_POSTED  (1 << 1)
+#define SMB_FLAG_LOCK_AND_READ  (1 << 0)
+
+#define SMB_FLAG_UNICODE        (1 << (15 + 8))
+#define SMB_FLAG_NT_ERRORS      (1 << (14 + 8))
+#define SMB_FLAG_EXECUTE_ONLY   (1 << (13 + 8))
+#define SMB_FLAG_DFS            (1 << (12 + 8))
+#define SMB_FLAG_EXT_SEC        (1 << (11 + 8))
+#define SMB_FLAG_REPARSE_PATH   (1 << (10 + 8))
+#define SMB_FLAG_LONG_NAMES     (1 << (6 + 8))
+#define SMB_FLAG_SIGN_REQUIRED  (1 << (4 + 8))
+#define SMB_FLAG_COMPRESSED     (1 << (3 + 8))
+#define SMB_FLAG_SIGN_SUPPORT   (1 << (2 + 8))
+#define SMB_FLAG_EXT_ATTR       (1 << (1 + 8))
+#define SMB_FLAG_LONG_NAMES_OK  (1 << (0 + 8))
+
+#define NT_STATUS_SUCCESS                   0x00000000
+#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
 
 typedef struct
 {
@@ -42,7 +73,19 @@ typedef struct
 
 typedef struct
 {
-
+  uint8_t         wct;          // +-12 :)
+  uint8_t         andx;         // 0xff when no other command (recommended :)
+  uint8_t         reserved;     // 0x00
+  uint16_t        andx_offset;  // 0x00 when no other command
+  uint16_t        max_buffer;   // Maximum size we can receive
+  uint16_t        mpx_count;    // maximum multiplexed session
+  uint16_t        vc_count;     // Virtual ciruits -> 1!
+  uint32_t        session_key;  // 0x00000000
+  uint16_t        blob_length;  // Length of Security Blob
+  uint32_t        reserved2;    // 0x00000000
+  uint32_t        caps;         // Capabilities
+  uint16_t        payload_size;
+  uint8_t         payload[];
 } __attribute__((packed))   smb_session_req_t;
 
 typedef struct
@@ -71,14 +114,6 @@ typedef struct
   smb_header_t    header;       // A packet header full of gorgeous goodness.
   uint8_t         payload[];    // Ze yummy data inside. Eat 5 fruits/day !
 } __attribute__((packed))       smb_packet_t;
-
-// This is used with convenience functions to build packets.
-typedef struct
-{
-  size_t          payload_size; // Size of the allocated payload
-  size_t          cursor;       // Write cursor in the payload
-  smb_packet_t    *packet;      // Yummy yummy, Fruity fruity !
-}                               smb_message_t;
 
 
 #endif

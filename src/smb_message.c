@@ -3,10 +3,12 @@
 // Copyright VideoLabs 2014
 // License: MIT License
 
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <assert.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "bdsm/smb_message.h"
 
@@ -28,7 +30,8 @@ smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
 
   for (unsigned i = 0; i < 4; i++)
     msg->packet->header.magic[i] = magic[i];
-  msg->packet->header.command  = cmd;
+  msg->packet->header.command   = cmd;
+  msg->packet->header.pid       = getpid();
 
   return (msg);
 }
@@ -75,4 +78,28 @@ int             smb_message_put32(smb_message_t *msg, uint32_t data)
 int             smb_message_put64(smb_message_t *msg, uint32_t data)
 {
     return(smb_message_append(msg, (void *)&data, 8));
+}
+
+void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)
+{
+  uint32_t      *flags;
+
+  assert(msg != NULL && msg->packet != NULL);
+
+  // flags + flags2 is actually 24 bit long, we have to be cautious
+  flags = (uint32_t *)&(msg->packet->header.flags);
+  flag &= 0x00FFFFFF;
+
+  if (value)
+    *flags |= flag;
+  else
+    *flags &= ~flag;
+}
+
+void            smb_message_set_default_flags(smb_message_t *msg)
+{
+  assert(msg != NULL && msg->packet != NULL);
+
+  msg->packet->header.flags   = 0x18;
+  msg->packet->header.flags2  = 0xc843;
 }

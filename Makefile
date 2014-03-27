@@ -14,6 +14,7 @@ UTIL_SRC		= dsm.c 							    \
 							src/netbios_query.c     \
 							src/netbios_session.c		\
 							src/smb_message.c				\
+							src/smb_session.c				\
 							src/context.c
 
 UTIL_OBJS		= $(UTIL_SRC:.c=.o)

@@ -50,7 +50,7 @@ netbios_session_t *netbios_session_new(uint32_t ip_addr)
   if (!open_socket_and_connect(session))
   {
     netbios_session_destroy(session);
-    return (0);
+    return (NULL);
   }
 
   return(session);
@@ -133,13 +133,13 @@ int               netbios_session_packet_append(netbios_session_t *s,
   assert(s && s->packet);
 
   if (s->packet_payload_size - s->packet_cursor < size)
-    return (-1);
+    return (0);
 
   start = ((char *)&s->packet->payload) + s->packet_cursor;
   memcpy(start, data, size);
   s->packet_cursor += size;
 
-  return (0);
+  return (1);
 }
 
 int               netbios_session_packet_send(netbios_session_t *s)

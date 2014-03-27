@@ -41,8 +41,10 @@ typedef struct              netbios_session_s {
   uint8_t                     recv_buffer[NETBIOS_SESSION_BUFFER];
 }                           netbios_session_t;
 
+// Return NULL if unable to open socket/connect
 netbios_session_t *netbios_session_new(uint32_t ip_addr);
 void              netbios_session_destroy(netbios_session_t *);
+
 int               netbios_session_connect(netbios_session_t *s, char *name);
 void              netbios_session_packet_init(netbios_session_t *s,
                                               uint8_t opcode);
