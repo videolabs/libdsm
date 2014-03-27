@@ -25,7 +25,6 @@ int main(int ac, char **av)
 {
   struct sockaddr_in  addr;
   bdsm_context_t      *ctx;
-  const char          *dialects[]= SMB_DIALECTS;
 
   printf("sizeof(smb_header_t) = %lu", sizeof(smb_header_t));
 
@@ -59,7 +58,11 @@ int main(int ac, char **av)
     exit(42);
   }
   if (smb_session_negotiate_protocol(session))
-    printf("cool\n");
+  {
+    fprintf(stderr, "Dialect/Security Mode negotation success.\n");
+    fprintf(stderr, "Session key is 0x%lx\n", session->srv.session_key);
+    fprintf(stderr, "Challenge key is 0x%llx\n", session->srv.challenge);
+  }
   else
     printf("Unable to negotiate SMB Dialect\n");
 

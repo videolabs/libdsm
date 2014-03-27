@@ -18,8 +18,14 @@
 typedef struct
 {
   int                 state;
-  unsigned            dialect;
   netbios_session_t   *nb_session;
+  struct {
+    uint16_t            dialect;        // The selected dialect
+    uint16_t            security_mode;  // Security mode
+    uint32_t            caps;           // Server caps replyed during negotiate
+    uint32_t            session_key;    // XXX Is this really usefull?
+    uint64_t            challenge;      // For challenge response security
+  }                   srv;
 }                   smb_session_t;
 
 

@@ -101,5 +101,6 @@ void            smb_message_set_default_flags(smb_message_t *msg)
   assert(msg != NULL && msg->packet != NULL);
 
   msg->packet->header.flags   = 0x18;
-  msg->packet->header.flags2  = 0xc843;
+  //msg->packet->header.flags2  = 0xc843; // w/ extended security;
+  msg->packet->header.flags2  = 0xc043; // w/o extended security;
 }

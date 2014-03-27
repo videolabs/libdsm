@@ -67,8 +67,20 @@ typedef struct
 
 typedef struct
 {
-  uint8_t         wct; // +-17 :)
-  uint8_t         payload[];
+  uint8_t         wct;            // +-17 :)
+  uint16_t        dialect_index;  //
+  uint8_t         security_mode;  // Share/User. Plaintext/Challenge
+  uint32_t        diplodocus;
+  uint32_t        max_bufsize;    // Max buffer size requested by server.
+  uint32_t        max_rawbuffer;  // Max raw buffer size requested by serv.
+  uint32_t        session_key;    // 'MUST' be returned to server
+  uint32_t        caps;
+  uint64_t        time;           // I don't give a fuck
+  uint16_t        tz;             // Even less fuck given
+  uint8_t         key_length;     // Size of challenge key, if > 8 then shit
+  uint16_t        bct;
+  uint64_t        challenge;      // Normally 8 bytes, if not then wtf monkey
+  uint8_t         payload[];      // The rest isn't really meaningfull for us
 } __attribute__((packed))   smb_negotiate_resp_t;
 
 typedef struct

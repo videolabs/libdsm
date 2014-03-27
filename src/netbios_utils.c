@@ -31,7 +31,6 @@ void  netbios_name_level1_encode(const char *name, char *encoded_name,
                                  unsigned type)
 {
   size_t    name_length = strlen(name);
-  char      symbol;
 
   if (name_length > NETBIOS_NAME_LENGTH)
     name_length = NETBIOS_NAME_LENGTH;

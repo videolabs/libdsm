@@ -1,7 +1,7 @@
 # Makefile for libdsm
 
-CFLAGS      = -g3 -I include -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99
-LDFLAGS     = #-levent
+CFLAGS      = -g3 -Iinclude -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 #-Wall -Wextra
+LDFLAGS     = -lcrypto #-levent
 CC          = clang
 
 UTIL				= dsm
@@ -25,6 +25,7 @@ clean:
 	rm -f $(UTIL) $(UTIL_OBJS)
 
 re: clean all
+c: clean
 
 $(UTIL): $(UTIL_OBJS)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS)

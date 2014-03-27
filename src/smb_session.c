@@ -99,9 +99,11 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
 
 int             smb_session_negotiate_protocol(smb_session_t *s)
 {
-  smb_message_t *msg = NULL;
-  smb_message_t answer;
-  const char    *dialects[] = SMB_DIALECTS;
+  const char            *dialects[] = SMB_DIALECTS;
+  smb_message_t         *msg = NULL;
+  smb_message_t         answer;
+  smb_negotiate_resp_t  *nego;
+
 
   msg = smb_message_new(SMB_CMD_NEGOTIATE, 64);
   smb_message_set_default_flags(msg);
@@ -123,13 +125,19 @@ int             smb_session_negotiate_protocol(smb_session_t *s)
   if (!smb_session_recv_msg(s, &answer))
     goto error;
 
+  nego = (smb_negotiate_resp_t *)answer.packet->payload;
   if (answer.packet->header.status != NT_STATUS_SUCCESS
-      && answer.packet->payload[0] != 0x11)
+      && nego->wct != 0x11 && nego->security_mode & 0x03)
     goto error;
 
-  // we dont provide more than 256 dialects, so we use it as an unsigned char
-  s->dialect  = answer.packet->payload[1];
-  s->state    = SMB_STATE_DIALECT_OK;
+  s->srv.dialect        = nego->dialect_index;
+  s->srv.security_mode  = nego->security_mode;
+  s->srv.caps           = nego->caps;
+  s->srv.session_key    = nego->session_key;
+  s->srv.challenge      = nego->challenge;
+
+  // Yeah !
+  s->state              = SMB_STATE_DIALECT_OK;
 
   return (1);
 
