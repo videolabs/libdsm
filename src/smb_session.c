@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "bdsm/smb_session.h"
+#include "bdsm/smb_ntlm.h"
 
 smb_session_t   *smb_session_new()
 {
@@ -110,7 +111,7 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
   return(msg->payload_size);
 }
 
-int             smb_session_negotiate_protocol(smb_session_t *s)
+int             smb_negotiate(smb_session_t *s)
 {
   const char            *dialects[] = SMB_DIALECTS;
   smb_message_t         *msg = NULL;
@@ -148,6 +149,7 @@ int             smb_session_negotiate_protocol(smb_session_t *s)
   s->srv.caps           = nego->caps;
   s->srv.session_key    = nego->session_key;
   s->srv.challenge      = nego->challenge;
+  s->srv.ts             = nego->ts;
 
   // Yeah !
   s->state              = SMB_STATE_DIALECT_OK;
@@ -157,4 +159,99 @@ int             smb_session_negotiate_protocol(smb_session_t *s)
   error:
     s->state = SMB_STATE_ERROR;
     return (0);
+}
+
+int             smb_authenticate(smb_session_t *s, const char *domain,
+                                 const char *user, const char *password)
+{
+  smb_message_t         answer;
+  smb_message_t         *msg = NULL;
+  smb_session_req_t     *req = NULL;
+  uint8_t               *ntlm2 = NULL;
+  smb_ntlmh_t           hash_v2;
+  uint8_t               *ucs;
+  size_t                ucs_len;
+  uint64_t              user_challenge;
+  uint8_t               blob[128];
+  size_t                blob_size;
+
+  msg = smb_message_new(SMB_CMD_SETUP, 512);
+  smb_message_set_default_flags(msg);
+  req = (smb_session_req_t *)msg->packet->payload;
+
+  req->wct              = (sizeof(smb_session_req_t) - 3) / 2;
+  req->andx             = 0xFF;
+  req->reserved         = 0;
+  req->max_buffer       = NETBIOS_SESSION_PAYLOAD;
+  req->max_buffer      -= sizeof(netbios_session_packet_t);
+  req->max_buffer      -= sizeof(smb_packet_t);
+  req->mpx_count        = 16; // XXX ?
+  req->vc_count         = 1;
+  req->session_key      = s->srv.session_key;
+  req->caps             = s->srv.caps; // XXX caps & our_caps_mask
+
+  smb_message_advance(msg, sizeof(smb_session_req_t));
+
+  user_challenge = smb_ntlm_generate_challenge();
+
+  // LM2 Response
+  smb_ntlm2_hash(user, password, domain, &hash_v2);
+  ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge,
+                             (void *)&user_challenge, 8);
+  smb_message_append(msg, ntlm2, 16 + 8);
+  free(ntlm2);
+
+  // NTLM2 Response
+  blob_size = smb_ntlm_blob((smb_ntlm_blob_t *)blob, s->srv.ts,
+                            user_challenge, domain);
+  ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge, blob, blob_size);
+  //smb_message_append(msg, ntlm2, 16 + blob_size);
+  free(ntlm2);
+
+  req->oem_pass_len = 16 + SMB_LM2_BLOB_SIZE;
+  req->uni_pass_len = 0; //16 + blob_size; //SMB_NTLM2_BLOB_SIZE;
+  if (msg->cursor / 2) // Padding !
+    smb_message_put8(msg, 0);
+
+  smb_message_put_utf16(msg, "", user, strlen(user));
+  smb_message_put16(msg, 0);
+  smb_message_put_utf16(msg, "", domain, strlen(domain));
+  smb_message_put16(msg, 0);
+  smb_message_put_utf16(msg, "", SMB_OS, strlen(SMB_OS));
+  smb_message_put16(msg, 0);
+  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_OS));
+  smb_message_put16(msg, 0);
+
+  req->payload_size = msg->cursor - sizeof(smb_session_req_t);
+
+  if (!smb_session_send_msg(s, msg))
+  {
+    smb_message_destroy(msg);
+    if (BDSM_DEBUG)
+      fprintf(stderr, "Unable to send Session Setup AndX message\n");
+    return (0);
+  }
+  smb_message_destroy(msg);
+
+  if (smb_session_recv_msg(s, &answer) == 0)
+  {
+    if (BDSM_DEBUG)
+      fprintf(stderr, "Unable to get Session Setup AndX reply\n");
+    return (0);
+  }
+
+  smb_session_resp_t *r = (smb_session_resp_t *)answer.packet->payload;
+  if (answer.packet->header.status != NT_STATUS_SUCCESS)
+  {
+    if (BDSM_DEBUG)
+      fprintf(stderr, "Session Setup AndX : failure.\n");
+    return (0);
+  }
+
+  if (r->action & 0x0001)
+    s->guest = 1;
+  s->state  = SMB_STATE_SESSION_OK;
+  s->uid    = answer.packet->header.uid;
+
+  return (1);
 }

@@ -18,7 +18,7 @@ Here's a list of features i intend to support in this project :
   ** Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.)
   ** Basic NETBIOS Session transport layer
 * SMB
-  ** Support only required parts of 'NT LM 0.12' (aka CIFS) dialect.
+  ** Support only required parts of 'NT LM 0.12' (aka CIFS?) dialect.
   ** User based authentication
   ** List Shares
   ** Browse folders

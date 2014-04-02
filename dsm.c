@@ -36,13 +36,16 @@
 #include "bdsm/netbios_utils.h"
 #include "bdsm/netbios_session.h"
 #include "bdsm/smb_session.h"
+#include "bdsm/smb_ntlm.h"
+#include "bdsm/smb_share.h"
+
+#include <openssl/md4.h>
+#include <openssl/md5.h>
 
 int main(int ac, char **av)
 {
   struct sockaddr_in  addr;
   bdsm_context_t      *ctx;
-
-  printf("sizeof(smb_header_t) = %lu", sizeof(smb_header_t));
 
   ctx = bdsm_context_new();
   assert(ctx);
@@ -73,14 +76,41 @@ int main(int ac, char **av)
     printf("Unable to connect to %s\n", av[1]);
     exit(42);
   }
-  if (smb_session_negotiate_protocol(session))
+  if (smb_negotiate(session))
   {
     fprintf(stderr, "Dialect/Security Mode negotation success.\n");
-    fprintf(stderr, "Session key is 0x%lx\n", session->srv.session_key);
-    fprintf(stderr, "Challenge key is 0x%llx\n", session->srv.challenge);
+    fprintf(stderr, "Session key is 0x%x\n", session->srv.session_key);
+    fprintf(stderr, "Challenge key is 0x%lx\n", session->srv.challenge);
   }
   else
+  {
     printf("Unable to negotiate SMB Dialect\n");
+    exit(42);
+  }
+
+
+  if (smb_authenticate(session, av[1], av[2], av[3]))
+  {
+    if (session->guest)
+      printf("Login FAILED but we were logged in as GUEST \n");
+    else
+      printf("Successfully logged in as %s\\%s\n", av[1], av[2]);
+  }
+  else
+  {
+    printf("Authentication FAILURE.\n");
+    exit(42);
+  }
+
+  smb_tid ipc  = smb_tree_connect(session, "\\\\CERBERE\\IPC$");
+  smb_tid test = smb_tree_connect(session, "\\\\CERBERE\\TEST");
+
+  if (ipc == 0)
+  {
+    fprintf(stderr, "Unable to connect to IPC$ share\n");
+    exit(42);
+  }
+  fprintf(stderr, "Connected to IPC$ share\n");
 
   smb_session_destroy(session);
   bdsm_context_destroy(ctx);

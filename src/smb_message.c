@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include "bdsm/smb_message.h"
+#include "bdsm/smb_utils.h"
 
 smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
 {
@@ -93,6 +94,20 @@ int             smb_message_put64(smb_message_t *msg, uint32_t data)
     return(smb_message_append(msg, (void *)&data, 8));
 }
 
+int             smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
+                                      const char *str, size_t str_len)
+{
+  char          *utf_str;
+  size_t        utf_str_len;
+  int           res;
+
+  utf_str_len = smb_to_utf16(src_enc, str, str_len, &utf_str);
+  res = smb_message_append(msg, utf_str, utf_str_len);
+  free(utf_str);
+
+  return(res);
+}
+
 void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)
 {
   uint32_t      *flags;
@@ -116,4 +131,15 @@ void            smb_message_set_default_flags(smb_message_t *msg)
   msg->packet->header.flags   = 0x18;
   //msg->packet->header.flags2  = 0xc843; // w/ extended security;
   msg->packet->header.flags2  = 0xc043; // w/o extended security;
+}
+
+int             smb_message_advance(smb_message_t *msg, size_t size)
+{
+  assert(msg != NULL);
+
+  if (msg->cursor + size > msg->payload_size)
+    return (0);
+
+  msg->cursor += size;
+  return (1);
 }
