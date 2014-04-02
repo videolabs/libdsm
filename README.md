@@ -1,8 +1,8 @@
 == liBDSM
 
-A small project of SMB protocol client implementation in C. The goal is to
-have a less restrictive license that Samba. (Currenyly MIT, might be WTFL)
-Final final goal is to have an iOS VLC integration.
+A small project of SMB protocol client implementation in C, with a lot less
+features than Samba but also a more permissive license (WTFL). Final final goal
+is to have an iOS VLC integration.
 
 === How to build
 
