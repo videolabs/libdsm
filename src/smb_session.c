@@ -69,6 +69,8 @@ int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg)
   assert(s != NULL && s->state >= SMB_STATE_NETBIOS_OK && s->nb_session != NULL);
   assert(msg != NULL && msg->packet != NULL);
 
+  msg->packet->header.uid = s->uid;
+
   netbios_session_packet_init(s->nb_session, NETBIOS_OP_SESSION_MSG);
 
   packet_size   = sizeof(netbios_session_packet_t) + sizeof(smb_packet_t);
@@ -87,14 +89,15 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
   ssize_t                   recv_size;
   size_t                    payload_size;
 
-  assert(s != NULL && s->nb_session != NULL && msg != NULL);
+  assert(s != NULL && s->nb_session != NULL);
 
   recv_size = netbios_session_packet_recv(s->nb_session);
   if(recv_size <= 0)
     return (0);
 
   nb_packet   = (netbios_session_packet_t *)s->nb_session->recv_buffer;
-  msg->packet = (smb_packet_t *)nb_packet->payload;
+  if (msg != NULL)
+    msg->packet = (smb_packet_t *)nb_packet->payload;
 
   payload_size  = ntohs(nb_packet->length);
   payload_size |= (nb_packet->flags & 0x01) << 16; // XXX If this is the case we overran our recv_buffer
@@ -105,10 +108,13 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
     return(0);
   }
 
-  msg->payload_size = payload_size - sizeof(smb_header_t);
-  msg->cursor       = 0;
+  if (msg != NULL)
+  {
+    msg->payload_size = payload_size - sizeof(smb_header_t);
+    msg->cursor       = 0;
+  }
 
-  return(msg->payload_size);
+  return (payload_size - sizeof(smb_header_t));
 }
 
 int             smb_negotiate(smb_session_t *s)

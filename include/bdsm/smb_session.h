@@ -39,15 +39,22 @@ typedef uint16_t    smb_fid;
 // First 4 bytes are the TreeID (smb_tid), last 4 are the File ID (FUID)
 typedef uint32_t    smb_fd;
 
-#define SMB_FD_TID(fd)    ((smb_tid) fd >> 16)
-#define SMB_FD_FID(fd)    ((smb_fid) fd & 0x0000ffff)
-#define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid))
+#define SMB_FD_TID(fd)    ((smb_tid)(fd >> 16))
+#define SMB_FD_FID(fd)    ((smb_fid)(fd & 0x0000ffff))
+#define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
 
 typedef struct smb_file_s
 {
   smb_fid             fid;
   struct smb_file_s   *next;          // Next file in this share
   smb_tid             tid;
+  uint64_t            created;
+  uint64_t            accessed;
+  uint64_t            written;
+  uint64_t            changed;
+  uint64_t            alloc_size;
+  uint64_t            size;
+  uint32_t            attr;
 } smb_file_t;
 
 typedef struct smb_share_s

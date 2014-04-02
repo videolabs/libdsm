@@ -29,9 +29,11 @@ int         smb_session_file_add(smb_session_t *s, smb_tid tid, smb_file_t *f);
 smb_file_t  *smb_session_file_get(smb_session_t *s, smb_fd fd);
 smb_file_t  *smb_session_file_remove(smb_session_t *s, smb_fd fd);
 
+
 smb_tid     smb_tree_connect(smb_session_t *s, const char *path);
 int         smb_tree_disconnect(smb_session_t *s, smb_tid tid);
-smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path);
+smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
+                      uint32_t mod);
 void        smb_fclose(smb_session_t *s, smb_fd);
 
 #endif

@@ -14,12 +14,12 @@ fix any error you have. (Hum... Enjoy!)
 
 Here's a list of features i intend to support in this project :
 * NETBIOS
-  ** Basic bi-directionnal NETBIOS name resolution
-  ** Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.)
-  ** Basic NETBIOS Session transport layer
+  ** Basic bi-directionnal NETBIOS name resolution [Done]
+  ** Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.) [Done]
+  ** Basic NETBIOS Session transport layer [Done]
 * SMB
   ** Support only required parts of 'NT LM 0.12' (aka CIFS?) dialect.
-  ** User based authentication
+  ** User based authentication [Done]
   ** List Shares
   ** Browse folders
   ** Read file

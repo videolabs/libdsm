@@ -96,6 +96,13 @@
 #define SMB_MOD_GENERIC_EXEC    (1 << 29)
 #define SMB_MOD_GENERIC_READ    (1 << 30)
 #define SMB_MOD_GENERIC_WRITE   (1 << 31)
+#define SMB_MOD_RW              (SMB_MOD_READ | SMB_MOD_WRITE | SMB_MOD_APPEND \
+                                | SMB_MOD_READ_EXT | SMB_MOD_WRITE_EXT \
+                                | SMB_MOD_READ_ATTR | SMB_MOD_WRITE_ATTR \
+                                | SMB_MOD_READ_CTL )
+#define SMB_MOD_RO              (SMB_MOD_READ | SMB_MOD_READ_EXT \
+                                | SMB_MOD_READ_ATTR | SMB_MOD_READ_CTL )
+
 // File attributes
 #define SMB_ATTR_RO             (1 << 0)
 #define SMB_ATTR_HIDDEN         (1 << 1)
@@ -130,6 +137,7 @@
 
 #define NT_STATUS_SUCCESS                   0x00000000
 #define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
+#define NT_STATUS_ACCESS_DENIED             0xc0000022
 
 #define SMB_ANDX_MEMBERS  \
   uint8_t         andx;         /* 0xff when no other command (recommended :)*/\
@@ -232,11 +240,12 @@ typedef struct
 {
   uint8_t         wct;                // 24
   SMB_ANDX_MEMBERS
+  uint8_t         reserved2;
   uint16_t        path_length;
   uint32_t        flags;
   uint32_t        root_fid;
   uint32_t        access_mask;
-  uint64_t        alloc_sz;
+  uint64_t        alloc_size;
   uint32_t        file_attr;
   uint32_t        share_access;
   uint32_t        disposition;
@@ -258,9 +267,9 @@ typedef struct
   uint64_t        accessed;           // File last access time
   uint64_t        written;            // File last write time
   uint64_t        changed;            // File last modification time
-  uint32_t        file_attr;
-  uint64_t        alloc_sz;
-  uint64_t        eof;
+  uint32_t        attr;
+  uint64_t        alloc_size;
+  uint64_t        size;
   uint16_t        filetype;
   uint16_t        ipc_state;
   uint8_t         is_dir;
@@ -268,6 +277,15 @@ typedef struct
 } __attribute__((packed))   smb_create_resp_t;
 
 
+//// Close File
+
+typedef struct
+{
+  uint8_t         wct;                // 3
+  uint16_t        fid;
+  uint32_t        last_write;         // Not defined == 0xffffffff
+  uint16_t        bct;                // 0
+} __attribute__((packed))   smb_close_req_t;
 
 
 
@@ -284,7 +302,7 @@ typedef struct
   uint16_t        pid_high;     // Unused ?
   uint64_t        signature;    // Unused ?
   uint16_t        reserved;     // More usuned bit (we have so much BW :)
-  uint16_t        tree_id;      // SMB's file descriptor or service id ?
+  uint16_t        tid;          // A kind of fd for share. (tree_connect)
   uint16_t        pid;          // Process ID.
   uint16_t        uid;          // User ID.
   uint16_t        mux_id;       // Multiplex ID. Increment it sometimes.

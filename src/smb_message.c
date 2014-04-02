@@ -74,6 +74,17 @@ int             smb_message_append(smb_message_t *msg, const void *data,
   return (1);
 }
 
+int             smb_message_advance(smb_message_t *msg, size_t size)
+{
+  assert(msg != NULL);
+
+  if (msg->cursor + size > msg->payload_size)
+    return (0);
+
+  msg->cursor += size;
+  return (1);
+}
+
 int             smb_message_put8(smb_message_t *msg, uint8_t data)
 {
   return(smb_message_append(msg, (void *)&data, 1));
@@ -94,7 +105,7 @@ int             smb_message_put64(smb_message_t *msg, uint32_t data)
     return(smb_message_append(msg, (void *)&data, 8));
 }
 
-int             smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
+size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
                                       const char *str, size_t str_len)
 {
   char          *utf_str;
@@ -105,7 +116,9 @@ int             smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
 
-  return(res);
+  if (res)
+    return(utf_str_len);
+  return (0);
 }
 
 void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)
@@ -133,13 +146,15 @@ void            smb_message_set_default_flags(smb_message_t *msg)
   msg->packet->header.flags2  = 0xc043; // w/o extended security;
 }
 
-int             smb_message_advance(smb_message_t *msg, size_t size)
+void            smb_message_set_andx_members(smb_message_t *msg)
 {
+  // This could have been any type with the 'SMB_ANDX_MEMBERS';
+  smb_session_req_t   *req;
+
   assert(msg != NULL);
 
-  if (msg->cursor + size > msg->payload_size)
-    return (0);
-
-  msg->cursor += size;
-  return (1);
+  req = (smb_session_req_t *)msg->packet->payload;
+  req->andx           = 0xff;
+  req->reserved       = 0;
+  req->andx_offset    = 0;
 }

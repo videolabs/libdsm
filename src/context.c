@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "bdsm/context.h"
 
@@ -25,13 +26,9 @@ bdsm_context_t    *bdsm_context_new()
 {
   bdsm_context_t  *ctx;
 
-  ctx = malloc(sizeof(bdsm_context_t));
-  memset((void *)ctx, 0, sizeof(bdsm_context_t));
+  ctx = calloc(1, sizeof(bdsm_context_t));
+  assert(ctx != NULL);
 
-  //if (BDSM_DEBUG)
-  //  event_enable_debug_mode();
-
-  //ctx->event_base = event_base_new();
   if (!(ctx->ns = netbios_ns_new()))
   {
     free(ctx);
@@ -45,9 +42,6 @@ void              bdsm_context_destroy(bdsm_context_t *ctx)
 {
   if (!ctx)
     return;
-
-  // if (ctx->event_base)
-  //   event_base_free(ctx->event_base);
 
   free(ctx);
 }

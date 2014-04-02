@@ -103,7 +103,6 @@ int main(int ac, char **av)
   }
 
   smb_tid ipc  = smb_tree_connect(session, "\\\\CERBERE\\IPC$");
-  smb_tid test = smb_tree_connect(session, "\\\\CERBERE\\TEST");
 
   if (ipc == 0)
   {
@@ -111,6 +110,26 @@ int main(int ac, char **av)
     exit(42);
   }
   fprintf(stderr, "Connected to IPC$ share\n");
+
+  smb_tid test = smb_tree_connect(session, "\\\\CERBERE\\TEST");
+  if (test)
+    fprintf(stderr, "Connected to Test share\n");
+  else
+  {
+    fprintf(stderr, "Unable to connect to Test share\n");
+    exit(42);
+  }
+
+  smb_fd fd = smb_fopen(session, test, "\\test.txt", SMB_MOD_RO);
+  if (fd)
+    fprintf(stderr, "Successfully opened \\test.txt: fd = 0x%.8x\n", fd);
+  else
+  {
+    fprintf(stderr, "Unable to open \\test.txt\n");
+    exit(42);
+  }
+
+  smb_fclose(session, fd);
 
   smb_session_destroy(session);
   bdsm_context_destroy(ctx);

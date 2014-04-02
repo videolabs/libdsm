@@ -39,9 +39,10 @@ int             smb_message_put8(smb_message_t *msg, uint8_t data);
 int             smb_message_put16(smb_message_t *msg, uint16_t data);
 int             smb_message_put32(smb_message_t *msg, uint32_t data);
 int             smb_message_put64(smb_message_t *msg, uint32_t data);
-int             smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
+size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
                                       const char *str, size_t str_len);
 
 void            smb_message_set_default_flags(smb_message_t *msg);
+void            smb_message_set_andx_members(smb_message_t *msg);
 void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value);
 #endif
