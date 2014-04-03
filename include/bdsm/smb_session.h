@@ -55,6 +55,7 @@ typedef struct smb_file_s
   uint64_t            alloc_size;
   uint64_t            size;
   uint32_t            attr;
+  uint32_t            readp;          // Current read pointer (position);
 } smb_file_t;
 
 typedef struct smb_share_s

@@ -124,6 +124,13 @@ int main(int ac, char **av)
     exit(42);
   }
 
+  char    data[512];
+
+  memset(data, 0, 512);
+  smb_fread(session, fd, data, 512);
+
+  fprintf(stderr, "Read from file:\n%s\n", data);
+
   smb_fclose(session, fd);
 
   smb_session_destroy(session);

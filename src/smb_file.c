@@ -126,9 +126,69 @@ void        smb_fclose(smb_session_t *s, smb_fd fd)
   smb_session_recv_msg(s, 0);
 }
 
-ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t *buf_size)
+ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size)
 {
+  smb_file_t        *file;
   smb_message_t     *req_msg, resp_msg;
   smb_read_req_t    *req;
   smb_read_resp_t   *resp;
+  size_t            max_read;
+  int               res;
+
+  assert(s != NULL && buf != NULL && fd);
+  if ((file = smb_session_file_get(s, fd)) == NULL)
+    return (-1);
+
+  req_msg = smb_message_new(SMB_CMD_READ, 64);
+  req_msg->packet->header.tid = file->tid;
+  smb_message_set_default_flags(req_msg);
+  smb_message_set_andx_members(req_msg);
+  smb_message_advance(req_msg, sizeof(smb_read_req_t));
+
+  max_read = NETBIOS_SESSION_BUFFER - 256; // XXX
+  max_read = max_read < buf_size ? max_read : buf_size;
+
+  req = (smb_read_req_t *)req_msg->packet->payload;
+  req->wct              = 12;
+  req->fid              = file->fid;
+  req->offset           = file->readp;
+  req->max_count        = max_read;
+  req->min_count        = max_read;
+  req->max_count_high   = 0;
+  req->remaining        = 0;
+  req->offset_high      = 0;
+  req->bct              = 0;
+
+  res = smb_session_send_msg(s, req_msg);
+  smb_message_destroy(req_msg);
+  if (!send)
+    return (-1);
+
+  if (!smb_session_recv_msg(s, &resp_msg))
+    return (-1);
+  if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+    return (-1);
+
+  resp = (smb_read_resp_t *)resp_msg.packet->payload;
+  memcpy(buf, resp->file, resp->data_len);
+  smb_fseek(s, fd, resp->data_len, SEEK_CUR);
+
+  return (resp->data_len);
+}
+
+ssize_t   smb_fseek(smb_session_t *s, smb_fd fd, ssize_t offset, int whence)
+{
+  smb_file_t  *file;
+
+  assert(s != NULL);
+
+  if (!fd || (file = smb_session_file_get(s, fd)) == NULL)
+    return(0);
+
+  if (whence == SEEK_SET)
+    file->readp = offset;
+  else if (whence == SEEK_CUR)
+    file->readp += offset;
+
+  return (file->readp);
 }

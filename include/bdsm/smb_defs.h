@@ -298,11 +298,11 @@ typedef struct
   SMB_ANDX_MEMBERS
   uint16_t        fid;
   uint32_t        offset;
-  uint16_t        max_count_low;
+  uint16_t        max_count;
   uint16_t        min_count;
-  uint32_t        max_count_high;     // Continuation of max_count_low field
+  uint32_t        max_count_high;     // Continuation of max_count field
   uint16_t        remaining;
-  uint32_t        high_offset;
+  uint32_t        offset_high;        // Continuation of offset field'
   uint16_t        bct;                // 0
 } __attribute__((packed))   smb_read_req_t;
 
@@ -310,16 +310,16 @@ typedef struct
 {
   uint8_t         wct;                // 12
   SMB_ANDX_MEMBERS
-  uint16_t        fid;
   uint16_t        remaining;
   uint16_t        compact_mode;
   uint16_t        reserved;
-  uint16_t        data_len_low;
+  uint16_t        data_len;
   uint16_t        data_offset;
   uint32_t        data_len_high;
   uint32_t        reserved2;
   uint16_t        reserved3;
   uint16_t        bct;
+  uint8_t         padding;
   uint8_t         file[];
 } __attribute__((packed))   smb_read_resp_t;
 
