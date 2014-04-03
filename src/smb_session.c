@@ -54,6 +54,7 @@ int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip)
   if (!netbios_session_connect(s->nb_session, name))
     goto error;
 
+  memcpy(s->srv.name, name, strlen(name) + 1);
   s->state = SMB_STATE_NETBIOS_OK;
   return (1);
 

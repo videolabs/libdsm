@@ -100,7 +100,7 @@ int             smb_message_put32(smb_message_t *msg, uint32_t data)
     return(smb_message_append(msg, (void *)&data, 4));
 }
 
-int             smb_message_put64(smb_message_t *msg, uint32_t data)
+int             smb_message_put64(smb_message_t *msg, uint64_t data)
 {
     return(smb_message_append(msg, (void *)&data, 8));
 }
@@ -119,6 +119,24 @@ size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
   if (res)
     return(utf_str_len);
   return (0);
+}
+
+int             smb_message_put_uuid(smb_message_t *msg, uint32_t a, uint16_t b,
+                                     uint16_t c, const uint8_t d[8])
+{
+  assert(msg != NULL);
+
+  if (!smb_message_put32(msg, a))
+    return (0);
+  if (!smb_message_put16(msg, b))
+    return (0);
+  if (!smb_message_put16(msg, c))
+    return (0);
+  for (int i = 0; i < 8; i++)
+    if (!smb_message_put8(msg, d[i]))
+      return (0);
+
+  return (1);
 }
 
 void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)

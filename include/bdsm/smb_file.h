@@ -22,7 +22,7 @@
 #include "bdsm/smb_session.h"
 
 smb_fd    smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
-                   uint32_t mod);
+                    uint32_t mod);
 void      smb_fclose(smb_session_t *s, smb_fd);
 ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size);
 ssize_t   smb_fseek(smb_session_t *s, smb_fd fd, ssize_t offset, int whence);

@@ -20,8 +20,15 @@
 #define __BDSM_SMB_SHARE_H_
 
 #include "bdsm/smb_session.h"
+#include "bdsm/smb_file.h"
 
-smb_tid         smb_tree_connect(smb_session_t *s, const char *path);
+typedef struct  smb_share_list_s
+{
+  char                name[16];
+}               smb_share_list_t;
+
+size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list);
+smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
 int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
 
 #endif

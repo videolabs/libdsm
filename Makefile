@@ -14,7 +14,7 @@
 ## permitted by applicable law. You can redistribute it and/or modify it under
 ## the terms of the Do What The Fuck You Want To Public License, Version 2, as
 ## published by Sam Hocevar. See the COPYING file for more details.
-	##----------------------------------------------------------------------------
+##----------------------------------------------------------------------------
 
 
 
@@ -26,18 +26,18 @@ UTIL				= dsm
 LIB					= libdsm.so
 
 UTIL_SRC		= dsm.c 							    \
-							src/netbios_utils.c	    \
-							src/netbios_ns.c		    \
-							src/netbios_ns_entry.c	\
-							src/netbios_query.c     \
-							src/netbios_session.c		\
-							src/smb_utils.c					\
-							src/smb_message.c				\
-							src/smb_session.c				\
-							src/smb_ntlm.c					\
-							src/smb_share.c					\
-							src/smb_file.c					\
-							src/context.c
+			src/netbios_utils.c				\
+			src/netbios_ns.c				\
+			src/netbios_ns_entry.c				\
+			src/netbios_query.c				\
+			src/netbios_session.c				\
+			src/smb_utils.c					\
+			src/smb_message.c				\
+			src/smb_session.c				\
+			src/smb_ntlm.c					\
+			src/smb_share.c					\
+			src/smb_file.c					\
+			src/context.c
 
 UTIL_OBJS		= $(UTIL_SRC:.c=.o)
 

@@ -21,6 +21,8 @@
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
 
 #include <sys/socket.h>
@@ -97,7 +99,7 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  smb_tid ipc  = smb_tree_connect(session, "\\\\CERBERE\\IPC$");
+  smb_tid ipc  = smb_tree_connect(session, "IPC$");
 
   if (ipc == 0)
   {
@@ -106,7 +108,7 @@ int main(int ac, char **av)
   }
   fprintf(stderr, "Connected to IPC$ share\n");
 
-  smb_tid test = smb_tree_connect(session, "\\\\CERBERE\\TEST");
+  smb_tid test = smb_tree_connect(session, "TEST");
   if (test)
     fprintf(stderr, "Connected to Test share\n");
   else
@@ -115,23 +117,33 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  smb_fd fd = smb_fopen(session, test, "\\test.txt", SMB_MOD_RO);
+  smb_fd fd = smb_fopen(session, test, "\\test.avi", SMB_MOD_RO);
   if (fd)
-    fprintf(stderr, "Successfully opened \\test.txt: fd = 0x%.8x\n", fd);
+    fprintf(stderr, "Successfully opened \\test.avi: fd = 0x%.8x\n", fd);
   else
   {
-    fprintf(stderr, "Unable to open \\test.txt\n");
+    fprintf(stderr, "Unable to open \\test.avi\n");
     exit(42);
   }
 
-  char    data[512];
+  char              data[1024];
+  smb_share_list_t  *share_list;
 
-  memset(data, 0, 512);
-  smb_fread(session, fd, data, 512);
 
+  smb_fread(session, fd, data, 1024);
   fprintf(stderr, "Read from file:\n%s\n", data);
-
   smb_fclose(session, fd);
+
+  if (!smb_share_list(session, &share_list))
+  {
+    fprintf(stderr, "Unable to list share for %s\n", av[1]);
+    exit(42);
+  }
+  else
+  {
+    fprintf(stderr, "Share list : \n");
+  }
+
 
   smb_session_destroy(session);
   bdsm_context_destroy(ctx);

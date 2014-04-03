@@ -19,9 +19,11 @@
 #ifndef __BDSM_SMB_SESSION_H_
 #define __BDSM_SMB_SESSION_H_
 
+
 #include "bdsm/netbios_session.h"
 #include "bdsm/smb_defs.h"
 #include "bdsm/smb_message.h"
+
 
 #define SMB_STATE_SESSION_OK    3 // We are authenticated and can do stuff
 #define SMB_STATE_DIALECT_OK    2
@@ -56,6 +58,7 @@ typedef struct smb_file_s
   uint64_t            size;
   uint32_t            attr;
   uint32_t            readp;          // Current read pointer (position);
+  int                 is_dir;         // 0 -> file, 1 -> directory
 } smb_file_t;
 
 typedef struct smb_share_s
@@ -65,7 +68,7 @@ typedef struct smb_share_s
   uint16_t            opts;           // Optionnal support opts
   uint16_t            rights;         // Maximum rights field
   uint16_t            guest_rights;
-  smb_file_t          *files;         // List of all open files for this share
+  struct smb_file_s   *files;         // List of all open files for this share
 } smb_share_t;
 
 typedef struct
@@ -77,6 +80,7 @@ typedef struct
 
   // Informations about the smb server we are connected to.
   struct {
+    char                name[16];       // The server name
     uint16_t            dialect;        // The selected dialect
     uint16_t            security_mode;  // Security mode
     uint32_t            caps;           // Server caps replyed during negotiate
@@ -85,8 +89,10 @@ typedef struct
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
 
-  smb_share_t         *shares;          // shares->files | Map fd <-> smb_file_t
+  struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file_t
 }                   smb_session_t;
+
+
 
 
 smb_session_t   *smb_session_new();

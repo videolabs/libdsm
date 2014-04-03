@@ -92,6 +92,7 @@ smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
   file->alloc_size    = resp->alloc_size;
   file->size          = resp->size;
   file->attr          = resp->attr;
+  file->is_dir        = resp->is_dir;
 
   smb_session_file_add(s, tid, file); // XXX Check return
 
