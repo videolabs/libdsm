@@ -155,6 +155,6 @@ void            smb_message_set_andx_members(smb_message_t *msg)
 
   req = (smb_session_req_t *)msg->packet->payload;
   req->andx           = 0xff;
-  req->reserved       = 0;
+  req->andx_reserved  = 0;
   req->andx_offset    = 0;
 }

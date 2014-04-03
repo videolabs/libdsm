@@ -33,11 +33,6 @@
 #define NBT_TCP_PORT        139
 
 #include "bdsm.h"
-#include "bdsm/netbios_utils.h"
-#include "bdsm/netbios_session.h"
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_ntlm.h"
-#include "bdsm/smb_share.h"
 
 #include <openssl/md4.h>
 #include <openssl/md5.h>

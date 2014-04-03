@@ -36,6 +36,7 @@ UTIL_SRC		= dsm.c 							    \
 							src/smb_session.c				\
 							src/smb_ntlm.c					\
 							src/smb_share.c					\
+							src/smb_file.c					\
 							src/context.c
 
 UTIL_OBJS		= $(UTIL_SRC:.c=.o)

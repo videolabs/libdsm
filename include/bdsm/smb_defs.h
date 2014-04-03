@@ -140,9 +140,9 @@
 #define NT_STATUS_ACCESS_DENIED             0xc0000022
 
 #define SMB_ANDX_MEMBERS  \
-  uint8_t         andx;         /* 0xff when no other command (recommended :)*/\
-  uint8_t         reserved;     /* 0x00 */                                     \
-  uint16_t        andx_offset;  /* 0x00 when no other command */
+  uint8_t         andx;           /* 0xff when no other command (do this :)*/  \
+  uint8_t         andx_reserved;  /* 0x00 */                                   \
+  uint16_t        andx_offset;    /* 0x00 when no other command */
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -277,6 +277,7 @@ typedef struct
 } __attribute__((packed))   smb_create_resp_t;
 
 
+
 //// Close File
 
 typedef struct
@@ -286,6 +287,42 @@ typedef struct
   uint32_t        last_write;         // Not defined == 0xffffffff
   uint16_t        bct;                // 0
 } __attribute__((packed))   smb_close_req_t;
+
+
+
+//// Read File
+
+typedef struct
+{
+  uint8_t         wct;                // 12
+  SMB_ANDX_MEMBERS
+  uint16_t        fid;
+  uint32_t        offset;
+  uint16_t        max_count_low;
+  uint16_t        min_count;
+  uint32_t        max_count_high;     // Continuation of max_count_low field
+  uint16_t        remaining;
+  uint32_t        high_offset;
+  uint16_t        bct;                // 0
+} __attribute__((packed))   smb_read_req_t;
+
+typedef struct
+{
+  uint8_t         wct;                // 12
+  SMB_ANDX_MEMBERS
+  uint16_t        fid;
+  uint16_t        remaining;
+  uint16_t        compact_mode;
+  uint16_t        reserved;
+  uint16_t        data_len_low;
+  uint16_t        data_offset;
+  uint32_t        data_len_high;
+  uint32_t        reserved2;
+  uint16_t        reserved3;
+  uint16_t        bct;
+  uint8_t         file[];
+} __attribute__((packed))   smb_read_resp_t;
+
 
 
 

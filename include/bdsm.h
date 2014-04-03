@@ -20,5 +20,11 @@
 #define __BDSM_H_
 
 #include "bdsm/context.h"
+#include "bdsm/netbios_utils.h"
+#include "bdsm/netbios_session.h"
+#include "bdsm/smb_session.h"
+#include "bdsm/smb_ntlm.h"
+#include "bdsm/smb_share.h"
+#include "bdsm/smb_file.h"
 
 #endif

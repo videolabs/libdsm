@@ -91,11 +91,26 @@ typedef struct
 smb_session_t   *smb_session_new();
 void            smb_session_destroy(smb_session_t *s);
 
+
+
+void            smb_session_share_add(smb_session_t *s, smb_share_t *share);
+smb_share_t     *smb_session_share_get(smb_session_t *s, smb_tid tid);
+smb_share_t     *smb_session_share_remove(smb_session_t *s, smb_tid tid);
+int             smb_session_file_add(smb_session_t *s, smb_tid tid,
+                                     smb_file_t *f);
+smb_file_t      *smb_session_file_get(smb_session_t *s, smb_fd fd);
+smb_file_t      *smb_session_file_remove(smb_session_t *s, smb_fd fd);
+
+
+
 int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg);
 // msg->packet will be updated to point on received data. You don't own this
 // memory. It'll be reused on next recv_msg
 size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg);
 int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip);
+
+
+
 int             smb_negotiate(smb_session_t *s);
 int             smb_authenticate(smb_session_t *s, const char *domain,
                                  const char *user, const char *password);

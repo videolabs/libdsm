@@ -117,6 +117,139 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
   return (payload_size - sizeof(smb_header_t));
 }
 
+
+void        smb_session_share_add(smb_session_t *s, smb_share_t *share)
+{
+  smb_share_t *iter;
+
+  assert(s != NULL && share != NULL);
+
+  if (s->shares == NULL)
+  {
+    s->shares = share;
+    return;
+  }
+
+  iter = s->shares;
+  while(iter->next != NULL)
+    iter = iter->next;
+  iter->next = share;
+}
+
+smb_share_t *smb_session_share_get(smb_session_t *s, smb_tid tid)
+{
+  smb_share_t *iter;
+
+  assert(s != NULL && tid);
+
+  iter = s->shares;
+  while(iter != NULL && iter->tid != tid)
+    iter = iter->next;
+
+  return (iter);
+}
+
+smb_share_t *smb_session_share_remove(smb_session_t *s, smb_tid tid)
+{
+  smb_share_t *iter, *keep;
+
+  assert(s != NULL && tid);
+  iter = s->shares;
+
+  if (iter == NULL)
+    return (NULL);
+  if (iter->tid == tid)
+  {
+    s->shares = s->shares->next;
+    return (iter);
+  }
+
+  while(iter->next != NULL && iter->next->tid != tid)
+    iter = iter->next;
+
+  if (iter->next != NULL) // We found it
+  {
+    keep = iter->next;
+    iter->next = iter->next->next;
+    return (keep);
+  }
+  return (NULL);
+}
+
+int         smb_session_file_add(smb_session_t *s, smb_tid tid, smb_file_t *f)
+{
+  smb_share_t *share;
+  smb_file_t  *iter;
+
+  assert(s != NULL && tid && f != NULL);
+
+  if ((share = smb_session_share_get(s, tid)) == NULL)
+    return (0);
+
+  if (share->files == NULL)
+    share->files = f;
+  else
+  {
+    iter = share->files;
+    while (iter->next != NULL)
+      iter = iter->next;
+    iter->next = f;
+  }
+
+  return (1);
+}
+
+smb_file_t  *smb_session_file_get(smb_session_t *s, smb_fd fd)
+{
+  smb_share_t *share;
+  smb_file_t  *iter;
+
+  assert(s != NULL && fd);
+
+  if ((share = smb_session_share_get(s, SMB_FD_TID(fd))) == NULL)
+    return (NULL);
+
+  iter = share->files;
+  while(iter != NULL && iter->fid != SMB_FD_FID(fd))
+    iter = iter->next;
+
+  return (iter);
+}
+
+smb_file_t  *smb_session_file_remove(smb_session_t *s, smb_fd fd)
+{
+  smb_share_t *share;
+  smb_file_t  *iter, *keep;
+
+  assert(s != NULL && fd);
+
+  if ((share = smb_session_share_get(s, SMB_FD_TID(fd))) == NULL)
+    return (NULL);
+
+  iter = share->files;
+
+  if (iter == NULL)
+    return (NULL);
+  if (iter->fid == SMB_FD_FID(fd))
+  {
+    share->files = iter->next;
+    return (iter);
+  }
+
+  while(iter->next != NULL && iter->next->fid != SMB_FD_TID(fd))
+    iter = iter->next;
+  if (iter->next != NULL)
+  {
+    keep = iter->next;
+    iter->next = iter->next->next;
+    return (keep);
+  }
+  else
+    return (NULL);
+}
+
+
+
 int             smb_negotiate(smb_session_t *s)
 {
   const char            *dialects[] = SMB_DIALECTS;
@@ -183,11 +316,10 @@ int             smb_authenticate(smb_session_t *s, const char *domain,
 
   msg = smb_message_new(SMB_CMD_SETUP, 512);
   smb_message_set_default_flags(msg);
+  smb_message_set_andx_members(msg);
   req = (smb_session_req_t *)msg->packet->payload;
 
   req->wct              = (sizeof(smb_session_req_t) - 3) / 2;
-  req->andx             = 0xFF;
-  req->reserved         = 0;
   req->max_buffer       = NETBIOS_SESSION_PAYLOAD;
   req->max_buffer      -= sizeof(netbios_session_packet_t);
   req->max_buffer      -= sizeof(smb_packet_t);
