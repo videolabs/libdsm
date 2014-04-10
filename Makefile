@@ -53,7 +53,7 @@ LIB_OBJS			= $(LIB_SRC:.c=.o)
 all: $(LIB) $(LIB_STATIC) $(UTILS)
 
 clean:
-	rm -f $(UTILS) $(LIB) $(LIB_STATIC)
+	rm -f $(UTILS) $(LIB) $(LIB_STATIC) *.o
 	rm -rf $(LIB_OBJS)
 
 re: clean all

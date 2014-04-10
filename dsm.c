@@ -161,7 +161,7 @@ int main(int ac, char **av)
   files = smb_stat(session, test, av[4]);
 
   if (files)
-    printf("File %s is %d bytes long", av[4], files->size);
+    printf("File %s is %lu bytes long", av[4], files->size);
 
 
   smb_session_destroy(session);
