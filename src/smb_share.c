@@ -96,6 +96,49 @@ int           smb_tree_disconnect(smb_session_t *s, smb_tid tid)
   return (0);
 }
 
+// Here we parse the NetShareEnumAll response packet payload to extract
+// The share list.
+// We are assuming share name are limited to 16 characters
+static size_t   smb_share_parse_enum(smb_message_t *msg,
+                                     smb_share_list_t **list)
+{
+  uint32_t          share_count, i;
+  uint8_t           *data, *eod;
+  smb_share_list_t  *s;
+
+  assert(msg != NULL && list != NULL);
+  // Let's skip smb parameters, DCE/RPC stuff until we are at the begginning of
+  // NetShareCtrl
+
+  share_count = *((uint32_t *)(msg->packet->payload + 60));
+  data        = msg->packet->payload + 72 + share_count * 12;
+  eod         = msg->packet->payload + msg->payload_size;
+
+  s = calloc(share_count, sizeof(smb_share_list_t));
+  assert (s != NULL);
+
+  for (i = 0; i < share_count && data < eod; i++)
+  {
+    uint32_t name_len, com_len;
+
+
+    name_len = *((uint32_t *)data);   // Read 'Max Count', make it a multiple of 2
+    data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Name.
+    memcpy(s[i].name, data, name_len * 2); // Those are unicode strings.
+    if (name_len % 2) name_len += 1;  // Align next move
+    data    += name_len * 2;          // Move the pointer to Comment 'Max count'
+
+    com_len  = *((uint32_t *)data);
+    data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Comment.
+    if (com_len % 2) com_len += 1;    // Align next move
+    data    += com_len * 2;           // Move the pointer to next item
+  }
+
+  *list = s;
+
+  return (i);
+}
+
 // We should normally implement SCERPC and SRVSVC to perform a share list. But
 // since these two protocols have no other use for use, we'll do it the trash
 // way
@@ -145,8 +188,9 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
   trans->fid                    = SMB_FD_FID(srvscv_fd);
   trans->bct                    = 89;
 
+  smb_message_put8(req, 0);   // Padding
   smb_message_put_utf16(req, "", "\\PIPE\\", strlen("\\PIPE\\") + 1);
-  smb_message_put16(req, 0); // Padding to be aligned with wtf boundary :-/
+  smb_message_put16(req, 0);  // Padding to be aligned with wtf boundary :-/
 
   // Now we'll 'build' the DCE/RPC Packet. This basically a copycat
   // from wireshark values.
@@ -194,7 +238,7 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
 
 
   //// Phase 2:
-  // Now we have the 'bind' (regarless of what it is), we'll call
+  // Now we have the 'bind' done (regarless of what it is), we'll call
   // NetShareEnumAll
 
   req = smb_message_new(SMD_CMD_TRANS, 256);
@@ -206,6 +250,80 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
 
   memset((void *)trans, 0, sizeof(smb_trans_req_t));
 
+  trans->wct              = 16;
+  trans->max_data_count   = 4280;
+  trans->setup_count      = 2;
+  trans->pipe_function    = 0x26; // TransactNmPipe;
+  trans->fid              = SMB_FD_FID(srvscv_fd);
 
-  return (1);
+  smb_message_put8(req, 0);  // Padding
+  smb_message_put_utf16(req, "", "\\PIPE\\", strlen("\\PIPE\\") + 1);
+  smb_message_put16(req, 0); // Padding
+
+  // Now we'll 'build' the DCE/RPC Packet. This basically a copycat
+  // from wireshark values.
+  smb_message_put8(req, 5);     // version major
+  smb_message_put8(req, 0);     // minor
+  smb_message_put8(req, 0);     // Packet type = 'request'
+  smb_message_put8(req, 0x03);  // Packet flags = ??
+  smb_message_put32(req, 0x10); // Representation = little endian/ASCII. Damn
+  smb_message_put16(req, 88);   // Data len again
+  smb_message_put16(req, 0);    // Auth len ?
+  smb_message_put32(req, 20);   // Call ID ?
+  smb_message_put32(req, 64);   // Alloc hint ?
+  smb_message_put16(req, 0);    // Context ID ?
+  smb_message_put16(req, 15);   // OpNum = NetShareEnumAll
+
+  // Pointer to server UNC
+  smb_message_put32(req, 0x00020000);   // Referent ID ?
+  smb_message_put32(req, 8);            // Max count
+  smb_message_put32(req, 0);            // Offset
+  smb_message_put32(req, 8);            // Actual count
+    // The server name, supposed to be downcased
+  smb_message_put_utf16(req, "", s->srv.name, strlen(s->srv.name) + 1);
+  if ((strlen(s->srv.name) % 2) == 0) // It won't be aligned with the terminating byte
+  smb_message_put16(req, 0);
+
+
+  smb_message_put32(req, 1);            // Level 1 ?
+  smb_message_put32(req, 1);            // Ctr ?
+  smb_message_put32(req, 0x00020004);   // Referent ID ?
+  smb_message_put64(req, 0);            // Count/Null Pointer to NetShareInfo1
+  smb_message_put32(req, rpc_len);      // Max Buffer
+
+  smb_message_put32(req, 0x00020008);   // Referent ID ?
+  smb_message_put32(req, 0);            // Resume ?
+
+  // Sets length values
+  trans->bct              = req->cursor - sizeof(smb_trans_req_t);
+  trans->data_count       = trans->bct - 17; // 17 -> padding + \PIPE\ + padding
+  trans->total_data_count = trans->data_count;
+  trans->data_offset      = trans->data_count - 4;
+  trans->param_offset     = trans->data_count - 4;
+
+
+  // Let's send this ugly pile of shit over the network !
+  res = smb_session_send_msg(s, req);
+  smb_message_destroy(req);
+  if (!res)
+    return (0);
+
+  // Is the server throwing pile of shit back at me ?
+  res = smb_session_recv_msg(s, &resp);
+  if (!res && (uint32_t)resp.packet->payload[resp.payload_size - 4])
+  {
+    if (BDSM_DEBUG)
+      fprintf(stderr, "NetShareEnumAll call failed.\n");
+    return (0);
+  }
+
+
+  //// Phase 3
+  // We parse the list of Share (finally !) and build function response
+  res = smb_share_parse_enum(&resp, list);
+
+  // Close the pipe
+  smb_fclose(s, srvscv_fd);
+
+  return (res);
 }

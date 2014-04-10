@@ -16,19 +16,33 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_SHARE_H_
-#define __BDSM_SMB_SHARE_H_
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_file.h"
+#include "bdsm.h"
 
-typedef struct  smb_share_list_s
+int main(int ac, char **av)
 {
-  char                name[32];
-}               smb_share_list_t;
+  bdsm_context_t      *ctx;
+  netbios_ns_entry_t  *iter;
 
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list);
-smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
-int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
+  ctx = bdsm_context_new();
+  assert(ctx);
 
-#endif
+  if (!netbios_ns_discover(ctx->ns))
+  {
+    fprintf(stderr, "Error while discovering local network\n");
+    exit(42);
+  }
+
+  iter = ctx->ns->entries;
+  while (iter != NULL)
+  {
+    printf("Found %s\n", iter->name);
+    iter = iter->next;
+  }
+
+  return (0);
+}

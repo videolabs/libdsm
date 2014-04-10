@@ -44,6 +44,9 @@
 #define SMB_CMD_READ            0x2e // Read AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
 
+#define SMB_TR2_FIND_FIRST      0x0001
+#define SMB_TR2_QUERY_PATH      0x0005
+
 ///////////////////////////////////////////////////////////////////////////////
 //// Flags definitions
 
@@ -124,6 +127,26 @@
 #define SMB_SHARE_READ          (1 << 0)
 #define SMB_SHARE_WRITE         (1 << 1)
 #define SMB_SHARE_DELETE        (1 << 2)
+
+// Trans 2 flags
+//// Find First 2
+#define SMB_FIND2_ATTR_RO       (1 << 0)  // Include RO files in result
+#define SMB_FIND2_ATTR_HIDDEN   (1 << 1)  // Include hidden files
+#define SMB_FIND2_ATTR_SYSTEM   (1 << 2)  // Include system files
+#define SMB_FIND2_ATTR_VOLUME   (1 << 3)  // Include volume ID ?
+#define SMB_FIND2_ATTR_DIR      (1 << 4)  // Include directory ?
+#define SMB_FIND2_ATTR_ARCHIVE  (1 << 5)  // Include archive ?
+#define SMB_FIND2_ATTR_DEFAULT  (SMB_FIND2_ATTR_RO | SMB_FIND2_ATTR_HIDDEN |  \
+                                 SMB_FIND2_ATTR_SYSTEM | SMB_FIND2_ATTR_DIR)
+
+#define SMB_FIND2_FLAG_CLOSE      (1 << 0)  // Close search after request ?
+#define SMB_FIND2_FLAG_CLOSE_EOS  (1 << 1)  // Close after End Of Search ?
+#define SMB_FIND2_FLAG_RESUME     (1 << 2)  // Send resume keys ?
+#define SMB_FIND2_FLAG_CONTINUE   (1 << 3)  // not set == new search
+#define SMB_FIND2_FLAG_BACKUP     (1 << 3)  // Backup intent ?
+#define SMB_FIND2_FLAG_DEFAULT    (SMB_FIND2_FLAG_CLOSE_EOS | \
+                                   SMB_FIND2_FLAG_RESUME)
+
 
 
 

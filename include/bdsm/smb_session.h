@@ -45,11 +45,13 @@ typedef uint32_t    smb_fd;
 #define SMB_FD_FID(fd)    ((smb_fid)(fd & 0x0000ffff))
 #define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
 
-typedef struct smb_file_s
+typedef struct  smb_file_s
 {
-  smb_fid             fid;
   struct smb_file_s   *next;          // Next file in this share
+  char                *name;
+  smb_fid             fid;
   smb_tid             tid;
+  size_t              name_len;
   uint64_t            created;
   uint64_t            accessed;
   uint64_t            written;
@@ -63,12 +65,12 @@ typedef struct smb_file_s
 
 typedef struct smb_share_s
 {
-  smb_tid             tid;
   struct smb_share_s  *next;          // Next share in this session
+  struct smb_file_s   *files;         // List of all open files for this share
+  smb_tid             tid;
   uint16_t            opts;           // Optionnal support opts
   uint16_t            rights;         // Maximum rights field
   uint16_t            guest_rights;
-  struct smb_file_s   *files;         // List of all open files for this share
 } smb_share_t;
 
 typedef struct
@@ -99,7 +101,6 @@ smb_session_t   *smb_session_new();
 void            smb_session_destroy(smb_session_t *s);
 
 
-
 void            smb_session_share_add(smb_session_t *s, smb_share_t *share);
 smb_share_t     *smb_session_share_get(smb_session_t *s, smb_tid tid);
 smb_share_t     *smb_session_share_remove(smb_session_t *s, smb_tid tid);
@@ -107,7 +108,6 @@ int             smb_session_file_add(smb_session_t *s, smb_tid tid,
                                      smb_file_t *f);
 smb_file_t      *smb_session_file_get(smb_session_t *s, smb_fd fd);
 smb_file_t      *smb_session_file_remove(smb_session_t *s, smb_fd fd);
-
 
 
 int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg);

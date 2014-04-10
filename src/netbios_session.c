@@ -168,7 +168,7 @@ int               netbios_session_packet_send(netbios_session_t *s)
 
   if (sent != to_send)
   {
-    perror("netbios_session_packet_send: Unable to send (full) packet");
+    perror("netbios_session_packet_send: Unable to send (full?) packet");
     return (0);
   }
 

@@ -252,12 +252,127 @@ typedef struct
   uint16_t      pipe_function;
   uint16_t      fid;
   uint16_t      bct;
-  uint8_t       padding;
   uint8_t       payload[];
 } __attribute__((packed))   smb_trans_req_t;
 
 
 
+
+
+//-> Trans2
+typedef struct
+{
+  uint8_t       wct;                // 15
+  uint16_t      total_param_count;
+  uint16_t      total_data_count;
+  uint16_t      max_param_count;
+  uint16_t      max_data_count;
+  uint8_t       max_setup_count;
+  uint8_t       reserved;
+  uint16_t      flags;
+  uint32_t      timeout;
+  uint16_t      reserve2;
+  uint16_t      param_count;
+  uint16_t      param_offset;
+  uint16_t      data_count;
+  uint16_t      data_offset;
+  uint8_t       setup_count;
+  uint8_t       reserved3;
+  uint16_t      cmd;
+  uint16_t      bct;
+  uint8_t       padding[3];
+  uint8_t       payload[];
+} __attribute__((packed))   smb_trans2_req_t;
+
+//// -> Trans2|FindFirst2
+typedef struct
+{
+  uint16_t      attrs;              // Search attributes
+  uint16_t      count;              // Search count
+  uint16_t      flags;
+  uint16_t      interest;           // What kind of info do we want ?
+  uint32_t      storage;            // ? => 0
+  uint8_t       pattern[];          // The queried pattern "\\folder\\*"
+} __attribute__((packed))   smb_tr2_find2_t;
+
+//// -> Trans2|QueryPathInfo
+typedef struct
+{
+  uint16_t      interest;
+  uint32_t      reserved;
+  uint8_t       path[];
+} __attribute__((packed))   smb_tr2_query_t;
+
+//<- Trans2
+
+typedef struct
+{
+  uint8_t       wct;                // 10
+  uint16_t      total_param_count;
+  uint16_t      total_data_count;
+  uint16_t      reserved;
+  uint16_t      param_count;
+  uint16_t      param_offset;
+  uint16_t      param_displacement; // ??
+  uint16_t      data_count;
+  uint16_t      data_offset;
+  uint16_t      data_displacement;  // ??
+  uint8_t       setup_count;
+  uint8_t       reserved2;
+  uint16_t      bct;
+  uint8_t       padding;
+  uint8_t       payload[];
+} __attribute__((packed))   smb_trans2_resp_t;
+
+//// <- Trans2|FindFirst2Params
+typedef struct
+{
+  uint16_t      id;
+  uint16_t      count;
+  uint16_t      eos;
+  uint16_t      ea_error_offset;
+  uint16_t      last_name_offset;
+  uint16_t      padding;
+} __attribute__((packed))   smb_tr2_find2_params_t;
+
+//// <- Trans2|FindFirst2FileInfo
+typedef struct
+{
+  uint32_t      next_entry;
+  uint32_t      index;
+  uint64_t      created;            // File creation time
+  uint64_t      accessed;           // File last access time
+  uint64_t      written;            // File last write time
+  uint64_t      changed;            // File last modification time
+  uint64_t      size;
+  uint64_t      alloc_size;
+  uint32_t      attr;
+  uint32_t      name_len;
+  uint32_t      ea_list_len;
+  uint8_t       short_name_len;
+  uint8_t       reserved;
+  uint8_t       short_name[24];
+  uint8_t       name[];
+} __attribute__((packed))   smb_tr2_find2_entry_t;
+
+
+//// <- Trans2|QueryPathInfo
+typedef struct
+{
+  uint64_t      created;
+  uint64_t      accessed;
+  uint64_t      written;
+  uint64_t      changed;
+  uint32_t      attr;
+  uint64_t      alloc_size;
+  uint64_t      size;
+  uint32_t      link_count;
+  uint8_t       rm_pending;
+  uint8_t       is_dir;
+  uint32_t      ea_list_len;
+  uint32_t      name_len;
+  uint8_t       name[];
+} __attribute__((packed))   smb_tr2_path_info_t;
 
 
 //-> Example

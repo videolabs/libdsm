@@ -31,13 +31,11 @@ smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
   const char    magic[4] = SMB_MAGIC;
   smb_message_t *msg;
 
-  msg = (smb_message_t *)malloc(sizeof(smb_message_t));
+  msg = (smb_message_t *)calloc(1, sizeof(smb_message_t));
   assert(msg != NULL);
-  memset((void *)msg, 0, sizeof(smb_message_t));
 
-  msg->packet = (smb_packet_t *)malloc(sizeof(smb_message_t) + payload_size);
+  msg->packet = (smb_packet_t *)calloc(1, sizeof(smb_message_t) + payload_size);
   assert(msg != NULL);
-  memset((void *)msg->packet, 0, sizeof(smb_message_t) + payload_size);
 
   msg->payload_size = payload_size;
   msg->cursor = 0;
@@ -71,6 +69,8 @@ int             smb_message_append(smb_message_t *msg, const void *data,
   memcpy(msg->packet->payload + msg->cursor, data, data_size);
   msg->cursor += data_size;
 
+  //fprintf(stderr, "Cursor is at %d (append)\n", msg->cursor);
+
   return (1);
 }
 
@@ -78,10 +78,12 @@ int             smb_message_advance(smb_message_t *msg, size_t size)
 {
   assert(msg != NULL);
 
-  if (msg->cursor + size > msg->payload_size)
+  if (msg->payload_size < msg->cursor + size)
     return (0);
 
   msg->cursor += size;
+
+  //fprintf(stderr, "Cursor is at %d (advance)\n", msg->cursor);
   return (1);
 }
 
@@ -115,6 +117,9 @@ size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
   utf_str_len = smb_to_utf16(src_enc, str, str_len, &utf_str);
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
+
+  //fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
+  //        utf_str_len, msg->cursor);
 
   if (res)
     return(utf_str_len);

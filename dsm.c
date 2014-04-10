@@ -35,6 +35,7 @@
 #define NBT_TCP_PORT        139
 
 #include "bdsm.h"
+#include "bdsm/smb_trans2.h"
 
 #include <openssl/md4.h>
 #include <openssl/md5.h>
@@ -108,7 +109,7 @@ int main(int ac, char **av)
   }
   fprintf(stderr, "Connected to IPC$ share\n");
 
-  smb_tid test = smb_tree_connect(session, "TEST");
+  smb_tid test = smb_tree_connect(session, "test");
   if (test)
     fprintf(stderr, "Connected to Test share\n");
   else
@@ -117,22 +118,23 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  smb_fd fd = smb_fopen(session, test, "\\test.avi", SMB_MOD_RO);
-  if (fd)
-    fprintf(stderr, "Successfully opened \\test.avi: fd = 0x%.8x\n", fd);
-  else
-  {
-    fprintf(stderr, "Unable to open \\test.avi\n");
-    exit(42);
-  }
+  // smb_fd fd = smb_fopen(session, test, "\\BDSM\\test.txt", SMB_MOD_RO);
+  // if (fd)
+  //   fprintf(stderr, "Successfully opened file: fd = 0x%.8x\n", fd);
+  // else
+  // {
+  //   fprintf(stderr, "Unable to open file\n");
+  //   exit(42);
+  // }
 
   char              data[1024];
   smb_share_list_t  *share_list;
+  smb_file_t        *files;
 
 
-  smb_fread(session, fd, data, 1024);
-  fprintf(stderr, "Read from file:\n%s\n", data);
-  smb_fclose(session, fd);
+  // smb_fread(session, fd, data, 1024);
+  // fprintf(stderr, "Read from file:\n%s\n", data);
+  // smb_fclose(session, fd);
 
   if (!smb_share_list(session, &share_list))
   {
@@ -143,6 +145,23 @@ int main(int ac, char **av)
   {
     fprintf(stderr, "Share list : \n");
   }
+
+  fprintf(stderr, "Let's find files at share's root :\n");
+  files = smb_find(session, test, "\\*");
+  if (files != NULL)
+    while(files)
+    {
+      fprintf(stderr, "Found a file %s \n", files->name);
+      files = files->next;
+    }
+  else
+    fprintf(stderr, "Unable to list files\n");
+
+  fprintf(stderr, "Query file info for path: %s\n", av[4]);
+  files = smb_stat(session, test, av[4]);
+
+  if (files)
+    printf("File %s is %d bytes long", av[4], files->size);
 
 
   smb_session_destroy(session);

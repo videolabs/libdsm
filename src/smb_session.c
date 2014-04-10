@@ -74,8 +74,7 @@ int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg)
 
   netbios_session_packet_init(s->nb_session, NETBIOS_OP_SESSION_MSG);
 
-  packet_size   = sizeof(netbios_session_packet_t) + sizeof(smb_packet_t);
-  packet_size  += msg->cursor;
+  packet_size   = sizeof(smb_packet_t) + msg->cursor;
   if (!netbios_session_packet_append(s->nb_session, (char *)msg->packet, packet_size))
     return (0);
   if (!netbios_session_packet_send(s->nb_session))

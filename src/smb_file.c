@@ -107,6 +107,7 @@ void        smb_fclose(smb_session_t *s, smb_fd fd)
 
   assert(s != NULL && fd);
 
+  // XXX Memory leak, destroy the file after removing it
   if ((file = smb_session_file_remove(s, fd)) == NULL)
     return;
 

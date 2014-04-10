@@ -2,3 +2,9 @@ pysmb-1.1.8/*
 ref/*
 *.o
 dsm
+*.so
+*.a
+discover
+lookup
+inverse
+

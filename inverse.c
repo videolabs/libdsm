@@ -16,19 +16,40 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_SHARE_H_
-#define __BDSM_SMB_SHARE_H_
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_file.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-typedef struct  smb_share_list_s
+#include "bdsm.h"
+
+int main(int ac, char **av)
 {
-  char                name[32];
-}               smb_share_list_t;
+  bdsm_context_t      *ctx;
+  netbios_ns_entry_t  ns_entry;
 
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list);
-smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
-int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
+  ctx = bdsm_context_new();
+  assert(ctx);
 
-#endif
+  if (ac != 2)
+  {
+    fprintf(stderr, "%s usage: %s a.b.c.d\n", av[0], av[0]);
+    fprintf(stderr, "Print the netbios name for this IP address\n");
+    exit(1);
+  }
+
+  inet_aton(av[1], &ns_entry.address);
+  if (!netbios_ns_inverse(ctx->ns, &ns_entry))
+  {
+    fprintf(stderr, "Unable to perform inverse name resolution for %s\n", av[1]);
+    exit(42);
+  }
+
+  printf("%s\n", ns_entry.name);
+
+  return (0);
+}

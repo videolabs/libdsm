@@ -288,7 +288,7 @@ int           netbios_ns_discover(netbios_ns_t *ns)
     iter = iter->next;
   }
 
-  return (0);
+  return (1);
 }
 
 // Perform inverse name resolution. Grap an IP and return the first <20> field
@@ -347,7 +347,8 @@ int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry)
     current_name = names + name_idx * 18;
     if (current_name[15] == 0x20)
     {
-      printf("Found name : %s\n", current_name);
+      if (BDSM_DEBUG)
+        fprintf(stderr, "Found name : %s\n", current_name);
       memcpy(entry->name, current_name, NETBIOS_NAME_LENGTH + 2);
       return (1);
     }

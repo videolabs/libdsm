@@ -20,7 +20,7 @@ Here's a list of features i intend to support in this project :
 * SMB
   ** Support only required parts of 'NT LM 0.12' (aka CIFS?) dialect.
   ** User based authentication [Done]
-  ** List Shares
+  ** List Shares [Partial/Ugly]
   ** Browse folders
-  ** Read file
+  ** Read file [Done, can be improved :)]
   ** No write, lock, RPCs, etc.

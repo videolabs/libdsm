@@ -16,19 +16,13 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_SHARE_H_
-#define __BDSM_SMB_SHARE_H_
+#ifndef __BDSM_SMB_TRANS2_H_
+#define __BDSM_SMB_TRANS2_H_
 
+#include "bdsm/smb_defs.h"
 #include "bdsm/smb_session.h"
-#include "bdsm/smb_file.h"
 
-typedef struct  smb_share_list_s
-{
-  char                name[32];
-}               smb_share_list_t;
-
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list);
-smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
-int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
+smb_file_t  *smb_find(smb_session_t *s, smb_tid tid, const char *pattern);
+smb_file_t  *smb_stat(smb_session_t *s, smb_tid tid, const char *path);
 
 #endif
