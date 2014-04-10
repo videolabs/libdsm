@@ -18,7 +18,7 @@
 
 
 
-CFLAGS      	= -g3 -Iinclude -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 -fPIC
+CFLAGS      	= -Iinclude -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 -fPIC
 LDFLAGS     	= -lcrypto #-levent
 CC          	= clang
 AR						= ar
