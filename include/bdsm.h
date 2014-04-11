@@ -19,6 +19,10 @@
 #ifndef __BDSM_H_
 #define __BDSM_H_
 
+#define BDSM_VERSION_CURRENT  0
+#define BDSM_VERSION_REVISION 0
+#define BDSM_VERSION_AGE      0
+
 #include "bdsm/context.h"
 #include "bdsm/netbios_utils.h"
 #include "bdsm/netbios_session.h"
