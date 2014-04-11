@@ -49,9 +49,13 @@ AC_CONFIG_MACRO_DIR([m4])
 
 ## Checks for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
+AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 if test -z "$DOXYGEN";
   then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+else
+  AC_CONFIG_FILES([doc/Doxyfile])
 fi
+
 
 AC_OUTPUT([
 Makefile

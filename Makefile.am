@@ -4,7 +4,7 @@ DISTCLEANFILES = @DOLT_CLEANFILES@
 
 EXTRA_DIST =
 
-CFLAGS = -Icontrib -Iinclude
+CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include
 
 bdsmdir = $(includedir)/bdsm
 
@@ -69,8 +69,15 @@ dsm_lookup_SOURCES = bin/lookup.c
 
 LDADD = libdsm.la
 
+if HAVE_DOXYGEN
 doc:
-	doxygen
+	$(DOXYGEN) doc/Doxyfile
+clean-local:
+	rm -rf $(top_builddir)/doc/html
+else
+doc:
+	echo "Doxygen wasn't detected by configure, it's support has been disabled"
+endif
 
 a : all
 c : clean
