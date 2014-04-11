@@ -22,10 +22,8 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include <openssl/hmac.h>
-#include <openssl/md4.h>
-#include <openssl/md5.h>
-
+#include "mdx/md4.h"
+#include "bdsm/hmac_md5.h"
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_ntlm.h"
 
@@ -47,6 +45,7 @@ uint64_t    smb_ntlm_generate_challenge()
 
 void        smb_ntlm_hash(const char *password, smb_ntlmh_t *hash)
 {
+  MD4_CTX   ctx;
   char      *ucs2le_pass;
   size_t    sz;
 
@@ -54,7 +53,11 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh_t *hash)
 
   sz = smb_to_utf16("ASCII", password, strlen(password), &ucs2le_pass);
   memset((void *)hash, 0, SMB_NTLM_HASH_SIZE);
-  MD4((uint8_t *)ucs2le_pass, sz, (uint8_t *)hash);
+
+  MD4_Init(&ctx);
+  MD4_Update(&ctx, (uint8_t *)ucs2le_pass, sz);
+  MD4_Final((uint8_t *)hash, &ctx);
+
   free(ucs2le_pass);
 }
 
@@ -76,10 +79,7 @@ void        smb_ntlm2_hash(const char *user, const char *password,
   memcpy(data, ucs_user, ucs_user_len);
   memcpy(data + ucs_user_len, ucs_dest, ucs_dest_len);
 
-  HMAC(EVP_md5(),
-       (uint8_t *)hash_v1, SMB_NTLM_HASH_SIZE,
-       (uint8_t *)data, data_len,
-       (uint8_t *)hash, NULL);
+  HMAC_MD5(hash_v1, SMB_NTLM_HASH_SIZE, data, data_len, hash);
 
   free(ucs_user);
   free(ucs_dest);
@@ -99,8 +99,7 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh_t *hash_v2, uint64_t srv_challenge,
   memcpy(data, (void *)&srv_challenge, sizeof(uint64_t));
   memcpy(data + sizeof(uint64_t), blob, blob_size);
 
-  HMAC(EVP_md5(), (uint8_t *)hash_v2, SMB_NTLM_HASH_SIZE,
-       data, data_len, (uint8_t *)&hmac, 0);
+  HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, data, data_len, &hmac);
 
   response = malloc(blob_size + 16);
   assert(response != NULL);

@@ -18,8 +18,8 @@
 
 
 
-CFLAGS      	= -Iinclude -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 -fPIC
-LDFLAGS     	= -lcrypto #-levent
+CFLAGS      	= -Iinclude -I contrib -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 -fPIC
+LDFLAGS     	= #-levent
 CC          	= clang
 AR						= ar
 RANLIB				= ranlib
@@ -28,7 +28,10 @@ LIB						= libdsm.so
 LIB_STATIC		= libdsm.a
 UTILS					= dsm discover inverse lookup
 
-LIB_SRC				= src/netbios_utils.c	\
+LIB_SRC				= contrib/mdx/md5.c \
+			contrib/mdx/md4.c				\
+			src/hmac_md5.c					\
+			src/netbios_utils.c			\
 			src/netbios_ns.c				\
 			src/netbios_ns_entry.c	\
 			src/netbios_query.c			\
