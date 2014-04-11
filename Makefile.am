@@ -59,13 +59,13 @@ if PROGRAMS
 bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup
 endif
 
-dsm_SOURCES = dsm.c
+dsm_SOURCES = bin/dsm.c
 
-dsm_discover_SOURCES = discover.c
+dsm_discover_SOURCES = bin/discover.c
 
-dsm_inverse_SOURCES = inverse.c
+dsm_inverse_SOURCES = bin/inverse.c
 
-dsm_lookup_SOURCES = lookup.c
+dsm_lookup_SOURCES = bin/lookup.c
 
 LDADD = libdsm.la
 
