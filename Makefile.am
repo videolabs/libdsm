@@ -68,3 +68,12 @@ dsm_inverse_SOURCES = inverse.c
 dsm_lookup_SOURCES = lookup.c
 
 LDADD = libdsm.la
+
+doc:
+	doxygen
+
+a : all
+c : clean
+re : clean all
+
+.PHONY: c a re doc
