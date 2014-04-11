@@ -51,7 +51,7 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh_t *hash)
 
   assert(password != NULL && hash != NULL);
 
-  sz = smb_to_utf16("ASCII", password, strlen(password), &ucs2le_pass);
+  sz = smb_to_utf16(password, strlen(password), &ucs2le_pass);
   memset((void *)hash, 0, SMB_NTLM_HASH_SIZE);
 
   MD4_Init(&ctx);
@@ -71,8 +71,8 @@ void        smb_ntlm2_hash(const char *user, const char *password,
 
   smb_ntlm_hash(password, &hash_v1);
 
-  ucs_user_len  = smb_to_utf16("", user, strlen(user), &ucs_user);
-  ucs_dest_len  = smb_to_utf16("", dest, strlen(dest), &ucs_dest);
+  ucs_user_len  = smb_to_utf16(user, strlen(user), &ucs_user);
+  ucs_dest_len  = smb_to_utf16(dest, strlen(dest), &ucs_dest);
   data_len      = ucs_user_len + ucs_dest_len;
   data          = alloca(data_len);
 
@@ -122,7 +122,7 @@ size_t      smb_ntlm_blob(smb_ntlm_blob_t *blob, uint64_t ts,
   blob->timestamp = ts;
   blob->challenge = user_challenge;
 
-  ucs_domain_len = smb_to_utf16("", domain, strlen(domain), &ucs_domain);
+  ucs_domain_len = smb_to_utf16(domain, strlen(domain), &ucs_domain);
   *((uint16_t *)blob->domain)     = 0x0002;   // type == Netbios domain
   *((uint16_t *)blob->domain + 1) = ucs_domain_len;
 

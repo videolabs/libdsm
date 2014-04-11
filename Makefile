@@ -19,7 +19,7 @@
 
 
 CFLAGS      	= -Iinclude -I contrib -DBDSM_DEBUG=1 -D_BSD_SOURCE -std=c99 -fPIC
-LDFLAGS     	= #-levent
+LDFLAGS     	=
 CC          	= clang
 AR						= ar
 RANLIB				= ranlib
@@ -55,6 +55,9 @@ LIB_OBJS			= $(LIB_SRC:.c=.o)
 
 all: $(LIB) $(LIB_STATIC) $(UTILS)
 
+doc:
+	doxygen
+
 clean:
 	rm -f $(UTILS) $(LIB) $(LIB_STATIC) *.o
 	rm -rf $(LIB_OBJS)
@@ -66,9 +69,6 @@ $(LIB): $(LIB_OBJS)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(LIB_LDFLAGS) $(LIB_OBJS)
 $(LIB_STATIC): $(LIB_OBJS)
 	$(AR) -rcs $@ $(LIB_OBJS)
-
-
-test:
 
 dsm: $(LIB) $(DSM_SRC)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(DSM_SRC) $(LIB_STATIC)
@@ -83,4 +83,4 @@ lookup:  $(LIB) $(LOOKUP_SRC)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 
-.PHONY: all clean re
+.PHONY: all clean re doc

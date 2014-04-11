@@ -114,7 +114,7 @@ size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
   size_t        utf_str_len;
   int           res;
 
-  utf_str_len = smb_to_utf16(src_enc, str, str_len, &utf_str);
+  utf_str_len = smb_to_utf16(str, str_len, &utf_str);
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
 
