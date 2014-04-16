@@ -35,8 +35,6 @@ AC_ARG_ENABLE([debug],
 
 AS_IF([test x"$enable_debug" != x"no"], [
   AC_DEFINE([BDSM_DEBUG], [1])
-], [
-  AC_DEFINE([BDSM_DEBUG], [0])
 ])
 
 AM_CONDITIONAL([PROGRAMS], [test x"$enable_programs" != x"no"])

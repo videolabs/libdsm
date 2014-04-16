@@ -10,7 +10,8 @@ bdsmdir = $(includedir)/bdsm
 
 bdsm_HEADERS = \
     include/bdsm.h			\
-    include/bdsm/context.h		\
+    include/bdsm/debug.h    \
+    include/bdsm/context.h    \
     include/bdsm/netbios_defs.h		\
     include/bdsm/netbios_query.h	\
     include/bdsm/netbios_utils.h	\

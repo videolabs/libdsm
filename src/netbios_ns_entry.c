@@ -23,7 +23,39 @@
 
 #include "bdsm/netbios_ns.h"
 
-void                netbios_ns_entry_clear(netbios_ns_t *ns)
+netbios_ns_iter_t   netbios_ns_iter_next(netbios_ns_iter_t iter)
+{
+  if (iter != NULL)
+    return (iter->next);
+  else
+    return (NULL);
+}
+
+const char          *netbios_ns_iter_name(netbios_ns_iter_t iter)
+{
+  if (iter != NULL)
+    return (iter->name);
+  else
+    return (NULL);
+}
+
+uint32_t            netbios_ns_iter_ip(netbios_ns_iter_t iter)
+{
+  if (iter != NULL)
+    return (iter->address.s_addr);
+  else
+    return (0);
+}
+
+char                netbios_ns_iter_type(netbios_ns_iter_t iter)
+{
+  if (iter != NULL)
+    return (iter->type);
+  else
+    return (-1);
+}
+
+void                netbios_ns_clear(netbios_ns_t *ns)
 {
   netbios_ns_entry_t  *next;
 
@@ -38,7 +70,7 @@ void                netbios_ns_entry_clear(netbios_ns_t *ns)
 }
 
 netbios_ns_entry_t *netbios_ns_entry_add(netbios_ns_t *ns, const char *name,
-                                         uint32_t ip)
+                                         char type, uint32_t ip)
 {
   netbios_ns_entry_t  *entry;
 
@@ -47,8 +79,12 @@ netbios_ns_entry_t *netbios_ns_entry_add(netbios_ns_t *ns, const char *name,
   memset((void *)entry, 0, sizeof(netbios_ns_entry_t));
 
   if (name != NULL)
-    memcpy(entry->name, name, NETBIOS_NAME_LENGTH + 2);
+  {
+    memcpy(entry->name, name, NETBIOS_NAME_LENGTH);
+    entry->name[NETBIOS_NAME_LENGTH] = 0;
+  }
 
+  entry->type           = type;
   entry->address.s_addr = ip;
   entry->next           = ns->entries;
 

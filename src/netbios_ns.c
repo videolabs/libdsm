@@ -29,9 +29,11 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/netbios_ns.h"
 #include "bdsm/netbios_query.h"
 #include "bdsm/netbios_utils.h"
+
 
 static int    ns_open_socket(netbios_ns_t *ns)
 {
@@ -89,7 +91,7 @@ void          netbios_ns_destroy(netbios_ns_t *ns)
   if (!ns)
     return;
 
-  netbios_ns_entry_clear(ns);
+  netbios_ns_clear(ns);
 
   close(ns->socket);
   free(ns);
@@ -193,8 +195,8 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
   // Let's send it
   if (!netbios_ns_send_query(ns, q, ip))
     return (0);
-  else if (BDSM_DEBUG)
-    fprintf(stderr, "netbios_ns_resolve, name query sent for '%s' !\n", name);
+  else
+    BDSM_dbg("netbios_ns_resolve, name query sent for '%s' !\n", name);
 
   free(encoded_name);
 
@@ -205,14 +207,19 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
 
   if (recv <= 0)
     goto error;
-  else if (BDSM_DEBUG)
-    fprintf(stderr, "netbios_ns_resolve, received a reply for '%s' !\n", name);
+  else
+    BDSM_dbg("netbios_ns_resolve, received a reply for '%s' !\n", name);
 
   return (*(uint32_t *)(recv_buffer + recv - 4));
 
   error:
     perror("netbios_ns_resolve: ");
     return (0);
+}
+
+static void   _netbios_ns_sync(netbios_ns_t *ns)
+{
+
 }
 
 int           netbios_ns_discover(netbios_ns_t *ns)
@@ -248,19 +255,17 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   // Let's send it
   if (!netbios_ns_send_query(ns, q, ip))
   {
-    fprintf(stderr, "Unable to send netbios 'discovery query'.\n");
+    BDSM_dbg("Unable to send netbios 'discovery query'.\n");
     return (0);
   }
-  else if (BDSM_DEBUG)
-    fprintf(stderr, "netbios_ns_discover, name query sent for '*'.\n");
+  else
+    BDSM_dbg("netbios_ns_discover, name query sent for '*'.\n");
 
 
 
   //
   // Second step, we list every IP that answered to our broadcast.
   //
-
-  netbios_ns_entry_clear(ns); // Let's reset our internal host list
 
   timeout.tv_sec = 1;
   timeout.tv_usec = 420;
@@ -270,30 +275,31 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   {
     // Verify this is a reply to our request
     if (ntohs(*(uint16_t *)recv_buffer) != ns->last_trn_id)
-      fprintf(stderr, "Not a reply to our query: %u (our trn_id was: %u)\n",
-        ntohs(*(uint16_t * )recv_buffer), ns->last_trn_id);
+    {
+      BDSM_dbg("Not a reply to our query: %u (our trn_id was: %u)\n",
+              ntohs(*(uint16_t * )recv_buffer), ns->last_trn_id);
+    }
     else // Add the ip to the list of IP to check
     {
-      netbios_ns_entry_add(ns, NULL, recv_addr.sin_addr.s_addr);
-      if (BDSM_DEBUG)
-        fprintf(stderr, "Discover: received a reply from %s\n",
-                inet_ntoa(recv_addr.sin_addr));
+      netbios_ns_inverse(ns, recv_addr.sin_addr.s_addr);
+      BDSM_dbg("Discover: received a reply from %s\n",
+              inet_ntoa(recv_addr.sin_addr));
     }
-  }
-
-  netbios_ns_entry_t *iter = ns->entries;
-  while(iter != NULL)
-  {
-    netbios_ns_inverse(ns, iter);
-    iter = iter->next;
   }
 
   return (1);
 }
 
+netbios_ns_iter_t netbios_ns_get_entries(netbios_ns_t *ns)
+{
+  assert(ns != NULL);
+
+  return (ns->entries);
+}
+
 // Perform inverse name resolution. Grap an IP and return the first <20> field
 // returned by the host
-int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry)
+const char        *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip)
 {
   const char  broadcast_name[] = NETBIOS_WILDCARD;
   char        footer[4]        = { 0x00, 0x21, 0x00, 0x01 }; // NBSTAT/IP
@@ -303,7 +309,7 @@ int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry)
   char                recv_buffer[512]; // Hu ?
   ssize_t             recv;
 
-  assert(ns != NULL && entry != NULL);
+  assert(ns != NULL && ip != 0);
 
   // Prepare NBSTAT query packet
   q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
@@ -312,11 +318,11 @@ int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry)
   q->packet->queries = htons(1);
 
   // Let's send it
-  if (!netbios_ns_send_query(ns, q, entry->address.s_addr))
-    return (0);
-  else if (BDSM_DEBUG)
-    fprintf(stderr, "netbios_ns_inverse, reverse name query sent for '%s' !\n",
-            inet_ntoa(entry->address));
+  if (!netbios_ns_send_query(ns, q, ip))
+    return (NULL);
+  else
+    BDSM_dbg("netbios_ns_inverse, reverse name query sent for '%s' !\n",
+            inet_ntoa(*(struct in_addr *)&ip));
 
   // Now wait for a reply and pray
   timeout.tv_sec = 1;
@@ -325,38 +331,46 @@ int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry)
 
   if (recv <= 0)
     goto error;
-  else if (BDSM_DEBUG)
-    fprintf(stderr, "netbios_ns_inverse, received a reply for '%s' !\n",
-            inet_ntoa(entry->address));
+  else
+    BDSM_dbg("netbios_ns_inverse, received a reply for '%s' !\n",
+            inet_ntoa(*(struct in_addr*)&ip));
 
 
-  // Now we've got something, let's find the <20> name
+  // Now we've got something, let's find the <20>/<0> name
   netbios_query_packet_t  *p = (netbios_query_packet_t *)recv_buffer;
   uint8_t                 name_count;
   uint8_t                 name_idx;
   char                    *names;
   char                    *current_name;
+  char                    current_type;
+  netbios_ns_entry_t      *entry = NULL, *res = NULL;
 
-  printf("Queried name length: %u\n", p->payload[0]);
+  BDSM_dbg("Queried name length: %u\n", p->payload[0]);
   name_count = p->payload[p->payload[0] + 12];
-  printf("Number of names: %hhu\n", name_count);
+  BDSM_dbg("Number of names: %hhu\n", name_count);
   names = p->payload + p->payload[0] + 13;
 
   for(name_idx = 0; name_idx < name_count; name_idx++)
   {
     current_name = names + name_idx * 18;
-    if (current_name[15] == 0x20)
-    {
-      if (BDSM_DEBUG)
-        fprintf(stderr, "Found name : %s\n", current_name);
-      memcpy(entry->name, current_name, NETBIOS_NAME_LENGTH + 2);
-      return (1);
-    }
+    current_type = current_name[15];
+
+    BDSM_dbg("Found name : %s (type == 0x%x)\n", current_name, current_type);
+    if (current_type == 0x20 || current_type == 0)
+      entry = netbios_ns_entry_add(ns, current_name, current_type, ip);
+    if (current_type == 0x20)
+      res = entry;
   }
 
-  return(0);
+  if (res)        // We prefer a <20> name.
+    return(res->name);
+  else if (entry) // Did we found a <0> or <20> name ?
+    return(entry->name);
+  else
+    return (NULL);
 
   error:
     perror("netbios_ns_inverse: ");
-    return (0);
+    return (NULL);
 }
+

@@ -16,43 +16,14 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#ifndef __BDSM_DEBUG_H__
+# define __BDSM_DEBUG_H__
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+# ifdef BDSM_DEBUG
+#  include <stdio.h>
+#  define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
+# else
+#  define BDSM_dbg(...) (0)
+# endif
 
-#include "bdsm.h"
-
-int main(int ac, char **av)
-{
-  netbios_ns_t      *ns;
-  netbios_ns_iter_t iter;
-
-  ns = netbios_ns_new();
-
-  if (!netbios_ns_discover(ns))
-  {
-    fprintf(stderr, "Error while discovering local network\n");
-    exit(42);
-  }
-
-  iter = netbios_ns_get_entries(ns);
-  while (iter != NULL)
-  {
-    struct in_addr addr;
-
-    addr.s_addr = netbios_ns_iter_ip(iter);
-    printf("Ip: %s, name: %s<%x> \n",
-      inet_ntoa(addr),
-      netbios_ns_iter_name(iter),
-      netbios_ns_iter_type(iter));
-
-    iter = netbios_ns_iter_next(iter);
-  }
-
-  return (0);
-}
+#endif

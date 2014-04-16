@@ -26,13 +26,73 @@
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 
+/**
+ * @file netbios_ns.h
+ * @brief Netbios name service
+ */
 
+/**
+ * @internal
+ * @brief Represents an correspondance between an IP address and a Netbios name.
+ *
+ * @details Consider it as an opaque data structure whose internal layout might
+ * change at any time, please use the provided accessors functions
+ */
 typedef struct                netbios_ns_entry_s
 {
   struct netbios_ns_entry_s     *next;
   struct in_addr                address;
-  char                          name[NETBIOS_NAME_LENGTH + 2];
+  char                          name[NETBIOS_NAME_LENGTH + 1];
+  char                          type;
 }                             netbios_ns_entry_t;
+
+/**
+ * @struct netbios_ns_iter_t
+ * @brief An iterator over name service cached entries.
+ * @details Can be compared againt NULL to test for validity
+ */
+typedef netbios_ns_entry_t    *netbios_ns_iter_t;
+
+/**
+ * @brief Iterates over netbios name service entries
+ *
+ * @param[in] iter An iterator opaque object.
+ * @return An interator referencing the next item in the item set, or NULL.
+ */
+netbios_ns_iter_t   netbios_ns_iter_next(netbios_ns_iter_t iter);
+
+/**
+ * @brief Get the name of the entry referenced by the iterator iter.
+ * @details The pointer points to an area of memory owned by the netbios name
+ * service
+ *
+ * @return A null-terminated ASCII string representing the name of a netbios machine.
+ */
+const char          *netbios_ns_iter_name(netbios_ns_iter_t iter);
+
+/**
+ * @brief Return the IP address of the correspondance referenced by the iterator
+ *
+ * @return The ip address of this entry, in network byte order.
+ */
+uint32_t            netbios_ns_iter_ip(netbios_ns_iter_t iter);
+
+/**
+ * @brief Return the type of record
+ *
+ * @return The type of netbios record (.ie 0x20 for FileServer,
+ * 0 for workstation, etc.) or a value < 0 if the iterator is invalid or an
+ * error occured.
+ */
+char                netbios_ns_iter_type(netbios_ns_iter_t iter);
+
+/**
+ * @brief The netbios name service object.
+ *
+ * @details Holds all the necessary data structure to perform resolution and
+ * discovery, and to stores the results. Consider it as an opaque data
+ * structure, use the related functions to interact with it.
+ */
 
 typedef struct {
   int                 socket;
@@ -41,25 +101,100 @@ typedef struct {
   netbios_ns_entry_t  *entries;     // Only used during discovery;
 }                   netbios_ns_t;
 
+/**
+ * @brief Allocate and initialize the Netbios name service client object.
+ * @return A newly allocated netbios_ns_t ready for querying.
+ * Deallocate with netbios_ns_destroy().
+ */
 netbios_ns_t  *netbios_ns_new();
+
+/**
+ * @brief Destroy the netbios name service object
+ * @param[in] ns A pointer on the netbios_ns_t to destroy and deallocate
+ */
 void          netbios_ns_destroy(netbios_ns_t *ns);
+
+/**
+ * @brief Resolve a Netbios name
+ * @details This function tries to resolves the given NetBIOS name with the
+ * given type on the LAN, using broadcast queries. No WINS server is called.
+ *
+ * @param ns the netbios name service object.
+ * @param name the null-terminated ASCII netbios name to resolve. If it's
+ * longer than 15 chars, it'll be truncated.
+ * @param type The type of the name to look for. @see netbios_defs.h
+ * @return the ipv4 address in network byte-order or 0 if it wasn't successfull.
+ */
 uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type);
+
+/**
+ * @brief Try to discover all the Netbios/SMB speaking machine on the LAN.
+ * @details This functions sends a message to '*' Netbios name, and waits for
+ * the machine on the LAN to answer. It then performs a reverse lookup on all
+ * the ip he received packet from. It stores the results inside of the name
+ * service, allowing you to list them
+ *
+ *
+ * @param ns The name service object.
+ * @return It returns 0 in case of error.
+ */
 int           netbios_ns_discover(netbios_ns_t *ns);
-int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry);
 
-int           netbios_ns_send_query(netbios_ns_t *ns, netbios_query_t *q,
-                                    uint32_t ip);
-ssize_t       netbios_ns_recv(int sock, void *buf, size_t buf_size,
-                              struct timeval *timeout, struct sockaddr *addr,
-                              socklen_t *addr_len);
+/**
+ * @brief List all know machines
+ * @details Returns an iterator for the list of known machine of this name
+ * service object. You might want to call discover before-hand if you don't want
+ * the lit to be empty
+ *
+ * @param ns The nameservice object.
+ * @return An iterator for the list of known machine
+ */
+netbios_ns_iter_t netbios_ns_get_entries(netbios_ns_t *ns);
 
-// Remove all the entry from the name service
-void                netbios_ns_entry_clear(netbios_ns_t *ns);
-// Add an entry to the nameservice list with name and/or ip
+/**
+ * @brief Perform an inverse netbios lookup (get name from ip)
+ * @details This function does a NBSTAT and stores all the returned entry in
+ * the internal list of entries. It returns one of the name found. (Normally
+ * the <20> or <0> name)
+ *
+ * @param ns The name service object.
+ * @param ip The ip address in network byte order.
+ *
+ * @return A null-terminated ASCII string containing the NETBIOS name. You don't
+ * own the it (it'll be freed when destroying/clearing the name service)
+ */
+const char          *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip);
+
+/**
+ * @brief Clear all the existing entries from the name service
+ *
+ * @param ns The nameservice object
+ */
+void                netbios_ns_clear(netbios_ns_t *ns);
+
+/**
+ * @internal
+ * @brief Add an entry to the name service list.
+ * @details You can provide a name and/or an ip
+ *
+ * @param ns The name service object.
+ * @param name The ASCII name of the entry or NULL
+ * @param type the <X> type for this entry or -1
+ * @param ip The IP address in network byte order (or 0)
+ * @return The added entry
+ */
 netbios_ns_entry_t  *netbios_ns_entry_add(netbios_ns_t *ns, const char *name,
-                                          uint32_t ip);
-// Find an entry in the list. Search by name if name is not NULL,
-// or by ip otherwise
+                                          char type, uint32_t ip);
+/**
+ * @internal
+ * @brief Find an entry in
+ * @details [long description]
+ *
+ * @param ns [description]
+ * @param by_name [description]
+ * @param ip [description]
+ * @return [description]
+ */
 netbios_ns_entry_t  *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
                                            uint32_t ip);
 
