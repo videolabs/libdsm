@@ -68,24 +68,16 @@ int main(int ac, char **av)
   smb_session_t *session;
   session = smb_session_new();
   if (smb_session_connect(session, av[1], addr.sin_addr.s_addr))
+  {
     printf("Successfully connected to %s\n", av[1]);
-  else
-  {
-    printf("Unable to connect to %s\n", av[1]);
-    exit(42);
-  }
-  if (smb_negotiate(session))
-  {
-    fprintf(stderr, "Dialect/Security Mode negotation success.\n");
     fprintf(stderr, "Session key is 0x%x\n", session->srv.session_key);
     fprintf(stderr, "Challenge key is 0x%lx\n", session->srv.challenge);
   }
   else
   {
-    printf("Unable to negotiate SMB Dialect\n");
+    printf("Unable to connect to %s\n", av[1]);
     exit(42);
   }
-
 
   if (smb_authenticate(session, av[1], av[2], av[3]))
   {

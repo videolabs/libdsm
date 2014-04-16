@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_ntlm.h"
 
@@ -39,10 +40,19 @@ void            smb_session_destroy(smb_session_t *s)
 {
   if (s != NULL)
   {
+    // FIXME Free smb_share and smb_file
     if (s->nb_session != NULL)
       netbios_session_destroy(s->nb_session);
     free(s);
   }
+}
+
+int             smb_session_state(smb_session_t *s)
+{
+  if (s != NULL)
+    return (s->state);
+  else
+    return (SMB_STATE_ERROR);
 }
 
 int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip)
@@ -56,7 +66,11 @@ int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip)
 
   memcpy(s->srv.name, name, strlen(name) + 1);
   s->state = SMB_STATE_NETBIOS_OK;
-  return (1);
+
+  if (!smb_negotiate(s))
+    return (0);
+
+  return(1);
 
   error:
     s->state = SMB_STATE_ERROR;
@@ -103,8 +117,7 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
   payload_size |= (nb_packet->flags & 0x01) << 16; // XXX If this is the case we overran our recv_buffer
   if (payload_size > recv_size - sizeof(netbios_session_packet_t))
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "smb_session_recv_msg: Packet size mismatch\n");
+    BDSM_dbg("smb_session_recv_msg: Packet size mismatch\n");
     return(0);
   }
 
@@ -365,24 +378,21 @@ int             smb_authenticate(smb_session_t *s, const char *domain,
   if (!smb_session_send_msg(s, msg))
   {
     smb_message_destroy(msg);
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to send Session Setup AndX message\n");
+    BDSM_dbg("Unable to send Session Setup AndX message\n");
     return (0);
   }
   smb_message_destroy(msg);
 
   if (smb_session_recv_msg(s, &answer) == 0)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to get Session Setup AndX reply\n");
+    BDSM_dbg("Unable to get Session Setup AndX reply\n");
     return (0);
   }
 
   smb_session_resp_t *r = (smb_session_resp_t *)answer.packet->payload;
   if (answer.packet->header.status != NT_STATUS_SUCCESS)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Session Setup AndX : failure.\n");
+    BDSM_dbg("Session Setup AndX : failure.\n");
     return (0);
   }
 

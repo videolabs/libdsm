@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/smb_trans2.h"
 
 static smb_file_t *smb_find_parse(smb_message_t *msg)
@@ -120,16 +121,14 @@ smb_file_t  *smb_find(smb_session_t *s, smb_tid tid, const char *pattern)
   smb_message_destroy(msg);
   if (!res)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to query pattern: %s\n", pattern);
+    BDSM_dbg("Unable to query pattern: %s\n", pattern);
     return (NULL);
   }
 
   if (!smb_session_recv_msg(s, &reply)
       || reply.packet->header.status != NT_STATUS_SUCCESS)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to recv msg or failure for %s\n", pattern);
+    BDSM_dbg("Unable to recv msg or failure for %s\n", pattern);
     return (NULL);
   }
 
@@ -191,16 +190,14 @@ smb_file_t  *smb_stat(smb_session_t *s, smb_tid tid, const char *path)
   smb_message_destroy(msg);
   if (!res)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to query pattern: %s\n", path);
+    BDSM_dbg("Unable to query pattern: %s\n", path);
     return (NULL);
   }
 
   if (!smb_session_recv_msg(s, &reply)
       || reply.packet->header.status != NT_STATUS_SUCCESS)
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Unable to recv msg or failure for %s\n", path);
+    BDSM_dbg("Unable to recv msg or failure for %s\n", path);
     return (NULL);
   }
 

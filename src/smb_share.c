@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_share.h"
 #include "bdsm/smb_file.h"
@@ -92,7 +93,7 @@ smb_tid         smb_tree_connect(smb_session_t *s, const char *name)
 int           smb_tree_disconnect(smb_session_t *s, smb_tid tid)
 {
   assert(s != NULL && tid);
-  fprintf(stderr, "smb_tree_disconnect: NOT IMPLEMENTED YET\n");
+  BDSM_dbg("smb_tree_disconnect: NOT IMPLEMENTED YET\n");
   return (0);
 }
 
@@ -107,7 +108,7 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
   smb_share_list_t  *s;
 
   assert(msg != NULL && list != NULL);
-  // Let's skip smb parameters, DCE/RPC stuff until we are at the begginning of
+  // Let's skip smb parameters and DCE/RPC stuff until we are at the begginning of
   // NetShareCtrl
 
   share_count = *((uint32_t *)(msg->packet->payload + 60));
@@ -120,7 +121,6 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
   for (i = 0; i < share_count && data < eod; i++)
   {
     uint32_t name_len, com_len;
-
 
     name_len = *((uint32_t *)data);   // Read 'Max Count', make it a multiple of 2
     data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Name.
@@ -140,8 +140,7 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
 }
 
 // We should normally implement SCERPC and SRVSVC to perform a share list. But
-// since these two protocols have no other use for use, we'll do it the trash
-// way
+// since these two protocols have no other use for us, we'll do it the trash way
 // PS: Worst function _EVER_. I don't understand a bit myself
 size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
 {
@@ -230,9 +229,8 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
   res = smb_session_recv_msg(s, &resp);
   if (!res || resp.packet->payload[68])
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "Bind call failed: 0x%hhx (reason = 0x%hhx)\n",
-              resp.packet->payload[68], resp.packet->payload[70]);
+    BDSM_dbg("Bind call failed: 0x%hhx (reason = 0x%hhx)\n",
+            resp.packet->payload[68], resp.packet->payload[70]);
     return (0);
   }
 
@@ -312,8 +310,7 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
   res = smb_session_recv_msg(s, &resp);
   if (!res && (uint32_t)resp.packet->payload[resp.payload_size - 4])
   {
-    if (BDSM_DEBUG)
-      fprintf(stderr, "NetShareEnumAll call failed.\n");
+    BDSM_dbg("NetShareEnumAll call failed.\n");
     return (0);
   }
 
