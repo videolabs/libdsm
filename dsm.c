@@ -80,13 +80,15 @@ static int parse_options(int argc, char * argv[])
 
 int main(int ac, char **av)
 {
+  char * hoststr = av[1];
+
   struct sockaddr_in  addr;
   bdsm_context_t      *ctx;
 
   ctx = bdsm_context_new();
   assert(ctx);
-  addr.sin_addr.s_addr = netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER);
-  printf("%s's IP address is : %s\n", av[1], inet_ntoa(addr.sin_addr));
+  addr.sin_addr.s_addr = netbios_ns_resolve(ctx->ns, hoststr, NETBIOS_FILESERVER);
+  printf("%s's IP address is : %s\n", hoststr, inet_ntoa(addr.sin_addr));
 
   //netbios_ns_discover(ctx->ns);
   //exit(0);
@@ -94,10 +96,10 @@ int main(int ac, char **av)
   // netbios_session_t *session;
   // session = netbios_session_new(addr.sin_addr.s_addr);
   // if (netbios_session_connect(session, "Cerbere"))
-  //   printf("A NetBIOS session with %s has been established\n", av[1]);
+  //   printf("A NetBIOS session with %s has been established\n", hoststr);
   // else
   // {
-  //   printf("Unable to establish a NetBIOS session with %s\n", av[1]);
+  //   printf("Unable to establish a NetBIOS session with %s\n", hoststr);
   //   exit(21);
   // }
 
@@ -105,11 +107,11 @@ int main(int ac, char **av)
 
   smb_session_t *session;
   session = smb_session_new();
-  if (smb_session_connect(session, av[1], addr.sin_addr.s_addr))
-    printf("Successfully connected to %s\n", av[1]);
+  if (smb_session_connect(session, hoststr, addr.sin_addr.s_addr))
+    printf("Successfully connected to %s\n", hoststr);
   else
   {
-    printf("Unable to connect to %s\n", av[1]);
+    printf("Unable to connect to %s\n", hoststr);
     exit(42);
   }
   if (smb_negotiate(session))
@@ -125,12 +127,12 @@ int main(int ac, char **av)
   }
 
 
-  if (smb_authenticate(session, av[1], av[2], av[3]))
+  if (smb_authenticate(session, hoststr, av[2], av[3]))
   {
     if (session->guest)
       printf("Login FAILED but we were logged in as GUEST \n");
     else
-      printf("Successfully logged in as %s\\%s\n", av[1], av[2]);
+      printf("Successfully logged in as %s\\%s\n", hoststr, av[2]);
   }
   else
   {
@@ -176,7 +178,7 @@ int main(int ac, char **av)
 
   if (!smb_share_list(session, &share_list))
   {
-    fprintf(stderr, "Unable to list share for %s\n", av[1]);
+    fprintf(stderr, "Unable to list share for %s\n", hoststr);
     exit(42);
   }
   else
