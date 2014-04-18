@@ -37,8 +37,6 @@
 #include "bdsm.h"
 #include "bdsm/smb_trans2.h"
 
-#include <openssl/md4.h>
-#include <openssl/md5.h>
 
 int main(int ac, char **av)
 {
