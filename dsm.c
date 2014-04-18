@@ -80,7 +80,15 @@ static int parse_options(int argc, char * argv[])
 
 int main(int ac, char **av)
 {
-  char * hoststr = av[1];
+  char const *pname = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
+  int const argoffset = parse_options(ac, av);
+
+  if (argoffset >= ac) {
+    fprintf(stderr, "usage: %s [options] host\n", pname);
+    exit(-1);
+  }
+
+  char * hoststr = av[argoffset];
 
   struct sockaddr_in  addr;
   bdsm_context_t      *ctx;
