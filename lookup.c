@@ -43,7 +43,9 @@ int main(int ac, char **av)
     exit(1);
   }
 
-  addr.s_addr = netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER);
+  if (0 != netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER, &addr.s_addr)) {
+    exit(-1);
+  }
   if (!addr.s_addr)
   {
     fprintf(stderr, "Unable to perform name resolution for %s\n", av[1]);

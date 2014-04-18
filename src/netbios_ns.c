@@ -158,7 +158,7 @@ ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
     return (-1);
 }
 
-uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
+int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint32_t * addr)
 {
   struct timeval      timeout;
   netbios_query_t     *q;
@@ -173,7 +173,7 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
   assert(ns != NULL);
 
   if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-    return (0);
+    return (-1);
 
     // Prepare packet
   q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
@@ -192,7 +192,7 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
 
   // Let's send it
   if (!netbios_ns_send_query(ns, q, ip))
-    return (0);
+    return (-1);
   else if (BDSM_DEBUG)
     fprintf(stderr, "netbios_ns_resolve, name query sent for '%s' !\n", name);
 
@@ -203,16 +203,19 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
   timeout.tv_usec = 420;
   recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
 
-  if (recv <= 0)
-    goto error;
+  if (recv < 0)
+    perror("netbios_ns_resolve: ");
+  else if (recv == 0 && BDSM_DEBUG)
+    fprintf(stderr, "netbios_ns_resolve, received no reply for '%s' !\n", name);
   else if (BDSM_DEBUG)
     fprintf(stderr, "netbios_ns_resolve, received a reply for '%s' !\n", name);
 
-  return (*(uint32_t *)(recv_buffer + recv - 4));
-
-  error:
-    perror("netbios_ns_resolve: ");
+  if (recv > 0) {
+    *addr = (*(uint32_t *)(recv_buffer + recv - 4));
     return (0);
+  }
+
+  return (-1);
 }
 
 int           netbios_ns_discover(netbios_ns_t *ns)

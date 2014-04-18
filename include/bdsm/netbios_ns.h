@@ -43,7 +43,7 @@ typedef struct {
 
 netbios_ns_t  *netbios_ns_new();
 void          netbios_ns_destroy(netbios_ns_t *ns);
-uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type);
+int           netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint32_t * addr);
 int           netbios_ns_discover(netbios_ns_t *ns);
 int           netbios_ns_inverse(netbios_ns_t *ns, netbios_ns_entry_t *entry);
 

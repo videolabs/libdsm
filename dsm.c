@@ -95,7 +95,9 @@ int main(int ac, char **av)
 
   ctx = bdsm_context_new();
   assert(ctx);
-  addr.sin_addr.s_addr = netbios_ns_resolve(ctx->ns, hoststr, NETBIOS_FILESERVER);
+  if (0 != netbios_ns_resolve(ctx->ns, hoststr, NETBIOS_FILESERVER, &addr.sin_addr.s_addr)) {
+    exit(-1);
+  }
   printf("%s's IP address is : %s\n", hoststr, inet_ntoa(addr.sin_addr));
 
   //netbios_ns_discover(ctx->ns);
