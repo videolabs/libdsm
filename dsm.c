@@ -37,6 +37,46 @@
 #include "bdsm.h"
 #include "bdsm/smb_trans2.h"
 
+#include <getopt.h>
+
+static int parse_options(int argc, char * argv[])
+{
+  /* *INDENT-OFF* */
+  char usage_str[] = {
+    "  -h, --help         Show this help screen.\n"
+    "  -v, --version      Print the version and quit.\n"
+  };
+  /* *INDENT-ON* */
+
+  struct option long_options[] = {
+    {"help", no_argument, 0, 'h'},
+    {"version", no_argument, 0, 'v'},
+    {0, 0, 0, 0},
+  };
+
+  int c, opt_index = 0;
+
+  char const *pname = ((pname = strrchr(argv[0], '/')) != NULL) ? pname + 1 : argv[0];
+
+  while (0 < (c = getopt_long(argc, argv, "hv", long_options, &opt_index)) ) {
+    switch (c) {
+
+    case 'h':
+      fprintf(stderr, "%s", usage_str);
+      exit(0);
+
+    case 'v':
+      fprintf(stderr, "v%s\n", VERSION);
+      exit(0);
+
+    default:
+      fprintf(stderr, "unknown option, %c, in getopt_long.\n", c);
+      exit(-1);
+    }
+  }
+
+  return optind;
+}
 
 int main(int ac, char **av)
 {
