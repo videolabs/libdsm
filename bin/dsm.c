@@ -37,18 +37,73 @@
 #include "bdsm.h"
 #include "bdsm/smb_trans2.h"
 
-#include <openssl/md4.h>
-#include <openssl/md5.h>
+#include <getopt.h>
+
+static int parse_options(int argc, char * argv[])
+{
+  /* *INDENT-OFF* */
+  char usage_str[] = {
+    "  -h, --help         Show this help screen.\n"
+    "  -v, --version      Print the version and quit.\n"
+  };
+  /* *INDENT-ON* */
+
+  struct option long_options[] = {
+    {"help", no_argument, 0, 'h'},
+    {"version", no_argument, 0, 'v'},
+    {0, 0, 0, 0},
+  };
+
+  int c, opt_index = 0;
+
+  char const *pname = ((pname = strrchr(argv[0], '/')) != NULL) ? pname + 1 : argv[0];
+
+  while (0 < (c = getopt_long(argc, argv, "hv", long_options, &opt_index)) ) {
+    switch (c) {
+
+    case 'h':
+      fprintf(stderr, "%s", usage_str);
+      exit(0);
+
+    case 'v':
+      fprintf(stderr, "v%s\n", VERSION);
+      exit(0);
+
+    default:
+      fprintf(stderr, "unknown option, %c, in getopt_long.\n", c);
+      exit(-1);
+    }
+  }
+
+  return optind;
+}
 
 int main(int ac, char **av)
 {
+  const char          *pname, *host, *login, *password, *fname;
   struct sockaddr_in  addr;
   bdsm_context_t      *ctx;
+  int                 argoffset;
+
+  pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
+  argoffset = parse_options(ac, av);
+
+  if (argoffset >= ac) {
+    fprintf(stderr, "usage: %s [options] host login password file\n", pname);
+    exit(-1);
+  }
+
+  host      = av[argoffset++];
+  login     = av[argoffset++];
+  password  = av[argoffset++];
+  fname     = av[argoffset++];
 
   ctx = bdsm_context_new();
   assert(ctx);
-  addr.sin_addr.s_addr = netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER);
-  printf("%s's IP address is : %s\n", av[1], inet_ntoa(addr.sin_addr));
+  if (0 != netbios_ns_resolve(ctx->ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr)) {
+    exit(-1);
+  }
+  printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
 
   //netbios_ns_discover(ctx->ns);
   //exit(0);
@@ -56,10 +111,10 @@ int main(int ac, char **av)
   // netbios_session_t *session;
   // session = netbios_session_new(addr.sin_addr.s_addr);
   // if (netbios_session_connect(session, "Cerbere"))
-  //   printf("A NetBIOS session with %s has been established\n", av[1]);
+  //   printf("A NetBIOS session with %s has been established\n", host);
   // else
   // {
-  //   printf("Unable to establish a NetBIOS session with %s\n", av[1]);
+  //   printf("Unable to establish a NetBIOS session with %s\n", host);
   //   exit(21);
   // }
 
@@ -67,24 +122,25 @@ int main(int ac, char **av)
 
   smb_session_t *session;
   session = smb_session_new();
-  if (smb_session_connect(session, av[1], addr.sin_addr.s_addr))
+
+  if (smb_session_connect(session, host, addr.sin_addr.s_addr))
   {
-    printf("Successfully connected to %s\n", av[1]);
+    printf("Successfully connected to %s\n", host);
     fprintf(stderr, "Session key is 0x%x\n", session->srv.session_key);
     fprintf(stderr, "Challenge key is 0x%lx\n", session->srv.challenge);
   }
   else
   {
-    printf("Unable to connect to %s\n", av[1]);
+    printf("Unable to connect to %s\n", host);
     exit(42);
   }
 
-  if (smb_authenticate(session, av[1], av[2], av[3]))
+  if (smb_authenticate(session, host, login, password))
   {
     if (session->guest)
       printf("Login FAILED but we were logged in as GUEST \n");
     else
-      printf("Successfully logged in as %s\\%s\n", av[1], av[2]);
+      printf("Successfully logged in as %s\\%s\n", host, login);
   }
   else
   {
@@ -130,7 +186,7 @@ int main(int ac, char **av)
 
   if (!smb_share_list(session, &share_list))
   {
-    fprintf(stderr, "Unable to list share for %s\n", av[1]);
+    fprintf(stderr, "Unable to list share for %s\n", host);
     exit(42);
   }
   else
@@ -149,11 +205,11 @@ int main(int ac, char **av)
   else
     fprintf(stderr, "Unable to list files\n");
 
-  fprintf(stderr, "Query file info for path: %s\n", av[4]);
-  files = smb_stat(session, test, av[4]);
+  fprintf(stderr, "Query file info for path: %s\n", fname);
+  files = smb_stat(session, test, fname);
 
   if (files)
-    printf("File %s is %lu bytes long\n", av[4], files->size);
+    printf("File %s is %lu bytes long\n", fname, files->size);
 
 
   smb_session_destroy(session);

@@ -58,11 +58,12 @@ typedef struct              netbios_session_s {
 netbios_session_t *netbios_session_new(uint32_t ip_addr);
 void              netbios_session_destroy(netbios_session_t *);
 
-int               netbios_session_connect(netbios_session_t *s, char *name);
+int               netbios_session_connect(netbios_session_t *s,
+                                          const char *name);
 void              netbios_session_packet_init(netbios_session_t *s,
                                               uint8_t opcode);
 int               netbios_session_packet_append(netbios_session_t *s,
-                                                char *data, size_t size);
+                                                const char *data, size_t size);
 int               netbios_session_packet_send(netbios_session_t *s);
 ssize_t           netbios_session_packet_recv(netbios_session_t *s);
 

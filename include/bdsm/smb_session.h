@@ -198,7 +198,8 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg);
  * @param ip The ip of the machine to connect to (in network byte order)
  * @return 0 in case of error, a value > 0 otherwise.
  */
-int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip);
+int             smb_session_connect(smb_session_t *s, const char *name,
+                                    uint32_t ip);
 
 /**
  * @brief Authenticate on the remote host with the provided credentials

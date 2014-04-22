@@ -55,7 +55,8 @@ int             smb_session_state(smb_session_t *s)
     return (SMB_STATE_ERROR);
 }
 
-int             smb_session_connect(smb_session_t *s, char *name, uint32_t ip)
+int             smb_session_connect(smb_session_t *s, const char *name,
+                                    uint32_t ip)
 {
   assert(s != NULL && name != NULL);
 

@@ -107,9 +107,11 @@ void          netbios_ns_destroy(netbios_ns_t *ns);
  * @param name the null-terminated ASCII netbios name to resolve. If it's
  * longer than 15 chars, it'll be truncated.
  * @param type The type of the name to look for. @see netbios_defs.h
+ * @param[out] addr The IP address in network byte order of the machine if found.
  * @return the ipv4 address in network byte-order or 0 if it wasn't successfull.
  */
-uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type);
+int             netbios_ns_resolve(netbios_ns_t *ns, const char *name,
+                                   char type, uint32_t * addr);
 
 /**
  * @brief Try to discover all the Netbios/SMB speaking machine on the LAN.

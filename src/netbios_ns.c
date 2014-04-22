@@ -160,7 +160,7 @@ ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
     return (-1);
 }
 
-uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
+int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint32_t * addr)
 {
   netbios_ns_entry_t  *cached;
   struct timeval      timeout;
@@ -180,7 +180,7 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
     return (cached->address.s_addr);
 
   if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-    return (0);
+    return (-1);
 
     // Prepare packet
   q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
@@ -211,15 +211,17 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
   recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
 
   if (recv <= 0)
-    goto error;
+    perror("netbios_ns_resolve:");
+  else if (recv == 0)
+    BDSM_dbg("netbios_ns_resolve, received NO reply for '%s' !\n", name);
   else
+  {
     BDSM_dbg("netbios_ns_resolve, received a reply for '%s' !\n", name);
+    *addr = (*(uint32_t *)(recv_buffer + recv - 4));
+    return (1);
+  }
 
-  return (*(uint32_t *)(recv_buffer + recv - 4));
-
-  error:
-    perror("netbios_ns_resolve: ");
-    return (0);
+  return (0);
 }
 
 
