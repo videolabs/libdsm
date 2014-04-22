@@ -44,3 +44,12 @@ Here's a list of features i intend to support in this project :
   * Browse folders [Done/Ugly]
   * Read file [Done, can be improved :)]
   * No write, lock, RPCs, etc. [Hum]
+
+## Contributing
+
+* Fork elthariel/libdsm
+* Make a feature branch
+* Commits your work there
+* Make a pull request
+* ...
+* Profit !
