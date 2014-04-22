@@ -31,23 +31,31 @@
 #include <netinet/udp.h>
 #include <arpa/inet.h>
 
-#define NBT_UDP_PORT        138
-#define NBT_TCP_PORT        139
+#include <getopt.h>
 
 #include "bdsm.h"
 #include "bdsm/smb_trans2.h"
 
-#include <getopt.h>
+#define NBT_UDP_PORT        138
+#define NBT_TCP_PORT        139
+#define USAGE
+
+/* *INDENT-OFF* */
+char usage_str[] = {
+  "usage: %s [options] host login password file\n"
+  "  -h, --help         Show this help screen.\n"
+  "  -v, --version      Print the version and quit.\n"
+};
+/* *INDENT-ON* */
+
+static void print_usage(const char *pname, int err)
+{
+  fprintf(stderr, usage_str, pname);
+  exit(err);
+}
 
 static int parse_options(int argc, char * argv[])
 {
-  /* *INDENT-OFF* */
-  char usage_str[] = {
-    "  -h, --help         Show this help screen.\n"
-    "  -v, --version      Print the version and quit.\n"
-  };
-  /* *INDENT-ON* */
-
   struct option long_options[] = {
     {"help", no_argument, 0, 'h'},
     {"version", no_argument, 0, 'v'},
@@ -62,8 +70,7 @@ static int parse_options(int argc, char * argv[])
     switch (c) {
 
     case 'h':
-      fprintf(stderr, "%s", usage_str);
-      exit(0);
+      print_usage(pname, 0);
 
     case 'v':
       fprintf(stderr, "v%s\n", VERSION);
@@ -88,9 +95,8 @@ int main(int ac, char **av)
   pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
   argoffset = parse_options(ac, av);
 
-  if (argoffset >= ac) {
-    fprintf(stderr, "usage: %s [options] host login password file\n", pname);
-    exit(-1);
+  if (argoffset >= ac || ac - argoffset != 4) {
+    print_usage(pname, -1);
   }
 
   host      = av[argoffset++];
@@ -100,9 +106,10 @@ int main(int ac, char **av)
 
   ctx = bdsm_context_new();
   assert(ctx);
-  if (0 != netbios_ns_resolve(ctx->ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr)) {
+
+  if (!netbios_ns_resolve(ctx->ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
     exit(-1);
-  }
+
   printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
 
   //netbios_ns_discover(ctx->ns);
