@@ -212,7 +212,7 @@ int             smb_session_connect(smb_session_t *s, const char *name,
  * machine name, then try 'WORKGROUP'.
  * @param user The user name in the current locale
  * @param password The password in the current locale
- * @return 0 in case of failure, > 0 in case of success. Sucess doesn't mean
+ * @return 0 in case of failure, > 0 in case of success. Success doesn't mean
  * you are logged in with the user you requested. If guest are activated on
  * the remote host, when login fails, you are logged in as 'Guest'.
  */
