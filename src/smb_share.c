@@ -24,6 +24,7 @@
 
 #include "bdsm/debug.h"
 #include "bdsm/smb_utils.h"
+#include "bdsm/smb_fd.h"
 #include "bdsm/smb_share.h"
 #include "bdsm/smb_file.h"
 

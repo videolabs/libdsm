@@ -169,15 +169,6 @@ void            smb_session_destroy(smb_session_t *s);
 int             smb_session_state(smb_session_t *s);
 
 
-// --------------------------------
-// Move me somewhere else !
-void            smb_session_share_add(smb_session_t *s, smb_share_t *share);
-smb_share_t     *smb_session_share_get(smb_session_t *s, smb_tid tid);
-smb_share_t     *smb_session_share_remove(smb_session_t *s, smb_tid tid);
-
-int             smb_session_file_add(smb_session_t *s, smb_tid tid, smb_file_t *f);
-smb_file_t      *smb_session_file_get(smb_session_t *s, smb_fd fd);
-smb_file_t      *smb_session_file_remove(smb_session_t *s, smb_fd fd);
 
 int             smb_negotiate(smb_session_t *s);
 int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg);
@@ -216,7 +207,25 @@ int             smb_session_connect(smb_session_t *s, const char *name,
  * you are logged in with the user you requested. If guest are activated on
  * the remote host, when login fails, you are logged in as 'Guest'.
  */
-int             smb_authenticate(smb_session_t *s, const char *domain,
-                                 const char *user, const char *password);
+int             smb_session_login(smb_session_t *s, const char *domain,
+                                  const char *user, const char *password);
+
+/**
+ * @brief Am i logged in as Guest ?
+ *
+ * @param s The session object
+ * @return 1  -> Logged in as guest
+ * 0  -> Logged in as regular user
+ * -1 -> Error (not logged in, invalid session, etc.)
+ */
+int             smb_session_is_guest(smb_session_t *s);
+
+/**
+ * @brief Returns the server name with the <XX> type
+ *
+ * @param s The session object
+ * @return The server name or NULL. The memory is owned by the session object.
+ */
+const char      *smb_session_server_name(smb_session_t *s);
 
 #endif

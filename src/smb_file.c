@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "bdsm/smb_fd.h"
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_file.h"
 
