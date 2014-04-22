@@ -270,7 +270,11 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   // Second step, we list every IP that answered to our broadcast.
   //
 
-  timeout.tv_sec = 1;
+  // XXX This shit is buggy. We need to stack received messages first, then
+  // perform the inverse query. Or else we trigger the 'Not a reply to our
+  // query' branch :-/
+
+  timeout.tv_sec = 2;
   timeout.tv_usec = 420;
   recv_addr_len = sizeof(recv_addr);
   while (netbios_ns_recv(ns->socket, (void *)recv_buffer, 512,
