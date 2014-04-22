@@ -162,6 +162,7 @@ ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
 
 uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
 {
+  netbios_ns_entry_t  *cached;
   struct timeval      timeout;
   netbios_query_t     *q;
   char                *encoded_name;
@@ -173,6 +174,10 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
 
 
   assert(ns != NULL);
+
+
+  if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
+    return (cached->address.s_addr);
 
   if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
     return (0);
@@ -217,10 +222,6 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type)
     return (0);
 }
 
-static void   _netbios_ns_sync(netbios_ns_t *ns)
-{
-
-}
 
 int           netbios_ns_discover(netbios_ns_t *ns)
 {
@@ -290,13 +291,6 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   return (1);
 }
 
-netbios_ns_iter_t netbios_ns_get_entries(netbios_ns_t *ns)
-{
-  assert(ns != NULL);
-
-  return (ns->entries);
-}
-
 // Perform inverse name resolution. Grap an IP and return the first <20> field
 // returned by the host
 const char        *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip)
@@ -304,12 +298,16 @@ const char        *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip)
   const char  broadcast_name[] = NETBIOS_WILDCARD;
   char        footer[4]        = { 0x00, 0x21, 0x00, 0x01 }; // NBSTAT/IP
 
+  netbios_ns_entry_t  *cached;
   struct timeval      timeout;
   netbios_query_t     *q;
   char                recv_buffer[512]; // Hu ?
   ssize_t             recv;
 
   assert(ns != NULL && ip != 0);
+
+  if ((cached = netbios_ns_entry_find(ns, NULL, ip)) != NULL)
+    return (cached->name);
 
   // Prepare NBSTAT query packet
   q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);

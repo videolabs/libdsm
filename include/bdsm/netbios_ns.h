@@ -32,7 +32,6 @@
  */
 
 /**
- * @internal
  * @brief Represents an correspondance between an IP address and a Netbios name.
  *
  * @details Consider it as an opaque data structure whose internal layout might
@@ -47,35 +46,20 @@ typedef struct                netbios_ns_entry_s
 }                             netbios_ns_entry_t;
 
 /**
- * @struct netbios_ns_iter_t
- * @brief An iterator over name service cached entries.
- * @details Can be compared againt NULL to test for validity
- */
-typedef netbios_ns_entry_t    *netbios_ns_iter_t;
-
-/**
- * @brief Iterates over netbios name service entries
- *
- * @param[in] iter An iterator opaque object.
- * @return An interator referencing the next item in the item set, or NULL.
- */
-netbios_ns_iter_t   netbios_ns_iter_next(netbios_ns_iter_t iter);
-
-/**
  * @brief Get the name of the entry referenced by the iterator iter.
  * @details The pointer points to an area of memory owned by the netbios name
  * service
  *
  * @return A null-terminated ASCII string representing the name of a netbios machine.
  */
-const char          *netbios_ns_iter_name(netbios_ns_iter_t iter);
+const char          *netbios_ns_entry_name(netbios_ns_entry_t *entry);
 
 /**
  * @brief Return the IP address of the correspondance referenced by the iterator
  *
  * @return The ip address of this entry, in network byte order.
  */
-uint32_t            netbios_ns_iter_ip(netbios_ns_iter_t iter);
+uint32_t            netbios_ns_entry_ip(netbios_ns_entry_t *entry);
 
 /**
  * @brief Return the type of record
@@ -84,7 +68,7 @@ uint32_t            netbios_ns_iter_ip(netbios_ns_iter_t iter);
  * 0 for workstation, etc.) or a value < 0 if the iterator is invalid or an
  * error occured.
  */
-char                netbios_ns_iter_type(netbios_ns_iter_t iter);
+char                netbios_ns_entry_type(netbios_ns_entry_t *entry);
 
 /**
  * @brief The netbios name service object.
@@ -141,15 +125,25 @@ uint32_t      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type);
 int           netbios_ns_discover(netbios_ns_t *ns);
 
 /**
- * @brief List all know machines
- * @details Returns an iterator for the list of known machine of this name
- * service object. You might want to call discover before-hand if you don't want
+ * @brief Get the list of entries (know machine) for this name service object
+ * @details You might want to call discover before-hand if you don't want
  * the lit to be empty
  *
- * @param ns The nameservice object.
- * @return An iterator for the list of known machine
+ * @return The list of entries in the name service.
  */
-netbios_ns_iter_t netbios_ns_get_entries(netbios_ns_t *ns);
+int             netbios_ns_entry_count(netbios_ns_t *ns);
+
+/**
+ * @brief Get the entry at a certain position in the entry list
+ * @details You might want to call discover before-hand if you don't want
+ * the lit to be empty. The entry list contains all the record known to the
+ * name service (including resolved, reverse resolved and discovered) since the
+ * creation of the name service object or the last call to clear
+ *
+ * @param ns The nameservice object.
+ * @return A pointer to a opaque netbios_ns_entry_t structure
+ */
+netbios_ns_entry_t *netbios_ns_entry_at(netbios_ns_t *ns, int pos);
 
 /**
  * @brief Perform an inverse netbios lookup (get name from ip)

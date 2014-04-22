@@ -23,34 +23,26 @@
 
 #include "bdsm/netbios_ns.h"
 
-netbios_ns_iter_t   netbios_ns_iter_next(netbios_ns_iter_t iter)
+const char          *netbios_ns_entry_name(netbios_ns_entry_t *entry)
 {
-  if (iter != NULL)
-    return (iter->next);
+  if (entry != NULL)
+    return (entry->name);
   else
     return (NULL);
 }
 
-const char          *netbios_ns_iter_name(netbios_ns_iter_t iter)
+uint32_t            netbios_ns_entry_ip(netbios_ns_entry_t *entry)
 {
-  if (iter != NULL)
-    return (iter->name);
-  else
-    return (NULL);
-}
-
-uint32_t            netbios_ns_iter_ip(netbios_ns_iter_t iter)
-{
-  if (iter != NULL)
-    return (iter->address.s_addr);
+  if (entry != NULL)
+    return (entry->address.s_addr);
   else
     return (0);
 }
 
-char                netbios_ns_iter_type(netbios_ns_iter_t iter)
+char                netbios_ns_entry_type(netbios_ns_entry_t *entry)
 {
-  if (iter != NULL)
-    return (iter->type);
+  if (entry != NULL)
+    return (entry->type);
   else
     return (-1);
 }
@@ -107,7 +99,7 @@ netbios_ns_entry_t *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
   {
     if (by_name != NULL)
     {
-      if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH + 1))
+      if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
         found = iter;
     }
     else if (iter->address.s_addr == ip)
@@ -115,4 +107,39 @@ netbios_ns_entry_t *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
   }
 
   return (found);
+}
+
+int             netbios_ns_entry_count(netbios_ns_t *ns)
+{
+  netbios_ns_entry_t  *iter;
+  int                 res;
+
+  assert (ns != NULL);
+
+  iter  = ns->entries;
+  res   = 0;
+  while (iter != NULL)
+  {
+    res++;
+    iter = iter->next;
+  }
+
+  return (res);
+}
+
+netbios_ns_entry_t  *netbios_ns_entry_at(netbios_ns_t *ns, int pos)
+{
+  netbios_ns_entry_t  *iter = NULL;
+  int                 i = 0;
+
+  assert(ns != NULL);
+
+  iter = ns->entries;
+  while (i < pos && iter != NULL)
+  {
+    i++;
+    iter = iter->next;
+  }
+
+  return (iter);
 }

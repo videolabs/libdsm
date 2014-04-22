@@ -29,8 +29,8 @@
 
 int main(int ac, char **av)
 {
-  netbios_ns_t      *ns;
-  netbios_ns_iter_t iter;
+  netbios_ns_t        *ns;
+  netbios_ns_entry_t  *entry;
 
   ns = netbios_ns_new();
 
@@ -40,18 +40,17 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  iter = netbios_ns_get_entries(ns);
-  while (iter != NULL)
+  for (int i = 0; i < netbios_ns_entry_count(ns); i++)
   {
     struct in_addr addr;
 
-    addr.s_addr = netbios_ns_iter_ip(iter);
+    entry       = netbios_ns_entry_at(ns, i);
+    addr.s_addr = netbios_ns_entry_ip(entry);
+
     printf("Ip: %s, name: %s<%x> \n",
       inet_ntoa(addr),
-      netbios_ns_iter_name(iter),
-      netbios_ns_iter_type(iter));
-
-    iter = netbios_ns_iter_next(iter);
+      netbios_ns_entry_name(entry),
+      netbios_ns_entry_type(entry));
   }
 
   return (0);
