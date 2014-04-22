@@ -45,6 +45,17 @@ Here's a list of features i intend to support in this project :
   * Read file [Done, can be improved :)]
   * No write, lock, RPCs, etc. [Hum]
 
+## Support
+
+liBDSM has been tested/reported to work witht the following devices/OSes:
+
+* Windows 7
+* Windows 8
+* A cheap NAS whose name i can't remember :)
+* Guest Login on French Orange 'Livebox' (more testing is welcome as i don't have the box password)
+
+Feel free to contribute items to this list (or network trace of not working devices)
+
 ## Contributing
 
 * Fork elthariel/libdsm
