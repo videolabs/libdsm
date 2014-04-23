@@ -183,7 +183,7 @@ int main(int ac, char **av)
   // }
 
   char              data[1024];
-  smb_share_list_t  *share_list;
+  char              **share_list;
   smb_file_t        *files;
 
 
@@ -199,6 +199,8 @@ int main(int ac, char **av)
   else
   {
     fprintf(stderr, "Share list : \n");
+    for (size_t j; share_list[j] != NULL; j++)
+      fprintf(stderr, "- %s\n", share_list[j]);
   }
 
   fprintf(stderr, "Let's find files at share's root :\n");

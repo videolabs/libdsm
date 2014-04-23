@@ -100,13 +100,10 @@ int           smb_tree_disconnect(smb_session_t *s, smb_tid tid)
 
 // Here we parse the NetShareEnumAll response packet payload to extract
 // The share list.
-// We are assuming share name are limited to 16 characters
-static size_t   smb_share_parse_enum(smb_message_t *msg,
-                                     smb_share_list_t **list)
+static size_t   smb_share_parse_enum(smb_message_t *msg, char ***list)
 {
   uint32_t          share_count, i;
   uint8_t           *data, *eod;
-  smb_share_list_t  *s;
 
   assert(msg != NULL && list != NULL);
   // Let's skip smb parameters and DCE/RPC stuff until we are at the begginning of
@@ -116,8 +113,8 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
   data        = msg->packet->payload + 72 + share_count * 12;
   eod         = msg->packet->payload + msg->payload_size;
 
-  s = calloc(share_count, sizeof(smb_share_list_t));
-  assert (s != NULL);
+  *list       = calloc(share_count + 1, sizeof(char *));
+  assert(*list != NULL);
 
   for (i = 0; i < share_count && data < eod; i++)
   {
@@ -125,7 +122,9 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
 
     name_len = *((uint32_t *)data);   // Read 'Max Count', make it a multiple of 2
     data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Name.
-    memcpy(s[i].name, data, name_len * 2); // Those are unicode strings.
+
+    smb_from_utf16(data, name_len * 2, (*list) + i);
+
     if (name_len % 2) name_len += 1;  // Align next move
     data    += name_len * 2;          // Move the pointer to Comment 'Max count'
 
@@ -135,15 +134,22 @@ static size_t   smb_share_parse_enum(smb_message_t *msg,
     data    += com_len * 2;           // Move the pointer to next item
   }
 
-  *list = s;
-
   return (i);
+}
+
+void            smb_share_list_destroy(char **list)
+{
+  assert(list != NULL);
+
+  for (size_t i; list[i] != NULL; i++)
+    free(list[i]);
+  free(list);
 }
 
 // We should normally implement SCERPC and SRVSVC to perform a share list. But
 // since these two protocols have no other use for us, we'll do it the trash way
 // PS: Worst function _EVER_. I don't understand a bit myself
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list)
+size_t          smb_share_list(smb_session_t *s, char ***list)
 {
   smb_message_t         *req, resp;
   smb_trans_req_t       *trans;

@@ -31,7 +31,7 @@
 #define NETBIOS_MESSENGER     0x03
 #define NETBIOS_FILESERVER    0x20
 #define NETBIOS_DOMAINMASTER  0x1b
-        // http://ubiqx.org/cifs/rfc-draft/rfc1001.html#s17.2
+// http://ubiqx.org/cifs/rfc-draft/rfc1001.html#s17.2
 #define NETBIOS_WILDCARD      { 32, 'C', 'K', 'A', 'A', 'A', 'A', 'A', 'A',    \
     'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', \
     'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 0 }

@@ -22,12 +22,8 @@
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_file.h"
 
-typedef struct  smb_share_list_s
-{
-  char                name[32];
-}               smb_share_list_t;
-
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t **list);
+size_t          smb_share_list(smb_session_t *s, char ***list);
+void            smb_share_list_destroy(char **list);
 smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
 int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
 

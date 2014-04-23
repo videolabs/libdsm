@@ -128,8 +128,8 @@ int               netbios_ns_send_query(netbios_ns_t *ns, netbios_query_t *q,
 }
 
 ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
-                                 struct timeval *timeout, struct sockaddr *addr,
-                                 socklen_t *addr_len)
+                                  struct timeval *timeout, struct sockaddr *addr,
+                                  socklen_t *addr_len)
 {
   fd_set        read_fds, error_fds;
   int           res;
@@ -224,18 +224,37 @@ int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint3
   return (0);
 }
 
+// We have a small recursive function for discovery, to stack received reply
+// when descending, and performing reverse lookup when ascending
+static void   netbios_ns_discover_rec(netbios_ns_t *ns, struct timeval *timeout,
+                                      void *recv_buffer)
+{
+  struct sockaddr_in  recv_addr;
+  socklen_t           recv_addr_len;
+  int                 res;
+
+  recv_addr_len = sizeof(recv_addr);
+  res = netbios_ns_recv(ns->socket, recv_buffer, 256, timeout,
+                        (struct sockaddr *)&recv_addr, &recv_addr_len);
+  if (res > 0 && timeout->tv_sec && timeout->tv_usec)
+  {
+    netbios_ns_discover_rec(ns, timeout, recv_buffer);
+
+    BDSM_dbg("Discover: received a reply from %s\n",
+      inet_ntoa(recv_addr.sin_addr));
+    netbios_ns_inverse(ns, recv_addr.sin_addr.s_addr);
+  }
+}
 
 int           netbios_ns_discover(netbios_ns_t *ns)
 {
   const char  broadcast_name[] = NETBIOS_WILDCARD;
   char        footer[4]        = { 0x00, 0x20, 0x00, 0x01 };
 
-  struct sockaddr_in  recv_addr;
-  socklen_t           recv_addr_len;
   struct timeval      timeout;
 
   netbios_query_t     *q;
-  char                recv_buffer[512]; // Hu ?
+  char                recv_buffer[256]; // Hu ?
   ssize_t             recv;
   uint32_t            ip;
 
@@ -269,30 +288,9 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   //
   // Second step, we list every IP that answered to our broadcast.
   //
-
-  // XXX This shit is buggy. We need to stack received messages first, then
-  // perform the inverse query. Or else we trigger the 'Not a reply to our
-  // query' branch :-/
-
   timeout.tv_sec = 2;
   timeout.tv_usec = 420;
-  recv_addr_len = sizeof(recv_addr);
-  while (netbios_ns_recv(ns->socket, (void *)recv_buffer, 512,
-    &timeout, (struct sockaddr *)&recv_addr, &recv_addr_len) > 0)
-  {
-    // Verify this is a reply to our request
-    if (ntohs(*(uint16_t *)recv_buffer) != ns->last_trn_id)
-    {
-      BDSM_dbg("Not a reply to our query: %u (our trn_id was: %u)\n",
-              ntohs(*(uint16_t * )recv_buffer), ns->last_trn_id);
-    }
-    else // Add the ip to the list of IP to check
-    {
-      netbios_ns_inverse(ns, recv_addr.sin_addr.s_addr);
-      BDSM_dbg("Discover: received a reply from %s\n",
-              inet_ntoa(recv_addr.sin_addr));
-    }
-  }
+  netbios_ns_discover_rec(ns, &timeout, (void *)recv_buffer);
 
   return (1);
 }

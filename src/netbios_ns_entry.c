@@ -104,6 +104,8 @@ netbios_ns_entry_t *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
     }
     else if (iter->address.s_addr == ip)
       found = iter;
+
+    iter = iter->next;
   }
 
   return (found);
