@@ -37,6 +37,7 @@ AS_IF([test x"$enable_debug" != x"no"], [
   AC_DEFINE([BDSM_DEBUG], [1])
 ])
 
+AM_CONDITIONAL([DEBUG], [test x"$enable_debug" != x"no"])
 AM_CONDITIONAL([PROGRAMS], [test x"$enable_programs" != x"no"])
 
 LT_INIT
