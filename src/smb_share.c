@@ -141,7 +141,7 @@ void            smb_share_list_destroy(char **list)
 {
   assert(list != NULL);
 
-  for (size_t i; list[i] != NULL; i++)
+  for (size_t i = 0; list[i] != NULL; i++)
     free(list[i]);
   free(list);
 }

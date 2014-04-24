@@ -202,7 +202,9 @@ int             smb_session_login(smb_session_t *s, const char *domain,
   req = (smb_session_req_t *)msg->packet->payload;
 
   req->wct              = (sizeof(smb_session_req_t) - 3) / 2;
-  req->max_buffer       = NETBIOS_SESSION_PAYLOAD;
+  req->max_buffer       = NETBIOS_SESSION_PAYLOAD
+                          - sizeof(smb_header_t)
+                          - sizeof(netbios_session_packet_t);
   req->max_buffer      -= sizeof(netbios_session_packet_t);
   req->max_buffer      -= sizeof(smb_packet_t);
   req->mpx_count        = 16; // XXX ?

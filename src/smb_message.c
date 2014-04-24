@@ -48,6 +48,25 @@ smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
   return (msg);
 }
 
+// Duplicate a message while growing payload_size.
+smb_message_t   *smb_message_grow(smb_message_t *msg, size_t size)
+{
+  smb_message_t *copy;
+
+  assert(msg != NULL && msg->packet != NULL);
+
+  copy = malloc(sizeof(smb_message_t));
+  assert(copy != NULL);
+  copy->cursor        = msg->cursor;
+  copy->payload_size  = msg->payload_size + size;
+
+  copy->packet = malloc(sizeof(smb_packet_t) + copy->payload_size);
+  assert(copy->packet != NULL);
+  memcpy((void *)copy->packet, (void *)msg->packet, msg->payload_size);
+
+  return (copy);
+}
+
 void            smb_message_destroy(smb_message_t *msg)
 {
   if (msg != NULL)

@@ -149,20 +149,18 @@ int main(int ac, char **av)
     else
       printf("Successfully logged in as %s\\%s\n", host, login);
   }
+  else if (smb_session_login(session, "WORKGROUP", login, password))
+  {
+    if (session->guest)
+      printf("Login FAILED but we were logged in as GUEST \n");
+    else
+      printf("Successfully logged in as %s\\%s\n", host, login);
+  }
   else
   {
     printf("Authentication FAILURE.\n");
     exit(42);
   }
-
-  smb_tid ipc  = smb_tree_connect(session, "IPC$");
-
-  if (ipc == 0)
-  {
-    fprintf(stderr, "Unable to connect to IPC$ share\n");
-    exit(42);
-  }
-  fprintf(stderr, "Connected to IPC$ share\n");
 
   smb_tid test = smb_tree_connect(session, "test");
   if (test)
@@ -196,19 +194,18 @@ int main(int ac, char **av)
     fprintf(stderr, "Unable to list share for %s\n", host);
     exit(42);
   }
-  else
-  {
-    fprintf(stderr, "Share list : \n");
-    for (size_t j; share_list[j] != NULL; j++)
-      fprintf(stderr, "- %s\n", share_list[j]);
-  }
+
+  fprintf(stderr, "Share list : \n");
+  for (size_t j = 0; share_list[j] != NULL; j++)
+    fprintf(stderr, "- %s\n", share_list[j]);
+  smb_share_list_destroy(share_list);
 
   fprintf(stderr, "Let's find files at share's root :\n");
   files = smb_find(session, test, "\\*");
   if (files != NULL)
     while(files)
     {
-      fprintf(stderr, "Found a file %s \n", files->name);
+      fprintf(stdout, "Found a file %s \n", files->name);
       files = files->next;
     }
   else
@@ -217,8 +214,8 @@ int main(int ac, char **av)
   fprintf(stderr, "Query file info for path: %s\n", fname);
   files = smb_stat(session, test, fname);
 
-  if (files)
-    printf("File %s is %lu bytes long\n", fname, files->size);
+  if (files != NULL)
+    printf("File '%s' is %lu bytes long\n", fname, files->size);
 
 
   smb_session_destroy(session);

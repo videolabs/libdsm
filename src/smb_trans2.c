@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "bdsm/debug.h"
+#include "bdsm/smb_utils.h"
 #include "bdsm/smb_trans2.h"
 
 static smb_file_t *smb_find_parse(smb_message_t *msg)
@@ -41,18 +42,16 @@ static smb_file_t *smb_find_parse(smb_message_t *msg)
   iter    = (smb_tr2_find2_entry_t *)(tr2->payload + sizeof(smb_tr2_find2_params_t));
   eod     = msg->packet->payload + msg->payload_size;
   count   = params->count;
-  files   = tmp = NULL;
+  files   = NULL;
 
-  for(i = 0; i < count && (uint8_t *)iter < eod; i++)
+  for(i = 0; (uint8_t *)iter < eod; i++)
   {
+    // Create a smb_file_t and fill it
     tmp = calloc(1, sizeof(smb_file_t));
     assert(tmp != NULL);
 
-    tmp->name_len = iter->name_len + 2;
-    tmp->name     = malloc(tmp->name_len);
-    assert(tmp->name != NULL);
-    memcpy(tmp->name, iter->name, tmp->name_len - 2);
-    tmp->name[tmp->name_len - 1] = tmp->name[tmp->name_len - 2] = 0;
+    tmp->name_len = smb_from_utf16(iter->name, iter->name_len, &tmp->name);
+    tmp->name[tmp->name_len] = 0;
 
     tmp->created    = iter->created;
     tmp->accessed   = iter->accessed;
@@ -72,13 +71,48 @@ static smb_file_t *smb_find_parse(smb_message_t *msg)
   return (files);
 }
 
+static smb_message_t *smb_tr2_recv(smb_session_t *s)
+{
+  smb_message_t           recv, *res;
+  smb_trans2_resp_t       *tr2;
+  smb_tr2_find2_params_t  *params;
+  uint8_t                 *data;
+  size_t                  growth;
+  int                     remaining;
+
+  if (!smb_session_recv_msg(s, &recv))
+    return (NULL);
+
+  tr2         = (smb_trans2_resp_t *)recv.packet->payload;
+  growth      = tr2->total_data_count - tr2->data_count;
+  res         = smb_message_grow(&recv, growth);
+  res->cursor = recv.payload_size;
+  remaining   = (int)tr2->total_data_count -
+                (tr2->data_displacement + tr2->data_count);
+
+  while(remaining > 0)
+  {
+    remaining = smb_session_recv_msg(s, &recv);
+    if (remaining)
+    {
+      tr2   = (smb_trans2_resp_t *)recv.packet->payload;
+      smb_message_append(res, tr2->payload + 2 /*pad*/, tr2->data_count);
+      remaining = (int)tr2->total_data_count -
+                  (tr2->data_displacement + tr2->data_count);
+    }
+  }
+
+  return (res);
+}
+
 smb_file_t  *smb_find(smb_session_t *s, smb_tid tid, const char *pattern)
 {
   smb_message_t           *msg, reply;
   smb_trans2_req_t        *tr2;
   smb_tr2_find2_t         *find;
+  smb_file_t              *files, *tmp;
   size_t                  pattern_len, msg_len;
-  int                     res;
+  int                     res, recv_res;
 
   assert(s != NULL && pattern != NULL && tid);
 
@@ -125,14 +159,10 @@ smb_file_t  *smb_find(smb_session_t *s, smb_tid tid, const char *pattern)
     return (NULL);
   }
 
-  if (!smb_session_recv_msg(s, &reply)
-      || reply.packet->header.status != NT_STATUS_SUCCESS)
-  {
-    BDSM_dbg("Unable to recv msg or failure for %s\n", pattern);
+  if ((msg = smb_tr2_recv(s)) == NULL)
     return (NULL);
-  }
 
-  return (smb_find_parse(&reply));
+  return (smb_find_parse(msg));
 }
 
 
@@ -202,14 +232,12 @@ smb_file_t  *smb_stat(smb_session_t *s, smb_tid tid, const char *path)
   }
 
   tr2_resp  = (smb_trans2_resp_t *)reply.packet->payload;
-  info      = (smb_tr2_path_info_t *)tr2_resp->payload;
+  info      = (smb_tr2_path_info_t *)(tr2_resp->payload + 4); //+4 is padding
   file      = calloc(1, sizeof(smb_file_t));
   assert(file != NULL);
 
-  file->name_len  = info->name_len;
-  file->name      = malloc(info->name_len);
-  assert(file->name != NULL);
-  memcpy(file->name, info->name, file->name_len);
+  file->name_len  = smb_from_utf16(info->name, info->name_len, &file->name);
+  file->name[info->name_len] = 0;
 
   file->created     = info->created;
   file->accessed    = info->accessed;

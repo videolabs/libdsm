@@ -364,11 +364,13 @@ typedef struct
   uint64_t      written;
   uint64_t      changed;
   uint32_t      attr;
+  uint32_t      reserved;
   uint64_t      alloc_size;
   uint64_t      size;
   uint32_t      link_count;
   uint8_t       rm_pending;
   uint8_t       is_dir;
+  uint16_t      reserved2;
   uint32_t      ea_list_len;
   uint32_t      name_len;
   uint8_t       name[];

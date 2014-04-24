@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <iconv.h>
+#include <locale.h>
 #include <langinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,14 @@
 
 static const char *current_encoding()
 {
+  static int locale_set = 0;
+
+  if (!locale_set)
+  {
+    setlocale(LC_ALL, "");
+    locale_set = 1;
+  }
+  //fprintf(stderr, "%s\n", nl_langinfo(CODESET));
   return (nl_langinfo(CODESET));
 }
 

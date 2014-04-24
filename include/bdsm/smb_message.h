@@ -31,6 +31,7 @@ typedef struct
 }                               smb_message_t;
 
 smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size);
+smb_message_t   *smb_message_grow(smb_message_t *msg, size_t size);
 void            smb_message_destroy(smb_message_t *msg);
 int             smb_message_advance(smb_message_t *msg, size_t size);
 int             smb_message_append(smb_message_t *msg, const void *data,
