@@ -16,6 +16,11 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
+/**
+ * @file smb_defs.h
+ * @brief SMB usefull constants
+ */
+
 #ifndef __BSDM_SMB_DEFS_H_
 #define __BSDM_SMB_DEFS_H_
 
@@ -80,30 +85,58 @@
 #define SMB_CREATE_EXT_RESP     (1 << 4)
 #define SMB_CREATE_DEFAULTS     (0)
 // File access rights
+/// Flag for smb_file_open. Request right for reading
 #define SMB_MOD_READ            (1 << 0)
+/// Flag for smb_file_open. Request right for writing
 #define SMB_MOD_WRITE           (1 << 1)
+/// Flag for smb_file_open. Request right for appending
 #define SMB_MOD_APPEND          (1 << 2)
+/// Flag for smb_file_open. Request right for extended read (?)
 #define SMB_MOD_READ_EXT        (1 << 3)
+/// Flag for smb_file_open. Request right for extended write (?)
 #define SMB_MOD_WRITE_EXT       (1 << 4)
+/// Flag for smb_file_open. Request right for execution (?)
 #define SMB_MOD_EXEC            (1 << 5)
+/// Flag for smb_file_open. Request right for child removal (?)
 #define SMB_MOD_RMCHILD         (1 << 6)
+/// Flag for smb_file_open. Request right for reading file attributes
 #define SMB_MOD_READ_ATTR       (1 << 7)
+/// Flag for smb_file_open. Request right for writing file attributes
 #define SMB_MOD_WRITE_ATTR      (1 << 8)
+/// Flag for smb_file_open. Request right for removing file
 #define SMB_MOD_RM              (1 << 16)
+/// Flag for smb_file_open. Request right for reading ACL
 #define SMB_MOD_READ_CTL        (1 << 17)
+/// Flag for smb_file_open. Request right for writing ACL
 #define SMB_MOD_WRITE_DAC       (1 << 18)
+/// Flag for smb_file_open. Request right for changing owner
 #define SMB_MOD_CHOWN           (1 << 19)
+/// Flag for smb_file_open. (??)
 #define SMB_MOD_SYNC            (1 << 20)
+/// Flag for smb_file_open. (??)
 #define SMB_MOD_SYS             (1 << 24)
+/// Flag for smb_file_open. (??)
 #define SMB_MOD_MAX_ALLOWED     (1 << 25)
+/// Flag for smb_file_open. Request all generic rights (??)
 #define SMB_MOD_GENERIC_ALL     (1 << 28)
+/// Flag for smb_file_open. Request generic exec right (??)
 #define SMB_MOD_GENERIC_EXEC    (1 << 29)
+/// Flag for smb_file_open. Request generic read right (??)
 #define SMB_MOD_GENERIC_READ    (1 << 30)
+/// Flag for smb_file_open. Request generic write right (??)
 #define SMB_MOD_GENERIC_WRITE   (1 << 31)
+/**
+ * @brief Flag for smb_file_open. Default R/W mode
+ * @details A few flags OR'ed
+ */
 #define SMB_MOD_RW              (SMB_MOD_READ | SMB_MOD_WRITE | SMB_MOD_APPEND \
                                 | SMB_MOD_READ_EXT | SMB_MOD_WRITE_EXT \
                                 | SMB_MOD_READ_ATTR | SMB_MOD_WRITE_ATTR \
                                 | SMB_MOD_READ_CTL )
+/**
+ * @brief Flag for smb_file_open. Default R/O mode
+ * @details A few flags OR'ed
+ */
 #define SMB_MOD_RO              (SMB_MOD_READ | SMB_MOD_READ_EXT \
                                 | SMB_MOD_READ_ATTR | SMB_MOD_READ_CTL )
 
@@ -157,7 +190,7 @@
 #define SMB_LM2_BLOB_SIZE       8
 
 #define SMB_OS                  "Unix"
-#define SMB_LANMAN              "libdsm-dev"
+#define SMB_LANMAN              "liBDSM"
 
 #define NT_STATUS_SUCCESS                   0x00000000
 #define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016

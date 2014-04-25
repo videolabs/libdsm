@@ -86,8 +86,6 @@ netbios_ns_t  *netbios_ns_new()
 
 void          netbios_ns_destroy(netbios_ns_t *ns)
 {
-  netbios_ns_entry_t  *next;
-
   if (!ns)
     return;
 
@@ -169,7 +167,6 @@ int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint3
   char                footer[4] = { 0x00, 0x20, 0x00, 0x01 };
   char                recv_buffer[512]; // Hu ?
   ssize_t             recv;
-  uint16_t            trn_id;
   uint32_t            ip;
 
 
@@ -252,10 +249,8 @@ int           netbios_ns_discover(netbios_ns_t *ns)
   char        footer[4]        = { 0x00, 0x20, 0x00, 0x01 };
 
   struct timeval      timeout;
-
   netbios_query_t     *q;
   char                recv_buffer[256]; // Hu ?
-  ssize_t             recv;
   uint32_t            ip;
 
   assert (ns != NULL);

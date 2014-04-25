@@ -180,7 +180,7 @@ int main(int ac, char **av)
   //   exit(42);
   // }
 
-  char              data[1024];
+  //char              data[1024];
   char              **share_list;
   smb_file_t        *files;
 

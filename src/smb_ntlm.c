@@ -88,7 +88,6 @@ void        smb_ntlm2_hash(const char *user, const char *password,
 uint8_t     *smb_ntlm2_response(smb_ntlmh_t *hash_v2, uint64_t srv_challenge,
                                 uint8_t *blob, size_t blob_size)
 {
-  struct timeval  t;
   uint8_t         *data, *response, hmac[16];
   size_t          data_len;
 

@@ -22,9 +22,77 @@
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_file.h"
 
-size_t          smb_share_list(smb_session_t *s, char ***list);
-void            smb_share_list_destroy(char **list);
+/**
+ * @file smb_share.h
+ * @brief List and connect to SMB shares
+ */
+
+/**
+ * @struct smb_share_list_t
+ * @brief An opaque object representing the list of share of a SMB file server.
+ */
+typedef char  **smb_share_list_t;
+
+/**
+ * @brief List the existing share of this sessions's machine
+ * @details This function makes a RPC to the machine this session is currently
+ * authenticated to and list all the existing shares of this machines. The share
+ * starting with a $ are supposed to be system/hidden share.
+ *
+ * @param[in] s The session object
+ * @param[out] list A pointer to an opaque share_list_t object.
+ *
+ * @return The number of share listed or 0 if there was an error (There
+ * theorically cannot be 0 share on a machine, there's at least $IPC)
+ */
+size_t          smb_share_list(smb_session_t *s, smb_share_list_t *list);
+
+/**
+ * @brief Get the number of share in the list
+ *
+ * @param list An opaque share list returned by smb_share_list()
+ * @return The number of share in the opaque share_list object
+ */
+size_t          smb_share_list_count(smb_share_list_t list);
+
+/**
+ * @brief Get the name of the share in the list at the given index
+
+ * @param list An opaque share list object
+ * @param index The index of the returned item in the list
+ *
+ * @return The string has been decoded from UTF16 to you local encoding
+ */
+const char      *smb_share_list_at(smb_share_list_t list, size_t index);
+
+/**
+ * @brief Destroy an opaque share list object
+ *
+ * @param list The list to destroy. The object is not usable anymore afterward,
+ * you can set it to 'NULL'
+ */
+void            smb_share_list_destroy(smb_share_list_t list);
+
+/**
+ * @brief Connects to a SMB share
+ * @details Before being able to list/read files on a SMB file server, you have
+ * to be connected to the share containing the files you want to read or
+ * the directories you want to list
+ *
+ * @param s The session object
+ * @param name The share name @see smb_share_list
+ *
+ * @return An opaque value representing an open share (like a file descriptor)
+ * or 0 if there was an error
+ */
 smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
+
+/**
+ * @brief Disconnect from a share
+ * @details UNIMPLEMENTED
+ *
+ * @return ?
+ */
 int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
 
 #endif

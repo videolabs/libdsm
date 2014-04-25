@@ -84,7 +84,6 @@ int               netbios_session_connect(netbios_session_t *s,
 {
   netbios_session_packet_t  *received;
   ssize_t                   recv_size;
-  ssize_t                   recv_payload_size;
   char                      *encoded_name;
 
   assert(s && s->packet && s->socket);
@@ -106,7 +105,6 @@ int               netbios_session_connect(netbios_session_t *s,
   recv_size = netbios_session_packet_recv(s);
   if (recv_size < sizeof(netbios_session_packet_t))
     goto error;
-  recv_payload_size = recv_size - sizeof(netbios_session_packet_t);
 
   received = (netbios_session_packet_t *)&s->recv_buffer;
   // Reply was negative, we are not connected :(

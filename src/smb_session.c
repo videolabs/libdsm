@@ -190,8 +190,6 @@ int             smb_session_login(smb_session_t *s, const char *domain,
   smb_session_req_t     *req = NULL;
   uint8_t               *ntlm2 = NULL;
   smb_ntlmh_t           hash_v2;
-  uint8_t               *ucs;
-  size_t                ucs_len;
   uint64_t              user_challenge;
   uint8_t               blob[128];
   size_t                blob_size;

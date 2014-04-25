@@ -164,7 +164,7 @@ ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size)
 
   res = smb_session_send_msg(s, req_msg);
   smb_message_destroy(req_msg);
-  if (!send)
+  if (!res)
     return (-1);
 
   if (!smb_session_recv_msg(s, &resp_msg))

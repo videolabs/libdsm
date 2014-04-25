@@ -7,7 +7,7 @@ EXTRA_DIST =
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include
 
 if DEBUG
-AM_CFLAGS = -O0 -g3
+AM_CFLAGS = -O0 -g3 -Wall #-Wextra
 else
 AM_CFLAGS = -O2
 endif

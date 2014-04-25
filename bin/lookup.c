@@ -30,7 +30,6 @@
 int main(int ac, char **av)
 {
   bdsm_context_t      *ctx;
-  char                name[NETBIOS_NAME_LENGTH + 2];
   struct in_addr      addr;
 
   ctx = bdsm_context_new();

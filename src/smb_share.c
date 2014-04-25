@@ -123,7 +123,7 @@ static size_t   smb_share_parse_enum(smb_message_t *msg, char ***list)
     name_len = *((uint32_t *)data);   // Read 'Max Count', make it a multiple of 2
     data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Name.
 
-    smb_from_utf16(data, name_len * 2, (*list) + i);
+    smb_from_utf16((const char *)data, name_len * 2, (*list) + i);
 
     if (name_len % 2) name_len += 1;  // Align next move
     data    += name_len * 2;          // Move the pointer to Comment 'Max count'
@@ -137,7 +137,27 @@ static size_t   smb_share_parse_enum(smb_message_t *msg, char ***list)
   return (i);
 }
 
-void            smb_share_list_destroy(char **list)
+size_t          smb_share_list_count(smb_share_list_t list)
+{
+  size_t        res;
+
+  if (list == NULL)
+    return (0);
+
+  for(res = 0; list[res] != NULL; res++)
+    ;
+
+  return (res);
+}
+
+const char      *smb_share_list_at(smb_share_list_t list, size_t index)
+{
+  assert (list != NULL);
+
+  return (list[index]);
+}
+
+void            smb_share_list_destroy(smb_share_list_t list)
 {
   assert(list != NULL);
 

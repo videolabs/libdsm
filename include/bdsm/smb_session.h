@@ -170,6 +170,8 @@ int             smb_session_state(smb_session_t *s);
 
 
 
+// ---------------------------------
+// Internal stuff, maybe move this somewhere else
 int             smb_negotiate(smb_session_t *s);
 int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg);
 // msg->packet will be updated to point on received data. You don't own this

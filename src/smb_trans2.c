@@ -44,13 +44,14 @@ static smb_file_t *smb_find_parse(smb_message_t *msg)
   count   = params->count;
   files   = NULL;
 
-  for(i = 0; (uint8_t *)iter < eod; i++)
+  for(i = 0; i < count && (uint8_t *)iter < eod; i++)
   {
     // Create a smb_file_t and fill it
     tmp = calloc(1, sizeof(smb_file_t));
     assert(tmp != NULL);
 
-    tmp->name_len = smb_from_utf16(iter->name, iter->name_len, &tmp->name);
+    tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
+                                  &tmp->name);
     tmp->name[tmp->name_len] = 0;
 
     tmp->created    = iter->created;
@@ -75,8 +76,6 @@ static smb_message_t *smb_tr2_recv(smb_session_t *s)
 {
   smb_message_t           recv, *res;
   smb_trans2_resp_t       *tr2;
-  smb_tr2_find2_params_t  *params;
-  uint8_t                 *data;
   size_t                  growth;
   int                     remaining;
 
@@ -107,12 +106,11 @@ static smb_message_t *smb_tr2_recv(smb_session_t *s)
 
 smb_file_t  *smb_find(smb_session_t *s, smb_tid tid, const char *pattern)
 {
-  smb_message_t           *msg, reply;
+  smb_message_t           *msg;
   smb_trans2_req_t        *tr2;
   smb_tr2_find2_t         *find;
-  smb_file_t              *files, *tmp;
   size_t                  pattern_len, msg_len;
-  int                     res, recv_res;
+  int                     res;
 
   assert(s != NULL && pattern != NULL && tid);
 
@@ -236,7 +234,8 @@ smb_file_t  *smb_stat(smb_session_t *s, smb_tid tid, const char *path)
   file      = calloc(1, sizeof(smb_file_t));
   assert(file != NULL);
 
-  file->name_len  = smb_from_utf16(info->name, info->name_len, &file->name);
+  file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
+                                  &file->name);
   file->name[info->name_len] = 0;
 
   file->created     = info->created;

@@ -21,6 +21,19 @@
 
 #include "bdsm/smb_session.h"
 
+/**
+ * @brief Open a file on a share.
+ * @details Use this function to obtain an smb_fd, necesary for file operations
+ *
+ * @param s The session object
+ * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
+ * @param path The path of the file to open
+ * @param mod The access modes requested (example: SMB_MOD_RO)
+ * @return A smb file description that can be use for further file operations
+ * or 0 in case of error
+ *
+ * @see smb_tree_connect
+ */
 smb_fd    smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
                     uint32_t mod);
 void      smb_fclose(smb_session_t *s, smb_fd);
