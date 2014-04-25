@@ -17,8 +17,8 @@
 //----------------------------------------------------------------------------
 
 /**
- * @file smb_trans2.h
- * @brief SMB transactions operations: find(i.e. ls), stat
+ * @file smb_types.h
+ * @brief liBDSM types and structures
  */
 
 #ifndef __BDSM_SMB_TYPES_H_

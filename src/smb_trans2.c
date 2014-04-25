@@ -23,7 +23,7 @@
 
 #include "bdsm/debug.h"
 #include "bdsm/smb_utils.h"
-#include "bdsm/smb_trans2.h"
+#include "bdsm/smb_stat.h"
 
 static smb_file_t *smb_find_parse(smb_message_t *msg)
 {

@@ -82,7 +82,7 @@ typedef struct {
   int                 socket;
   struct sockaddr_in  addr;
   uint16_t            last_trn_id;  // Last transaction id used;
-  netbios_ns_entry_t  *entries;     // Only used during discovery;
+  netbios_ns_entry_t  *entries;     // NS entries cache, mainly used by discover()
 }                   netbios_ns_t;
 
 /**

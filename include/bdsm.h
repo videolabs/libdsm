@@ -28,6 +28,6 @@
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_share.h"
 #include "bdsm/smb_file.h"
-#include "bdsm/smb_trans2.h"
+#include "bdsm/smb_stat.h"
 
 #endif
