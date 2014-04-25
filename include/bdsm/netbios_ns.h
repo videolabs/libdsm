@@ -143,7 +143,7 @@ int             netbios_ns_entry_count(netbios_ns_t *ns);
  * creation of the name service object or the last call to clear
  *
  * @param ns The nameservice object.
- * @param post The index/position of the item to access in the list. Must be <
+ * @param pos The index/position of the item to access in the list. Must be <
  * netbios_ns_entry_count(ns) or the pointer returned will be NULL.
  * @return A pointer to a opaque netbios_ns_entry_t structure
  */

@@ -188,9 +188,9 @@ ssize_t   smb_fseek(smb_session_t *s, smb_fd fd, ssize_t offset, int whence)
   if (!fd || (file = smb_session_file_get(s, fd)) == NULL)
     return(0);
 
-  if (whence == SEEK_SET)
+  if (whence == SMB_SEEK_SET)
     file->readp = offset;
-  else if (whence == SEEK_CUR)
+  else if (whence == SMB_SEEK_CUR)
     file->readp += offset;
 
   return (file->readp);
