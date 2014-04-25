@@ -29,11 +29,10 @@
 
 int main(int ac, char **av)
 {
-  bdsm_context_t      *ctx;
+  netbios_ns_t        *ns;
   struct in_addr      addr;
 
-  ctx = bdsm_context_new();
-  assert(ctx);
+  ns = netbios_ns_new();
 
   if (ac != 2)
   {
@@ -42,7 +41,7 @@ int main(int ac, char **av)
     exit(1);
   }
 
-  if (!netbios_ns_resolve(ctx->ns, av[1], NETBIOS_FILESERVER, &addr.s_addr)) {
+  if (!netbios_ns_resolve(ns, av[1], NETBIOS_FILESERVER, &addr.s_addr)) {
     exit(-1);
   }
   if (!addr.s_addr)
@@ -52,6 +51,6 @@ int main(int ac, char **av)
   }
 
   printf("%s's IP address is : %s\n", av[1], inet_ntoa(addr));
-
+  netbios_ns_destroy(ns);
   return (0);
 }

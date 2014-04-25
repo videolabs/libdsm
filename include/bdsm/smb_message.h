@@ -19,16 +19,8 @@
 #ifndef __BDSM_SMB_MESSAGE_H_
 #define __BDSM_SMB_MESSAGE_H_
 
-// The actual packet data format definition is here
 #include "bdsm/smb_defs.h"
-
-// This is used with convenience functions to build packets.
-typedef struct
-{
-  size_t          payload_size; // Size of the allocated payload
-  size_t          cursor;       // Write cursor in the payload
-  smb_packet_t    *packet;      // Yummy yummy, Fruity fruity !
-}                               smb_message_t;
+#include "bdsm/smb_types.h"
 
 smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size);
 smb_message_t   *smb_message_grow(smb_message_t *msg, size_t size);

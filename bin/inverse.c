@@ -29,12 +29,11 @@
 
 int main(int ac, char **av)
 {
-  bdsm_context_t      *ctx;
+  netbios_ns_t        *ns;
   struct in_addr      addr;
   const char          *name;
 
-  ctx = bdsm_context_new();
-  assert(ctx);
+  ns = netbios_ns_new();
 
   if (ac != 2)
   {
@@ -44,13 +43,13 @@ int main(int ac, char **av)
   }
 
   inet_aton(av[1], &addr);
-  if ((name = netbios_ns_inverse(ctx->ns, addr.s_addr)) == NULL)
+  if ((name = netbios_ns_inverse(ns, addr.s_addr)) == NULL)
   {
     fprintf(stderr, "Unable to perform inverse name resolution for %s\n", av[1]);
     exit(42);
   }
 
   printf("%s\n", name);
-
+  netbios_ns_destroy(ns);
   return (0);
 }

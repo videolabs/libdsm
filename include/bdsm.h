@@ -23,12 +23,11 @@
 #define BDSM_VERSION_REVISION 0
 #define BDSM_VERSION_AGE      0
 
-#include "bdsm/context.h"
-#include "bdsm/netbios_utils.h"
+#include "bdsm/netbios_ns.h"
 #include "bdsm/netbios_session.h"
 #include "bdsm/smb_session.h"
-#include "bdsm/smb_ntlm.h"
 #include "bdsm/smb_share.h"
 #include "bdsm/smb_file.h"
+#include "bdsm/smb_trans2.h"
 
 #endif

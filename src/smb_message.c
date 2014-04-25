@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "bdsm/netbios_session.h"
 #include "bdsm/smb_message.h"
 #include "bdsm/smb_utils.h"
 

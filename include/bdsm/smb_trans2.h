@@ -28,18 +28,6 @@
 #include "bdsm/smb_session.h"
 
 /**
- * @struct smb_stat_list_t
- * @brief An opaque structure containing a list of file status
- */
-typedef smb_file_t *smb_stat_list_t;
-
-/**
- * @struct smb_stat_t
- * @brief An opaque structure containing info about a file
- */
-typedef smb_file_t *smb_stat_t;
-
-/**
  * @brief Returns infos about files matching a pattern
  * @details This functions uses the FIND_FIRST2 SMB operations to list files
  * matching a certain pattern. It's basically used to list folder contents

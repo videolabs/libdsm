@@ -26,10 +26,6 @@
 
 #include "bdsm/smb_session.h"
 
-/// Set the read pointer at the given position
-#define SMB_SEEK_SET 0
-/// Adjusts the read pointer relatively to the actual position
-#define SMB_SEEK_CUR 1
 
 /**
  * @brief Open a file on a share.

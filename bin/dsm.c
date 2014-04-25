@@ -34,7 +34,6 @@
 #include <getopt.h>
 
 #include "bdsm.h"
-#include "bdsm/smb_trans2.h"
 
 #define NBT_UDP_PORT        138
 #define NBT_TCP_PORT        139
@@ -89,7 +88,8 @@ int main(int ac, char **av)
 {
   const char          *pname, *host, *login, *password, *fname;
   struct sockaddr_in  addr;
-  bdsm_context_t      *ctx;
+  netbios_ns_t        *ns;
+  smb_session_t       *session;
   int                 argoffset;
 
   pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
@@ -104,10 +104,8 @@ int main(int ac, char **av)
   password  = av[argoffset++];
   fname     = av[argoffset++];
 
-  ctx = bdsm_context_new();
-  assert(ctx);
-
-  if (!netbios_ns_resolve(ctx->ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
+  ns = netbios_ns_new();
+  if (!netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
     exit(-1);
 
   printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
@@ -127,7 +125,6 @@ int main(int ac, char **av)
 
   // netbios_session_destroy(session);
 
-  smb_session_t *session;
   session = smb_session_new();
 
   if (smb_session_connect(session, host, addr.sin_addr.s_addr))
@@ -219,7 +216,7 @@ int main(int ac, char **av)
 
 
   smb_session_destroy(session);
-  bdsm_context_destroy(ctx);
+  netbios_ns_destroy(ns);
 
   return (0);
 }

@@ -17,7 +17,6 @@ bdsmdir = $(includedir)/bdsm
 bdsm_HEADERS = \
     include/bdsm.h			\
     include/bdsm/debug.h    \
-    include/bdsm/context.h    \
     include/bdsm/netbios_defs.h		\
     include/bdsm/netbios_query.h	\
     include/bdsm/netbios_utils.h	\
@@ -30,6 +29,7 @@ bdsm_HEADERS = \
     include/bdsm/netbios_ns.h		\
     include/bdsm/netbios_session.h	\
     include/bdsm/smb_defs.h		\
+    include/bdsm/smb_types.h    \
     include/bdsm/smb_message.h		\
     include/bdsm/smb_packets.h		\
     include/bdsm/smb_share.h		\
@@ -53,8 +53,7 @@ libdsm_la_SOURCES = \
     src/smb_ntlm.c		\
     src/smb_share.c		\
     src/smb_file.c		\
-    src/smb_trans2.c		\
-    src/context.c
+    src/smb_trans2.c
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc

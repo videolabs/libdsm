@@ -26,65 +26,34 @@
 
 #include <bdsm/smb_packets.h>
 
-#define SMB_MAGIC               { 0xff, 0x53, 0x4d, 0x42 } // aka "\xffSMB"
 
-#define SMB_DIALECTS {          \
-  "\2Samba",                    \
-  "\2NT LM 0.12",               \
-  NULL                          \
-}
+//-----------------------------------------------------------------------------/
+// SMB Session states
+//-----------------------------------------------------------------------------/
+/// Session Authentication was successfull, you can become nasty
+#define SMB_STATE_SESSION_OK    3
+/// Dialect was successfully negotiated
+#define SMB_STATE_DIALECT_OK    2
+/// A Netbios session has been successfully established.
+#define SMB_STATE_NETBIOS_OK    1
+/// The SMB session has just been created
+#define SMB_STATE_NEW           0
+/// Error state, there was an error somewhere
+#define SMB_STATE_ERROR         -1
 
-// Dialect values must match position on SMB_DIALECTS array
-#define SMB_DIALECT_SAMBA       0
-#define SMB_DIALECT_NTLM        1
+//-----------------------------------------------------------------------------/
+// smb_fseek() operations
+//-----------------------------------------------------------------------------/
+// smb_fseek operations
+/// Set the read pointer at the given position
+#define SMB_SEEK_SET 0
+/// Adjusts the read pointer relatively to the actual position
+#define SMB_SEEK_CUR 1
 
-#define SMB_CMD_CLOSE           0x04
-#define SMD_CMD_TRANS           0x25
-#define SMB_CMD_TRANS2          0x32
-#define SMB_CMD_TREE_DISCONNECT 0x71
-#define SMB_CMD_NEGOTIATE       0x72
-#define SMB_CMD_SETUP           0x73 // Session Setup AndX
-#define SMB_CMD_TREE_CONNECT    0x75 // Tree Connect AndX
-#define SMB_CMD_ECHO            0x2b
-#define SMB_CMD_READ            0x2e // Read AndX
-#define SMB_CMD_CREATE          0xa2 // NT Create AndX
 
-#define SMB_TR2_FIND_FIRST      0x0001
-#define SMB_TR2_QUERY_PATH      0x0005
-
-///////////////////////////////////////////////////////////////////////////////
-//// Flags definitions
-
-// Many aren't use in libdsm but are here for possible later use
-
-// Protocol negotiation flags (flags field in spec)
-#define SMB_FLAG_RESPONSE       (1 << 7)
-#define SMB_FLAG_NOTIFY         (1 << 6)
-#define SMB_FLAG_OPLOCK         (1 << 5)
-#define SMB_FLAG_CANONIC        (1 << 4)
-#define SMB_FLAG_CASELESS       (1 << 3)
-#define SMB_FLAG_BUFFER_POSTED  (1 << 1)
-#define SMB_FLAG_LOCK_AND_READ  (1 << 0)
-// More Protocol negotiation flags (flags2 field in spec)
-#define SMB_FLAG_UNICODE        (1 << (15 + 8))
-#define SMB_FLAG_NT_ERRORS      (1 << (14 + 8))
-#define SMB_FLAG_EXECUTE_ONLY   (1 << (13 + 8))
-#define SMB_FLAG_DFS            (1 << (12 + 8))
-#define SMB_FLAG_EXT_SEC        (1 << (11 + 8))
-#define SMB_FLAG_REPARSE_PATH   (1 << (10 + 8))
-#define SMB_FLAG_LONG_NAMES     (1 << (6 + 8))
-#define SMB_FLAG_SIGN_REQUIRED  (1 << (4 + 8))
-#define SMB_FLAG_COMPRESSED     (1 << (3 + 8))
-#define SMB_FLAG_SIGN_SUPPORT   (1 << (2 + 8))
-#define SMB_FLAG_EXT_ATTR       (1 << (1 + 8))
-#define SMB_FLAG_LONG_NAMES_OK  (1 << (0 + 8))
-// File creation/open flags
-#define SMB_CREATE_OPLOCK       (1 << 1)
-#define SMB_CREATE_BATCH_OPLOCK (1 << 2)
-#define SMB_CREATE_MKDIR        (1 << 3)
-#define SMB_CREATE_EXT_RESP     (1 << 4)
-#define SMB_CREATE_DEFAULTS     (0)
-// File access rights
+//-----------------------------------------------------------------------------/
+// File access rights (used when smb_open() files)
+//-----------------------------------------------------------------------------/
 /// Flag for smb_file_open. Request right for reading
 #define SMB_MOD_READ            (1 << 0)
 /// Flag for smb_file_open. Request right for writing
@@ -140,6 +109,96 @@
 #define SMB_MOD_RO              (SMB_MOD_READ | SMB_MOD_READ_EXT \
                                 | SMB_MOD_READ_ATTR | SMB_MOD_READ_CTL )
 
+
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
+//!! PRIVATE stuff below                                                     !!/
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/
+
+//-----------------------------------------------------------------------------/
+// Our own identity
+//-----------------------------------------------------------------------------/
+#define SMB_OS                  "Unix"
+#define SMB_LANMAN              "liBDSM"
+
+
+//-----------------------------------------------------------------------------/
+// A few magic stuffs (SMB magic // our dialect support)
+//-----------------------------------------------------------------------------/
+#define SMB_MAGIC               { 0xff, 0x53, 0x4d, 0x42 } // aka "\xffSMB"
+#define SMB_DIALECTS {          \
+  "\2Samba",                    \
+  "\2NT LM 0.12",               \
+  NULL                          \
+}
+// Dialect values must match position on SMB_DIALECTS array
+#define SMB_DIALECT_SAMBA       0
+#define SMB_DIALECT_NTLM        1
+
+
+//-----------------------------------------------------------------------------/
+// SMB Operations/Commands
+//-----------------------------------------------------------------------------/
+#define SMB_CMD_CLOSE           0x04
+#define SMD_CMD_TRANS           0x25
+#define SMB_CMD_TRANS2          0x32
+#define SMB_CMD_TREE_DISCONNECT 0x71
+#define SMB_CMD_NEGOTIATE       0x72
+#define SMB_CMD_SETUP           0x73 // Session Setup AndX
+#define SMB_CMD_TREE_CONNECT    0x75 // Tree Connect AndX
+#define SMB_CMD_ECHO            0x2b
+#define SMB_CMD_READ            0x2e // Read AndX
+#define SMB_CMD_CREATE          0xa2 // NT Create AndX
+
+
+//-----------------------------------------------------------------------------/
+// SMB TRANS2 SubCommands
+//-----------------------------------------------------------------------------/
+#define SMB_TR2_FIND_FIRST      0x0001
+#define SMB_TR2_QUERY_PATH      0x0005
+
+
+//-----------------------------------------------------------------------------/
+// NTSTATUS Codes
+//-----------------------------------------------------------------------------/
+#define NT_STATUS_SUCCESS                   0x00000000
+#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
+#define NT_STATUS_ACCESS_DENIED             0xc0000022
+
+
+///////////////////////////////////////////////////////////////////////////////
+//// Flags definitions
+//// Many aren't use in libdsm but are here for possible later use
+
+// Protocol negotiation flags (flags field in spec)
+#define SMB_FLAG_RESPONSE       (1 << 7)
+#define SMB_FLAG_NOTIFY         (1 << 6)
+#define SMB_FLAG_OPLOCK         (1 << 5)
+#define SMB_FLAG_CANONIC        (1 << 4)
+#define SMB_FLAG_CASELESS       (1 << 3)
+#define SMB_FLAG_BUFFER_POSTED  (1 << 1)
+#define SMB_FLAG_LOCK_AND_READ  (1 << 0)
+// More Protocol negotiation flags (flags2 field in spec)
+#define SMB_FLAG_UNICODE        (1 << (15 + 8))
+#define SMB_FLAG_NT_ERRORS      (1 << (14 + 8))
+#define SMB_FLAG_EXECUTE_ONLY   (1 << (13 + 8))
+#define SMB_FLAG_DFS            (1 << (12 + 8))
+#define SMB_FLAG_EXT_SEC        (1 << (11 + 8))
+#define SMB_FLAG_REPARSE_PATH   (1 << (10 + 8))
+#define SMB_FLAG_LONG_NAMES     (1 << (6 + 8))
+#define SMB_FLAG_SIGN_REQUIRED  (1 << (4 + 8))
+#define SMB_FLAG_COMPRESSED     (1 << (3 + 8))
+#define SMB_FLAG_SIGN_SUPPORT   (1 << (2 + 8))
+#define SMB_FLAG_EXT_ATTR       (1 << (1 + 8))
+#define SMB_FLAG_LONG_NAMES_OK  (1 << (0 + 8))
+// File creation/open flags
+#define SMB_CREATE_OPLOCK       (1 << 1)
+#define SMB_CREATE_BATCH_OPLOCK (1 << 2)
+#define SMB_CREATE_MKDIR        (1 << 3)
+#define SMB_CREATE_EXT_RESP     (1 << 4)
+#define SMB_CREATE_DEFAULTS     (0)
+
+
 // File attributes
 #define SMB_ATTR_RO             (1 << 0)
 #define SMB_ATTR_HIDDEN         (1 << 1)
@@ -181,20 +240,8 @@
                                    SMB_FIND2_FLAG_RESUME)
 
 
-
-
-
-
 #define SMB_NTLM_HASH_SIZE      16
 #define SMB_NTLM2_BLOB_SIZE     64
 #define SMB_LM2_BLOB_SIZE       8
-
-#define SMB_OS                  "Unix"
-#define SMB_LANMAN              "liBDSM"
-
-#define NT_STATUS_SUCCESS                   0x00000000
-#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
-#define NT_STATUS_ACCESS_DENIED             0xc0000022
-
 
 #endif

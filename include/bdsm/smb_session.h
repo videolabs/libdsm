@@ -22,43 +22,13 @@
 
 #include "bdsm/netbios_session.h"
 #include "bdsm/smb_defs.h"
+#include "bdsm/smb_types.h"
 #include "bdsm/smb_message.h"
 
 /**
  * @file smb_session.h
  * @brief Functions to connect and authenticate to an SMB server
  */
-
-/// Session Authentication was successfull, you can become nasty
-#define SMB_STATE_SESSION_OK    3
-/// Dialect was successfully negotiated
-#define SMB_STATE_DIALECT_OK    2
-/// A Netbios session has been successfully established.
-#define SMB_STATE_NETBIOS_OK    1
-/// The SMB session has just been created
-#define SMB_STATE_NEW           0
-/// Error state, there was an error somewhere
-#define SMB_STATE_ERROR         -1
-
-/**
-  * @struct smb_tid
-  * @brief The id of a connection to a share within a session.
-  */
-typedef uint16_t    smb_tid;
-
-/**
-  * @struct smb_fid
-  * @brief The id of a file within a share within a session.
-  */
-typedef uint16_t    smb_fid;
-
-// Concatenation of the two above, representing a file inside of a session
-// First 4 bytes are the TreeID (smb_tid), last 4 are the File ID (FUID)
-
-/** @struct smb_fd
-  * @brief SMB File descriptor, represents a file within a session.
-  */
-typedef uint32_t    smb_fd;
 
 /**
  * @internal
@@ -84,61 +54,6 @@ typedef uint32_t    smb_fd;
  * @return A smb_fd
  */
 #define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
-
-/**
- * @brief An opaque data structure to represent file
- */
-typedef struct  smb_file_s
-{
-  struct smb_file_s   *next;          // Next file in this share
-  char                *name;
-  smb_fid             fid;
-  smb_tid             tid;
-  size_t              name_len;
-  uint64_t            created;
-  uint64_t            accessed;
-  uint64_t            written;
-  uint64_t            changed;
-  uint64_t            alloc_size;
-  uint64_t            size;
-  uint32_t            attr;
-  uint32_t            readp;          // Current read pointer (position);
-  int                 is_dir;         // 0 -> file, 1 -> directory
-} smb_file_t;
-
-typedef struct smb_share_s
-{
-  struct smb_share_s  *next;          // Next share in this session
-  struct smb_file_s   *files;         // List of all open files for this share
-  smb_tid             tid;
-  uint16_t            opts;           // Optionnal support opts
-  uint16_t            rights;         // Maximum rights field
-  uint16_t            guest_rights;
-} smb_share_t;
-
-/**
- * @brief An opaque data structure to represent a SMB Session.
- */
-typedef struct
-{
-  int                 state;
-  int                 guest;            // boolean, are we logged as guest ?
-  uint16_t            uid;              // uid attributed by the server
-  netbios_session_t   *nb_session;
-
-  // Informations about the smb server we are connected to.
-  struct {
-    char                name[16];       // The server name
-    uint16_t            dialect;        // The selected dialect
-    uint16_t            security_mode;  // Security mode
-    uint32_t            caps;           // Server caps replyed during negotiate
-    uint32_t            session_key;    // XXX Is this really usefull?
-    uint64_t            challenge;      // For challenge response security
-    uint64_t            ts;             // It seems Win7 requires it :-/
-  }                   srv;
-
-  struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file_t
-}                   smb_session_t;
 
 
 

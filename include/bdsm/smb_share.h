@@ -28,12 +28,6 @@
  */
 
 /**
- * @struct smb_share_list_t
- * @brief An opaque object representing the list of share of a SMB file server.
- */
-typedef char  **smb_share_list_t;
-
-/**
  * @brief List the existing share of this sessions's machine
  * @details This function makes a RPC to the machine this session is currently
  * authenticated to and list all the existing shares of this machines. The share
