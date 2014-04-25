@@ -45,6 +45,7 @@ typedef uint16_t    smb_fid;
 typedef uint32_t    smb_fd;
 
 /**
+ * @internal
  * @struct smb_file_t
  * @brief An opaque data structure to represent file
  */
