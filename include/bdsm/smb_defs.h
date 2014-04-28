@@ -30,26 +30,31 @@
 //-----------------------------------------------------------------------------/
 // SMB Session states
 //-----------------------------------------------------------------------------/
-/// Session Authentication was successfull, you can become nasty
-#define SMB_STATE_SESSION_OK    3
-/// Dialect was successfully negotiated
-#define SMB_STATE_DIALECT_OK    2
-/// A Netbios session has been successfully established.
-#define SMB_STATE_NETBIOS_OK    1
-/// The SMB session has just been created
-#define SMB_STATE_NEW           0
-/// Error state, there was an error somewhere
-#define SMB_STATE_ERROR         -1
-
+enum
+{
+  /// Error state, there was an error somewhere
+  SMB_STATE_ERROR             = -1,
+  /// The SMB session has just been created
+  SMB_STATE_NEW               = 0,
+  /// A Netbios session has been successfully established.
+  SMB_STATE_NETBIOS_OK        = 1,
+  /// Dialect was successfully negotiated
+  SMB_STATE_DIALECT_OK        = 2,
+  /// Session Authentication was successfull, you can become nasty
+  SMB_STATE_SESSION_OK        = 3
+};
 
 //-----------------------------------------------------------------------------/
 // smb_fseek() operations
 //-----------------------------------------------------------------------------/
 // smb_fseek operations
-/// Set the read pointer at the given position
-#define SMB_SEEK_SET 0
-/// Adjusts the read pointer relatively to the actual position
-#define SMB_SEEK_CUR 1
+enum
+{
+  /// Set the read pointer at the given position
+  SMB_SEEK_SET                = 0,
+  /// Adjusts the read pointer relatively to the actual position
+  SMB_SEEK_CUR                = 1
+};
 
 
 //-----------------------------------------------------------------------------/
