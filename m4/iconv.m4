@@ -9,8 +9,6 @@ dnl From Bruno Haible.
 AC_DEFUN([AM_ICONV_LINKFLAGS_BODY],
 [
   dnl Prerequisites of AC_LIB_LINKFLAGS_BODY.
-  AC_REQUIRE([AC_LIB_PREPARE_PREFIX])
-  AC_REQUIRE([AC_LIB_RPATH])
 
   dnl Search for libiconv and define LIBICONV, LTLIBICONV and INCICONV
   dnl accordingly.
