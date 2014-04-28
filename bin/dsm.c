@@ -179,7 +179,7 @@ int main(int ac, char **av)
 
   //char              data[1024];
   char              **share_list;
-  smb_file        *files;
+  smb_file          *files;
 
 
   // smb_fread(session, fd, data, 1024);

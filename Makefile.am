@@ -59,7 +59,7 @@ libdsm_la_SOURCES = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ -liconv
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV
 
 
 bin_PROGRAMS =

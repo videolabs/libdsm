@@ -24,6 +24,8 @@ AC_MSG_NOTICE([dsm ABI version: $BDSM_ABI_VERSION])
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
+## Where is iconv? In libc or separate lib?
+AM_ICONV
 
 AC_ARG_ENABLE([programs],
   AS_HELP_STRING([--enable-programs], [Build additional programs [default=yes]])

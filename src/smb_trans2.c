@@ -31,8 +31,8 @@ static smb_file *smb_find_parse(smb_message *msg)
   smb_tr2_find2_params  *params;
   smb_tr2_find2_entry   *iter;
   smb_file              *files, *tmp;
-  uint8_t                 *eod;
-  size_t                  count, i;
+  uint8_t               *eod;
+  size_t                count, i;
 
   assert(msg != NULL);
 
@@ -76,8 +76,8 @@ static smb_message *smb_tr2_recv(smb_session *s)
 {
   smb_message           recv, *res;
   smb_trans2_resp       *tr2;
-  size_t                  growth;
-  int                     remaining;
+  size_t                growth;
+  int                   remaining;
 
   if (!smb_session_recv_msg(s, &recv))
     return (NULL);
@@ -109,8 +109,8 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
   smb_message           *msg;
   smb_trans2_req        *tr2;
   smb_tr2_find2         *find;
-  size_t                  pattern_len, msg_len;
-  int                     res;
+  size_t                pattern_len, msg_len;
+  int                   res;
 
   assert(s != NULL && pattern != NULL && tid);
 
@@ -172,8 +172,8 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
   smb_tr2_query         *query;
   smb_tr2_path_info     *info;
   smb_file              *file;
-  size_t                  path_len, msg_len;
-  int                     res;
+  size_t                path_len, msg_len;
+  int                   res;
 
   assert(s != NULL && path != NULL && tid);
 
