@@ -29,8 +29,8 @@
 
 int main(int ac, char **av)
 {
-  netbios_ns_t        *ns;
-  netbios_ns_entry_t  *entry;
+  netbios_ns        *ns;
+  netbios_ns_entry  *entry;
 
   ns = netbios_ns_new();
 

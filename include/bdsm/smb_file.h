@@ -40,7 +40,7 @@
  *
  * @see smb_tree_connect
  */
-smb_fd    smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
+smb_fd    smb_fopen(smb_session *s, smb_tid tid, const char *path,
                     uint32_t mod);
 
 /**
@@ -51,7 +51,7 @@ smb_fd    smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
  * @param s The session object
  * @param fd The SMB file descriptor
  */
-void      smb_fclose(smb_session_t *s, smb_fd fd);
+void      smb_fclose(smb_session *s, smb_fd fd);
 
 /**
  * @brief Read from an open file
@@ -66,7 +66,7 @@ void      smb_fclose(smb_session_t *s, smb_fd fd);
  * @param[in] buf_size [description]
  * @return The number of bytes read or -1 in case of error.
  */
-ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size);
+ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
 
 /**
  * @brief Sets/Moves/Get the read pointer for a given file
@@ -86,6 +86,6 @@ ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size);
  * #SMB_SEEK_SET and #SMB_SEEK_CUR
  * @return The current read pointer position
  */
-ssize_t   smb_fseek(smb_session_t *s, smb_fd fd, ssize_t offset, int whence);
+ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
 
 #endif

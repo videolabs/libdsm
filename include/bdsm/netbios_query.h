@@ -27,18 +27,18 @@
 typedef struct              netbios_query_s {
   size_t                      payload_size;
   size_t                      cursor;
-  netbios_query_packet_t      *packet;
-}                           netbios_query_t;
+  netbios_query_packet      *packet;
+}                           netbios_query;
 
-netbios_query_t   *netbios_query_new(size_t payload_size, int is_query,
+netbios_query   *netbios_query_new(size_t payload_size, int is_query,
                                      char opcode);
-void              netbios_query_destroy(netbios_query_t *q);
-void              netbios_query_set_flag(netbios_query_t *q,
+void              netbios_query_destroy(netbios_query *q);
+void              netbios_query_set_flag(netbios_query *q,
                                          uint16_t flag, int value);
-int               netbios_query_append(netbios_query_t *q, const char *data,
+int               netbios_query_append(netbios_query *q, const char *data,
                                        size_t data_size);
 
-void              netbios_query_print(netbios_query_t *q);
+void              netbios_query_print(netbios_query *q);
 
 
 #endif

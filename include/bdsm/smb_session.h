@@ -63,7 +63,7 @@
  * call smb_session_connect, then authenticate with smb_authenticate.
  * @return A new Session object.
  */
-smb_session_t   *smb_session_new();
+smb_session   *smb_session_new();
 
 /**
  * @brief Close a session and deallocate its ressources
@@ -72,7 +72,7 @@ smb_session_t   *smb_session_new();
  *
  * @param s The session to destroy
  */
-void            smb_session_destroy(smb_session_t *s);
+void            smb_session_destroy(smb_session *s);
 
 
 /**
@@ -81,17 +81,17 @@ void            smb_session_destroy(smb_session_t *s);
  * @see SMB_STATE_NEW
  * @see SMB_STATE_SESSION_OK
  */
-int             smb_session_state(smb_session_t *s);
+int             smb_session_state(smb_session *s);
 
 
 
 // ---------------------------------
 // Internal stuff, maybe move this somewhere else
-int             smb_negotiate(smb_session_t *s);
-int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg);
+int             smb_negotiate(smb_session *s);
+int             smb_session_send_msg(smb_session *s, smb_message *msg);
 // msg->packet will be updated to point on received data. You don't own this
 // memory. It'll be reused on next recv_msg
-size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg);
+size_t          smb_session_recv_msg(smb_session *s, smb_message *msg);
 // --------------------------------
 
 /**
@@ -106,7 +106,7 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg);
  * @param ip The ip of the machine to connect to (in network byte order)
  * @return 0 in case of error, a value > 0 otherwise.
  */
-int             smb_session_connect(smb_session_t *s, const char *name,
+int             smb_session_connect(smb_session *s, const char *name,
                                     uint32_t ip);
 
 /**
@@ -124,7 +124,7 @@ int             smb_session_connect(smb_session_t *s, const char *name,
  * you are logged in with the user you requested. If guest are activated on
  * the remote host, when login fails, you are logged in as 'Guest'.
  */
-int             smb_session_login(smb_session_t *s, const char *domain,
+int             smb_session_login(smb_session *s, const char *domain,
                                   const char *user, const char *password);
 
 /**
@@ -135,7 +135,7 @@ int             smb_session_login(smb_session_t *s, const char *domain,
  * 0  -> Logged in as regular user
  * -1 -> Error (not logged in, invalid session, etc.)
  */
-int             smb_session_is_guest(smb_session_t *s);
+int             smb_session_is_guest(smb_session *s);
 
 /**
  * @brief Returns the server name with the <XX> type
@@ -143,6 +143,6 @@ int             smb_session_is_guest(smb_session_t *s);
  * @param s The session object
  * @return The server name or NULL. The memory is owned by the session object.
  */
-const char      *smb_session_server_name(smb_session_t *s);
+const char      *smb_session_server_name(smb_session *s);
 
 #endif

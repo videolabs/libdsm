@@ -29,7 +29,7 @@
 #include "bdsm/netbios_session.h"
 #include "bdsm/netbios_utils.h"
 
-static int        open_socket_and_connect(netbios_session_t *s)
+static int        open_socket_and_connect(netbios_session *s)
 {
   if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     goto error;
@@ -43,18 +43,18 @@ static int        open_socket_and_connect(netbios_session_t *s)
     return (0);
 }
 
-netbios_session_t *netbios_session_new(uint32_t ip_addr)
+netbios_session *netbios_session_new(uint32_t ip_addr)
 {
-  netbios_session_t *session;
+  netbios_session *session;
   size_t            packet_size;
 
-  session = (netbios_session_t *)malloc(sizeof(netbios_session_t));
+  session = (netbios_session *)malloc(sizeof(netbios_session));
   assert(session);
-  memset((void *) session, 0, sizeof(netbios_session_t));
+  memset((void *) session, 0, sizeof(netbios_session));
 
   session->packet_payload_size = NETBIOS_SESSION_PAYLOAD;
-  packet_size = sizeof(netbios_session_packet_t) + session->packet_payload_size;
-  session->packet = (netbios_session_packet_t *)malloc(packet_size);
+  packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
+  session->packet = (netbios_session_packet *)malloc(packet_size);
   assert(session->packet);
 
   session->remote_addr.sin_family       = AF_INET;
@@ -69,7 +69,7 @@ netbios_session_t *netbios_session_new(uint32_t ip_addr)
   return(session);
 }
 
-void              netbios_session_destroy(netbios_session_t *s)
+void              netbios_session_destroy(netbios_session *s)
 {
   if (!s)
     return;
@@ -79,10 +79,10 @@ void              netbios_session_destroy(netbios_session_t *s)
   free(s);
 }
 
-int               netbios_session_connect(netbios_session_t *s,
+int               netbios_session_connect(netbios_session *s,
                                           const char *name)
 {
-  netbios_session_packet_t  *received;
+  netbios_session_packet  *received;
   ssize_t                   recv_size;
   char                      *encoded_name;
 
@@ -103,10 +103,10 @@ int               netbios_session_connect(netbios_session_t *s,
 
   // Now receiving the reply from the server.
   recv_size = netbios_session_packet_recv(s);
-  if (recv_size < sizeof(netbios_session_packet_t))
+  if (recv_size < sizeof(netbios_session_packet))
     goto error;
 
-  received = (netbios_session_packet_t *)&s->recv_buffer;
+  received = (netbios_session_packet *)&s->recv_buffer;
   // Reply was negative, we are not connected :(
   if (received->opcode != NETBIOS_OP_SESSION_REQ_OK)
   {
@@ -123,21 +123,21 @@ int               netbios_session_connect(netbios_session_t *s,
     return (0);
 }
 
-void              netbios_session_packet_init(netbios_session_t *s,
+void              netbios_session_packet_init(netbios_session *s,
                                               uint8_t opcode)
 {
   size_t          packet_size;
 
   assert(s);
 
-  packet_size = s->packet_payload_size + sizeof(netbios_session_packet_t);
+  packet_size = s->packet_payload_size + sizeof(netbios_session_packet);
   memset((void *)s->packet, 0, packet_size);
 
   s->packet_cursor = 0;
   s->packet->opcode = opcode;
 }
 
-int               netbios_session_packet_append(netbios_session_t *s,
+int               netbios_session_packet_append(netbios_session *s,
                                                 const char *data, size_t size)
 {
   char  *start;
@@ -154,7 +154,7 @@ int               netbios_session_packet_append(netbios_session_t *s,
   return (1);
 }
 
-int               netbios_session_packet_send(netbios_session_t *s)
+int               netbios_session_packet_send(netbios_session *s)
 {
   ssize_t         to_send;
   ssize_t         sent;
@@ -162,7 +162,7 @@ int               netbios_session_packet_send(netbios_session_t *s)
   assert(s && s->packet && s->socket && s->state > 0);
 
   s->packet->length = htons(s->packet_cursor);
-  to_send           = sizeof(netbios_session_packet_t) + s->packet_cursor;
+  to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
   sent              = send(s->socket, (void *)s->packet, to_send, 0);
 
   if (sent != to_send)
@@ -174,7 +174,7 @@ int               netbios_session_packet_send(netbios_session_t *s)
   return (sent);
 }
 
-ssize_t           netbios_session_packet_recv(netbios_session_t *s)
+ssize_t           netbios_session_packet_recv(netbios_session *s)
 {
   assert(s && s->socket && s->state > 0);
 

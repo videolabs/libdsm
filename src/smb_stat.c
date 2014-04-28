@@ -21,14 +21,14 @@
 #include "bdsm/smb_stat.h"
 #include "bdsm/smb_fd.h"
 
-smb_stat_t        smb_stat_fd(smb_session_t *s, smb_fd fd)
+smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {
   assert (s != NULL && fd);
 
   return (smb_session_file_get(s, fd));
 }
 
-size_t            smb_stat_list_count(smb_stat_list_t list)
+size_t            smb_stat_list_count(smb_stat_list list)
 {
   size_t          count = 0;
 
@@ -41,7 +41,7 @@ size_t            smb_stat_list_count(smb_stat_list_t list)
   return (count);
 }
 
-smb_stat_t        smb_stat_list_at(smb_stat_list_t list, size_t index)
+smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
 {
   size_t          pos;
 
@@ -54,7 +54,7 @@ smb_stat_t        smb_stat_list_at(smb_stat_list_t list, size_t index)
   return (list);
 }
 
-const char        *smb_stat_name(smb_stat_t info)
+const char        *smb_stat_name(smb_stat info)
 {
   if (info == NULL)
     return (NULL);
@@ -62,7 +62,7 @@ const char        *smb_stat_name(smb_stat_t info)
     return (info->name);
 }
 
-uint64_t          smb_stat_get(smb_stat_t info, int what)
+uint64_t          smb_stat_get(smb_stat info, int what)
 {
   if (info == NULL)
     return (0);

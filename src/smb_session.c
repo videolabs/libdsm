@@ -25,18 +25,18 @@
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_ntlm.h"
 
-smb_session_t   *smb_session_new()
+smb_session   *smb_session_new()
 {
-  smb_session_t *s;
+  smb_session *s;
 
-  s = malloc(sizeof(smb_session_t));
+  s = malloc(sizeof(smb_session));
   assert(s != NULL);
-  memset((void *)s, 0, sizeof(smb_session_t));
+  memset((void *)s, 0, sizeof(smb_session));
 
   return (s);
 }
 
-void            smb_session_destroy(smb_session_t *s)
+void            smb_session_destroy(smb_session *s)
 {
   if (s != NULL)
   {
@@ -47,7 +47,7 @@ void            smb_session_destroy(smb_session_t *s)
   }
 }
 
-int             smb_session_state(smb_session_t *s)
+int             smb_session_state(smb_session *s)
 {
   if (s != NULL)
     return (s->state);
@@ -55,7 +55,7 @@ int             smb_session_state(smb_session_t *s)
     return (SMB_STATE_ERROR);
 }
 
-int             smb_session_connect(smb_session_t *s, const char *name,
+int             smb_session_connect(smb_session *s, const char *name,
                                     uint32_t ip)
 {
   assert(s != NULL && name != NULL);
@@ -78,7 +78,7 @@ int             smb_session_connect(smb_session_t *s, const char *name,
     return (0);
 }
 
-int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg)
+int             smb_session_send_msg(smb_session *s, smb_message *msg)
 {
   size_t        packet_size;
 
@@ -89,7 +89,7 @@ int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg)
 
   netbios_session_packet_init(s->nb_session, NETBIOS_OP_SESSION_MSG);
 
-  packet_size   = sizeof(smb_packet_t) + msg->cursor;
+  packet_size   = sizeof(smb_packet) + msg->cursor;
   if (!netbios_session_packet_append(s->nb_session, (char *)msg->packet, packet_size))
     return (0);
   if (!netbios_session_packet_send(s->nb_session))
@@ -98,9 +98,9 @@ int             smb_session_send_msg(smb_session_t *s, smb_message_t *msg)
   return (1);
 }
 
-size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
+size_t          smb_session_recv_msg(smb_session *s, smb_message *msg)
 {
-  netbios_session_packet_t  *nb_packet;
+  netbios_session_packet  *nb_packet;
   ssize_t                   recv_size;
   size_t                    payload_size;
 
@@ -110,13 +110,13 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
   if(recv_size <= 0)
     return (0);
 
-  nb_packet   = (netbios_session_packet_t *)s->nb_session->recv_buffer;
+  nb_packet   = (netbios_session_packet *)s->nb_session->recv_buffer;
   if (msg != NULL)
-    msg->packet = (smb_packet_t *)nb_packet->payload;
+    msg->packet = (smb_packet *)nb_packet->payload;
 
   payload_size  = ntohs(nb_packet->length);
   payload_size |= (nb_packet->flags & 0x01) << 16; // XXX If this is the case we overran our recv_buffer
-  if (payload_size > recv_size - sizeof(netbios_session_packet_t))
+  if (payload_size > recv_size - sizeof(netbios_session_packet))
   {
     BDSM_dbg("smb_session_recv_msg: Packet size mismatch\n");
     return(0);
@@ -124,20 +124,20 @@ size_t          smb_session_recv_msg(smb_session_t *s, smb_message_t *msg)
 
   if (msg != NULL)
   {
-    msg->payload_size = payload_size - sizeof(smb_header_t);
+    msg->payload_size = payload_size - sizeof(smb_header);
     msg->cursor       = 0;
   }
 
-  return (payload_size - sizeof(smb_header_t));
+  return (payload_size - sizeof(smb_header));
 }
 
 
-int             smb_negotiate(smb_session_t *s)
+int             smb_negotiate(smb_session *s)
 {
   const char            *dialects[] = SMB_DIALECTS;
-  smb_message_t         *msg = NULL;
-  smb_message_t         answer;
-  smb_negotiate_resp_t  *nego;
+  smb_message         *msg = NULL;
+  smb_message         answer;
+  smb_negotiate_resp  *nego;
 
 
   msg = smb_message_new(SMB_CMD_NEGOTIATE, 64);
@@ -160,7 +160,7 @@ int             smb_negotiate(smb_session_t *s)
   if (!smb_session_recv_msg(s, &answer))
     goto error;
 
-  nego = (smb_negotiate_resp_t *)answer.packet->payload;
+  nego = (smb_negotiate_resp *)answer.packet->payload;
   if (answer.packet->header.status != NT_STATUS_SUCCESS
       && nego->wct != 0x11 && nego->security_mode & 0x03)
     goto error;
@@ -182,12 +182,12 @@ int             smb_negotiate(smb_session_t *s)
     return (0);
 }
 
-int             smb_session_login(smb_session_t *s, const char *domain,
+int             smb_session_login(smb_session *s, const char *domain,
                                   const char *user, const char *password)
 {
-  smb_message_t         answer;
-  smb_message_t         *msg = NULL;
-  smb_session_req_t     *req = NULL;
+  smb_message         answer;
+  smb_message         *msg = NULL;
+  smb_session_req     *req = NULL;
   uint8_t               *ntlm2 = NULL;
   smb_ntlmh_t           hash_v2;
   uint64_t              user_challenge;
@@ -197,20 +197,20 @@ int             smb_session_login(smb_session_t *s, const char *domain,
   msg = smb_message_new(SMB_CMD_SETUP, 512);
   smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
-  req = (smb_session_req_t *)msg->packet->payload;
+  req = (smb_session_req *)msg->packet->payload;
 
-  req->wct              = (sizeof(smb_session_req_t) - 3) / 2;
+  req->wct              = (sizeof(smb_session_req) - 3) / 2;
   req->max_buffer       = NETBIOS_SESSION_PAYLOAD
-                          - sizeof(smb_header_t)
-                          - sizeof(netbios_session_packet_t);
-  req->max_buffer      -= sizeof(netbios_session_packet_t);
-  req->max_buffer      -= sizeof(smb_packet_t);
+                          - sizeof(smb_header)
+                          - sizeof(netbios_session_packet);
+  req->max_buffer      -= sizeof(netbios_session_packet);
+  req->max_buffer      -= sizeof(smb_packet);
   req->mpx_count        = 16; // XXX ?
   req->vc_count         = 1;
   req->session_key      = s->srv.session_key;
   req->caps             = s->srv.caps; // XXX caps & our_caps_mask
 
-  smb_message_advance(msg, sizeof(smb_session_req_t));
+  smb_message_advance(msg, sizeof(smb_session_req));
 
   user_challenge = smb_ntlm_generate_challenge();
 
@@ -242,7 +242,7 @@ int             smb_session_login(smb_session_t *s, const char *domain,
   smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_OS));
   smb_message_put16(msg, 0);
 
-  req->payload_size = msg->cursor - sizeof(smb_session_req_t);
+  req->payload_size = msg->cursor - sizeof(smb_session_req);
 
   if (!smb_session_send_msg(s, msg))
   {
@@ -258,7 +258,7 @@ int             smb_session_login(smb_session_t *s, const char *domain,
     return (0);
   }
 
-  smb_session_resp_t *r = (smb_session_resp_t *)answer.packet->payload;
+  smb_session_resp *r = (smb_session_resp *)answer.packet->payload;
   if (answer.packet->header.status != NT_STATUS_SUCCESS)
   {
     BDSM_dbg("Session Setup AndX : failure.\n");
@@ -273,7 +273,7 @@ int             smb_session_login(smb_session_t *s, const char *domain,
   return (1);
 }
 
-int             smb_session_is_guest(smb_session_t *s)
+int             smb_session_is_guest(smb_session *s)
 {
   // Invalid session object
   if (s == NULL)
@@ -291,7 +291,7 @@ int             smb_session_is_guest(smb_session_t *s)
   return (0);
 }
 
-const char      *smb_session_server_name(smb_session_t *s)
+const char      *smb_session_server_name(smb_session *s)
 {
   if (s == NULL)
     return (NULL);

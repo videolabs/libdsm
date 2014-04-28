@@ -34,12 +34,12 @@
  * starting with a $ are supposed to be system/hidden share.
  *
  * @param[in] s The session object
- * @param[out] list A pointer to an opaque share_list_t object.
+ * @param[out] list A pointer to an opaque share_list object.
  *
  * @return The number of share listed or 0 if there was an error (There
  * theorically cannot be 0 share on a machine, there's at least $IPC)
  */
-size_t          smb_share_list(smb_session_t *s, smb_share_list_t *list);
+size_t          smb_share_get_list(smb_session *s, smb_share_list *list);
 
 /**
  * @brief Get the number of share in the list
@@ -47,7 +47,7 @@ size_t          smb_share_list(smb_session_t *s, smb_share_list_t *list);
  * @param list An opaque share list returned by smb_share_list()
  * @return The number of share in the opaque share_list object
  */
-size_t          smb_share_list_count(smb_share_list_t list);
+size_t          smb_share_list_count(smb_share_list list);
 
 /**
  * @brief Get the name of the share in the list at the given index
@@ -57,7 +57,7 @@ size_t          smb_share_list_count(smb_share_list_t list);
  *
  * @return The string has been decoded from UTF16 to you local encoding
  */
-const char      *smb_share_list_at(smb_share_list_t list, size_t index);
+const char      *smb_share_list_at(smb_share_list list, size_t index);
 
 /**
  * @brief Destroy an opaque share list object
@@ -65,7 +65,7 @@ const char      *smb_share_list_at(smb_share_list_t list, size_t index);
  * @param list The list to destroy. The object is not usable anymore afterward,
  * you can set it to 'NULL'
  */
-void            smb_share_list_destroy(smb_share_list_t list);
+void            smb_share_list_destroy(smb_share_list list);
 
 /**
  * @brief Connects to a SMB share
@@ -79,7 +79,7 @@ void            smb_share_list_destroy(smb_share_list_t list);
  * @return An opaque value representing an open share (like a file descriptor)
  * or 0 if there was an error
  */
-smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
+smb_tid         smb_tree_connect(smb_session *s, const char *name);
 
 /**
  * @brief Disconnect from a share
@@ -87,6 +87,6 @@ smb_tid         smb_tree_connect(smb_session_t *s, const char *name);
  *
  * @return ?
  */
-int             smb_tree_disconnect(smb_session_t *s, smb_tid tid);
+int             smb_tree_disconnect(smb_session *s, smb_tid tid);
 
 #endif

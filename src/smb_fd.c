@@ -20,9 +20,9 @@
 
 #include "bdsm/smb_fd.h"
 
-void        smb_session_share_add(smb_session_t *s, smb_share_t *share)
+void        smb_session_share_add(smb_session *s, smb_share *share)
 {
-  smb_share_t *iter;
+  smb_share *iter;
 
   assert(s != NULL && share != NULL);
 
@@ -38,9 +38,9 @@ void        smb_session_share_add(smb_session_t *s, smb_share_t *share)
   iter->next = share;
 }
 
-smb_share_t *smb_session_share_get(smb_session_t *s, smb_tid tid)
+smb_share *smb_session_share_get(smb_session *s, smb_tid tid)
 {
-  smb_share_t *iter;
+  smb_share *iter;
 
   assert(s != NULL && tid);
 
@@ -51,9 +51,9 @@ smb_share_t *smb_session_share_get(smb_session_t *s, smb_tid tid)
   return (iter);
 }
 
-smb_share_t *smb_session_share_remove(smb_session_t *s, smb_tid tid)
+smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
 {
-  smb_share_t *iter, *keep;
+  smb_share *iter, *keep;
 
   assert(s != NULL && tid);
   iter = s->shares;
@@ -78,10 +78,10 @@ smb_share_t *smb_session_share_remove(smb_session_t *s, smb_tid tid)
   return (NULL);
 }
 
-int         smb_session_file_add(smb_session_t *s, smb_tid tid, smb_file_t *f)
+int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
 {
-  smb_share_t *share;
-  smb_file_t  *iter;
+  smb_share *share;
+  smb_file  *iter;
 
   assert(s != NULL && tid && f != NULL);
 
@@ -101,10 +101,10 @@ int         smb_session_file_add(smb_session_t *s, smb_tid tid, smb_file_t *f)
   return (1);
 }
 
-smb_file_t  *smb_session_file_get(smb_session_t *s, smb_fd fd)
+smb_file  *smb_session_file_get(smb_session *s, smb_fd fd)
 {
-  smb_share_t *share;
-  smb_file_t  *iter;
+  smb_share *share;
+  smb_file  *iter;
 
   assert(s != NULL && fd);
 
@@ -118,10 +118,10 @@ smb_file_t  *smb_session_file_get(smb_session_t *s, smb_fd fd)
   return (iter);
 }
 
-smb_file_t  *smb_session_file_remove(smb_session_t *s, smb_fd fd)
+smb_file  *smb_session_file_remove(smb_session *s, smb_fd fd)
 {
-  smb_share_t *share;
-  smb_file_t  *iter, *keep;
+  smb_share *share;
+  smb_file  *iter, *keep;
 
   assert(s != NULL && fd);
 

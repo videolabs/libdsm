@@ -27,15 +27,15 @@
 #include "bdsm/smb_message.h"
 #include "bdsm/smb_utils.h"
 
-smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
+smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
 {
   const char    magic[4] = SMB_MAGIC;
-  smb_message_t *msg;
+  smb_message *msg;
 
-  msg = (smb_message_t *)calloc(1, sizeof(smb_message_t));
+  msg = (smb_message *)calloc(1, sizeof(smb_message));
   assert(msg != NULL);
 
-  msg->packet = (smb_packet_t *)calloc(1, sizeof(smb_message_t) + payload_size);
+  msg->packet = (smb_packet *)calloc(1, sizeof(smb_message) + payload_size);
   assert(msg != NULL);
 
   msg->payload_size = payload_size;
@@ -50,25 +50,25 @@ smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size)
 }
 
 // Duplicate a message while growing payload_size.
-smb_message_t   *smb_message_grow(smb_message_t *msg, size_t size)
+smb_message   *smb_message_grow(smb_message *msg, size_t size)
 {
-  smb_message_t *copy;
+  smb_message *copy;
 
   assert(msg != NULL && msg->packet != NULL);
 
-  copy = malloc(sizeof(smb_message_t));
+  copy = malloc(sizeof(smb_message));
   assert(copy != NULL);
   copy->cursor        = msg->cursor;
   copy->payload_size  = msg->payload_size + size;
 
-  copy->packet = malloc(sizeof(smb_packet_t) + copy->payload_size);
+  copy->packet = malloc(sizeof(smb_packet) + copy->payload_size);
   assert(copy->packet != NULL);
   memcpy((void *)copy->packet, (void *)msg->packet, msg->payload_size);
 
   return (copy);
 }
 
-void            smb_message_destroy(smb_message_t *msg)
+void            smb_message_destroy(smb_message *msg)
 {
   if (msg != NULL)
   {
@@ -78,7 +78,7 @@ void            smb_message_destroy(smb_message_t *msg)
   }
 }
 
-int             smb_message_append(smb_message_t *msg, const void *data,
+int             smb_message_append(smb_message *msg, const void *data,
                                    size_t data_size)
 {
   assert(msg != NULL && data != NULL);
@@ -94,7 +94,7 @@ int             smb_message_append(smb_message_t *msg, const void *data,
   return (1);
 }
 
-int             smb_message_advance(smb_message_t *msg, size_t size)
+int             smb_message_advance(smb_message *msg, size_t size)
 {
   assert(msg != NULL);
 
@@ -107,27 +107,27 @@ int             smb_message_advance(smb_message_t *msg, size_t size)
   return (1);
 }
 
-int             smb_message_put8(smb_message_t *msg, uint8_t data)
+int             smb_message_put8(smb_message *msg, uint8_t data)
 {
   return(smb_message_append(msg, (void *)&data, 1));
 }
 
-int             smb_message_put16(smb_message_t *msg, uint16_t data)
+int             smb_message_put16(smb_message *msg, uint16_t data)
 {
     return(smb_message_append(msg, (void *)&data, 2));
 }
 
-int             smb_message_put32(smb_message_t *msg, uint32_t data)
+int             smb_message_put32(smb_message *msg, uint32_t data)
 {
     return(smb_message_append(msg, (void *)&data, 4));
 }
 
-int             smb_message_put64(smb_message_t *msg, uint64_t data)
+int             smb_message_put64(smb_message *msg, uint64_t data)
 {
     return(smb_message_append(msg, (void *)&data, 8));
 }
 
-size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
+size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
                                       const char *str, size_t str_len)
 {
   char          *utf_str;
@@ -146,7 +146,7 @@ size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
   return (0);
 }
 
-int             smb_message_put_uuid(smb_message_t *msg, uint32_t a, uint16_t b,
+int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
                                      uint16_t c, const uint8_t d[8])
 {
   assert(msg != NULL);
@@ -164,7 +164,7 @@ int             smb_message_put_uuid(smb_message_t *msg, uint32_t a, uint16_t b,
   return (1);
 }
 
-void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)
+void            smb_message_flag(smb_message *msg, uint32_t flag, int value)
 {
   uint32_t      *flags;
 
@@ -180,7 +180,7 @@ void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value)
     *flags &= ~flag;
 }
 
-void            smb_message_set_default_flags(smb_message_t *msg)
+void            smb_message_set_default_flags(smb_message *msg)
 {
   assert(msg != NULL && msg->packet != NULL);
 
@@ -189,14 +189,14 @@ void            smb_message_set_default_flags(smb_message_t *msg)
   msg->packet->header.flags2  = 0xc043; // w/o extended security;
 }
 
-void            smb_message_set_andx_members(smb_message_t *msg)
+void            smb_message_set_andx_members(smb_message *msg)
 {
   // This could have been any type with the 'SMB_ANDX_MEMBERS';
-  smb_session_req_t   *req;
+  smb_session_req   *req;
 
   assert(msg != NULL);
 
-  req = (smb_session_req_t *)msg->packet->payload;
+  req = (smb_session_req *)msg->packet->payload;
   req->andx           = 0xff;
   req->andx_reserved  = 0;
   req->andx_offset    = 0;

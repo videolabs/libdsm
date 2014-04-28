@@ -22,22 +22,22 @@
 #include "bdsm/smb_defs.h"
 #include "bdsm/smb_types.h"
 
-smb_message_t   *smb_message_new(uint8_t cmd, size_t payload_size);
-smb_message_t   *smb_message_grow(smb_message_t *msg, size_t size);
-void            smb_message_destroy(smb_message_t *msg);
-int             smb_message_advance(smb_message_t *msg, size_t size);
-int             smb_message_append(smb_message_t *msg, const void *data,
+smb_message   *smb_message_new(uint8_t cmd, size_t payload_size);
+smb_message   *smb_message_grow(smb_message *msg, size_t size);
+void            smb_message_destroy(smb_message *msg);
+int             smb_message_advance(smb_message *msg, size_t size);
+int             smb_message_append(smb_message *msg, const void *data,
                                    size_t data_size);
-int             smb_message_put8(smb_message_t *msg, uint8_t data);
-int             smb_message_put16(smb_message_t *msg, uint16_t data);
-int             smb_message_put32(smb_message_t *msg, uint32_t data);
-int             smb_message_put64(smb_message_t *msg, uint64_t data);
-size_t          smb_message_put_utf16(smb_message_t *msg, const char *src_enc,
+int             smb_message_put8(smb_message *msg, uint8_t data);
+int             smb_message_put16(smb_message *msg, uint16_t data);
+int             smb_message_put32(smb_message *msg, uint32_t data);
+int             smb_message_put64(smb_message *msg, uint64_t data);
+size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
                                       const char *str, size_t str_len);
-int             smb_message_put_uuid(smb_message_t *msg, uint32_t a, uint16_t b,
+int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
                                      uint16_t c, const uint8_t e[8]);
 
-void            smb_message_set_default_flags(smb_message_t *msg);
-void            smb_message_set_andx_members(smb_message_t *msg);
-void            smb_message_flag(smb_message_t *msg, uint32_t flag, int value);
+void            smb_message_set_default_flags(smb_message *msg);
+void            smb_message_set_andx_members(smb_message *msg);
+void            smb_message_flag(smb_message *msg, uint32_t flag, int value);
 #endif

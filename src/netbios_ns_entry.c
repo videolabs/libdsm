@@ -23,7 +23,7 @@
 
 #include "bdsm/netbios_ns.h"
 
-const char          *netbios_ns_entry_name(netbios_ns_entry_t *entry)
+const char          *netbios_ns_entry_name(netbios_ns_entry *entry)
 {
   if (entry != NULL)
     return (entry->name);
@@ -31,7 +31,7 @@ const char          *netbios_ns_entry_name(netbios_ns_entry_t *entry)
     return (NULL);
 }
 
-uint32_t            netbios_ns_entry_ip(netbios_ns_entry_t *entry)
+uint32_t            netbios_ns_entry_ip(netbios_ns_entry *entry)
 {
   if (entry != NULL)
     return (entry->address.s_addr);
@@ -39,7 +39,7 @@ uint32_t            netbios_ns_entry_ip(netbios_ns_entry_t *entry)
     return (0);
 }
 
-char                netbios_ns_entry_type(netbios_ns_entry_t *entry)
+char                netbios_ns_entry_type(netbios_ns_entry *entry)
 {
   if (entry != NULL)
     return (entry->type);
@@ -47,9 +47,9 @@ char                netbios_ns_entry_type(netbios_ns_entry_t *entry)
     return (-1);
 }
 
-void                netbios_ns_clear(netbios_ns_t *ns)
+void                netbios_ns_clear(netbios_ns *ns)
 {
-  netbios_ns_entry_t  *next;
+  netbios_ns_entry  *next;
 
   assert(ns != NULL);
 
@@ -61,14 +61,14 @@ void                netbios_ns_clear(netbios_ns_t *ns)
   }
 }
 
-netbios_ns_entry_t *netbios_ns_entry_add(netbios_ns_t *ns, const char *name,
+netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
                                          char type, uint32_t ip)
 {
-  netbios_ns_entry_t  *entry;
+  netbios_ns_entry  *entry;
 
-  entry = malloc(sizeof(netbios_ns_entry_t));
+  entry = malloc(sizeof(netbios_ns_entry));
   assert(entry != NULL);
-  memset((void *)entry, 0, sizeof(netbios_ns_entry_t));
+  memset((void *)entry, 0, sizeof(netbios_ns_entry));
 
   if (name != NULL)
   {
@@ -86,11 +86,11 @@ netbios_ns_entry_t *netbios_ns_entry_add(netbios_ns_t *ns, const char *name,
 }
 // Find an entry in the list. Search by name if name is not NULL,
 // or by ip otherwise
-netbios_ns_entry_t *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
+netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_name,
                                           uint32_t ip)
 {
-  netbios_ns_entry_t  *found = NULL;
-  netbios_ns_entry_t  *iter;
+  netbios_ns_entry  *found = NULL;
+  netbios_ns_entry  *iter;
 
   assert(ns != NULL);
 
@@ -111,9 +111,9 @@ netbios_ns_entry_t *netbios_ns_entry_find(netbios_ns_t *ns, const char *by_name,
   return (found);
 }
 
-int             netbios_ns_entry_count(netbios_ns_t *ns)
+int             netbios_ns_entry_count(netbios_ns *ns)
 {
-  netbios_ns_entry_t  *iter;
+  netbios_ns_entry  *iter;
   int                 res;
 
   assert (ns != NULL);
@@ -129,9 +129,9 @@ int             netbios_ns_entry_count(netbios_ns_t *ns)
   return (res);
 }
 
-netbios_ns_entry_t  *netbios_ns_entry_at(netbios_ns_t *ns, int pos)
+netbios_ns_entry  *netbios_ns_entry_at(netbios_ns *ns, int pos)
 {
-  netbios_ns_entry_t  *iter = NULL;
+  netbios_ns_entry  *iter = NULL;
   int                 i = 0;
 
   assert(ns != NULL);

@@ -60,7 +60,7 @@ typedef struct
   uint16_t                    ns_count;   // Number of authorities (?)
   uint16_t                    ar_count;   // Additionnal (??)
   char                        payload[];
-} __attribute__((packed))   netbios_query_packet_t;
+} __attribute__((packed))   netbios_query_packet;
 
 typedef struct
 {
@@ -69,6 +69,6 @@ typedef struct
                                           // beginning of the length field (!!)
   uint16_t                    length;     // payload length;
   uint8_t                     payload[];
-} __attribute__((packed))   netbios_session_packet_t;
+} __attribute__((packed))   netbios_session_packet;
 
 #endif

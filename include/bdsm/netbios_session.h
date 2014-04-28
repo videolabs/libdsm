@@ -49,22 +49,22 @@ typedef struct              netbios_session_s {
   // Where is the write cursor relative to the beginning of the payload
   size_t                      packet_cursor;
   // Our allocated packet, this is where the magic happen :)
-  netbios_session_packet_t    *packet;
+  netbios_session_packet      *packet;
   // Some buffer space to receive message from peer;
   uint8_t                     recv_buffer[NETBIOS_SESSION_BUFFER];
-}                           netbios_session_t;
+}                           netbios_session;
 
 // Return NULL if unable to open socket/connect
-netbios_session_t *netbios_session_new(uint32_t ip_addr);
-void              netbios_session_destroy(netbios_session_t *);
+netbios_session   *netbios_session_new(uint32_t ip_addr);
+void              netbios_session_destroy(netbios_session *);
 
-int               netbios_session_connect(netbios_session_t *s,
+int               netbios_session_connect(netbios_session *s,
                                           const char *name);
-void              netbios_session_packet_init(netbios_session_t *s,
+void              netbios_session_packet_init(netbios_session *s,
                                               uint8_t opcode);
-int               netbios_session_packet_append(netbios_session_t *s,
+int               netbios_session_packet_append(netbios_session *s,
                                                 const char *data, size_t size);
-int               netbios_session_packet_send(netbios_session_t *s);
-ssize_t           netbios_session_packet_recv(netbios_session_t *s);
+int               netbios_session_packet_send(netbios_session *s);
+ssize_t           netbios_session_packet_recv(netbios_session *s);
 
 #endif

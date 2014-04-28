@@ -29,13 +29,13 @@
 #include "bdsm/smb_file.h"
 
 
-smb_tid         smb_tree_connect(smb_session_t *s, const char *name)
+smb_tid         smb_tree_connect(smb_session *s, const char *name)
 {
-  smb_tree_connect_req_t  *req;
-  smb_tree_connect_resp_t *resp;
-  smb_message_t   resp_msg;
-  smb_message_t   *req_msg;
-  smb_share_t     *share;
+  smb_tree_connect_req  *req;
+  smb_tree_connect_resp *resp;
+  smb_message   resp_msg;
+  smb_message   *req_msg;
+  smb_share     *share;
   size_t          path_len;
   char            *path;
 
@@ -54,8 +54,8 @@ smb_tid         smb_tree_connect(smb_session_t *s, const char *name)
   req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
 
   // Packet payload
-  req = (smb_tree_connect_req_t *)req_msg->packet->payload;
-  smb_message_advance(req_msg, sizeof(smb_tree_connect_req_t));
+  req = (smb_tree_connect_req *)req_msg->packet->payload;
+  smb_message_advance(req_msg, sizeof(smb_tree_connect_req));
   req->wct          = 4;
   req->flags        = 0x0c; // (??)
   req->passwd_len   = 1;    // Null byte
@@ -77,8 +77,8 @@ smb_tid         smb_tree_connect(smb_session_t *s, const char *name)
   if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
     return (0);
 
-  resp  = (smb_tree_connect_resp_t *)resp_msg.packet->payload;
-  share = calloc(1, sizeof(smb_share_t));
+  resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
+  share = calloc(1, sizeof(smb_share));
   assert(share != NULL);
 
   share->tid          = resp_msg.packet->header.tid;
@@ -91,7 +91,7 @@ smb_tid         smb_tree_connect(smb_session_t *s, const char *name)
   return(share->tid);
 }
 
-int           smb_tree_disconnect(smb_session_t *s, smb_tid tid)
+int           smb_tree_disconnect(smb_session *s, smb_tid tid)
 {
   assert(s != NULL && tid);
   BDSM_dbg("smb_tree_disconnect: NOT IMPLEMENTED YET\n");
@@ -100,7 +100,7 @@ int           smb_tree_disconnect(smb_session_t *s, smb_tid tid)
 
 // Here we parse the NetShareEnumAll response packet payload to extract
 // The share list.
-static size_t   smb_share_parse_enum(smb_message_t *msg, char ***list)
+static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
 {
   uint32_t          share_count, i;
   uint8_t           *data, *eod;
@@ -137,7 +137,7 @@ static size_t   smb_share_parse_enum(smb_message_t *msg, char ***list)
   return (i);
 }
 
-size_t          smb_share_list_count(smb_share_list_t list)
+size_t          smb_share_list_count(smb_share_list list)
 {
   size_t        res;
 
@@ -150,14 +150,14 @@ size_t          smb_share_list_count(smb_share_list_t list)
   return (res);
 }
 
-const char      *smb_share_list_at(smb_share_list_t list, size_t index)
+const char      *smb_share_list_at(smb_share_list list, size_t index)
 {
   assert (list != NULL);
 
   return (list[index]);
 }
 
-void            smb_share_list_destroy(smb_share_list_t list)
+void            smb_share_list_destroy(smb_share_list list)
 {
   assert(list != NULL);
 
@@ -169,10 +169,10 @@ void            smb_share_list_destroy(smb_share_list_t list)
 // We should normally implement SCERPC and SRVSVC to perform a share list. But
 // since these two protocols have no other use for us, we'll do it the trash way
 // PS: Worst function _EVER_. I don't understand a bit myself
-size_t          smb_share_list(smb_session_t *s, char ***list)
+size_t          smb_share_get_list(smb_session *s, char ***list)
 {
-  smb_message_t         *req, resp;
-  smb_trans_req_t       *trans;
+  smb_message         *req, resp;
+  smb_trans_req       *trans;
   smb_tid               ipc_tid;
   smb_fd                srvscv_fd;
   uint16_t              rpc_len;
@@ -196,10 +196,10 @@ size_t          smb_share_list(smb_session_t *s, char ***list)
   smb_message_set_default_flags(req);
   req->packet->header.tid = ipc_tid;
 
-  smb_message_advance(req, sizeof(smb_trans_req_t));
-  trans = (smb_trans_req_t *)req->packet->payload;
+  smb_message_advance(req, sizeof(smb_trans_req));
+  trans = (smb_trans_req *)req->packet->payload;
 
-  memset((void *)trans, 0, sizeof(smb_trans_req_t));
+  memset((void *)trans, 0, sizeof(smb_trans_req));
 
   rpc_len = NETBIOS_SESSION_PAYLOAD - 256; // XXX
 
@@ -270,10 +270,10 @@ size_t          smb_share_list(smb_session_t *s, char ***list)
   smb_message_set_default_flags(req);
   req->packet->header.tid = ipc_tid;
 
-  smb_message_advance(req, sizeof(smb_trans_req_t));
-  trans = (smb_trans_req_t *)req->packet->payload;
+  smb_message_advance(req, sizeof(smb_trans_req));
+  trans = (smb_trans_req *)req->packet->payload;
 
-  memset((void *)trans, 0, sizeof(smb_trans_req_t));
+  memset((void *)trans, 0, sizeof(smb_trans_req));
 
   trans->wct              = 16;
   trans->max_data_count   = 4280;
@@ -320,7 +320,7 @@ size_t          smb_share_list(smb_session_t *s, char ***list)
   smb_message_put32(req, 0);            // Resume ?
 
   // Sets length values
-  trans->bct              = req->cursor - sizeof(smb_trans_req_t);
+  trans->bct              = req->cursor - sizeof(smb_trans_req);
   trans->data_count       = trans->bct - 17; // 17 -> padding + \PIPE\ + padding
   trans->total_data_count = trans->data_count;
   trans->data_offset      = trans->data_count - 4;

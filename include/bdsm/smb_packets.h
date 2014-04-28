@@ -44,13 +44,13 @@ typedef struct
   uint16_t        pid;          // Process ID.
   uint16_t        uid;          // User ID.
   uint16_t        mux_id;       // Multiplex ID. Increment it sometimes.
-} __attribute__((packed))       smb_header_t;
+} __attribute__((packed))       smb_header;
 
 typedef struct
 {
-  smb_header_t    header;       // A packet header full of gorgeous goodness.
+  smb_header    header;       // A packet header full of gorgeous goodness.
   uint8_t         payload[];    // Ze yummy data inside. Eat 5 fruits/day !
-} __attribute__((packed))       smb_packet_t;
+} __attribute__((packed))       smb_packet;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ typedef struct
   uint16_t        bct;
   char            dialects[];
 
-} __attribute__((packed))   smb_negotiate_req_t;
+} __attribute__((packed))   smb_negotiate_req;
 
 //<- Negotiate Protocol
 typedef struct
@@ -82,7 +82,7 @@ typedef struct
   uint16_t        bct;
   uint64_t        challenge;      // Normally 8 bytes, if not then wtf monkey
   uint8_t         payload[];      // The rest isn't really meaningfull for us
-} __attribute__((packed))   smb_negotiate_resp_t;
+} __attribute__((packed))   smb_negotiate_resp;
 
 
 
@@ -102,7 +102,7 @@ typedef struct
   uint32_t        caps;         // Capabilities
   uint16_t        payload_size;
   uint8_t         payload[];
-} __attribute__((packed))   smb_session_req_t;
+} __attribute__((packed))   smb_session_req;
 
 //<- Session Setup
 typedef struct
@@ -112,7 +112,7 @@ typedef struct
   uint16_t        action;
   uint16_t        bct;
   uint8_t         bullshit[];
-} __attribute__((packed))   smb_session_resp_t;
+} __attribute__((packed))   smb_session_resp;
 
 
 
@@ -126,7 +126,7 @@ typedef struct
   uint16_t        bct;
   uint8_t         payload[];        // Password | Path | Service
 
-} __attribute__((packed))   smb_tree_connect_req_t;
+} __attribute__((packed))   smb_tree_connect_req;
 
 //<- Tree Connect
 typedef struct
@@ -138,7 +138,7 @@ typedef struct
   uint32_t        guest_rights;
   uint16_t        bct;
   uint8_t         payload[];
-} __attribute__((packed))   smb_tree_connect_resp_t;
+} __attribute__((packed))   smb_tree_connect_resp;
 
 
 
@@ -161,7 +161,7 @@ typedef struct
   uint8_t         security_flags;
   uint16_t        bct;
   uint8_t         path[];             // UTF16 Path, starting with '\'
-} __attribute__((packed))   smb_create_req_t;
+} __attribute__((packed))   smb_create_req;
 
 //<- Create File
 typedef struct
@@ -182,7 +182,7 @@ typedef struct
   uint16_t        ipc_state;
   uint8_t         is_dir;
   uint16_t        bct;                // 0
-} __attribute__((packed))   smb_create_resp_t;
+} __attribute__((packed))   smb_create_resp;
 
 
 
@@ -193,7 +193,7 @@ typedef struct
   uint16_t        fid;
   uint32_t        last_write;         // Not defined == 0xffffffff
   uint16_t        bct;                // 0
-} __attribute__((packed))   smb_close_req_t;
+} __attribute__((packed))   smb_close_req;
 
 
 
@@ -210,7 +210,7 @@ typedef struct
   uint16_t        remaining;
   uint32_t        offset_high;        // Continuation of offset field'
   uint16_t        bct;                // 0
-} __attribute__((packed))   smb_read_req_t;
+} __attribute__((packed))   smb_read_req;
 
 //<- Read File
 typedef struct
@@ -228,7 +228,7 @@ typedef struct
   uint16_t        bct;
   uint8_t         padding;
   uint8_t         file[];
-} __attribute__((packed))   smb_read_resp_t;
+} __attribute__((packed))   smb_read_resp;
 
 //-> Trans
 typedef struct
@@ -253,7 +253,7 @@ typedef struct
   uint16_t      fid;
   uint16_t      bct;
   uint8_t       payload[];
-} __attribute__((packed))   smb_trans_req_t;
+} __attribute__((packed))   smb_trans_req;
 
 
 
@@ -282,7 +282,7 @@ typedef struct
   uint16_t      bct;
   uint8_t       padding[3];
   uint8_t       payload[];
-} __attribute__((packed))   smb_trans2_req_t;
+} __attribute__((packed))   smb_trans2_req;
 
 //// -> Trans2|FindFirst2
 typedef struct
@@ -293,7 +293,7 @@ typedef struct
   uint16_t      interest;           // What kind of info do we want ?
   uint32_t      storage;            // ? => 0
   uint8_t       pattern[];          // The queried pattern "\\folder\\*"
-} __attribute__((packed))   smb_tr2_find2_t;
+} __attribute__((packed))   smb_tr2_find2;
 
 //// -> Trans2|QueryPathInfo
 typedef struct
@@ -301,7 +301,7 @@ typedef struct
   uint16_t      interest;
   uint32_t      reserved;
   uint8_t       path[];
-} __attribute__((packed))   smb_tr2_query_t;
+} __attribute__((packed))   smb_tr2_query;
 
 //<- Trans2
 
@@ -322,7 +322,7 @@ typedef struct
   uint16_t      bct;
   uint8_t       padding;
   uint8_t       payload[];
-} __attribute__((packed))   smb_trans2_resp_t;
+} __attribute__((packed))   smb_trans2_resp;
 
 //// <- Trans2|FindFirst2Params
 typedef struct
@@ -333,7 +333,7 @@ typedef struct
   uint16_t      ea_error_offset;
   uint16_t      last_name_offset;
   uint16_t      padding;
-} __attribute__((packed))   smb_tr2_find2_params_t;
+} __attribute__((packed))   smb_tr2_find2_params;
 
 //// <- Trans2|FindFirst2FileInfo
 typedef struct
@@ -353,7 +353,7 @@ typedef struct
   uint8_t       reserved;
   uint8_t       short_name[24];
   uint8_t       name[];
-} __attribute__((packed))   smb_tr2_find2_entry_t;
+} __attribute__((packed))   smb_tr2_find2_entry;
 
 
 //// <- Trans2|QueryPathInfo
@@ -374,7 +374,7 @@ typedef struct
   uint32_t      ea_list_len;
   uint32_t      name_len;
   uint8_t       name[];
-} __attribute__((packed))   smb_tr2_path_info_t;
+} __attribute__((packed))   smb_tr2_path_info;
 
 
 //-> Example

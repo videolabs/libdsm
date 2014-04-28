@@ -29,7 +29,7 @@
 
 int main(int ac, char **av)
 {
-  netbios_ns_t        *ns;
+  netbios_ns        *ns;
   struct in_addr      addr;
   const char          *name;
 

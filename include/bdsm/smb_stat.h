@@ -53,9 +53,9 @@
  * @param pattern The pattern to match files. '\\*' will list all the files at
  * the root of the share. '\\afolder\\*' will list all the files inside of the
  * 'afolder' directory.
- * @return An opaque list of smb_stat_t or NULL in case of error
+ * @return An opaque list of smb_stat or NULL in case of error
  */
-smb_stat_list_t   smb_find(smb_session_t *s, smb_tid tid, const char *pattern);
+smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
 
 /**
  * @brief Get the status of a file from it's path inside of a share
@@ -64,9 +64,9 @@ smb_stat_list_t   smb_find(smb_session_t *s, smb_tid tid, const char *pattern);
  * @param tid The tree id of a share obtained by smb_tree_connect()
  * @param path The full path of the file relative to the root of the share
  * (e.g. '\\folder\\file.ext')
- * @return An opaque smb_stat_t or NULL in case of error
+ * @return An opaque smb_stat or NULL in case of error
  */
-smb_stat_t        smb_stat(smb_session_t *s, smb_tid tid, const char *path);
+smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
 
 /**
  * @brief Get the status of an open file from it's file descriptor
@@ -75,17 +75,17 @@ smb_stat_t        smb_stat(smb_session_t *s, smb_tid tid, const char *path);
  * @param s The session object
  * @param fd The smb_fd from which you want infos/status
  *
- * @return  An opaque smb_stat_t or NULL in case of error
+ * @return  An opaque smb_stat or NULL in case of error
  */
-smb_stat_t        smb_stat_fd(smb_session_t *s, smb_fd fd);
+smb_stat        smb_stat_fd(smb_session *s, smb_fd fd);
 
 /**
- * @brief Get the number of item in a smb_stat_list_t file info
+ * @brief Get the number of item in a smb_stat_list file info
  *
  * @param list The list you want the length of
  * @return The length of the list. It returns 0 if the list is invalid
  */
-size_t            smb_stat_list_count(smb_stat_list_t list);
+size_t            smb_stat_list_count(smb_stat_list list);
 
 /**
  * @brief Get the element at the given position.
@@ -93,9 +93,9 @@ size_t            smb_stat_list_count(smb_stat_list_t list);
  * @param list A stat list
  * @param index The position of the element you want.
  *
- * @return An opaque smb_stat_t or NULL in case of error
+ * @return An opaque smb_stat or NULL in case of error
  */
-smb_stat_t        smb_stat_list_at(smb_stat_list_t list, size_t index);
+smb_stat        smb_stat_list_at(smb_stat_list list, size_t index);
 
 /**
  * @brief Get the name of the file from its status
@@ -103,15 +103,15 @@ smb_stat_t        smb_stat_list_at(smb_stat_list_t list, size_t index);
  * @param info A file status
  * @return A null-terminated string in you current locale encoding or NULL.
  */
-const char        *smb_stat_name(smb_stat_t info);
+const char        *smb_stat_name(smb_stat info);
 
 /**
  * @brief Get a file attribute
  * @details This function is a getter that allow you to retrieve various
- * informations about a file on a smb_stat_t object. You can get its size,
+ * informations about a file on a smb_stat object. You can get its size,
  * various timestamps, etc.
  *
- * @param info The smb_stat_t object to get info from.
+ * @param info The smb_stat object to get info from.
  * @param what This parameter tells the functions which information to get, can
  * be one of #SMB_STAT_SIZE, #SMB_STAT_ALLOC_SIZE, #SMB_STAT_ISDIR,
  * #SMB_STAT_CTIME, #SMB_STAT_ATIME, #SMB_STAT_MTIME, #SMB_STAT_WTIME.
@@ -119,6 +119,6 @@ const char        *smb_stat_name(smb_stat_t info);
  * @return The meaning of the returned value depends on the 'what' parameter.
  * See each item documentation.
  */
-uint64_t          smb_stat_get(smb_stat_t info, int what);
+uint64_t          smb_stat_get(smb_stat info, int what);
 
 #endif

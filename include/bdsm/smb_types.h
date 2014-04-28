@@ -38,7 +38,7 @@ typedef uint16_t    smb_fid;
 
 // Concatenation of the two above, representing a file inside of a session
 // First 4 bytes are the TreeID (smb_tid), last 4 are the File ID (FUID)
-// A map between smb_fd and smb_file_t is maintained inside each session
+// A map between smb_fd and smb_file is maintained inside each session
 /** @struct smb_fd
   * @brief SMB File descriptor, represents a file within a session.
   */
@@ -46,7 +46,7 @@ typedef uint32_t    smb_fd;
 
 /**
  * @internal
- * @struct smb_file_t
+ * @struct smb_file
  * @brief An opaque data structure to represent file
  */
 typedef struct  smb_file_s
@@ -65,7 +65,7 @@ typedef struct  smb_file_s
   uint32_t            attr;
   uint32_t            readp;          // Current read pointer (position);
   int                 is_dir;         // 0 -> file, 1 -> directory
-} smb_file_t;
+} smb_file;
 
 typedef struct smb_share_s
 {
@@ -75,7 +75,7 @@ typedef struct smb_share_s
   uint16_t            opts;           // Optionnal support opts
   uint16_t            rights;         // Maximum rights field
   uint16_t            guest_rights;
-} smb_share_t;
+} smb_share;
 
 /**
  * @brief An opaque data structure to represent a SMB Session.
@@ -85,7 +85,7 @@ typedef struct
   int                 state;
   int                 guest;            // boolean, are we logged as guest ?
   uint16_t            uid;              // uid attributed by the server
-  netbios_session_t   *nb_session;
+  netbios_session   *nb_session;
 
   // Informations about the smb server we are connected to.
   struct {
@@ -98,38 +98,38 @@ typedef struct
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
 
-  struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file_t
-}                   smb_session_t;
+  struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file
+}                   smb_session;
 
 /**
- * @struct smb_share_list_t
+ * @struct smb_share_list
  * @brief An opaque object representing the list of share of a SMB file server.
  */
-typedef char  **smb_share_list_t;
+typedef char  **smb_share_list;
 
 /**
- * @struct smb_stat_list_t
+ * @struct smb_stat_list
  * @brief An opaque structure containing a list of file status
  */
-typedef smb_file_t *smb_stat_list_t;
+typedef smb_file *smb_stat_list;
 
 /**
- * @struct smb_stat_t
+ * @struct smb_stat
  * @brief An opaque structure containing info about a file
  */
-typedef smb_file_t *smb_stat_t;
+typedef smb_file *smb_stat;
 
 /**
  * @internal
- * @struct smb_message_t
+ * @struct smb_message
  * @brief A convenience structure used to build smb messages
  */
 typedef struct
 {
   size_t          payload_size; // Size of the allocated payload
   size_t          cursor;       // Write cursor in the payload
-  smb_packet_t    *packet;      // Yummy yummy, Fruity fruity !
-}                               smb_message_t;
+  smb_packet    *packet;      // Yummy yummy, Fruity fruity !
+}                               smb_message;
 
 
 #endif

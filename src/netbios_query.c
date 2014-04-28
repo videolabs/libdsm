@@ -24,18 +24,18 @@
 
 #include "bdsm/netbios_query.h"
 
-netbios_query_t   *netbios_query_new(size_t payload_size,
+netbios_query   *netbios_query_new(size_t payload_size,
                                      int is_query, char opcode)
 {
-  netbios_query_t *q;
+  netbios_query *q;
 
-  q = malloc(sizeof(netbios_query_t));
+  q = malloc(sizeof(netbios_query));
   assert(q);
-  memset((void *)q, 0, sizeof(netbios_query_t));
+  memset((void *)q, 0, sizeof(netbios_query));
 
-  q->packet = malloc(sizeof(netbios_query_packet_t) + payload_size);
+  q->packet = malloc(sizeof(netbios_query_packet) + payload_size);
   assert(q->packet);
-  memset((void *)q->packet, 0, sizeof(netbios_query_packet_t) + payload_size);
+  memset((void *)q->packet, 0, sizeof(netbios_query_packet) + payload_size);
 
   q->payload_size = payload_size;
 
@@ -45,7 +45,7 @@ netbios_query_t   *netbios_query_new(size_t payload_size,
   return (q);
 }
 
-void              netbios_query_destroy(netbios_query_t *q)
+void              netbios_query_destroy(netbios_query *q)
 {
   assert(q);
 
@@ -54,7 +54,7 @@ void              netbios_query_destroy(netbios_query_t *q)
   free(q);
 }
 
-void              netbios_query_set_flag(netbios_query_t *q,
+void              netbios_query_set_flag(netbios_query *q,
                                          uint16_t flag, int value)
 {
   assert(q && q->packet);
@@ -65,16 +65,16 @@ void              netbios_query_set_flag(netbios_query_t *q,
     q->packet->flags = htons(ntohs(q->packet->flags) & ~flag);
 }
 
-void              netbios_query_print(netbios_query_t *q)
+void              netbios_query_print(netbios_query *q)
 {
   assert(q && q->packet);
 
-  printf("--- netbios_query_t dump :\n");
+  printf("--- netbios_query dump :\n");
   printf("payload = %zu, cursor = %zu.\n", q->payload_size, q->cursor);
   printf("Transaction id = %u.\n", q->packet->trn_id);
 
   printf("-------------------------\n");
-  for(unsigned i = 0; i < sizeof(netbios_query_packet_t) + q->cursor; i++)
+  for(unsigned i = 0; i < sizeof(netbios_query_packet) + q->cursor; i++)
   {
     char c;
     if ((i % 8) == 0 && i != 0)
@@ -89,7 +89,7 @@ void              netbios_query_print(netbios_query_t *q)
   printf("-------------------------\n");
 }
 
-int               netbios_query_append(netbios_query_t *q, const char *data,
+int               netbios_query_append(netbios_query *q, const char *data,
                                        size_t data_size)
 {
   assert(q && q->packet);

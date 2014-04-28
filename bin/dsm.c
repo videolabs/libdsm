@@ -88,8 +88,8 @@ int main(int ac, char **av)
 {
   const char          *pname, *host, *login, *password, *fname;
   struct sockaddr_in  addr;
-  netbios_ns_t        *ns;
-  smb_session_t       *session;
+  netbios_ns        *ns;
+  smb_session       *session;
   int                 argoffset;
 
   pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
@@ -113,7 +113,7 @@ int main(int ac, char **av)
   //netbios_ns_discover(ctx->ns);
   //exit(0);
 
-  // netbios_session_t *session;
+  // netbios_session *session;
   // session = netbios_session_new(addr.sin_addr.s_addr);
   // if (netbios_session_connect(session, "Cerbere"))
   //   printf("A NetBIOS session with %s has been established\n", host);
@@ -179,14 +179,14 @@ int main(int ac, char **av)
 
   //char              data[1024];
   char              **share_list;
-  smb_file_t        *files;
+  smb_file        *files;
 
 
   // smb_fread(session, fd, data, 1024);
   // fprintf(stderr, "Read from file:\n%s\n", data);
   // smb_fclose(session, fd);
 
-  if (!smb_share_list(session, &share_list))
+  if (!smb_share_get_list(session, &share_list))
   {
     fprintf(stderr, "Unable to list share for %s\n", host);
     exit(42);
@@ -209,7 +209,7 @@ int main(int ac, char **av)
     fprintf(stderr, "Unable to list files\n");
 
   fprintf(stderr, "Query file info for path: %s\n", fname);
-  files = smb_stat(session, test, fname);
+  files = smb_fstat(session, test, fname);
 
   if (files != NULL)
     printf("File '%s' is %lu bytes long\n", fname, files->size);

@@ -35,7 +35,7 @@
 #include "bdsm/netbios_utils.h"
 
 
-static int    ns_open_socket(netbios_ns_t *ns)
+static int    ns_open_socket(netbios_ns *ns)
 {
   int sock_opt;
 
@@ -65,12 +65,12 @@ static int    ns_open_socket(netbios_ns_t *ns)
     return (0);
 }
 
-netbios_ns_t  *netbios_ns_new()
+netbios_ns  *netbios_ns_new()
 {
-  netbios_ns_t  *ns;
+  netbios_ns  *ns;
 
-  assert(ns = malloc(sizeof(netbios_ns_t)));
-  memset((void *)ns, 0, sizeof(netbios_ns_t));
+  assert(ns = malloc(sizeof(netbios_ns)));
+  memset((void *)ns, 0, sizeof(netbios_ns));
 
   if (!ns_open_socket(ns))
   {
@@ -84,7 +84,7 @@ netbios_ns_t  *netbios_ns_new()
   return (ns);
 }
 
-void          netbios_ns_destroy(netbios_ns_t *ns)
+void          netbios_ns_destroy(netbios_ns *ns)
 {
   if (!ns)
     return;
@@ -95,7 +95,7 @@ void          netbios_ns_destroy(netbios_ns_t *ns)
   free(ns);
 }
 
-int               netbios_ns_send_query(netbios_ns_t *ns, netbios_query_t *q,
+int               netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
                                         uint32_t ip)
 {
   struct sockaddr_in  addr;
@@ -112,7 +112,7 @@ int               netbios_ns_send_query(netbios_ns_t *ns, netbios_query_t *q,
   addr.sin_port         = htons(NETBIOS_PORT_NAME);
 
   sent = sendto(ns->socket, (void *)q->packet,
-                sizeof(netbios_query_packet_t) + q->cursor, 0,
+                sizeof(netbios_query_packet) + q->cursor, 0,
                 (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
   netbios_query_destroy(q);
 
@@ -158,11 +158,11 @@ ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
     return (-1);
 }
 
-int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint32_t * addr)
+int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_t * addr)
 {
-  netbios_ns_entry_t  *cached;
+  netbios_ns_entry  *cached;
   struct timeval      timeout;
-  netbios_query_t     *q;
+  netbios_query     *q;
   char                *encoded_name;
   char                footer[4] = { 0x00, 0x20, 0x00, 0x01 };
   char                recv_buffer[512]; // Hu ?
@@ -223,7 +223,7 @@ int      netbios_ns_resolve(netbios_ns_t *ns, const char *name, char type, uint3
 
 // We have a small recursive function for discovery, to stack received reply
 // when descending, and performing reverse lookup when ascending
-static void   netbios_ns_discover_rec(netbios_ns_t *ns, struct timeval *timeout,
+static void   netbios_ns_discover_rec(netbios_ns *ns, struct timeval *timeout,
                                       void *recv_buffer)
 {
   struct sockaddr_in  recv_addr;
@@ -243,13 +243,13 @@ static void   netbios_ns_discover_rec(netbios_ns_t *ns, struct timeval *timeout,
   }
 }
 
-int           netbios_ns_discover(netbios_ns_t *ns)
+int           netbios_ns_discover(netbios_ns *ns)
 {
   const char  broadcast_name[] = NETBIOS_WILDCARD;
   char        footer[4]        = { 0x00, 0x20, 0x00, 0x01 };
 
   struct timeval      timeout;
-  netbios_query_t     *q;
+  netbios_query     *q;
   char                recv_buffer[256]; // Hu ?
   uint32_t            ip;
 
@@ -292,14 +292,14 @@ int           netbios_ns_discover(netbios_ns_t *ns)
 
 // Perform inverse name resolution. Grap an IP and return the first <20> field
 // returned by the host
-const char        *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip)
+const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
 {
   const char  broadcast_name[] = NETBIOS_WILDCARD;
   char        footer[4]        = { 0x00, 0x21, 0x00, 0x01 }; // NBSTAT/IP
 
-  netbios_ns_entry_t  *cached;
+  netbios_ns_entry  *cached;
   struct timeval      timeout;
-  netbios_query_t     *q;
+  netbios_query     *q;
   char                recv_buffer[512]; // Hu ?
   ssize_t             recv;
 
@@ -334,13 +334,13 @@ const char        *netbios_ns_inverse(netbios_ns_t *ns, uint32_t ip)
 
 
   // Now we've got something, let's find the <20>/<0> name
-  netbios_query_packet_t  *p = (netbios_query_packet_t *)recv_buffer;
+  netbios_query_packet  *p = (netbios_query_packet *)recv_buffer;
   uint8_t                 name_count;
   uint8_t                 name_idx;
   char                    *names;
   char                    *current_name;
   char                    current_type;
-  netbios_ns_entry_t      *entry = NULL, *res = NULL;
+  netbios_ns_entry      *entry = NULL, *res = NULL;
 
   BDSM_dbg("Queried name length: %u\n", p->payload[0]);
   name_count = p->payload[p->payload[0] + 12];

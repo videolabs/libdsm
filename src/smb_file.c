@@ -26,14 +26,14 @@
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_file.h"
 
-smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
+smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
                       uint32_t o_flags)
 {
-  smb_share_t       *share;
-  smb_file_t        *file;
-  smb_message_t     *req_msg, resp_msg;
-  smb_create_req_t  *req;
-  smb_create_resp_t *resp;
+  smb_share       *share;
+  smb_file        *file;
+  smb_message     *req_msg, resp_msg;
+  smb_create_req  *req;
+  smb_create_resp *resp;
   size_t            path_len;
   int               res;
 
@@ -49,7 +49,7 @@ smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
   req_msg->packet->header.tid = tid;
 
   // Create AndX Params
-  req = (smb_create_req_t *)req_msg->packet->payload;
+  req = (smb_create_req *)req_msg->packet->payload;
   req->wct            = 24;
   req->flags          = 0;
   req->root_fid       = 0;
@@ -63,7 +63,7 @@ smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
   req->security_flags = 0;  // ???
 
   // Create AndX 'Body'
-  smb_message_advance(req_msg, sizeof(smb_create_req_t));
+  smb_message_advance(req_msg, sizeof(smb_create_req));
   smb_message_put8(req_msg, 0);   // Align beginning of path
   path_len = smb_message_put_utf16(req_msg, "", path, strlen(path) + 1);
   // smb_message_put16(req_msg, 0);  // ??
@@ -80,8 +80,8 @@ smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
   if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
     return (0);
 
-  resp = (smb_create_resp_t *)resp_msg.packet->payload;
-  file = calloc(1, sizeof(smb_file_t));
+  resp = (smb_create_resp *)resp_msg.packet->payload;
+  file = calloc(1, sizeof(smb_file));
   assert(file != NULL);
 
   file->fid           = resp->fid;
@@ -100,11 +100,11 @@ smb_fd      smb_fopen(smb_session_t *s, smb_tid tid, const char *path,
   return (SMB_FD(tid, file->fid));
 }
 
-void        smb_fclose(smb_session_t *s, smb_fd fd)
+void        smb_fclose(smb_session *s, smb_fd fd)
 {
-  smb_file_t        *file;
-  smb_message_t     *msg;
-  smb_close_req_t   *req;
+  smb_file        *file;
+  smb_message     *msg;
+  smb_close_req   *req;
 
   assert(s != NULL && fd);
 
@@ -113,11 +113,11 @@ void        smb_fclose(smb_session_t *s, smb_fd fd)
     return;
 
   msg = smb_message_new(SMB_CMD_CLOSE, 64);
-  req = (smb_close_req_t *)msg->packet->payload;
+  req = (smb_close_req *)msg->packet->payload;
 
   msg->packet->header.tid = SMB_FD_TID(fd);
 
-  smb_message_advance(msg, sizeof(smb_close_req_t));
+  smb_message_advance(msg, sizeof(smb_close_req));
   req->wct        = 3;
   req->fid        = SMB_FD_FID(fd);
   req->last_write = ~0;
@@ -129,12 +129,12 @@ void        smb_fclose(smb_session_t *s, smb_fd fd)
   smb_session_recv_msg(s, 0);
 }
 
-ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size)
+ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 {
-  smb_file_t        *file;
-  smb_message_t     *req_msg, resp_msg;
-  smb_read_req_t    *req;
-  smb_read_resp_t   *resp;
+  smb_file        *file;
+  smb_message     *req_msg, resp_msg;
+  smb_read_req    *req;
+  smb_read_resp   *resp;
   size_t            max_read;
   int               res;
 
@@ -146,12 +146,12 @@ ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size)
   req_msg->packet->header.tid = file->tid;
   smb_message_set_default_flags(req_msg);
   smb_message_set_andx_members(req_msg);
-  smb_message_advance(req_msg, sizeof(smb_read_req_t));
+  smb_message_advance(req_msg, sizeof(smb_read_req));
 
   max_read = NETBIOS_SESSION_BUFFER - 256; // XXX
   max_read = max_read < buf_size ? max_read : buf_size;
 
-  req = (smb_read_req_t *)req_msg->packet->payload;
+  req = (smb_read_req *)req_msg->packet->payload;
   req->wct              = 12;
   req->fid              = file->fid;
   req->offset           = file->readp;
@@ -172,16 +172,16 @@ ssize_t   smb_fread(smb_session_t *s, smb_fd fd, void *buf, size_t buf_size)
   if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
     return (-1);
 
-  resp = (smb_read_resp_t *)resp_msg.packet->payload;
+  resp = (smb_read_resp *)resp_msg.packet->payload;
   memcpy(buf, resp->file, resp->data_len);
   smb_fseek(s, fd, resp->data_len, SEEK_CUR);
 
   return (resp->data_len);
 }
 
-ssize_t   smb_fseek(smb_session_t *s, smb_fd fd, ssize_t offset, int whence)
+ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
 {
-  smb_file_t  *file;
+  smb_file  *file;
 
   assert(s != NULL);
 
