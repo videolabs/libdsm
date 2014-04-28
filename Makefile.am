@@ -14,8 +14,8 @@ endif
 
 bdsmdir = $(includedir)/bdsm
 
-include_HEADERS = include/bdsm.h
 bdsm_HEADERS = \
+    include/bdsm.h      \
     include/bdsm/debug.h    \
     include/bdsm/hmac_md5.h   \
     include/bdsm/netbios_defs.h   \
