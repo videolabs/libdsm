@@ -14,8 +14,8 @@ endif
 
 bdsmdir = $(includedir)/bdsm
 
+include_HEADERS = include/bdsm.h
 bdsm_HEADERS = \
-    include/bdsm.h      \
     include/bdsm/debug.h    \
     include/bdsm/hmac_md5.h   \
     include/bdsm/netbios_defs.h   \
@@ -28,12 +28,15 @@ bdsm_HEADERS = \
     include/bdsm/smb_file.h   \
     include/bdsm/smb_message.h    \
     include/bdsm/smb_ntlm.h   \
-    include/bdsm/smb_packets.h    \
     include/bdsm/smb_session.h    \
     include/bdsm/smb_share.h    \
     include/bdsm/smb_stat.h   \
     include/bdsm/smb_types.h    \
     include/bdsm/smb_utils.h
+noinst_HEADERS = \
+    include/bdsm/smb_packets.h  \
+    contrib/mdx/md4.h           \
+    contrib/mdx/md5.h
 
 lib_LTLIBRARIES = libdsm.la
 
