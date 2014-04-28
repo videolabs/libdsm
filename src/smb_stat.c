@@ -43,7 +43,7 @@ size_t            smb_stat_list_count(smb_stat_list list)
 
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
 {
-  size_t          pos;
+  size_t          pos = 0;
 
   while(list != NULL && pos < index)
   {
