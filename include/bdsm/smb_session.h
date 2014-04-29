@@ -102,6 +102,7 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
  *
  * @param s A session object.
  * @param name The ASCII netbios name, the name type will be coerced to <20>
+ * since libdsm is about reading files
  * @param ip The ip of the machine to connect to (in network byte order)
  * @param transport The type of transport used, it could be SMB_TRANSPORT_TCP
  * or SMB_TRANSPORT_NBT (Netbios over TCP, ie legacy)
