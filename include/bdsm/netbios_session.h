@@ -33,10 +33,6 @@
 #define NETBIOS_SESSION_ERROR       -1
 #define NETBIOS_SESSION_REFUSED     -2
 
-#define NETBIOS_SESSION_BUFFER      8192
-#define NETBIOS_SESSION_PAYLOAD     NETBIOS_SESSION_BUFFER
-
-
 typedef struct              netbios_session_s {
   // The address of the remote peer;
   struct sockaddr_in          remote_addr;
@@ -48,23 +44,21 @@ typedef struct              netbios_session_s {
   size_t                      packet_payload_size;
   // Where is the write cursor relative to the beginning of the payload
   size_t                      packet_cursor;
-  // Our allocated packet, this is where the magic happen :)
+  // Our allocated packet, this is where the magic happen (both send and recv :)
   netbios_session_packet      *packet;
-  // Some buffer space to receive message from peer;
-  uint8_t                     recv_buffer[NETBIOS_SESSION_BUFFER];
 }                           netbios_session;
 
-// Return NULL if unable to open socket/connect
-netbios_session   *netbios_session_new(uint32_t ip_addr);
-void              netbios_session_destroy(netbios_session *);
 
-int               netbios_session_connect(netbios_session *s,
+// Return NULL if unable to open socket/connect
+netbios_session   *netbios_session_new(size_t buf_size);
+void              netbios_session_destroy(netbios_session *);
+int               netbios_session_connect(struct in_addr *addr,
+                                          netbios_session *s,
                                           const char *name);
-void              netbios_session_packet_init(netbios_session *s,
-                                              uint8_t opcode);
+void              netbios_session_packet_init(netbios_session *s);
 int               netbios_session_packet_append(netbios_session *s,
                                                 const char *data, size_t size);
 int               netbios_session_packet_send(netbios_session *s);
-ssize_t           netbios_session_packet_recv(netbios_session *s);
+ssize_t           netbios_session_packet_recv(netbios_session *s, void **data);
 
 #endif

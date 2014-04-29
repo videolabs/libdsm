@@ -148,7 +148,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
   smb_message_set_andx_members(req_msg);
   smb_message_advance(req_msg, sizeof(smb_read_req));
 
-  max_read = NETBIOS_SESSION_BUFFER - 256; // XXX
+  max_read = SMB_IO_BUFSIZE - 256; // XXX
   max_read = max_read < buf_size ? max_read : buf_size;
 
   req = (smb_read_req *)req_msg->packet->payload;

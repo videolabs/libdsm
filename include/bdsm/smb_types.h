@@ -24,6 +24,11 @@
 #ifndef __BDSM_SMB_TYPES_H_
 #define __BDSM_SMB_TYPES_H_
 
+#include <netinet/ip.h>
+#include <stddef.h>
+
+#include "bdsm/smb_packets.h"
+
 /**
   * @struct smb_tid
   * @brief The id of a connection to a share within a session.
@@ -77,6 +82,17 @@ typedef struct smb_share_s
   uint16_t            guest_rights;
 } smb_share;
 
+typedef struct smb_transport_s {
+  void              *session;
+  void              *(*new)(size_t buf_size);
+  int               (*connect)(struct in_addr *addr, void *s, const char *name);
+  void              (*destroy)(void *s);
+  void              (*pkt_init)(void *s);
+  int               (*pkt_append)(void *s, void *data, size_t size);
+  int               (*send)(void *s);
+  ssize_t           (*recv)(void *s, void **data);
+}                   smb_transport;
+
 /**
  * @brief An opaque data structure to represent a SMB Session.
  */
@@ -85,7 +101,6 @@ typedef struct
   int                 state;
   int                 guest;            // boolean, are we logged as guest ?
   uint16_t            uid;              // uid attributed by the server
-  netbios_session   *nb_session;
 
   // Informations about the smb server we are connected to.
   struct {
@@ -98,6 +113,7 @@ typedef struct
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
 
+  smb_transport       transport;
   struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file
 }                   smb_session;
 
@@ -128,7 +144,7 @@ typedef struct
 {
   size_t          payload_size; // Size of the allocated payload
   size_t          cursor;       // Write cursor in the payload
-  smb_packet    *packet;      // Yummy yummy, Fruity fruity !
+  smb_packet      *packet;      // Yummy yummy, Fruity fruity !
 }                               smb_message;
 
 

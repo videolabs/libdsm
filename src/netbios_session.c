@@ -26,6 +26,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/netbios_session.h"
 #include "bdsm/netbios_utils.h"
 
@@ -43,28 +44,19 @@ static int        open_socket_and_connect(netbios_session *s)
     return (0);
 }
 
-netbios_session *netbios_session_new(uint32_t ip_addr)
+netbios_session *netbios_session_new(size_t buf_size)
 {
-  netbios_session *session;
+  netbios_session   *session;
   size_t            packet_size;
 
   session = (netbios_session *)malloc(sizeof(netbios_session));
-  assert(session);
+  assert(session != NULL);
   memset((void *) session, 0, sizeof(netbios_session));
 
-  session->packet_payload_size = NETBIOS_SESSION_PAYLOAD;
+  session->packet_payload_size = buf_size;
   packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
   session->packet = (netbios_session_packet *)malloc(packet_size);
-  assert(session->packet);
-
-  session->remote_addr.sin_family       = AF_INET;
-  session->remote_addr.sin_port         = htons(NETBIOS_PORT_SESSION);
-  session->remote_addr.sin_addr.s_addr  = ip_addr;
-  if (!open_socket_and_connect(session))
-  {
-    netbios_session_destroy(session);
-    return (NULL);
-  }
+  assert(session->packet != NULL);
 
   return(session);
 }
@@ -79,17 +71,24 @@ void              netbios_session_destroy(netbios_session *s)
   free(s);
 }
 
-int               netbios_session_connect(netbios_session *s,
+int               netbios_session_connect(struct in_addr *addr,
+                                          netbios_session *s,
                                           const char *name)
 {
-  netbios_session_packet  *received;
   ssize_t                   recv_size;
   char                      *encoded_name;
 
-  assert(s && s->packet && s->socket);
+  assert(s != NULL && s->packet != NULL);
+
+  s->remote_addr.sin_family       = AF_INET;
+  s->remote_addr.sin_port         = htons(NETBIOS_PORT_SESSION);
+  s->remote_addr.sin_addr.s_addr  = addr->s_addr;
+  if (!open_socket_and_connect(s))
+    goto error;
 
   // Send the Session Request message
-  netbios_session_packet_init(s, NETBIOS_OP_SESSION_REQ);
+  netbios_session_packet_init(s);
+  s->packet->opcode = NETBIOS_OP_SESSION_REQ;
   encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
   netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
   free(encoded_name);
@@ -102,13 +101,12 @@ int               netbios_session_connect(netbios_session *s,
     goto error;
 
   // Now receiving the reply from the server.
-  recv_size = netbios_session_packet_recv(s);
-  if (recv_size < sizeof(netbios_session_packet))
+  recv_size = netbios_session_packet_recv(s, NULL);
+  if (recv_size < 0)
     goto error;
 
-  received = (netbios_session_packet *)&s->recv_buffer;
   // Reply was negative, we are not connected :(
-  if (received->opcode != NETBIOS_OP_SESSION_REQ_OK)
+  if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
   {
     s->state = NETBIOS_SESSION_REFUSED;
     return (0);
@@ -123,18 +121,12 @@ int               netbios_session_connect(netbios_session *s,
     return (0);
 }
 
-void              netbios_session_packet_init(netbios_session *s,
-                                              uint8_t opcode)
+void              netbios_session_packet_init(netbios_session *s)
 {
-  size_t          packet_size;
-
-  assert(s);
-
-  packet_size = s->packet_payload_size + sizeof(netbios_session_packet);
-  memset((void *)s->packet, 0, packet_size);
+  assert(s != NULL);
 
   s->packet_cursor = 0;
-  s->packet->opcode = opcode;
+  s->packet->opcode = NETBIOS_OP_SESSION_MSG;
 }
 
 int               netbios_session_packet_append(netbios_session *s,
@@ -174,10 +166,32 @@ int               netbios_session_packet_send(netbios_session *s)
   return (sent);
 }
 
-ssize_t           netbios_session_packet_recv(netbios_session *s)
+ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 {
-  assert(s && s->socket && s->state > 0);
+  ssize_t         recv_size;
+  size_t          len;
 
-  return (recv(s->socket, (void *)&(s->recv_buffer), NETBIOS_SESSION_BUFFER, 0));
+  assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
+
+  recv_size = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
+
+  if (recv_size < 0)
+    perror("netbios_session_packet_recv: ");
+
+  if (recv_size >= sizeof(netbios_session_packet) && data != NULL)
+    *data = (void *)s->packet->payload;
+  else if (data != NULL)
+    *data = NULL;
+
+  len  = ntohs(s->packet->length);
+  len |= (s->packet->flags & 0x01) << 16;
+
+  if (len != recv_size - sizeof(netbios_session_packet))
+  {
+    BDSM_dbg("netbios_session_packet_recv: Packet size mismatch\n");
+    return(-1);
+  }
+
+  return (len);
 }
 

@@ -34,8 +34,10 @@ bdsm_HEADERS = \
     include/bdsm/smb_types.h    \
     include/bdsm/smb_utils.h
 noinst_HEADERS = \
-    include/bdsm/smb_packets.h  \
-    contrib/mdx/md4.h           \
+    include/bdsm/smb_packets.h    \
+    include/bdsm/smb_transport.h  \
+    include/bdsm/tcp_session.h    \
+    contrib/mdx/md4.h             \
     contrib/mdx/md5.h
 
 lib_LTLIBRARIES = libdsm.la
@@ -56,7 +58,8 @@ libdsm_la_SOURCES = \
     src/smb_session.c   \
     src/smb_share.c   \
     src/smb_stat.c    \
-    src/smb_trans2.c  \
+    src/smb_trans2.c      \
+    src/smb_transport.c   \
     src/smb_utils.c
 
 pkgconfigdir = $(libdir)/pkgconfig

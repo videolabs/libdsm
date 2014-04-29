@@ -201,7 +201,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
 
   memset((void *)trans, 0, sizeof(smb_trans_req));
 
-  rpc_len = NETBIOS_SESSION_PAYLOAD - 256; // XXX
+  rpc_len = SMB_IO_BUFSIZE - 256; // XXX
 
   trans->wct                    = 16;
   trans->total_data_count       = 72;

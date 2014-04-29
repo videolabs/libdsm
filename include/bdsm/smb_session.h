@@ -63,7 +63,7 @@
  * call smb_session_connect, then authenticate with smb_authenticate.
  * @return A new Session object.
  */
-smb_session   *smb_session_new();
+smb_session     *smb_session_new();
 
 /**
  * @brief Close a session and deallocate its ressources
@@ -87,11 +87,10 @@ int             smb_session_state(smb_session *s);
 
 // ---------------------------------
 // Internal stuff, maybe move this somewhere else
-int             smb_negotiate(smb_session *s);
 int             smb_session_send_msg(smb_session *s, smb_message *msg);
 // msg->packet will be updated to point on received data. You don't own this
 // memory. It'll be reused on next recv_msg
-size_t          smb_session_recv_msg(smb_session *s, smb_message *msg);
+ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
 // --------------------------------
 
 /**
@@ -107,7 +106,7 @@ size_t          smb_session_recv_msg(smb_session *s, smb_message *msg);
  * @return 0 in case of error, a value > 0 otherwise.
  */
 int             smb_session_connect(smb_session *s, const char *name,
-                                    uint32_t ip);
+                                    uint32_t ip, int transport);
 
 /**
  * @brief Authenticate on the remote host with the provided credentials
