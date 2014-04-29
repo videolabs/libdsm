@@ -73,46 +73,53 @@ void              netbios_session_destroy(netbios_session *s)
 
 int               netbios_session_connect(struct in_addr *addr,
                                           netbios_session *s,
-                                          const char *name)
+                                          const char *name,
+                                          int direct_tcp)
 {
   ssize_t                   recv_size;
   char                      *encoded_name;
 
   assert(s != NULL && s->packet != NULL);
 
+  if (direct_tcp)
+    s->remote_addr.sin_port       = htons(NETBIOS_PORT_DIRECT);
+  else
+    s->remote_addr.sin_port       = htons(NETBIOS_PORT_SESSION);
   s->remote_addr.sin_family       = AF_INET;
-  s->remote_addr.sin_port         = htons(NETBIOS_PORT_SESSION);
   s->remote_addr.sin_addr.s_addr  = addr->s_addr;
   if (!open_socket_and_connect(s))
     goto error;
 
-  // Send the Session Request message
-  netbios_session_packet_init(s);
-  s->packet->opcode = NETBIOS_OP_SESSION_REQ;
-  encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
-  netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
-  free(encoded_name);
-  encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
-  netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
-  free(encoded_name);
-
-  s->state = NETBIOS_SESSION_CONNECTING;
-  if (!netbios_session_packet_send(s))
-    goto error;
-
-  // Now receiving the reply from the server.
-  recv_size = netbios_session_packet_recv(s, NULL);
-  if (recv_size < 0)
-    goto error;
-
-  // Reply was negative, we are not connected :(
-  if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
+  if (!direct_tcp)
   {
-    s->state = NETBIOS_SESSION_REFUSED;
-    return (0);
+  // Send the Session Request message
+    netbios_session_packet_init(s);
+    s->packet->opcode = NETBIOS_OP_SESSION_REQ;
+    encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
+    netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+    free(encoded_name);
+    encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
+    netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+    free(encoded_name);
+
+    s->state = NETBIOS_SESSION_CONNECTING;
+    if (!netbios_session_packet_send(s))
+      goto error;
+
+    // Now receiving the reply from the server.
+    recv_size = netbios_session_packet_recv(s, NULL);
+    if (recv_size < 0)
+      goto error;
+
+    // Reply was negative, we are not connected :(
+    if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
+    {
+      s->state = NETBIOS_SESSION_REFUSED;
+      return (0);
+    }
   }
 
-  // Reply was OK, a netbios sessions has been established
+  // Reply was OK or DirectTCP, a session has been established
   s->state = NETBIOS_SESSION_CONNECTED;
   return(1);
 

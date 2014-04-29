@@ -127,7 +127,7 @@ int main(int ac, char **av)
 
   session = smb_session_new();
 
-  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_NBT))
+  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Successfully connected to %s\n", host);
     fprintf(stderr, "Session key is 0x%x\n", session->srv.session_key);

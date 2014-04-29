@@ -21,12 +21,26 @@
 #include "bdsm/smb_transport.h"
 #include "bdsm/netbios_session.h"
 
+int               transport_connect_nbt(struct in_addr *addr,
+                                        netbios_session *s,
+                                        const char *name)
+{
+  return (netbios_session_connect(addr, s, name, 0));
+}
+
+int               transport_connect_tcp(struct in_addr *addr,
+                                        netbios_session *s,
+                                        const char *name)
+{
+  return (netbios_session_connect(addr, s, name, 1));
+}
+
 void              smb_transport_nbt(smb_transport *tr)
 {
   assert(tr != NULL);
 
   tr->new           = netbios_session_new;
-  tr->connect       = netbios_session_connect;
+  tr->connect       = transport_connect_nbt;
   tr->destroy       = netbios_session_destroy;
   tr->pkt_init      = netbios_session_packet_init;
   tr->pkt_append    = netbios_session_packet_append;
@@ -37,4 +51,12 @@ void              smb_transport_nbt(smb_transport *tr)
 void              smb_transport_tcp(smb_transport *tr)
 {
   assert(tr != NULL);
+
+  tr->new           = netbios_session_new;
+  tr->connect       = transport_connect_tcp;
+  tr->destroy       = netbios_session_destroy;
+  tr->pkt_init      = netbios_session_packet_init;
+  tr->pkt_append    = netbios_session_packet_append;
+  tr->send          = netbios_session_packet_send;
+  tr->recv          = netbios_session_packet_recv;
 }

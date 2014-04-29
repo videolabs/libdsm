@@ -54,7 +54,8 @@ netbios_session   *netbios_session_new(size_t buf_size);
 void              netbios_session_destroy(netbios_session *);
 int               netbios_session_connect(struct in_addr *addr,
                                           netbios_session *s,
-                                          const char *name);
+                                          const char *name,
+                                          int direct_tcp);
 void              netbios_session_packet_init(netbios_session *s);
 int               netbios_session_packet_append(netbios_session *s,
                                                 const char *data, size_t size);

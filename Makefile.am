@@ -36,7 +36,6 @@ bdsm_HEADERS = \
 noinst_HEADERS = \
     include/bdsm/smb_packets.h    \
     include/bdsm/smb_transport.h  \
-    include/bdsm/tcp_session.h    \
     contrib/mdx/md4.h             \
     contrib/mdx/md5.h
 
