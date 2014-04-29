@@ -103,6 +103,8 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
  * @param s A session object.
  * @param name The ASCII netbios name, the name type will be coerced to <20>
  * @param ip The ip of the machine to connect to (in network byte order)
+ * @param transport The type of transport used, it could be SMB_TRANSPORT_TCP
+ * or SMB_TRANSPORT_NBT (Netbios over TCP, ie legacy)
  * @return 0 in case of error, a value > 0 otherwise.
  */
 int             smb_session_connect(smb_session *s, const char *name,
