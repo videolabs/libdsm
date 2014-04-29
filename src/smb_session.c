@@ -153,7 +153,7 @@ static int        smb_negotiate(smb_session *s)
   smb_negotiate_resp  *nego;
 
 
-  msg = smb_message_new(SMB_CMD_NEGOTIATE, 64);
+  msg = smb_message_new(SMB_CMD_NEGOTIATE, 128);
   smb_message_set_default_flags(msg);
 
   smb_message_put8(msg, 0);   // wct

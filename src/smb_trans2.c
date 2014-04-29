@@ -133,7 +133,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
   tr2->data_offset        = 88; // Offset of pattern in packet
   tr2->setup_count        = 1;
   tr2->cmd                = SMB_TR2_FIND_FIRST;
-  tr2->bct                = sizeof(smb_tr2_find2) + pattern_len * 2 + 3;
+  tr2->bct                = sizeof(smb_tr2_find2) + pattern_len * 2;
 
   find = (smb_tr2_find2 *) tr2->payload;
   find->attrs     = SMB_FIND2_ATTR_DEFAULT;
@@ -146,8 +146,11 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
   smb_message_put_utf16(msg, "", pattern, pattern_len);
 
   // Adds padding at the end if necessary.
-  if (tr2->bct % 4)
-    smb_message_advance(msg, 4 - tr2->bct % 4);
+  while (tr2->bct % 4)
+  {
+    smb_message_put8(msg, 0);
+    tr2->bct++;
+  }
 
   res = smb_session_send_msg(s, msg);
   smb_message_destroy(msg);

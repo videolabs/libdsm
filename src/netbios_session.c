@@ -132,7 +132,8 @@ void              netbios_session_packet_init(netbios_session *s)
 {
   assert(s != NULL);
 
-  s->packet_cursor = 0;
+  s->packet_cursor  = 0;
+  s->packet->flags  = 0;
   s->packet->opcode = NETBIOS_OP_SESSION_MSG;
 }
 
@@ -175,30 +176,48 @@ int               netbios_session_packet_send(netbios_session *s)
 
 ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 {
-  ssize_t         recv_size;
-  size_t          len;
+  ssize_t         res;
+  size_t          total, sofar;
 
   assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
 
-  recv_size = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
-
-  if (recv_size < 0)
+  res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
+  if (res < 0)
+  {
     perror("netbios_session_packet_recv: ");
+    return (-1);
+  }
 
-  if (recv_size >= sizeof(netbios_session_packet) && data != NULL)
+  if (res > sizeof(netbios_session_packet) && data != NULL)
     *data = (void *)s->packet->payload;
   else if (data != NULL)
     *data = NULL;
 
-  len  = ntohs(s->packet->length);
-  len |= (s->packet->flags & 0x01) << 16;
+  total  = ntohs(s->packet->length);
+  total |= (s->packet->flags & 0x01) << 16;
+  sofar  = res - sizeof(netbios_session_packet);
 
-  if (len != recv_size - sizeof(netbios_session_packet))
+  //fprintf(stderr, "Total = %ld, sofar = %ld\n", total, sofar);
+
+  while (sofar < total)
+  {
+    res = recv(s->socket, (void *)(s->packet) + 4 + sofar, total - sofar, 0);
+    //xfprintf(stderr, "Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
+
+    if (res < 0)
+    {
+      perror("netbios_session_packet_recv: ");
+      return (-1);
+    }
+    sofar += res;
+  }
+
+  if (sofar > total)
   {
     BDSM_dbg("netbios_session_packet_recv: Packet size mismatch\n");
     return(-1);
   }
 
-  return (len);
+  return (sofar);
 }
 

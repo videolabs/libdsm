@@ -22,8 +22,8 @@
 #include "bdsm/smb_defs.h"
 #include "bdsm/smb_types.h"
 
-smb_message   *smb_message_new(uint8_t cmd, size_t payload_size);
-smb_message   *smb_message_grow(smb_message *msg, size_t size);
+smb_message     *smb_message_new(uint8_t cmd, size_t payload_size);
+smb_message     *smb_message_grow(smb_message *msg, size_t size);
 void            smb_message_destroy(smb_message *msg);
 int             smb_message_advance(smb_message *msg, size_t size);
 int             smb_message_append(smb_message *msg, const void *data,

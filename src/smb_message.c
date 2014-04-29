@@ -35,7 +35,7 @@ smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
   msg = (smb_message *)calloc(1, sizeof(smb_message));
   assert(msg != NULL);
 
-  msg->packet = (smb_packet *)calloc(1, sizeof(smb_message) + payload_size);
+  msg->packet = (smb_packet *)calloc(1, sizeof(smb_packet) + payload_size);
   assert(msg != NULL);
 
   msg->payload_size = payload_size;
@@ -138,8 +138,8 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
 
-  //fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
-  //        utf_str_len, msg->cursor);
+  // fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
+  //         utf_str_len, msg->cursor);
 
   if (res)
     return(utf_str_len);
