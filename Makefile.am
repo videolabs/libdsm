@@ -4,7 +4,7 @@ DISTCLEANFILES = @DOLT_CLEANFILES@
 
 EXTRA_DIST =
 
-CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include
+CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @H5L_GSS_CFLAGS@
 
 if DEBUG
 AM_CFLAGS = -O0 -g3 -Wall #-Wextra
@@ -64,7 +64,7 @@ libdsm_la_SOURCES = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @H5L_GSS_LIBS@
 
 
 bin_PROGRAMS =

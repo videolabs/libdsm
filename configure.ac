@@ -48,6 +48,9 @@ DOLT
 
 AC_CONFIG_MACRO_DIR([m4])
 
+## Checks for Heimdal
+PKG_CHECK_MODULES([H5L_GSS], [heimdal-gssapi > 1.5])
+
 ## Checks for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
