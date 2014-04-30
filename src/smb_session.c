@@ -310,3 +310,17 @@ const char      *smb_session_server_name(smb_session *s)
   else
     return (s->srv.name);
 }
+
+int             smb_session_supports(smb_session *s, int what)
+{
+  if (s == NULL)
+    return (0);
+
+  switch (what)
+  {
+    case SMB_SESSION_EXT_SEC:
+      return (s->srv.caps & SMB_CAPS_EXT_SEC);
+    default:
+      return (0);
+  }
+}

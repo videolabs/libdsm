@@ -65,6 +65,10 @@ enum
   SMB_SEEK_CUR                = 1
 };
 
+enum smb_session_supports_what
+{
+  SMB_SESSION_EXT_SEC         = 0,
+};
 
 //-----------------------------------------------------------------------------/
 // File access rights (used when smb_open() files)
@@ -206,6 +210,18 @@ enum
 #define SMB_FLAG_SIGN_SUPPORT   (1 << (2 + 8))
 #define SMB_FLAG_EXT_ATTR       (1 << (1 + 8))
 #define SMB_FLAG_LONG_NAMES_OK  (1 << (0 + 8))
+
+// Negotiated server capabilities
+#define SMB_CAPS_RAW            (1 << 0)
+#define SMB_CAPS_MPX            (1 << 1)
+#define SMB_CAPS_UNICODE        (1 << 2)
+#define SMB_CAPS_LARGE          (1 << 3)
+#define SMB_CAPS_NTSMB          (1 << 4)
+#define SMB_CAPS_RPC            (1 << 5)
+#define SMB_CAPS_NTSTATUS       (1 << 6)
+#define SMB_CAPS_NTFIND         (1 << 9)
+#define SMB_CAPS_EXT_SEC        (1 << 31)
+
 // File creation/open flags
 #define SMB_CREATE_OPLOCK       (1 << 1)
 #define SMB_CREATE_BATCH_OPLOCK (1 << 2)

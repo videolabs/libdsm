@@ -147,4 +147,14 @@ int             smb_session_is_guest(smb_session *s);
  */
 const char      *smb_session_server_name(smb_session *s);
 
+/**
+ * @brief Check if a feature is supported/has been negociated with the server
+ *
+ * @param s The session object
+ * @param what Which features to check ? @see smb_session_supports_what
+ *
+ * @return 0 if the feature is not supported, something else otherwise
+ */
+int             smb_session_supports(smb_session *s, int what);
+
 #endif
