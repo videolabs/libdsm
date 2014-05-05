@@ -24,6 +24,7 @@
 #include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_ntlm.h"
+#include "bdsm/smb_gss.h"
 #include "bdsm/smb_transport.h"
 
 static int        smb_negotiate(smb_session *s);
@@ -36,8 +37,12 @@ smb_session   *smb_session_new()
   assert(s != NULL);
   memset((void *)s, 0, sizeof(smb_session));
 
+  // Explicitly sets pointer to NULL, insted of 0
+  s->gss.spnego.value   = NULL;
   s->transport.session  = NULL;
   s->shares             = NULL;
+
+  s->gss.ctx = GSS_C_NO_CONTEXT;
 
   return (s);
 }
@@ -52,6 +57,10 @@ void            smb_session_destroy(smb_session *s)
       s->transport.destroy(s->transport.session);
       s->transport.session = NULL;
     }
+
+    if (s->gss.spnego.value != NULL)
+      free(s->gss.spnego.value);
+
     free(s);
   }
 }
@@ -150,7 +159,8 @@ static int        smb_negotiate(smb_session *s)
   const char          *dialects[] = SMB_DIALECTS;
   smb_message         *msg = NULL;
   smb_message         answer;
-  smb_negotiate_resp  *nego;
+  smb_nego_resp       *nego;
+  smb_nego_xsec_resp  *nego_xsec;
 
 
   msg = smb_message_new(SMB_CMD_NEGOTIATE, 128);
@@ -173,9 +183,8 @@ static int        smb_negotiate(smb_session *s)
   if (!smb_session_recv_msg(s, &answer))
     goto error;
 
-  nego = (smb_negotiate_resp *)answer.packet->payload;
-  if (answer.packet->header.status != NT_STATUS_SUCCESS
-      && nego->wct != 0x11 && nego->security_mode & 0x03)
+  nego = (smb_nego_resp *)answer.packet->payload;
+  if (answer.packet->header.status != NT_STATUS_SUCCESS && nego->wct != 0x11)
     goto error;
 
   s->srv.dialect        = nego->dialect_index;
@@ -185,6 +194,18 @@ static int        smb_negotiate(smb_session *s)
   s->srv.challenge      = nego->challenge;
   s->srv.ts             = nego->ts;
 
+  // Copy SPNEGO supported mechanisms  token for later usage (login_gss())
+  if (smb_session_supports(s, SMB_SESSION_XSEC))
+  {
+    BDSM_dbg("Server is supporting extended security\n");
+
+    nego_xsec             = (smb_nego_xsec_resp *)nego;
+    s->gss.spnego.length  = nego_xsec->bct - 16;
+    s->gss.spnego.value   = malloc(s->gss.spnego.length);
+
+    assert(s->gss.spnego.value != NULL);
+    memcpy(s->gss.spnego.value, nego_xsec->gssapi, s->gss.spnego.length);
+  }
   // Yeah !
   s->state              = SMB_STATE_DIALECT_OK;
 
@@ -195,8 +216,8 @@ static int        smb_negotiate(smb_session *s)
     return (0);
 }
 
-int             smb_session_login(smb_session *s, const char *domain,
-                                  const char *user, const char *password)
+static int        smb_session_login_ntlm(smb_session *s, const char *domain,
+                                         const char *user, const char *password)
 {
   smb_message         answer;
   smb_message         *msg = NULL;
@@ -285,6 +306,18 @@ int             smb_session_login(smb_session *s, const char *domain,
   return (1);
 }
 
+int             smb_session_login(smb_session *s, const char *domain,
+                                  const char *user, const char *password)
+{
+  assert(s != NULL && user != NULL && password != NULL);
+
+  if (smb_session_supports(s, SMB_SESSION_XSEC))
+    return(smb_session_login_gss(s, domain, user, password));
+  else
+    return(smb_session_login_ntlm(s, domain, user, password));
+}
+
+
 int             smb_session_is_guest(smb_session *s)
 {
   // Invalid session object
@@ -318,8 +351,8 @@ int             smb_session_supports(smb_session *s, int what)
 
   switch (what)
   {
-    case SMB_SESSION_EXT_SEC:
-      return (s->srv.caps & SMB_CAPS_EXT_SEC);
+    case SMB_SESSION_XSEC:
+      return (s->srv.caps & SMB_CAPS_XSEC);
     default:
       return (0);
   }

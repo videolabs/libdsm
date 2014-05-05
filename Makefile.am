@@ -4,7 +4,7 @@ DISTCLEANFILES = @DOLT_CLEANFILES@
 
 EXTRA_DIST =
 
-CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @H5L_GSS_CFLAGS@
+CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
 
 if DEBUG
 AM_CFLAGS = -O0 -g3 -Wall #-Wextra
@@ -36,6 +36,7 @@ bdsm_HEADERS = \
 noinst_HEADERS = \
     include/bdsm/smb_packets.h    \
     include/bdsm/smb_transport.h  \
+    include/bdsm/smb_gss.h        \
     contrib/mdx/md4.h             \
     contrib/mdx/md5.h
 
@@ -44,27 +45,28 @@ lib_LTLIBRARIES = libdsm.la
 libdsm_la_SOURCES = \
     contrib/mdx/md4.c   \
     contrib/mdx/md5.c   \
-    src/hmac_md5.c    \
+    src/hmac_md5.c      \
     src/netbios_ns.c    \
     src/netbios_ns_entry.c  \
-    src/netbios_query.c   \
-    src/netbios_session.c \
-    src/netbios_utils.c   \
-    src/smb_fd.c   \
-    src/smb_file.c    \
+    src/netbios_query.c     \
+    src/netbios_session.c   \
+    src/netbios_utils.c     \
+    src/smb_fd.c        \
+    src/smb_file.c      \
+    src/smb_gss.c       \
     src/smb_message.c   \
-    src/smb_ntlm.c    \
+    src/smb_ntlm.c      \
     src/smb_session.c   \
-    src/smb_share.c   \
-    src/smb_stat.c    \
-    src/smb_trans2.c      \
-    src/smb_transport.c   \
+    src/smb_share.c     \
+    src/smb_stat.c      \
+    src/smb_trans2.c    \
+    src/smb_transport.c \
     src/smb_utils.c
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @H5L_GSS_LIBS@
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @TASN1_LIBS@
 
 
 bin_PROGRAMS =

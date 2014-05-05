@@ -67,7 +67,7 @@ enum
 
 enum smb_session_supports_what
 {
-  SMB_SESSION_EXT_SEC         = 0,
+  SMB_SESSION_XSEC            = 0,
 };
 
 //-----------------------------------------------------------------------------/
@@ -202,7 +202,7 @@ enum smb_session_supports_what
 #define SMB_FLAG_NT_ERRORS      (1 << (14 + 8))
 #define SMB_FLAG_EXECUTE_ONLY   (1 << (13 + 8))
 #define SMB_FLAG_DFS            (1 << (12 + 8))
-#define SMB_FLAG_EXT_SEC        (1 << (11 + 8))
+#define SMB_FLAG_XSEC           (1 << (11 + 8))
 #define SMB_FLAG_REPARSE_PATH   (1 << (10 + 8))
 #define SMB_FLAG_LONG_NAMES     (1 << (6 + 8))
 #define SMB_FLAG_SIGN_REQUIRED  (1 << (4 + 8))
@@ -218,9 +218,8 @@ enum smb_session_supports_what
 #define SMB_CAPS_LARGE          (1 << 3)
 #define SMB_CAPS_NTSMB          (1 << 4)
 #define SMB_CAPS_RPC            (1 << 5)
-#define SMB_CAPS_NTSTATUS       (1 << 6)
 #define SMB_CAPS_NTFIND         (1 << 9)
-#define SMB_CAPS_EXT_SEC        (1 << 31)
+#define SMB_CAPS_XSEC           (1 << 31)
 
 // File creation/open flags
 #define SMB_CREATE_OPLOCK       (1 << 1)

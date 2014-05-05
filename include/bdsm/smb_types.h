@@ -27,6 +27,9 @@
 #include <netinet/ip.h>
 #include <stddef.h>
 
+#include <gssapi/gssapi_spnego.h>
+#include <gssapi/gssapi_ntlm.h>
+
 #include "bdsm/smb_packets.h"
 
 /**
@@ -112,6 +115,11 @@ typedef struct
     uint64_t            challenge;      // For challenge response security
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
+  struct {
+    gss_cred_id_t     credentials;
+    gss_ctx_id_t      ctx;
+    gss_buffer_desc   spnego;
+  }                   gss;              // eXtended SECurity negociation data
 
   smb_transport       transport;
   struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file

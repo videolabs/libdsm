@@ -63,26 +63,38 @@ typedef struct
   uint16_t        bct;
   char            dialects[];
 
-} __attribute__((packed))   smb_negotiate_req;
+} __attribute__((packed))   smb_nego_req;
+
+
+#define SMB_NEGO_RESP_COMMON \
+  uint8_t         wct;            /* +-17 :) */                                \
+  uint16_t        dialect_index;                                               \
+  uint8_t         security_mode;  /* Share/User. Plaintext/Challenge */        \
+  uint32_t        diplodocus;                                                  \
+  uint32_t        max_bufsize;    /* Max buffer size requested by server. */   \
+  uint32_t        max_rawbuffer;  /* Max raw buffer size requested by serv. */ \
+  uint32_t        session_key;    /* 'MUST' be returned to server */           \
+  uint32_t        caps;                                                        \
+  uint64_t        ts;             /* I don't give a fuck (or do i?) */         \
+  uint16_t        tz;             /* Even less fuck given */                   \
+  uint8_t         key_length;     /* Size of challenge key // GSS blob */      \
+  uint16_t        bct;
 
 //<- Negotiate Protocol
 typedef struct
 {
-  uint8_t         wct;            // +-17 :)
-  uint16_t        dialect_index;  //
-  uint8_t         security_mode;  // Share/User. Plaintext/Challenge
-  uint32_t        diplodocus;
-  uint32_t        max_bufsize;    // Max buffer size requested by server.
-  uint32_t        max_rawbuffer;  // Max raw buffer size requested by serv.
-  uint32_t        session_key;    // 'MUST' be returned to server
-  uint32_t        caps;
-  uint64_t        ts;             // I don't give a fuck (or do i?)
-  uint16_t        tz;             // Even less fuck given
-  uint8_t         key_length;     // Size of challenge key, if != 8 then shit
-  uint16_t        bct;
+  SMB_NEGO_RESP_COMMON
   uint64_t        challenge;      // Normally 8 bytes, if not then wtf monkey
   uint8_t         payload[];      // The rest isn't really meaningfull for us
-} __attribute__((packed))   smb_negotiate_resp;
+} __attribute__((packed))   smb_nego_resp;
+
+//<- Negotiate Protocol
+typedef struct
+{
+  SMB_NEGO_RESP_COMMON
+  uint8_t         srv_guid[16];
+  uint8_t         gssapi[];
+} __attribute__((packed))   smb_nego_xsec_resp;
 
 
 

@@ -131,6 +131,8 @@ int main(int ac, char **av)
 
   session = smb_session_new();
 
+  //inet_aton("192.168.110.138", &addr.sin_addr);
+
   if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Successfully connected to %s\n", host);

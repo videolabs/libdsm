@@ -115,7 +115,6 @@ int             smb_session_connect(smb_session *s, const char *name,
  * @brief Authenticate on the remote host with the provided credentials
  * @details Can be called if session state is SMB_STATE_DIALECT_OK.
  * If successfull, session state transition to SMB_STATE_SESSION_OK
- * @bug We currently only support LMv2 authentication.
  *
  * @param s The session object.
  * @param domain The domain of the user. You should use the (netbios) uppercased

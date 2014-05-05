@@ -48,8 +48,8 @@ DOLT
 
 AC_CONFIG_MACRO_DIR([m4])
 
-## Checks for Heimdal
-PKG_CHECK_MODULES([H5L_GSS], [heimdal-gssapi > 1.5])
+## Checks for the ASN.1 parser
+PKG_CHECK_MODULES([TASN1], [libtasn1])
 
 ## Checks for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
