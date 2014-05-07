@@ -49,3 +49,4 @@ libdsm.pc
 
 doc/html/*
 doc/Doxyfile
+dsm_ntlm

@@ -24,7 +24,7 @@
 #include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_ntlm.h"
-#include "bdsm/smb_gss.h"
+#include "bdsm/smb_spnego.h"
 #include "bdsm/smb_transport.h"
 
 static int        smb_negotiate(smb_session *s);
@@ -38,11 +38,11 @@ smb_session   *smb_session_new()
   memset((void *)s, 0, sizeof(smb_session));
 
   // Explicitly sets pointer to NULL, insted of 0
-  s->gss.spnego.value   = NULL;
+  s->spnego.init        = NULL;
+  s->spnego.asn1_def    = NULL;
+  s->xsec.tgt_info      = NULL;
   s->transport.session  = NULL;
   s->shares             = NULL;
-
-  s->gss.ctx = GSS_C_NO_CONTEXT;
 
   return (s);
 }
@@ -58,9 +58,12 @@ void            smb_session_destroy(smb_session *s)
       s->transport.session = NULL;
     }
 
-    if (s->gss.spnego.value != NULL)
-      free(s->gss.spnego.value);
-
+    if (s->spnego.init != NULL)
+      free(s->spnego.init);
+    if (s->spnego.asn1_def != NULL)
+      asn1_delete_structure(&s->spnego.asn1_def);
+    if (s->xsec.tgt_info != NULL)
+      free(s->xsec.tgt_info);
     free(s);
   }
 }
@@ -119,7 +122,7 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
   assert(s->transport.session != NULL);
   assert(msg != NULL && msg->packet != NULL);
 
-  msg->packet->header.uid = s->uid;
+  msg->packet->header.uid = s->srv.uid;
 
   s->transport.pkt_init(s->transport.session);
 
@@ -190,9 +193,8 @@ static int        smb_negotiate(smb_session *s)
   s->srv.dialect        = nego->dialect_index;
   s->srv.security_mode  = nego->security_mode;
   s->srv.caps           = nego->caps;
-  s->srv.session_key    = nego->session_key;
-  s->srv.challenge      = nego->challenge;
   s->srv.ts             = nego->ts;
+  s->srv.session_key    = nego->session_key;
 
   // Copy SPNEGO supported mechanisms  token for later usage (login_gss())
   if (smb_session_supports(s, SMB_SESSION_XSEC))
@@ -200,12 +202,15 @@ static int        smb_negotiate(smb_session *s)
     BDSM_dbg("Server is supporting extended security\n");
 
     nego_xsec             = (smb_nego_xsec_resp *)nego;
-    s->gss.spnego.length  = nego_xsec->bct - 16;
-    s->gss.spnego.value   = malloc(s->gss.spnego.length);
+    s->spnego.init_sz     = nego_xsec->bct - 16;
+    s->spnego.init        = malloc(s->spnego.init_sz);
 
-    assert(s->gss.spnego.value != NULL);
-    memcpy(s->gss.spnego.value, nego_xsec->gssapi, s->gss.spnego.length);
+    assert(s->spnego.init != NULL);
+    memcpy(s->spnego.init, nego_xsec->gssapi, s->spnego.init_sz);
   }
+  else
+    s->srv.challenge      = nego->challenge;
+
   // Yeah !
   s->state              = SMB_STATE_DIALECT_OK;
 
@@ -216,14 +221,15 @@ static int        smb_negotiate(smb_session *s)
     return (0);
 }
 
+
 static int        smb_session_login_ntlm(smb_session *s, const char *domain,
                                          const char *user, const char *password)
 {
-  smb_message         answer;
-  smb_message         *msg = NULL;
-  smb_session_req     *req = NULL;
+  smb_message           answer;
+  smb_message           *msg = NULL;
+  smb_session_req       *req = NULL;
   uint8_t               *ntlm2 = NULL;
-  smb_ntlmh_t           hash_v2;
+  smb_ntlmh             hash_v2;
   uint64_t              user_challenge;
   uint8_t               blob[128];
   size_t                blob_size;
@@ -231,16 +237,13 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   msg = smb_message_new(SMB_CMD_SETUP, 512);
   smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
-  req = (smb_session_req *)msg->packet->payload;
 
-  req->wct              = (sizeof(smb_session_req) - 3) / 2;
-  req->max_buffer       = SMB_IO_BUFSIZE
-                          - sizeof(smb_header);
-  req->max_buffer      -= sizeof(netbios_session_packet);
-  req->max_buffer      -= sizeof(smb_packet);
+  req = (smb_session_req *)msg->packet->payload;
+  req->wct              = 13;
+  req->max_buffer       = SMB_IO_BUFSIZE;
   req->mpx_count        = 16; // XXX ?
   req->vc_count         = 1;
-  req->session_key      = s->srv.session_key;
+  //req->session_key      = s->srv.session_key; // XXX Useless on the wire?
   req->caps             = s->srv.caps; // XXX caps & our_caps_mask
 
   smb_message_advance(msg, sizeof(smb_session_req));
@@ -249,17 +252,16 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 
   // LM2 Response
   smb_ntlm2_hash(user, password, domain, &hash_v2);
-  ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge,
-                             (void *)&user_challenge, 8);
+  ntlm2 = smb_lm2_response(&hash_v2, s->srv.challenge, user_challenge);
   smb_message_append(msg, ntlm2, 16 + 8);
   free(ntlm2);
 
-  // NTLM2 Response
-  blob_size = smb_ntlm_blob((smb_ntlm_blob_t *)blob, s->srv.ts,
-                            user_challenge, domain);
-  ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge, blob, blob_size);
-  //smb_message_append(msg, ntlm2, 16 + blob_size);
-  free(ntlm2);
+  // NTLM2 Response (Win7 unsupported, replaced by extended security)
+  // blob_size = smb_ntlm_make_blob((smb_ntlm_blob *)blob, s->srv.ts,
+  //                                user_challenge, domain);
+  // ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge, blob, blob_size);
+  // smb_message_append(msg, ntlm2, 16 + blob_size);
+  // free(ntlm2);
 
   req->oem_pass_len = 16 + SMB_LM2_BLOB_SIZE;
   req->uni_pass_len = 0; //16 + blob_size; //SMB_NTLM2_BLOB_SIZE;
@@ -272,7 +274,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   smb_message_put16(msg, 0);
   smb_message_put_utf16(msg, "", SMB_OS, strlen(SMB_OS));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_OS));
+  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_LANMAN));
   smb_message_put16(msg, 0);
 
   req->payload_size = msg->cursor - sizeof(smb_session_req);
@@ -300,8 +302,9 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 
   if (r->action & 0x0001)
     s->guest = 1;
-  s->state  = SMB_STATE_SESSION_OK;
-  s->uid    = answer.packet->header.uid;
+
+  s->srv.uid  = answer.packet->header.uid;
+  s->state    = SMB_STATE_SESSION_OK;
 
   return (1);
 }
@@ -312,7 +315,7 @@ int             smb_session_login(smb_session *s, const char *domain,
   assert(s != NULL && user != NULL && password != NULL);
 
   if (smb_session_supports(s, SMB_SESSION_XSEC))
-    return(smb_session_login_gss(s, domain, user, password));
+    return(smb_session_login_spnego(s, domain, user, password));
   else
     return(smb_session_login_ntlm(s, domain, user, password));
 }

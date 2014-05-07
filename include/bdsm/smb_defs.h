@@ -270,8 +270,4 @@ enum smb_session_supports_what
                                    SMB_FIND2_FLAG_RESUME)
 
 
-#define SMB_NTLM_HASH_SIZE      16
-#define SMB_NTLM2_BLOB_SIZE     64
-#define SMB_LM2_BLOB_SIZE       8
-
 #endif

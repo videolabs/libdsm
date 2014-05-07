@@ -55,7 +55,10 @@
  */
 #define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
 
-
+#define SMB_SESSION_MAX_BUFFER (SMB_IO_BUFSIZE                    \
+                                - sizeof(smb_header)              \
+                                - sizeof(netbios_session_packet)  \
+                                - sizeof(smb_packet))
 
 /**
  * @brief Allocates a new Session object
@@ -155,5 +158,6 @@ const char      *smb_session_server_name(smb_session *s);
  * @return 0 if the feature is not supported, something else otherwise
  */
 int             smb_session_supports(smb_session *s, int what);
+
 
 #endif

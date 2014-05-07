@@ -3,7 +3,7 @@
 //  \______   \______ \  /   _____/ /     \          /  _  \ |__| ____   | |
 //   |    |  _/|    |  \ \_____  \ /  \ /  \        /  /_\  \|  _/ __ \  | |
 //   |    |   \|    `   \/        /    Y    \      /    |    |  \  ___/   \|
-//   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
+// li|______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
 //          \/        \/        \/        \/  )/           \/        \/   \/
 //
 // This file is part of libdsm. Copyright © 2014 VideoLabs SAS
@@ -96,18 +96,18 @@ typedef struct
   uint8_t         gssapi[];
 } __attribute__((packed))   smb_nego_xsec_resp;
 
-
+#define SMB_SESSION_REQ_COMMON \
+  uint8_t         wct;          /* +-13 :) */                                  \
+  SMB_ANDX_MEMBERS                                                             \
+  uint16_t        max_buffer;   /* Maximum size we can receive */              \
+  uint16_t        mpx_count;    /* maximum multiplexed session */              \
+  uint16_t        vc_count;     /* Virtual ciruits -> 1! */                    \
+  uint32_t        session_key;  /* 0x00000000 */
 
 //-> Session Setup
 typedef struct
 {
-  uint8_t         wct;          // +-13 :)
-  SMB_ANDX_MEMBERS
-  uint16_t        max_buffer;   // Maximum size we can receive
-  uint16_t        mpx_count;    // maximum multiplexed session
-  uint16_t        vc_count;     // Virtual ciruits -> 1!
-
-  uint32_t        session_key;  // 0x00000000
+  SMB_SESSION_REQ_COMMON
   uint16_t        oem_pass_len; // Length of LM2 response
   uint16_t        uni_pass_len; // Length of NTLM2 response
   uint32_t        reserved2;    // 0x00000000
@@ -115,6 +115,18 @@ typedef struct
   uint16_t        payload_size;
   uint8_t         payload[];
 } __attribute__((packed))   smb_session_req;
+
+//-> Session Setup
+typedef struct
+{
+  SMB_SESSION_REQ_COMMON
+  uint16_t        xsec_blob_size; // Length of GSSAPI/SPNEGO blob
+  uint32_t        reserved2;      // 0x00000000
+  uint32_t        caps;           // Capabilities
+  uint16_t        payload_size;
+  uint8_t         payload[];
+} __attribute__((packed))   smb_session_xsec_req;
+
 
 //<- Session Setup
 typedef struct
@@ -125,6 +137,16 @@ typedef struct
   uint16_t        bct;
   uint8_t         bullshit[];
 } __attribute__((packed))   smb_session_resp;
+
+typedef struct
+{
+  uint8_t         wct;
+  SMB_ANDX_MEMBERS
+  uint16_t        action;
+  uint16_t        xsec_blob_size;
+  uint16_t        payload_size;
+  uint8_t         payload[];
+} __attribute__((packed))   smb_session_xsec_resp;
 
 
 

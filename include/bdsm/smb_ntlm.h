@@ -21,7 +21,10 @@
 
 #include "bdsm/smb_defs.h"
 
-typedef uint8_t smb_ntlmh_t[SMB_NTLM_HASH_SIZE];
+#define SMB_LM2_BLOB_SIZE         8
+#define SMB_NTLM_HASH_SIZE        16
+
+typedef uint8_t smb_ntlmh[SMB_NTLM_HASH_SIZE];
 
 typedef struct
 {
@@ -30,17 +33,83 @@ typedef struct
   uint64_t    timestamp;
   uint64_t    challenge;
   uint32_t    unknown;
-  uint8_t     domain[];
-} __attribute__((packed)) smb_ntlm_blob_t;
+  uint8_t     target[];
+} __attribute__((packed)) smb_ntlm_blob;
+
+
+
+#define SMB_NTLMSSP_CMD_NEGO      0x01
+#define SMB_NTLMSSP_CMD_AUTH      0x03
+
+#define _NTLMSSP_COMMON     \
+  char        id[8];        \
+  uint32_t    type;
+
+#define _NTLMSSP_FIELD(FIELD)    \
+  uint16_t  FIELD ## _len;       \
+  uint16_t  FIELD ## _maxlen;    \
+  uint32_t  FIELD ## _offset;
+
+typedef struct
+{
+  _NTLMSSP_COMMON
+  uint32_t    flags;
+  _NTLMSSP_FIELD(domain)
+  _NTLMSSP_FIELD(host)
+  uint8_t     names[];
+} __attribute__((packed)) smb_ntlmssp_nego;
+
+typedef struct
+{
+  _NTLMSSP_COMMON
+  _NTLMSSP_FIELD(name)
+  uint32_t    flags;
+  uint64_t    challenge;
+  uint64_t    reserved;
+  _NTLMSSP_FIELD(tgt) // Target Info
+  uint8_t     data[];
+} __attribute__((packed)) smb_ntlmssp_challenge;
+
+typedef struct
+{
+  _NTLMSSP_COMMON
+  _NTLMSSP_FIELD(lm)
+  _NTLMSSP_FIELD(ntlm)
+  _NTLMSSP_FIELD(domain)
+  _NTLMSSP_FIELD(user)
+  _NTLMSSP_FIELD(host)
+  _NTLMSSP_FIELD(session_key)
+
+  uint32_t    flags;
+  uint8_t     data[];
+} __attribute__((packed)) smb_ntlmssp_auth;
 
 uint64_t    smb_ntlm_generate_challenge();
-void        smb_ntlm_hash(const char *password, smb_ntlmh_t *hash);
+void        smb_ntlm_generate_xkey(smb_ntlmh *cli_session_key);
+void        smb_ntlm_hash(const char *password, smb_ntlmh *hash);
 void        smb_ntlm2_hash(const char *username, const char *password,
-                           const char *destination, smb_ntlmh_t *hash);
+                           const char *destination, smb_ntlmh *hash);
+// Precompute the blob that will be HMAC'ed to produce NTLM2 Response
+// You have to free() the blob after usage
+size_t      smb_ntlm_make_blob(smb_ntlm_blob **blob, uint64_t ts,
+                               uint64_t user_challenge, void *tgt,
+                               size_t tgt_sz, uint64_t ts2);
 // Returned response is blob_size + 16 long. You'll have to free it
-uint8_t     *smb_ntlm2_response(smb_ntlmh_t *hash_v2, uint64_t srv_challenge,
+uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
                                 uint8_t *blob, size_t blob_size);
-// This method seems useless on Win7 (other untested)
-size_t      smb_ntlm_blob(smb_ntlm_blob_t *blob, uint64_t ts,
-                              uint64_t user_challenge, const char *domain);
+// Returned response is 24 bytes long. You'll have to free it.
+uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
+                              uint64_t user_challenge);
+// You have to allocate session key
+void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
+                                  smb_ntlmh *xkey, smb_ntlmh *enc_xkey);
+
+void        smb_ntlmssp_negotiate(const char *host, const char *domain,
+                                  void **token, size_t *token_sz);
+void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
+                                 const char *host, const char *domain,
+                                 const char *user, const char *password,
+                                 void *tgt, size_t tgt_sz,
+                                 void **token, size_t *token_sz);
+
 #endif

@@ -17,13 +17,13 @@
 //----------------------------------------------------------------------------
 
 
-#ifndef __BDSM_SMB_GSS_H_
-#define __BDSM_SMB_GSS_H_
+#ifndef __BDSM_SMB_SPNEGO_H_
+#define __BDSM_SMB_SPNEGO_H_
 
 #include "bdsm/smb_types.h"
 
-int             smb_session_login_gss(smb_session *s, const char *domain,
-                                      const char *user, const char *password);
+int             smb_session_login_spnego(smb_session *s, const char *domain,
+                                         const char *user, const char *password);
 
 
 #endif

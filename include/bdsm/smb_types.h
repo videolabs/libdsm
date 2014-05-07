@@ -26,9 +26,7 @@
 
 #include <netinet/ip.h>
 #include <stddef.h>
-
-#include <gssapi/gssapi_spnego.h>
-#include <gssapi/gssapi_ntlm.h>
+#include <libtasn1.h>
 
 #include "bdsm/smb_packets.h"
 
@@ -103,23 +101,29 @@ typedef struct
 {
   int                 state;
   int                 guest;            // boolean, are we logged as guest ?
-  uint16_t            uid;              // uid attributed by the server
 
   // Informations about the smb server we are connected to.
   struct {
     char                name[16];       // The server name
     uint16_t            dialect;        // The selected dialect
     uint16_t            security_mode;  // Security mode
+    uint16_t            uid;            // uid attributed by the server.
+    uint32_t            session_key;    // The session key sent by the server on protocol negotiate
     uint32_t            caps;           // Server caps replyed during negotiate
-    uint32_t            session_key;    // XXX Is this really usefull?
     uint64_t            challenge;      // For challenge response security
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
   struct {
-    gss_cred_id_t     credentials;
-    gss_ctx_id_t      ctx;
-    gss_buffer_desc   spnego;
-  }                   gss;              // eXtended SECurity negociation data
+    void                *init;
+    size_t              init_sz;
+    ASN1_TYPE           asn1_def;
+    //uint32_t            flags;          // NTLMSSP negotiation flags
+  }                   spnego;           // eXtended SECurity negociation data
+  struct {
+    uint32_t            flags;
+    void                *tgt_info;
+    size_t              tgt_info_sz;
+  }                   xsec;
 
   smb_transport       transport;
   struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file

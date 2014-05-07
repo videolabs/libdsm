@@ -136,7 +136,6 @@ int main(int ac, char **av)
   if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Successfully connected to %s\n", host);
-    fprintf(stderr, "Session key is 0x%x\n", session->srv.session_key);
     fprintf(stderr, "Challenge key is 0x%lx\n", session->srv.challenge);
   }
   else
@@ -152,13 +151,13 @@ int main(int ac, char **av)
     else
       printf("Successfully logged in as %s\\%s\n", host, login);
   }
-  else if (smb_session_login(session, "WORKGROUP", login, password))
-  {
-    if (session->guest)
-      printf("Login FAILED but we were logged in as GUEST \n");
-    else
-      printf("Successfully logged in as %s\\%s\n", host, login);
-  }
+  // else if (smb_session_login(session, "WORKGROUP", login, password))
+  // {
+  //   if (session->guest)
+  //     printf("Login FAILED but we were logged in as GUEST \n");
+  //   else
+  //     printf("Successfully logged in as %s\\%s\n", host, login);
+  // }
   else
   {
     printf("Authentication FAILURE.\n");

@@ -36,15 +36,19 @@ bdsm_HEADERS = \
 noinst_HEADERS = \
     include/bdsm/smb_packets.h    \
     include/bdsm/smb_transport.h  \
-    include/bdsm/smb_gss.h        \
+    include/bdsm/smb_spnego.h     \
+    contrib/spnego/spnego_asn1.h  \
     contrib/mdx/md4.h             \
-    contrib/mdx/md5.h
+    contrib/mdx/md5.h             \
+    contrib/rc4/rc4.h
 
 lib_LTLIBRARIES = libdsm.la
 
 libdsm_la_SOURCES = \
     contrib/mdx/md4.c   \
     contrib/mdx/md5.c   \
+    contrib/rc4/rc4.c   \
+    contrib/spnego/spnego_asn1.c  \
     src/hmac_md5.c      \
     src/netbios_ns.c    \
     src/netbios_ns_entry.c  \
@@ -53,7 +57,7 @@ libdsm_la_SOURCES = \
     src/netbios_utils.c     \
     src/smb_fd.c        \
     src/smb_file.c      \
-    src/smb_gss.c       \
+    src/smb_spnego.c    \
     src/smb_message.c   \
     src/smb_ntlm.c      \
     src/smb_session.c   \
@@ -66,13 +70,13 @@ libdsm_la_SOURCES = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @TASN1_LIBS@
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @TASN1_LIBS@ -lbsd
 
 
 bin_PROGRAMS =
 
 if PROGRAMS
-bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup
+bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup dsm_ntlm
 endif
 
 dsm_SOURCES = bin/dsm.c
@@ -82,6 +86,8 @@ dsm_discover_SOURCES = bin/discover.c
 dsm_inverse_SOURCES = bin/inverse.c
 
 dsm_lookup_SOURCES = bin/lookup.c
+
+dsm_ntlm_SOURCES = bin/ntlm.c
 
 LDADD = libdsm.la
 
@@ -94,6 +100,9 @@ else
 doc:
 	echo "Doxygen wasn't detected by configure, it's support has been disabled"
 endif
+
+contrib/spnego/spnego_asn1.c: contrib/spnego/spnego.asn1
+	asn1Parser -o $@ -n spnego_asn1_conf $<
 
 a : all
 c : clean
