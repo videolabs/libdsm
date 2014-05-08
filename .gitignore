@@ -50,3 +50,4 @@ libdsm.pc
 doc/html/*
 doc/Doxyfile
 dsm_ntlm
+contrib/spnego/spnego_asn1.c
