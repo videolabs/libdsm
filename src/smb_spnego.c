@@ -78,10 +78,10 @@ static int      negotiate(smb_session *s, const char *domain, const char *user)
   smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
   req = (smb_session_xsec_req *)msg->packet->payload;
-  msg->packet->header.mux_id  = 1;
+  //msg->packet->header.mux_id  = 1;
 
   req->wct              = 12;
-  req->max_buffer       = SMB_IO_BUFSIZE;
+  req->max_buffer       = SMB_SESSION_MAX_BUFFER;
   req->mpx_count        = 16; // XXX ?
   req->vc_count         = 1;
   req->caps             = s->srv.caps; // XXX caps & our_caps_mask
@@ -227,11 +227,11 @@ static int      auth(smb_session *s, const char *domain, const char *user,
   msg = smb_message_new(SMB_CMD_SETUP, 512);
   smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
-  msg->packet->header.mux_id = 2;
+  //msg->packet->header.mux_id = 2;
   req = (smb_session_xsec_req *)msg->packet->payload;
 
   req->wct              = 12;
-  req->max_buffer       = SMB_IO_BUFSIZE;
+  req->max_buffer       = SMB_SESSION_MAX_BUFFER;
   req->mpx_count        = 16; // XXX ?
   req->vc_count         = 1;
   req->caps             = s->srv.caps; // XXX caps & our_caps_mask

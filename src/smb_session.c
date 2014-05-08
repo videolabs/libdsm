@@ -240,7 +240,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 
   req = (smb_session_req *)msg->packet->payload;
   req->wct              = 13;
-  req->max_buffer       = SMB_IO_BUFSIZE;
+  req->max_buffer       = SMB_SESSION_MAX_BUFFER;
   req->mpx_count        = 16; // XXX ?
   req->vc_count         = 1;
   //req->session_key      = s->srv.session_key; // XXX Useless on the wire?

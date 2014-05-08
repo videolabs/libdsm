@@ -214,7 +214,8 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 
   if (sofar > total)
   {
-    BDSM_dbg("netbios_session_packet_recv: Packet size mismatch\n");
+    BDSM_dbg("netbios_session_packet_recv: Packet size mismatch (%ld/%ld)\n",
+              sofar, total);
     return(-1);
   }
 

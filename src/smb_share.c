@@ -171,12 +171,13 @@ void            smb_share_list_destroy(smb_share_list list)
 // PS: Worst function _EVER_. I don't understand a bit myself
 size_t          smb_share_get_list(smb_session *s, char ***list)
 {
-  smb_message         *req, resp;
-  smb_trans_req       *trans;
+  smb_message           *req, resp;
+  smb_trans_req         *trans;
   smb_tid               ipc_tid;
   smb_fd                srvscv_fd;
   uint16_t              rpc_len;
-  ssize_t               res;
+  ssize_t               res, frag_len_cursor;
+
 
   assert(s != NULL && list != NULL);
   *list = NULL;
@@ -292,29 +293,31 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   smb_message_put8(req, 0);     // Packet type = 'request'
   smb_message_put8(req, 0x03);  // Packet flags = ??
   smb_message_put32(req, 0x10); // Representation = little endian/ASCII. Damn
-  smb_message_put16(req, 88);   // Data len again
+  // Let's save the cursor here to update that later
+  frag_len_cursor = req->cursor;
+  smb_message_put16(req, 0);    // Data len again (frag length)
   smb_message_put16(req, 0);    // Auth len ?
-  smb_message_put32(req, 20);   // Call ID ?
+  smb_message_put32(req, 12);   // Call ID ?
   smb_message_put32(req, 64);   // Alloc hint ?
   smb_message_put16(req, 0);    // Context ID ?
   smb_message_put16(req, 15);   // OpNum = NetShareEnumAll
 
   // Pointer to server UNC
   smb_message_put32(req, 0x00020000);   // Referent ID ?
-  smb_message_put32(req, 8);            // Max count
+  smb_message_put32(req, strlen(s->srv.name) + 1);            // Max count
   smb_message_put32(req, 0);            // Offset
-  smb_message_put32(req, 8);            // Actual count
+  smb_message_put32(req, strlen(s->srv.name) + 1);            // Actual count
     // The server name, supposed to be downcased
   smb_message_put_utf16(req, "", s->srv.name, strlen(s->srv.name) + 1);
   if ((strlen(s->srv.name) % 2) == 0) // It won't be aligned with the terminating byte
-  smb_message_put16(req, 0);
+    smb_message_put16(req, 0);
 
 
   smb_message_put32(req, 1);            // Level 1 ?
   smb_message_put32(req, 1);            // Ctr ?
   smb_message_put32(req, 0x00020004);   // Referent ID ?
   smb_message_put64(req, 0);            // Count/Null Pointer to NetShareInfo1
-  smb_message_put32(req, rpc_len);      // Max Buffer
+  smb_message_put32(req, 0xffffffff);   // Max Buffer (0xffffffff required by smbX)
 
   smb_message_put32(req, 0x00020008);   // Referent ID ?
   smb_message_put32(req, 0);            // Resume ?
@@ -323,8 +326,9 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   trans->bct              = req->cursor - sizeof(smb_trans_req);
   trans->data_count       = trans->bct - 17; // 17 -> padding + \PIPE\ + padding
   trans->total_data_count = trans->data_count;
-  trans->data_offset      = trans->data_count - 4;
-  trans->param_offset     = trans->data_count - 4;
+  req->packet->payload[frag_len_cursor] = trans->data_count; // (data_count SHOULD stay < 256)
+  trans->data_offset      = 84;
+  trans->param_offset     = 84;
 
 
   // Let's send this ugly pile of shit over the network !
