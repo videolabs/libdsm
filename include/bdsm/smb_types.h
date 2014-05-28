@@ -94,6 +94,14 @@ typedef struct smb_transport_s {
   ssize_t           (*recv)(void *s, void **data);
 }                   smb_transport;
 
+// An structure to store user credentials;
+// login:password@domain (also DOMAIN\login)
+typedef struct {
+    const char *    domain;
+    const char *    login;
+    const char *    password;
+} smb_creds;
+
 /**
  * @brief An opaque data structure to represent a SMB Session.
  */
@@ -113,18 +121,20 @@ typedef struct
     uint64_t            challenge;      // For challenge response security
     uint64_t            ts;             // It seems Win7 requires it :-/
   }                   srv;
+
   struct {
     void                *init;
     size_t              init_sz;
     ASN1_TYPE           asn1_def;
-    //uint32_t            flags;          // NTLMSSP negotiation flags
   }                   spnego;           // eXtended SECurity negociation data
+
   struct {
     uint32_t            flags;
-    void                *tgt_info;
-    size_t              tgt_info_sz;
+    void                *tgt_info;      // Target info buffer, given by server.
+    size_t              tgt_info_sz;    // The size of the buffer
   }                   xsec;
 
+  smb_creds           creds;
   smb_transport       transport;
   struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file
 }                   smb_session;

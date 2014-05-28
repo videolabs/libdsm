@@ -86,6 +86,18 @@ void            smb_session_destroy(smb_session *s);
  */
 int             smb_session_state(smb_session *s);
 
+/**
+ * @brief Set the credentials for this session.
+ * @details Any of the params except s can be NULL.
+ *
+ * @param s The session object.
+ * @param domain Domain to authenticate on. Often it's the same as netbios host.
+ * @param login The user to login as.
+ * @param password the user's password.
+ */
+void            smb_session_set_creds(smb_session *s, const char *domain,
+                                      const char *login, const char *password)
+#define SMB_CREDS_MAXLEN 128
 
 
 // ---------------------------------

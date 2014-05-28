@@ -44,6 +44,10 @@ smb_session   *smb_session_new()
   s->transport.session  = NULL;
   s->shares             = NULL;
 
+  s->creds.domain       = NULL;
+  s->creds.login        = NULL;
+  s->creds.password     = NULL;
+
   return (s);
 }
 
@@ -64,6 +68,15 @@ void            smb_session_destroy(smb_session *s)
       asn1_delete_structure(&s->spnego.asn1_def);
     if (s->xsec.tgt_info != NULL)
       free(s->xsec.tgt_info);
+
+    // Free stored credentials.
+    if (s->creds.domain != NULL)
+      free(s->creds.domain);
+    if (s->creds.login != NULL)
+      free(s->creds.login);
+    if (s->creds.password != NULL)
+      free(s->creds.password);
+
     free(s);
   }
 }
@@ -74,6 +87,33 @@ int             smb_session_state(smb_session *s)
     return (s->state);
   else
     return (SMB_STATE_ERROR);
+}
+
+void            smb_session_set_creds(smb_session *s, const char *domain,
+                                      const char *login, const char *password)
+{
+  assert(s != NULL);
+
+  if (domain != NULL)
+  {
+    if (s->creds.domain != NULL)
+      free(s->creds.domain);
+    s->creds.domain = strndup(domain, SMB_CREDS_MAXLEN);
+  }
+
+  if (login != NULL)
+  {
+    if (s->creds.login != NULL)
+      free(s->creds.login);
+    s->creds.login = strndup(login, SMB_CREDS_MAXLEN);
+  }
+
+  if (password != NULL)
+  {
+    if (s->creds.password != NULL)
+      free(s->creds.password);
+    s->creds.password = strndup(password, SMB_CREDS_MAXLEN);
+  }
 }
 
 int             smb_session_connect(smb_session *s, const char *name,
