@@ -97,9 +97,9 @@ typedef struct smb_transport_s {
 // An structure to store user credentials;
 // login:password@domain (also DOMAIN\login)
 typedef struct {
-    const char *    domain;
-    const char *    login;
-    const char *    password;
+    char *    domain;
+    char *    login;
+    char *    password;
 } smb_creds;
 
 /**

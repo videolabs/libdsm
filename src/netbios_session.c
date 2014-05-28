@@ -188,7 +188,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     return (-1);
   }
 
-  if (res > sizeof(netbios_session_packet) && data != NULL)
+  if ((size_t)res > sizeof(netbios_session_packet) && data != NULL)
     *data = (void *)s->packet->payload;
   else if (data != NULL)
     *data = NULL;

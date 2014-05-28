@@ -137,91 +137,91 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
 uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
                               uint64_t user_challenge)
 {
-  smb_ntlm2_response(hash_v2, srv_challenge, &user_challenge, 8);
+  return (smb_ntlm2_response(hash_v2, srv_challenge, (void *)&user_challenge, 8));
 }
 
-static void   _wcamelcase(char *str)
-{
-  int first = 1;
+// static void   _wcamelcase(char *str)
+// {
+//   int first = 1;
 
-  assert (str != NULL);
+//   assert (str != NULL);
 
-  while(*str)
-  {
-    if (isalpha(*str))
-    {
-      if (first)
-        *str = toupper(*str);
-      else
-        *str = tolower(*str);
-    }
-    first = 0;
-    str += 2;
-  }
-}
+//   while(*str)
+//   {
+//     if (isalpha(*str))
+//     {
+//       if (first)
+//         *str = toupper(*str);
+//       else
+//         *str = tolower(*str);
+//     }
+//     first = 0;
+//     str += 2;
+//   }
+// }
 
-#define __NAME_ENCODE_APPEND(type, item)  \
-  *res = type;                            \
-  res += 2;                               \
-  *(uint16_t *)res = item##_sz - 2;       \
-  res += 2;                               \
-  memcpy(res, item, item##_sz - 2);       \
-  res += item##_sz - 2;                   \
+// // This was test code to encode the name the way the server looked to expect
+// // it. But apparently we just had to sent him back his own data.
 
-static size_t _ntlm_name_encode(char **names, const char *domain,
-                                const char *host, uint64_t ts2)
-{
-  char    *wdomain, *whost, *wdomain_camel, *whost_camel;
-  size_t  wdomain_sz, whost_sz, wdomain_camel_sz, whost_camel_sz;
-  char    *res;
-  size_t  res_sz;
+/* #define __NAME_ENCODE_APPEND(type, item)  \
+   *res = type;                            \
+   res += 2;                               \
+   *(uint16_t *)res = item##_sz - 2;       \
+   res += 2;                               \
+   memcpy(res, item, item##_sz - 2);       \
+   res += item##_sz - 2;                   \
+*/
+// static size_t _ntlm_name_encode(char **names, const char *domain,
+//                                 const char *host, uint64_t ts2)
+// {
+//   char    *wdomain, *whost, *wdomain_camel, *whost_camel;
+//   size_t  wdomain_sz, whost_sz, wdomain_camel_sz, whost_camel_sz;
+//   char    *res;
+//   size_t  res_sz;
 
-  assert(names != NULL && domain != NULL && host != NULL);
+//   assert(names != NULL && domain != NULL && host != NULL);
 
-  wdomain_sz        = smb_to_utf16(domain, strlen(domain) + 1, &wdomain);
-  wdomain_camel_sz  = smb_to_utf16(domain, strlen(domain) + 1, &wdomain_camel);
-  whost_sz          = smb_to_utf16(host, strlen(host) + 1, &whost);
-  whost_camel_sz    = smb_to_utf16(host, strlen(host) + 1, &whost_camel);
+//   wdomain_sz        = smb_to_utf16(domain, strlen(domain) + 1, &wdomain);
+//   wdomain_camel_sz  = smb_to_utf16(domain, strlen(domain) + 1, &wdomain_camel);
+//   whost_sz          = smb_to_utf16(host, strlen(host) + 1, &whost);
+//   whost_camel_sz    = smb_to_utf16(host, strlen(host) + 1, &whost_camel);
 
-  _wcamelcase(wdomain_camel);
-  _wcamelcase(whost_camel);
+//   _wcamelcase(wdomain_camel);
+//   _wcamelcase(whost_camel);
 
-  res_sz = (wdomain_sz - 2) * 2 + (whost_sz - 2) * 2 + 8 + 6 * 4;
-  *names = res = malloc(res_sz);
-  assert(res != NULL);
-  memset(res, 0, res_sz);
+//   res_sz = (wdomain_sz - 2) * 2 + (whost_sz - 2) * 2 + 8 + 6 * 4;
+//   *names = res = malloc(res_sz);
+//   assert(res != NULL);
+//   memset(res, 0, res_sz);
 
-  __NAME_ENCODE_APPEND(2, wdomain)
-  __NAME_ENCODE_APPEND(1, whost)
-  __NAME_ENCODE_APPEND(4, wdomain_camel)
-  __NAME_ENCODE_APPEND(3, whost_camel)
+//   __NAME_ENCODE_APPEND(2, wdomain)
+//   __NAME_ENCODE_APPEND(1, whost)
+//   __NAME_ENCODE_APPEND(4, wdomain_camel)
+//   __NAME_ENCODE_APPEND(3, whost_camel)
 
-  *res = 7;
-  res += 2;
-  *res = 8;
-  res += 2;
-  *(uint64_t *)res = ts2;
-  res += 8;
+//   *res = 7;
+//   res += 2;
+//   *res = 8;
+//   res += 2;
+//   *(uint64_t *)res = ts2;
+//   res += 8;
 
-  free(wdomain);
-  free(wdomain_camel);
-  free(whost);
-  free(whost_camel);
+//   free(wdomain);
+//   free(wdomain_camel);
+//   free(whost);
+//   free(whost_camel);
 
-  return (res_sz);
-}
+//   return (res_sz);
+// }
 
 size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
                                uint64_t user_challenge, void *tgt_info,
-                               size_t tgt_sz, uint64_t ts2)
+                               size_t tgt_sz)
 {
   smb_ntlm_blob *blob;
-  //char          *names;
-  //size_t        names_sz;
 
-  assert(blob != NULL && tgt_info != NULL);
+  assert(out_blob != NULL && tgt_info != NULL);
 
-  //names_sz = _ntlm_name_encode(&names, domain, host, ts2);
   blob = malloc(tgt_sz + sizeof(smb_ntlm_blob));
 
   memset((void *)blob, 0, sizeof(smb_ntlm_blob));
@@ -230,7 +230,6 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
   blob->challenge = user_challenge;
 
   memcpy(blob->target, tgt_info, tgt_sz);
-  //free(names);
 
   *out_blob = blob;
   return (sizeof(smb_ntlm_blob) + tgt_sz);
@@ -245,7 +244,7 @@ void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
   HMAC_MD5(&hash_v2, 16, ntlm2, 16, &hmac_ntlm2);
 
   rc4_init(&rc4, hmac_ntlm2, 16);
-  rc4_crypt(&rc4, xkey, xkey_crypt, 16);
+  rc4_crypt(&rc4, (void *)xkey, (void *)xkey_crypt, 16);
 }
 
 
@@ -306,11 +305,10 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
   smb_ntlm2_hash(user, password, domain, &hash_v2);
   user_challenge = smb_ntlm_generate_challenge();
   smb_ntlm_generate_xkey(&xkey);
-  blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, tgt, tgt_sz,
-                                 srv_ts + 4200);
+  blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, tgt, tgt_sz);
 
   lm2   = smb_lm2_response(&hash_v2, srv_challenge, smb_ntlm_generate_challenge());
-  ntlm2 = smb_ntlm2_response(&hash_v2, srv_challenge, blob, blob_size);
+  ntlm2 = smb_ntlm2_response(&hash_v2, srv_challenge, (void *)blob, blob_size);
   smb_ntlm2_session_key(&hash_v2, ntlm2, &xkey, &xkey_crypt);
 
   *token_sz = sizeof(smb_ntlmssp_auth)

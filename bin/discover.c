@@ -27,7 +27,7 @@
 
 #include "bdsm.h"
 
-int main(int ac, char **av)
+int main()
 {
   netbios_ns        *ns;
   netbios_ns_entry  *entry;

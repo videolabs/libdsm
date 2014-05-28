@@ -159,6 +159,8 @@ int             smb_session_connect(smb_session *s, const char *name,
 // xsec == 1 -> add Extended security flag
 static int        smb_negotiate(smb_session *s, int xsec)
 {
+  (void)xsec; // FIXME
+
   const char          *dialects[] = SMB_DIALECTS;
   smb_message         *msg = NULL;
   smb_message         answer;
@@ -230,8 +232,8 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   uint8_t               *ntlm2 = NULL;
   smb_ntlmh             hash_v2;
   uint64_t              user_challenge;
-  uint8_t               blob[128];
-  size_t                blob_size;
+  //uint8_t               blob[128];
+  //size_t                blob_size;
 
   msg = smb_message_new(SMB_CMD_SETUP, 512);
   smb_message_set_andx_members(msg);

@@ -93,7 +93,7 @@ void        smb_ntlm2_hash(const char *username, const char *password,
 // You have to free() the blob after usage
 size_t      smb_ntlm_make_blob(smb_ntlm_blob **blob, uint64_t ts,
                                uint64_t user_challenge, void *tgt,
-                               size_t tgt_sz, uint64_t ts2);
+                               size_t tgt_sz);
 // Returned response is blob_size + 16 long. You'll have to free it
 uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
                                 uint8_t *blob, size_t blob_size);

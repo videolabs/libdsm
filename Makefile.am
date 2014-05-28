@@ -7,7 +7,7 @@ EXTRA_DIST =
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
 
 if DEBUG
-AM_CFLAGS = -O0 -g3 -Wall #-Wextra
+AM_CFLAGS = -O0 -g3 -Wall -Wextra #-Werror
 else
 AM_CFLAGS = -O2
 endif
@@ -78,7 +78,7 @@ libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ LTLIBICONV @TASN1_LIBS@
 bin_PROGRAMS =
 
 if PROGRAMS
-bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup dsm_ntlm
+bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup
 endif
 
 dsm_SOURCES = bin/dsm.c
@@ -88,8 +88,6 @@ dsm_discover_SOURCES = bin/discover.c
 dsm_inverse_SOURCES = bin/inverse.c
 
 dsm_lookup_SOURCES = bin/lookup.c
-
-dsm_ntlm_SOURCES = bin/ntlm.c
 
 LDADD = libdsm.la
 

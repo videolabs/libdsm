@@ -55,7 +55,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
     return (0);
   }
 
-  if ((ic = iconv_open(dst_enc, src_enc)) < 0)
+  if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
   {
     fprintf(stderr, "Unable to open iconv to convert from %s to %s\n",
             src_enc, dst_enc);

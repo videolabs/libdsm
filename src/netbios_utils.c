@@ -78,10 +78,12 @@ void  netbios_name_level1_decode(const char *encoded_name, char *name)
   name[NETBIOS_NAME_LENGTH] = 0;
 }
 
-
+// XXX: Supports domain
 char  *netbios_name_encode(const char *name, char *domain,
                            unsigned type)
 {
+  (void )domain; // Unused yet
+
   size_t    encoded_size = 34; // length byte + 32 bytes for encoded name + terminator
   char      *encoded_name;
 
@@ -101,6 +103,8 @@ char  *netbios_name_encode(const char *name, char *domain,
 int             netbios_name_decode(const char *encoded_name,
                                     char *name, char **domain)
 {
+  (void )domain; // Unused yet
+
   size_t  encoded_length;
 
   if (!encoded_name || !name)

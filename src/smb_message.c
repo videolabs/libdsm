@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/netbios_session.h"
 #include "bdsm/smb_message.h"
 #include "bdsm/smb_utils.h"
@@ -137,6 +138,9 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
   utf_str_len = smb_to_utf16(str, str_len, &utf_str);
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
+
+  if (src_enc != NULL)
+    BDSM_dbg("smb_message_put_utf16: src_enc not supported. We use system locale\n");
 
   // fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
   //         utf_str_len, msg->cursor);

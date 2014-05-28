@@ -65,7 +65,7 @@ static void     clean_asn1(smb_session *s)
     asn1_delete_structure(&s->spnego.asn1_def);
 }
 
-static int      negotiate(smb_session *s, const char *domain, const char *user)
+static int      negotiate(smb_session *s, const char *domain)
 {
   smb_message           *msg = NULL;
   smb_session_xsec_req  *req = NULL;
@@ -305,14 +305,13 @@ static int      auth(smb_session *s, const char *domain, const char *user,
 int             smb_session_login_spnego(smb_session *s, const char *domain,
                                          const char *user, const char *password)
 {
-  smb_message   resp;
   int           res;
   assert(s != NULL && domain != NULL && user != NULL && password != NULL);
 
   if (!init_asn1(s))
     return (0);
 
-  if (!negotiate(s, domain, user))
+  if (!negotiate(s, domain))
     goto error;
   if (!challenge(s))
     goto error;
