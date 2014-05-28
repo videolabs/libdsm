@@ -144,7 +144,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 
   smb_message_advance(msg, sizeof(smb_trans2_req));
   smb_message_advance(msg, sizeof(smb_tr2_find2));
-  smb_message_put_utf16(msg, "", pattern, pattern_len);
+  smb_message_put_utf16(msg, pattern, pattern_len);
 
   // Adds padding at the end if necessary.
   while (tr2->bct % 4)
@@ -206,7 +206,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
   smb_message_advance(msg, sizeof(smb_trans2_req));
   smb_message_advance(msg, sizeof(smb_tr2_query));
-  smb_message_put_utf16(msg, "", path, path_len);
+  smb_message_put_utf16(msg, path, path_len);
 
   // Adds padding at the end if necessary.
   if (msg->cursor % 4)

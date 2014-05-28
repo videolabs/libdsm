@@ -61,7 +61,7 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
   req->passwd_len   = 1;    // Null byte
 
   smb_message_put8(req_msg, 0); // Ze null byte password;
-  smb_message_put_utf16(req_msg, "", path, strlen(path) + 1);
+  smb_message_put_utf16(req_msg, path, strlen(path) + 1);
   smb_message_append(req_msg, "?????", strlen("?????") + 1);
   req->bct = strlen(path) * 2 + 2 + 6 + 1;
 
@@ -215,7 +215,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   trans->bct                    = 89;
 
   smb_message_put8(req, 0);   // Padding
-  smb_message_put_utf16(req, "", "\\PIPE\\", strlen("\\PIPE\\") + 1);
+  smb_message_put_utf16(req, "\\PIPE\\", strlen("\\PIPE\\") + 1);
   smb_message_put16(req, 0);  // Padding to be aligned with wtf boundary :-/
 
   // Now we'll 'build' the DCE/RPC Packet. This basically a copycat
@@ -281,7 +281,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   trans->fid              = SMB_FD_FID(srvscv_fd);
 
   smb_message_put8(req, 0);  // Padding
-  smb_message_put_utf16(req, "", "\\PIPE\\", strlen("\\PIPE\\") + 1);
+  smb_message_put_utf16(req, "\\PIPE\\", strlen("\\PIPE\\") + 1);
   smb_message_put16(req, 0); // Padding
 
   // Now we'll 'build' the DCE/RPC Packet. This basically a copycat
@@ -306,7 +306,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   smb_message_put32(req, 0);            // Offset
   smb_message_put32(req, strlen(s->srv.name) + 1);            // Actual count
     // The server name, supposed to be downcased
-  smb_message_put_utf16(req, "", s->srv.name, strlen(s->srv.name) + 1);
+  smb_message_put_utf16(req, s->srv.name, strlen(s->srv.name) + 1);
   if ((strlen(s->srv.name) % 2) == 0) // It won't be aligned with the terminating byte
     smb_message_put16(req, 0);
 

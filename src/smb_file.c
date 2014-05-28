@@ -65,7 +65,7 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
   // Create AndX 'Body'
   smb_message_advance(req_msg, sizeof(smb_create_req));
   smb_message_put8(req_msg, 0);   // Align beginning of path
-  path_len = smb_message_put_utf16(req_msg, "", path, strlen(path) + 1);
+  path_len = smb_message_put_utf16(req_msg, path, strlen(path) + 1);
   // smb_message_put16(req_msg, 0);  // ??
   req->path_length  = path_len;
   req->bct          = path_len + 1;

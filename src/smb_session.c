@@ -268,13 +268,13 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   if (msg->cursor / 2) // Padding !
     smb_message_put8(msg, 0);
 
-  smb_message_put_utf16(msg, "", user, strlen(user));
+  smb_message_put_utf16(msg, user, strlen(user));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", domain, strlen(domain));
+  smb_message_put_utf16(msg, domain, strlen(domain));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_OS, strlen(SMB_OS));
+  smb_message_put_utf16(msg, SMB_OS, strlen(SMB_OS));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_LANMAN));
+  smb_message_put_utf16(msg, SMB_LANMAN, strlen(SMB_LANMAN));
   smb_message_put16(msg, 0);
 
   req->payload_size = msg->cursor - sizeof(smb_session_req);

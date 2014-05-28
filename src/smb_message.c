@@ -128,8 +128,8 @@ int             smb_message_put64(smb_message *msg, uint64_t data)
     return(smb_message_append(msg, (void *)&data, 8));
 }
 
-size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
-                                      const char *str, size_t str_len)
+size_t          smb_message_put_utf16(smb_message *msg, const char *str,
+                                      size_t str_len)
 {
   char          *utf_str;
   size_t        utf_str_len;
@@ -138,9 +138,6 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
   utf_str_len = smb_to_utf16(str, str_len, &utf_str);
   res = smb_message_append(msg, utf_str, utf_str_len);
   free(utf_str);
-
-  if (src_enc != NULL)
-    BDSM_dbg("smb_message_put_utf16: src_enc not supported. We use system locale\n");
 
   // fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
   //         utf_str_len, msg->cursor);

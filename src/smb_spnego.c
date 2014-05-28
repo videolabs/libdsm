@@ -119,9 +119,9 @@ static int      negotiate(smb_session *s, const char *domain)
   }
 
   smb_message_append(msg, der, der_size);
-  smb_message_put_utf16(msg, "", SMB_OS, strlen(SMB_OS));
+  smb_message_put_utf16(msg, SMB_OS, strlen(SMB_OS));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_LANMAN));
+  smb_message_put_utf16(msg, SMB_LANMAN, strlen(SMB_LANMAN));
   smb_message_put16(msg, 0);
   smb_message_put16(msg, 0);
 
@@ -270,9 +270,9 @@ static int      auth(smb_session *s, const char *domain, const char *user,
   smb_message_append(msg, der, der_size);
   if (msg->cursor % 2)
     smb_message_put8(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_OS, strlen(SMB_OS));
+  smb_message_put_utf16(msg, SMB_OS, strlen(SMB_OS));
   smb_message_put16(msg, 0);
-  smb_message_put_utf16(msg, "", SMB_LANMAN, strlen(SMB_LANMAN));
+  smb_message_put_utf16(msg, SMB_LANMAN, strlen(SMB_LANMAN));
   smb_message_put16(msg, 0);
   smb_message_put16(msg, 0); // Empty PDC name
 
