@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 #include "bdsm/debug.h"
+#include "bdsm/smb_session_msg.h"
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_fd.h"
 #include "bdsm/smb_share.h"

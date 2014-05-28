@@ -34,12 +34,13 @@ bdsm_HEADERS = \
     include/bdsm/smb_types.h    \
     include/bdsm/smb_utils.h
 noinst_HEADERS = \
-    include/bdsm/smb_packets.h    \
-    include/bdsm/smb_transport.h  \
-    include/bdsm/smb_spnego.h     \
-    contrib/spnego/spnego_asn1.h  \
-    contrib/mdx/md4.h             \
-    contrib/mdx/md5.h             \
+		include/bdsm/smb_session_msg.h \
+    include/bdsm/smb_packets.h     \
+    include/bdsm/smb_transport.h   \
+    include/bdsm/smb_spnego.h      \
+    contrib/spnego/spnego_asn1.h   \
+    contrib/mdx/md4.h              \
+    contrib/mdx/md5.h              \
     contrib/rc4/rc4.h
 
 lib_LTLIBRARIES = libdsm.la
@@ -55,16 +56,17 @@ libdsm_la_SOURCES = \
     src/netbios_query.c     \
     src/netbios_session.c   \
     src/netbios_utils.c     \
-    src/smb_fd.c        \
-    src/smb_file.c      \
-    src/smb_spnego.c    \
-    src/smb_message.c   \
-    src/smb_ntlm.c      \
-    src/smb_session.c   \
-    src/smb_share.c     \
-    src/smb_stat.c      \
-    src/smb_trans2.c    \
-    src/smb_transport.c \
+    src/smb_fd.c            \
+    src/smb_file.c          \
+    src/smb_spnego.c        \
+    src/smb_message.c       \
+    src/smb_ntlm.c          \
+    src/smb_session.c       \
+    src/smb_session_msg.c   \
+    src/smb_share.c         \
+    src/smb_stat.c          \
+    src/smb_trans2.c        \
+    src/smb_transport.c     \
     src/smb_utils.c
 
 pkgconfigdir = $(libdir)/pkgconfig

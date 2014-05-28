@@ -23,6 +23,7 @@
 
 #include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
+#include "bdsm/smb_session_msg.h"
 #include "bdsm/smb_ntlm.h"
 #include "spnego/spnego_asn1.h"
 

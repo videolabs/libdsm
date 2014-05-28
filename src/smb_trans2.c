@@ -22,6 +22,8 @@
 #include <assert.h>
 
 #include "bdsm/debug.h"
+#include "bdsm/smb_message.h"
+#include "bdsm/smb_session_msg.h"
 #include "bdsm/smb_utils.h"
 #include "bdsm/smb_stat.h"
 
