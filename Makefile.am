@@ -32,7 +32,8 @@ bdsm_HEADERS = \
     include/bdsm/smb_share.h    \
     include/bdsm/smb_stat.h   \
     include/bdsm/smb_types.h    \
-    include/bdsm/smb_utils.h
+    include/bdsm/smb_utils.h	\
+    include/bdsm/smb_buffer.h
 noinst_HEADERS = \
 		include/bdsm/smb_session_msg.h \
     include/bdsm/smb_packets.h     \
@@ -56,6 +57,7 @@ libdsm_la_SOURCES = \
     src/netbios_query.c     \
     src/netbios_session.c   \
     src/netbios_utils.c     \
+    src/smb_buffer.c				\
     src/smb_fd.c            \
     src/smb_file.c          \
     src/smb_spnego.c        \
