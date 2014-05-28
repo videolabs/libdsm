@@ -59,6 +59,10 @@ DirectTCP SMB is on the way, to fix this issue.
 
 Feel free to contribute items to this list (or network trace of not working devices)
 
+## TODO
+
+* HEAVILY refactor. Any help is welcome.
+
 ## Contributing
 
 * Fork elthariel/libdsm

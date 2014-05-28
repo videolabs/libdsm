@@ -33,8 +33,8 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
 
   assert(key != NULL && msg != NULL);
 
-  // This is Microsoft variation for NTLMv2 (afaik)
-  // afaik, they truncate the key instead of hashing it
+  // This is Microsoft variation of HMAC_MD5 for NTLMv2
+  // It seems they truncate over-sized keys instead of rehashing
   if (key_len > 64)
     key_len = 64;
   else
