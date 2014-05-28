@@ -144,7 +144,8 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  if (smb_session_login(session, host, login, password))
+  smb_session_set_creds(session, host, login, password);
+  if (smb_session_login(session))
   {
     if (session->guest)
       printf("Login FAILED but we were logged in as GUEST \n");

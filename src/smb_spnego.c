@@ -75,7 +75,6 @@ static int      negotiate(smb_session *s, const char *domain, const char *user)
   char                  der[128], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
   msg = smb_message_new(SMB_CMD_SETUP, 512);
-  smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
   req = (smb_session_xsec_req *)msg->packet->payload;
   //msg->packet->header.mux_id  = 1;
@@ -225,9 +224,7 @@ static int      auth(smb_session *s, const char *domain, const char *user,
   char                  der[512], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
   msg = smb_message_new(SMB_CMD_SETUP, 512);
-  smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
-  //msg->packet->header.mux_id = 2;
   req = (smb_session_xsec_req *)msg->packet->payload;
 
   req->wct              = 12;

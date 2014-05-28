@@ -180,15 +180,6 @@ void            smb_message_flag(smb_message *msg, uint32_t flag, int value)
     *flags &= ~flag;
 }
 
-void            smb_message_set_default_flags(smb_message *msg)
-{
-  assert(msg != NULL && msg->packet != NULL);
-
-  msg->packet->header.flags   = 0x18;
-  msg->packet->header.flags2  = 0xc843; // w/ extended security;
-  //msg->packet->header.flags2  = 0xc043; // w/o extended security;
-}
-
 void            smb_message_set_andx_members(smb_message *msg)
 {
   // This could have been any type with the 'SMB_ANDX_MEMBERS';

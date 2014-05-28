@@ -37,7 +37,6 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *src_enc,
 int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
                                      uint16_t c, const uint8_t e[8]);
 
-void            smb_message_set_default_flags(smb_message *msg);
 void            smb_message_set_andx_members(smb_message *msg);
 void            smb_message_flag(smb_message *msg, uint32_t flag, int value);
 #endif

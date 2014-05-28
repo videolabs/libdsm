@@ -27,7 +27,7 @@
 #include "bdsm/smb_spnego.h"
 #include "bdsm/smb_transport.h"
 
-static int        smb_negotiate(smb_session *s);
+static int        smb_negotiate(smb_session *s, int xsec);
 
 smb_session   *smb_session_new()
 {
@@ -144,8 +144,9 @@ int             smb_session_connect(smb_session *s, const char *name,
   memcpy(s->srv.name, name, strlen(name) + 1);
   s->state = SMB_STATE_NETBIOS_OK;
 
-  if (!smb_negotiate(s))
-    return (0);
+  if (!smb_negotiate(s, 1))     // Try to negotiate with extended security
+    if (!smb_negotiate(s, 0))   // Try to negotiate withOUT extended security
+      return (0);
 
   return(1);
 
@@ -162,6 +163,9 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
   assert(s->transport.session != NULL);
   assert(msg != NULL && msg->packet != NULL);
 
+  msg->packet->header.flags   = 0x18;
+  msg->packet->header.flags2  = 0xc843;
+  // msg->packet->header.flags2  = 0xc043; // w/o extended security;
   msg->packet->header.uid = s->srv.uid;
 
   s->transport.pkt_init(s->transport.session);
@@ -197,7 +201,8 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
 }
 
 
-static int        smb_negotiate(smb_session *s)
+// xsec == 1 -> add Extended security flag
+static int        smb_negotiate(smb_session *s, int xsec)
 {
   const char          *dialects[] = SMB_DIALECTS;
   smb_message         *msg = NULL;
@@ -207,7 +212,6 @@ static int        smb_negotiate(smb_session *s)
 
 
   msg = smb_message_new(SMB_CMD_NEGOTIATE, 128);
-  smb_message_set_default_flags(msg);
 
   smb_message_put8(msg, 0);   // wct
   smb_message_put16(msg, 0);  // bct, will be updated later
@@ -275,7 +279,6 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   size_t                blob_size;
 
   msg = smb_message_new(SMB_CMD_SETUP, 512);
-  smb_message_set_default_flags(msg);
   smb_message_set_andx_members(msg);
 
   req = (smb_session_req *)msg->packet->payload;
@@ -349,15 +352,16 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   return (1);
 }
 
-int             smb_session_login(smb_session *s, const char *domain,
-                                  const char *user, const char *password)
+int             smb_session_login(smb_session *s)
 {
-  assert(s != NULL && user != NULL && password != NULL);
+  assert(s != NULL);
 
   if (smb_session_supports(s, SMB_SESSION_XSEC))
-    return(smb_session_login_spnego(s, domain, user, password));
+    return(smb_session_login_spnego(s, s->creds.domain, s->creds.login,
+                                    s->creds.password));
   else
-    return(smb_session_login_ntlm(s, domain, user, password));
+    return(smb_session_login_ntlm(s, s->creds.domain, s->creds.login,
+                                  s->creds.password));
 }
 
 

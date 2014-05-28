@@ -49,7 +49,6 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
   req_msg = smb_message_new(SMB_CMD_TREE_CONNECT, 128);
 
   // Packet headers
-  smb_message_set_default_flags(req_msg);
   smb_message_set_andx_members(req_msg);
   req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
 
@@ -194,7 +193,6 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   // We bind a context or whatever for DCE/RPC
 
   req = smb_message_new(SMD_CMD_TRANS, 256);
-  smb_message_set_default_flags(req);
   req->packet->header.tid = ipc_tid;
 
   smb_message_advance(req, sizeof(smb_trans_req));
@@ -268,7 +266,6 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
   // NetShareEnumAll
 
   req = smb_message_new(SMD_CMD_TRANS, 256);
-  smb_message_set_default_flags(req);
   req->packet->header.tid = ipc_tid;
 
   smb_message_advance(req, sizeof(smb_trans_req));

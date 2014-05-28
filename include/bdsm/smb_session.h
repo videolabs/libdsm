@@ -96,7 +96,7 @@ int             smb_session_state(smb_session *s);
  * @param password the user's password.
  */
 void            smb_session_set_creds(smb_session *s, const char *domain,
-                                      const char *login, const char *password)
+                                      const char *login, const char *password);
 #define SMB_CREDS_MAXLEN 128
 
 
@@ -116,32 +116,30 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
  * with you.
  *
  * @param s A session object.
- * @param name The ASCII netbios name, the name type will be coerced to <20>
+ * @param hostname The ASCII netbios name, the name type will be coerced to <20>
  * since libdsm is about reading files
  * @param ip The ip of the machine to connect to (in network byte order)
  * @param transport The type of transport used, it could be SMB_TRANSPORT_TCP
  * or SMB_TRANSPORT_NBT (Netbios over TCP, ie legacy)
  * @return 0 in case of error, a value > 0 otherwise.
  */
-int             smb_session_connect(smb_session *s, const char *name,
+int             smb_session_connect(smb_session *s, const char *hostname,
                                     uint32_t ip, int transport);
 
 /**
  * @brief Authenticate on the remote host with the provided credentials
  * @details Can be called if session state is SMB_STATE_DIALECT_OK.
  * If successfull, session state transition to SMB_STATE_SESSION_OK
+ * Provides the credentials with smb_session_set_creds.
  *
  * @param s The session object.
- * @param domain The domain of the user. You should use the (netbios) uppercased
- * machine name, then try 'WORKGROUP'.
- * @param user The user name in the current locale
- * @param password The password in the current locale
+ *
  * @return 0 in case of failure, > 0 in case of success. Success doesn't mean
  * you are logged in with the user you requested. If guest are activated on
- * the remote host, when login fails, you are logged in as 'Guest'.
+ * the remote host, when login fails, you are logged in as 'Guest'. Failure
+ * might also indicate you didn't supplied all the credentials
  */
-int             smb_session_login(smb_session *s, const char *domain,
-                                  const char *user, const char *password);
+int             smb_session_login(smb_session *s);
 
 /**
  * @brief Am i logged in as Guest ?

@@ -44,7 +44,6 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
   req_msg = smb_message_new(SMB_CMD_CREATE, 128);
 
   // Set SMB Headers
-  smb_message_set_default_flags(req_msg);
   smb_message_set_andx_members(req_msg);
   req_msg->packet->header.tid = tid;
 
@@ -144,7 +143,6 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 
   req_msg = smb_message_new(SMB_CMD_READ, 64);
   req_msg->packet->header.tid = file->tid;
-  smb_message_set_default_flags(req_msg);
   smb_message_set_andx_members(req_msg);
   smb_message_advance(req_msg, sizeof(smb_read_req));
 

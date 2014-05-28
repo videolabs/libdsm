@@ -119,7 +119,6 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
   msg_len    += pattern_len * 2 + 3;
 
   msg = smb_message_new(SMB_CMD_TRANS2, msg_len);
-  smb_message_set_default_flags(msg);
   msg->packet->header.tid = tid;
 
   tr2 = (smb_trans2_req *)msg->packet->payload;
@@ -185,7 +184,6 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
   msg_len  += path_len * 2 + 3; // +3 for eventual padding
 
   msg = smb_message_new(SMB_CMD_TRANS2, msg_len);
-  smb_message_set_default_flags(msg);
   msg->packet->header.tid = tid;
 
   tr2 = (smb_trans2_req *)msg->packet->payload;
