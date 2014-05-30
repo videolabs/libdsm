@@ -217,8 +217,6 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     uint8_t               *ntlm2 = NULL;
     smb_ntlmh             hash_v2;
     uint64_t              user_challenge;
-    //uint8_t               blob[128];
-    //size_t                blob_size;
 
     msg = smb_message_new(SMB_CMD_SETUP, 512);
     smb_message_set_andx_members(msg);
