@@ -23,7 +23,7 @@
 #include "bdsm/smb_types.h"
 
 int             smb_session_login_spnego(smb_session *s, const char *domain,
-                                         const char *user, const char *password);
+        const char *user, const char *password);
 
 
 #endif

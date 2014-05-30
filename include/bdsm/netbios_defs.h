@@ -54,22 +54,22 @@
 
 typedef struct
 {
-  uint16_t                    trn_id;     // Transaction ID
-  uint16_t                    flags;      // Various flags
-  uint16_t                    queries;    // Number of queries in this packet
-  uint16_t                    answers;    // Number of answers
-  uint16_t                    ns_count;   // Number of authorities (?)
-  uint16_t                    ar_count;   // Additionnal (??)
-  char                        payload[];
+    uint16_t                    trn_id;     // Transaction ID
+    uint16_t                    flags;      // Various flags
+    uint16_t                    queries;    // Number of queries in this packet
+    uint16_t                    answers;    // Number of answers
+    uint16_t                    ns_count;   // Number of authorities (?)
+    uint16_t                    ar_count;   // Additionnal (??)
+    char                        payload[];
 } __attribute__((packed))   netbios_query_packet;
 
 typedef struct
 {
-  uint8_t                     opcode;     // 'TYPE'
-  uint8_t                     flags;      // 0-6 reserved (== 0), byte 7 is the
-                                          // beginning of the length field (!!)
-  uint16_t                    length;     // payload length;
-  uint8_t                     payload[];
+    uint8_t                     opcode;     // 'TYPE'
+    uint8_t                     flags;      // 0-6 reserved (== 0), byte 7 is the
+    // beginning of the length field (!!)
+    uint16_t                    length;     // payload length;
+    uint8_t                     payload[];
 } __attribute__((packed))   netbios_session_packet;
 
 #endif

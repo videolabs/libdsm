@@ -30,10 +30,10 @@
 
 enum
 {
-  /// SMB with Direct-TCP connection (OSX supports only this)
-  SMB_TRANSPORT_TCP       = 1,
-  /// SMB with Netbios over TCP (older mechanism)
-  SMB_TRANSPORT_NBT       = 2
+    /// SMB with Direct-TCP connection (OSX supports only this)
+    SMB_TRANSPORT_TCP       = 1,
+    /// SMB with Netbios over TCP (older mechanism)
+    SMB_TRANSPORT_NBT       = 2
 };
 
 //-----------------------------------------------------------------------------/
@@ -41,16 +41,16 @@ enum
 //-----------------------------------------------------------------------------/
 enum
 {
-  /// Error state, there was an error somewhere
-  SMB_STATE_ERROR             = -1,
-  /// The SMB session has just been created
-  SMB_STATE_NEW               = 0,
-  /// A Netbios session has been successfully established.
-  SMB_STATE_NETBIOS_OK        = 1,
-  /// Dialect was successfully negotiated
-  SMB_STATE_DIALECT_OK        = 2,
-  /// Session Authentication was successfull, you can become nasty
-  SMB_STATE_SESSION_OK        = 3
+    /// Error state, there was an error somewhere
+    SMB_STATE_ERROR             = -1,
+    /// The SMB session has just been created
+    SMB_STATE_NEW               = 0,
+    /// A Netbios session has been successfully established.
+    SMB_STATE_NETBIOS_OK        = 1,
+    /// Dialect was successfully negotiated
+    SMB_STATE_DIALECT_OK        = 2,
+    /// Session Authentication was successfull, you can become nasty
+    SMB_STATE_SESSION_OK        = 3
 };
 
 //-----------------------------------------------------------------------------/
@@ -59,15 +59,15 @@ enum
 // smb_fseek operations
 enum
 {
-  /// Set the read pointer at the given position
-  SMB_SEEK_SET                = 0,
-  /// Adjusts the read pointer relatively to the actual position
-  SMB_SEEK_CUR                = 1
+    /// Set the read pointer at the given position
+    SMB_SEEK_SET                = 0,
+    /// Adjusts the read pointer relatively to the actual position
+    SMB_SEEK_CUR                = 1
 };
 
 enum smb_session_supports_what
 {
-  SMB_SESSION_XSEC            = 0,
+    SMB_SESSION_XSEC            = 0,
 };
 
 //-----------------------------------------------------------------------------/

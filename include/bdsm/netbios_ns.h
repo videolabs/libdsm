@@ -39,10 +39,10 @@
  */
 typedef struct                netbios_ns_entry_s
 {
-  struct netbios_ns_entry_s     *next;
-  struct in_addr                address;
-  char                          name[NETBIOS_NAME_LENGTH + 1];
-  char                          type;
+    struct netbios_ns_entry_s     *next;
+    struct in_addr                address;
+    char                          name[NETBIOS_NAME_LENGTH + 1];
+    char                          type;
 }                             netbios_ns_entry;
 
 /**
@@ -78,11 +78,12 @@ char                netbios_ns_entry_type(netbios_ns_entry *entry);
  * structure, use the related functions to interact with it.
  */
 
-typedef struct {
-  int                 socket;
-  struct sockaddr_in  addr;
-  uint16_t            last_trn_id;  // Last transaction id used;
-  netbios_ns_entry  *entries;     // NS entries cache, mainly used by discover()
+typedef struct
+{
+    int                 socket;
+    struct sockaddr_in  addr;
+    uint16_t            last_trn_id;  // Last transaction id used;
+    netbios_ns_entry  *entries;     // NS entries cache, mainly used by discover()
 }                   netbios_ns;
 
 /**
@@ -111,7 +112,7 @@ void          netbios_ns_destroy(netbios_ns *ns);
  * @return the ipv4 address in network byte-order or 0 if it wasn't successfull.
  */
 int           netbios_ns_resolve(netbios_ns *ns, const char *name,
-                                 char type, uint32_t * addr);
+                                 char type, uint32_t *addr);
 
 /**
  * @brief Try to discover all the Netbios/SMB speaking machine on the LAN.
@@ -182,7 +183,7 @@ void                netbios_ns_clear(netbios_ns *ns);
  * @return The added entry
  */
 netbios_ns_entry    *netbios_ns_entry_add(netbios_ns *ns, const char *name,
-                                          char type, uint32_t ip);
+        char type, uint32_t ip);
 /**
  * @internal
  * @brief Find an entry in
@@ -194,6 +195,6 @@ netbios_ns_entry    *netbios_ns_entry_add(netbios_ns *ns, const char *name,
  * @return [description]
  */
 netbios_ns_entry    *netbios_ns_entry_find(netbios_ns *ns, const char *by_name,
-                                           uint32_t ip);
+        uint32_t ip);
 
 #endif

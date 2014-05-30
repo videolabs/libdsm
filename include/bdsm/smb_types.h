@@ -59,60 +59,63 @@ typedef uint32_t    smb_fd;
  */
 typedef struct  smb_file_s
 {
-  struct smb_file_s   *next;          // Next file in this share
-  char                *name;
-  smb_fid             fid;
-  smb_tid             tid;
-  size_t              name_len;
-  uint64_t            created;
-  uint64_t            accessed;
-  uint64_t            written;
-  uint64_t            changed;
-  uint64_t            alloc_size;
-  uint64_t            size;
-  uint32_t            attr;
-  uint32_t            readp;          // Current read pointer (position);
-  int                 is_dir;         // 0 -> file, 1 -> directory
+    struct smb_file_s   *next;          // Next file in this share
+    char                *name;
+    smb_fid             fid;
+    smb_tid             tid;
+    size_t              name_len;
+    uint64_t            created;
+    uint64_t            accessed;
+    uint64_t            written;
+    uint64_t            changed;
+    uint64_t            alloc_size;
+    uint64_t            size;
+    uint32_t            attr;
+    uint32_t            readp;          // Current read pointer (position);
+    int                 is_dir;         // 0 -> file, 1 -> directory
 } smb_file;
 
 typedef struct smb_share_s
 {
-  struct smb_share_s  *next;          // Next share in this session
-  struct smb_file_s   *files;         // List of all open files for this share
-  smb_tid             tid;
-  uint16_t            opts;           // Optionnal support opts
-  uint16_t            rights;         // Maximum rights field
-  uint16_t            guest_rights;
+    struct smb_share_s  *next;          // Next share in this session
+    struct smb_file_s   *files;         // List of all open files for this share
+    smb_tid             tid;
+    uint16_t            opts;           // Optionnal support opts
+    uint16_t            rights;         // Maximum rights field
+    uint16_t            guest_rights;
 } smb_share;
 
-typedef struct smb_transport_s {
-  void              *session;
-  void              *(*new)(size_t buf_size);
-  int               (*connect)(struct in_addr *addr, void *s, const char *name);
-  void              (*destroy)(void *s);
-  void              (*pkt_init)(void *s);
-  int               (*pkt_append)(void *s, void *data, size_t size);
-  int               (*send)(void *s);
-  ssize_t           (*recv)(void *s, void **data);
+typedef struct smb_transport_s
+{
+    void              *session;
+    void              *(*new)(size_t buf_size);
+    int (*connect)(struct in_addr *addr, void *s, const char *name);
+    void (*destroy)(void *s);
+    void (*pkt_init)(void *s);
+    int (*pkt_append)(void *s, void *data, size_t size);
+    int (*send)(void *s);
+    ssize_t (*recv)(void *s, void **data);
 }                   smb_transport;
 
 // An structure to store user credentials;
 // login:password@domain (also DOMAIN\login)
-typedef struct {
-    char *    domain;
-    char *    login;
-    char *    password;
+typedef struct
+{
+    char     *domain;
+    char     *login;
+    char     *password;
 }           smb_creds;
 
-typedef struct {
-  char                name[16];       // The server name
-  uint16_t            dialect;        // The selected dialect
-  uint16_t            security_mode;  // Security mode
-  uint16_t            uid;            // uid attributed by the server.
-  uint32_t            session_key;    // The session key sent by the server on protocol negotiate
-  uint32_t            caps;           // Server caps replyed during negotiate
-  uint64_t            challenge;      // For challenge response security
-  uint64_t            ts;             // It seems Win7 requires it :-/
+typedef struct
+{
+    char                name[16];       // The server name
+    uint16_t            dialect;        // The selected dialect
+    uint16_t            security_mode;  // Security mode
+    uint16_t            uid;            // uid attributed by the server.
+    uint32_t            session_key;    // The session key sent by the server on protocol negotiate
+    uint32_t            caps;           // Server caps replyed during negotiate
+    uint64_t            challenge;      // For challenge response security
+    uint64_t            ts;             // It seems Win7 requires it :-/
 }                   smb_srv_info;
 
 /**
@@ -120,20 +123,20 @@ typedef struct {
  */
 typedef struct
 {
-  int                 state;
-  bool                guest;            // Are we logged as guest ?
+    int                 state;
+    bool                guest;            // Are we logged as guest ?
 
-  // Informations about the smb server we are connected to.
-  smb_srv_info        srv;
+    // Informations about the smb server we are connected to.
+    smb_srv_info        srv;
 
 
-  ASN1_TYPE           spnego_asn1;
-  smb_buffer          xsec_target;
+    ASN1_TYPE           spnego_asn1;
+    smb_buffer          xsec_target;
 
-  smb_creds           creds;
-  smb_transport       transport;
+    smb_creds           creds;
+    smb_transport       transport;
 
-  struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file
+    struct smb_share_s  *shares;          // shares->files | Map fd <-> smb_file
 }                   smb_session;
 
 /**
@@ -161,9 +164,9 @@ typedef smb_file *smb_stat;
  */
 typedef struct
 {
-  size_t          payload_size; // Size of the allocated payload
-  size_t          cursor;       // Write cursor in the payload
-  smb_packet      *packet;      // Yummy yummy, Fruity fruity !
+    size_t          payload_size; // Size of the allocated payload
+    size_t          cursor;       // Write cursor in the payload
+    smb_packet      *packet;      // Yummy yummy, Fruity fruity !
 }                               smb_message;
 
 

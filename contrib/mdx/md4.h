@@ -31,11 +31,12 @@
 /* Any 32-bit or wider unsigned integer data type will do */
 typedef unsigned int MD4_u32plus;
 
-typedef struct {
-	MD4_u32plus lo, hi;
-	MD4_u32plus a, b, c, d;
-	unsigned char buffer[64];
-	MD4_u32plus block[16];
+typedef struct
+{
+    MD4_u32plus lo, hi;
+    MD4_u32plus a, b, c, d;
+    unsigned char buffer[64];
+    MD4_u32plus block[16];
 } MD4_CTX;
 
 extern void MD4_Init(MD4_CTX *ctx);

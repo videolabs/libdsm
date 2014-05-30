@@ -25,39 +25,39 @@ int               transport_connect_nbt(struct in_addr *addr,
                                         netbios_session *s,
                                         const char *name)
 {
-  return (netbios_session_connect(addr, s, name, 0));
+    return (netbios_session_connect(addr, s, name, 0));
 }
 
 int               transport_connect_tcp(struct in_addr *addr,
                                         netbios_session *s,
                                         const char *name)
 {
-  return (netbios_session_connect(addr, s, name, 1));
+    return (netbios_session_connect(addr, s, name, 1));
 }
 
 void              smb_transport_nbt(smb_transport *tr)
 {
-  assert(tr != NULL);
+    assert(tr != NULL);
 
-  // Sorry for the dirty cast.
-  tr->new           = (void *)netbios_session_new;
-  tr->connect       = (void *)transport_connect_nbt;
-  tr->destroy       = (void *)netbios_session_destroy;
-  tr->pkt_init      = (void *)netbios_session_packet_init;
-  tr->pkt_append    = (void *)netbios_session_packet_append;
-  tr->send          = (void *)netbios_session_packet_send;
-  tr->recv          = (void *)netbios_session_packet_recv;
+    // Sorry for the dirty cast.
+    tr->new           = (void *)netbios_session_new;
+    tr->connect       = (void *)transport_connect_nbt;
+    tr->destroy       = (void *)netbios_session_destroy;
+    tr->pkt_init      = (void *)netbios_session_packet_init;
+    tr->pkt_append    = (void *)netbios_session_packet_append;
+    tr->send          = (void *)netbios_session_packet_send;
+    tr->recv          = (void *)netbios_session_packet_recv;
 }
 
 void              smb_transport_tcp(smb_transport *tr)
 {
-  assert(tr != NULL);
+    assert(tr != NULL);
 
-  tr->new           = (void *)netbios_session_new;
-  tr->connect       = (void *)transport_connect_tcp;
-  tr->destroy       = (void *)netbios_session_destroy;
-  tr->pkt_init      = (void *)netbios_session_packet_init;
-  tr->pkt_append    = (void *)netbios_session_packet_append;
-  tr->send          = (void *)netbios_session_packet_send;
-  tr->recv          = (void *)netbios_session_packet_recv;
+    tr->new           = (void *)netbios_session_new;
+    tr->connect       = (void *)transport_connect_tcp;
+    tr->destroy       = (void *)netbios_session_destroy;
+    tr->pkt_init      = (void *)netbios_session_packet_init;
+    tr->pkt_append    = (void *)netbios_session_packet_append;
+    tr->send          = (void *)netbios_session_packet_send;
+    tr->recv          = (void *)netbios_session_packet_recv;
 }

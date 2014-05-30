@@ -23,65 +23,65 @@
 
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {
-  assert (s != NULL && fd);
+    assert(s != NULL && fd);
 
-  return (smb_session_file_get(s, fd));
+    return (smb_session_file_get(s, fd));
 }
 
 size_t            smb_stat_list_count(smb_stat_list list)
 {
-  size_t          count = 0;
+    size_t          count = 0;
 
-  while(list != NULL)
-  {
-    list = list->next;
-    ++count;
-  }
+    while (list != NULL)
+    {
+        list = list->next;
+        ++count;
+    }
 
-  return (count);
+    return (count);
 }
 
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
 {
-  size_t          pos = 0;
+    size_t          pos = 0;
 
-  while(list != NULL && pos < index)
-  {
-    list = list->next;
-    pos++;
-  }
+    while (list != NULL && pos < index)
+    {
+        list = list->next;
+        pos++;
+    }
 
-  return (list);
+    return (list);
 }
 
 const char        *smb_stat_name(smb_stat info)
 {
-  if (info == NULL)
-    return (NULL);
-  else
-    return (info->name);
+    if (info == NULL)
+        return (NULL);
+    else
+        return (info->name);
 }
 
 uint64_t          smb_stat_get(smb_stat info, int what)
 {
-  if (info == NULL)
-    return (0);
+    if (info == NULL)
+        return (0);
 
-  switch (what)
-  {
-    case SMB_STAT_SIZE:
-      return(info->size);
-    case SMB_STAT_ALLOC_SIZE:
-      return(info->alloc_size);
-    case SMB_STAT_CTIME:
-      return(info->created);
-    case SMB_STAT_ATIME:
-      return(info->accessed);
-    case SMB_STAT_WTIME:
-      return(info->written);
-    case SMB_STAT_MTIME:
-      return(info->changed);
-    default:
-      return (0);
-  }
+    switch (what)
+    {
+        case SMB_STAT_SIZE:
+            return (info->size);
+        case SMB_STAT_ALLOC_SIZE:
+            return (info->alloc_size);
+        case SMB_STAT_CTIME:
+            return (info->created);
+        case SMB_STAT_ATIME:
+            return (info->accessed);
+        case SMB_STAT_WTIME:
+            return (info->written);
+        case SMB_STAT_MTIME:
+            return (info->changed);
+        default:
+            return (0);
+    }
 }

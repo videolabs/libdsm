@@ -28,58 +28,58 @@
 
 static const char *current_encoding()
 {
-  static int locale_set = 0;
+    static int locale_set = 0;
 
-  if (!locale_set)
-  {
-    setlocale(LC_ALL, "");
-    locale_set = 1;
-  }
-  //fprintf(stderr, "%s\n", nl_langinfo(CODESET));
-  return (nl_langinfo(CODESET));
+    if (!locale_set)
+    {
+        setlocale(LC_ALL, "");
+        locale_set = 1;
+    }
+    //fprintf(stderr, "%s\n", nl_langinfo(CODESET));
+    return (nl_langinfo(CODESET));
 }
 
 static size_t smb_iconv(const char *src, size_t src_len, char **dst,
                         size_t dst_len, const char *src_enc,
                         const char *dst_enc)
 {
-  iconv_t   ic;
-  char      *out;
-  size_t    outleft;
+    iconv_t   ic;
+    char      *out;
+    size_t    outleft;
 
-  assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
+    assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
 
-  if (!src_len)
-  {
-    *dst = NULL;
-    return (0);
-  }
+    if (!src_len)
+    {
+        *dst = NULL;
+        return (0);
+    }
 
-  if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
-  {
-    fprintf(stderr, "Unable to open iconv to convert from %s to %s\n",
-            src_enc, dst_enc);
-    return (0);
-  }
+    if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
+    {
+        fprintf(stderr, "Unable to open iconv to convert from %s to %s\n",
+                src_enc, dst_enc);
+        return (0);
+    }
 
-  outleft = dst_len; // The utf-16 str is at most 2x bigger than the utf-8 one. (i think ?)
-  out     = *dst = malloc(outleft);
+    outleft = dst_len; // The utf-16 str is at most 2x bigger than the utf-8 one. (i think ?)
+    out     = *dst = malloc(outleft);
 
-  assert(out != NULL);
-  iconv(ic, (char **)&src, &src_len, &out, &outleft);
-  assert(src_len == 0);
+    assert(out != NULL);
+    iconv(ic, (char **)&src, &src_len, &out, &outleft);
+    assert(src_len == 0);
 
-  return (dst_len - outleft);
+    return (dst_len - outleft);
 }
 
 size_t      smb_to_utf16(const char *src, size_t src_len, char **dst)
 {
-  return(smb_iconv(src, src_len, dst, src_len * 2,
-         current_encoding(), "UCS-2LE"));
+    return (smb_iconv(src, src_len, dst, src_len * 2,
+                      current_encoding(), "UCS-2LE"));
 }
 
 size_t      smb_from_utf16(const char *src, size_t src_len, char **dst)
 {
-  return(smb_iconv(src, src_len, dst, src_len,
-         "UCS-2LE", current_encoding()));
+    return (smb_iconv(src, src_len, dst, src_len,
+                      "UCS-2LE", current_encoding()));
 }

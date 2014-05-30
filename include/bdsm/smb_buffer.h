@@ -32,8 +32,8 @@
   */
 typedef struct
 {
-  void      *data;  /// Data pointed
-  size_t    size;   /// Size in byte of the pointed
+    void      *data;  /// Data pointed
+    size_t    size;   /// Size in byte of the pointed
 } smb_buffer;
 
 /**

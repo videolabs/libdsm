@@ -25,123 +25,123 @@
 
 const char          *netbios_ns_entry_name(netbios_ns_entry *entry)
 {
-  if (entry != NULL)
-    return (entry->name);
-  else
-    return (NULL);
+    if (entry != NULL)
+        return (entry->name);
+    else
+        return (NULL);
 }
 
 uint32_t            netbios_ns_entry_ip(netbios_ns_entry *entry)
 {
-  if (entry != NULL)
-    return (entry->address.s_addr);
-  else
-    return (0);
+    if (entry != NULL)
+        return (entry->address.s_addr);
+    else
+        return (0);
 }
 
 char                netbios_ns_entry_type(netbios_ns_entry *entry)
 {
-  if (entry != NULL)
-    return (entry->type);
-  else
-    return (-1);
+    if (entry != NULL)
+        return (entry->type);
+    else
+        return (-1);
 }
 
 void                netbios_ns_clear(netbios_ns *ns)
 {
-  netbios_ns_entry  *next;
+    netbios_ns_entry  *next;
 
-  assert(ns != NULL);
+    assert(ns != NULL);
 
-  while (ns->entries != NULL)
-  {
-    next = ns->entries->next;
-    free(ns->entries->next);
-    ns->entries = next;
-  }
+    while (ns->entries != NULL)
+    {
+        next = ns->entries->next;
+        free(ns->entries->next);
+        ns->entries = next;
+    }
 }
 
 netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
-                                         char type, uint32_t ip)
+                                       char type, uint32_t ip)
 {
-  netbios_ns_entry  *entry;
+    netbios_ns_entry  *entry;
 
-  entry = malloc(sizeof(netbios_ns_entry));
-  assert(entry != NULL);
-  memset((void *)entry, 0, sizeof(netbios_ns_entry));
+    entry = malloc(sizeof(netbios_ns_entry));
+    assert(entry != NULL);
+    memset((void *)entry, 0, sizeof(netbios_ns_entry));
 
-  if (name != NULL)
-  {
-    memcpy(entry->name, name, NETBIOS_NAME_LENGTH);
-    entry->name[NETBIOS_NAME_LENGTH] = 0;
-  }
+    if (name != NULL)
+    {
+        memcpy(entry->name, name, NETBIOS_NAME_LENGTH);
+        entry->name[NETBIOS_NAME_LENGTH] = 0;
+    }
 
-  entry->type           = type;
-  entry->address.s_addr = ip;
-  entry->next           = ns->entries;
+    entry->type           = type;
+    entry->address.s_addr = ip;
+    entry->next           = ns->entries;
 
-  ns->entries = entry;
+    ns->entries = entry;
 
-  return (ns->entries);
+    return (ns->entries);
 }
 // Find an entry in the list. Search by name if name is not NULL,
 // or by ip otherwise
 netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_name,
-                                          uint32_t ip)
+                                        uint32_t ip)
 {
-  netbios_ns_entry  *found = NULL;
-  netbios_ns_entry  *iter;
+    netbios_ns_entry  *found = NULL;
+    netbios_ns_entry  *iter;
 
-  assert(ns != NULL);
+    assert(ns != NULL);
 
-  iter = ns->entries;
-  while(iter != NULL && found == NULL)
-  {
-    if (by_name != NULL)
+    iter = ns->entries;
+    while (iter != NULL && found == NULL)
     {
-      if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
-        found = iter;
+        if (by_name != NULL)
+        {
+            if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
+                found = iter;
+        }
+        else if (iter->address.s_addr == ip)
+            found = iter;
+
+        iter = iter->next;
     }
-    else if (iter->address.s_addr == ip)
-      found = iter;
 
-    iter = iter->next;
-  }
-
-  return (found);
+    return (found);
 }
 
 int             netbios_ns_entry_count(netbios_ns *ns)
 {
-  netbios_ns_entry  *iter;
-  int                 res;
+    netbios_ns_entry  *iter;
+    int                 res;
 
-  assert (ns != NULL);
+    assert(ns != NULL);
 
-  iter  = ns->entries;
-  res   = 0;
-  while (iter != NULL)
-  {
-    res++;
-    iter = iter->next;
-  }
+    iter  = ns->entries;
+    res   = 0;
+    while (iter != NULL)
+    {
+        res++;
+        iter = iter->next;
+    }
 
-  return (res);
+    return (res);
 }
 
 netbios_ns_entry  *netbios_ns_entry_at(netbios_ns *ns, int pos)
 {
-  netbios_ns_entry  *iter = NULL;
-  int                 i = 0;
+    netbios_ns_entry  *iter = NULL;
+    int                 i = 0;
 
-  assert(ns != NULL);
+    assert(ns != NULL);
 
-  iter = ns->entries;
-  while (i < pos && iter != NULL)
-  {
-    i++;
-    iter = iter->next;
-  }
+    iter = ns->entries;
+    while (i < pos && iter != NULL)
+    {
+        i++;
+        iter = iter->next;
+    }
 
-  return (iter);
+    return (iter);
 }

@@ -29,12 +29,12 @@ typedef uint8_t smb_ntlmh[SMB_NTLM_HASH_SIZE];
 
 typedef struct
 {
-  uint32_t    header;
-  uint32_t    reserved;
-  uint64_t    timestamp;
-  uint64_t    challenge;
-  uint32_t    unknown;
-  uint8_t     target[];
+    uint32_t    header;
+    uint32_t    reserved;
+    uint64_t    timestamp;
+    uint64_t    challenge;
+    uint32_t    unknown;
+    uint8_t     target[];
 } __attribute__((packed)) smb_ntlm_blob;
 
 
@@ -53,36 +53,36 @@ typedef struct
 
 typedef struct
 {
-  _NTLMSSP_COMMON
-  uint32_t    flags;
-  _NTLMSSP_FIELD(domain)
-  _NTLMSSP_FIELD(host)
-  uint8_t     names[];
+    _NTLMSSP_COMMON
+    uint32_t    flags;
+    _NTLMSSP_FIELD(domain)
+    _NTLMSSP_FIELD(host)
+    uint8_t     names[];
 } __attribute__((packed)) smb_ntlmssp_nego;
 
 typedef struct
 {
-  _NTLMSSP_COMMON
-  _NTLMSSP_FIELD(name)
-  uint32_t    flags;
-  uint64_t    challenge;
-  uint64_t    reserved;
-  _NTLMSSP_FIELD(tgt) // Target Info
-  uint8_t     data[];
+    _NTLMSSP_COMMON
+    _NTLMSSP_FIELD(name)
+    uint32_t    flags;
+    uint64_t    challenge;
+    uint64_t    reserved;
+    _NTLMSSP_FIELD(tgt) // Target Info
+    uint8_t     data[];
 } __attribute__((packed)) smb_ntlmssp_challenge;
 
 typedef struct
 {
-  _NTLMSSP_COMMON
-  _NTLMSSP_FIELD(lm)
-  _NTLMSSP_FIELD(ntlm)
-  _NTLMSSP_FIELD(domain)
-  _NTLMSSP_FIELD(user)
-  _NTLMSSP_FIELD(host)
-  _NTLMSSP_FIELD(session_key)
+    _NTLMSSP_COMMON
+    _NTLMSSP_FIELD(lm)
+    _NTLMSSP_FIELD(ntlm)
+    _NTLMSSP_FIELD(domain)
+    _NTLMSSP_FIELD(user)
+    _NTLMSSP_FIELD(host)
+    _NTLMSSP_FIELD(session_key)
 
-  uint32_t    flags;
-  uint8_t     data[];
+    uint32_t    flags;
+    uint8_t     data[];
 } __attribute__((packed)) smb_ntlmssp_auth;
 
 uint64_t    smb_ntlm_generate_challenge();

@@ -32,193 +32,193 @@
 
 static int        open_socket_and_connect(netbios_session *s)
 {
-  if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    goto error;
-  if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
-    goto error;
+    if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        goto error;
+    if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
+        goto error;
 
-  return (1);
+    return (1);
 
-  error:
+error:
     perror("netbios_session_new, open_socket: ");
     return (0);
 }
 
 netbios_session *netbios_session_new(size_t buf_size)
 {
-  netbios_session   *session;
-  size_t            packet_size;
+    netbios_session   *session;
+    size_t            packet_size;
 
-  session = (netbios_session *)malloc(sizeof(netbios_session));
-  assert(session != NULL);
-  memset((void *) session, 0, sizeof(netbios_session));
+    session = (netbios_session *)malloc(sizeof(netbios_session));
+    assert(session != NULL);
+    memset((void *) session, 0, sizeof(netbios_session));
 
-  session->packet_payload_size = buf_size;
-  packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
-  session->packet = (netbios_session_packet *)malloc(packet_size);
-  assert(session->packet != NULL);
+    session->packet_payload_size = buf_size;
+    packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
+    session->packet = (netbios_session_packet *)malloc(packet_size);
+    assert(session->packet != NULL);
 
-  return(session);
+    return (session);
 }
 
 void              netbios_session_destroy(netbios_session *s)
 {
-  if (!s)
-    return;
-  close(s->socket);
+    if (!s)
+        return;
+    close(s->socket);
 
-  free(s->packet);
-  free(s);
+    free(s->packet);
+    free(s);
 }
 
 int               netbios_session_connect(struct in_addr *addr,
-                                          netbios_session *s,
-                                          const char *name,
-                                          int direct_tcp)
+        netbios_session *s,
+        const char *name,
+        int direct_tcp)
 {
-  ssize_t                   recv_size;
-  char                      *encoded_name;
+    ssize_t                   recv_size;
+    char                      *encoded_name;
 
-  assert(s != NULL && s->packet != NULL);
+    assert(s != NULL && s->packet != NULL);
 
-  if (direct_tcp)
-    s->remote_addr.sin_port       = htons(NETBIOS_PORT_DIRECT);
-  else
-    s->remote_addr.sin_port       = htons(NETBIOS_PORT_SESSION);
-  s->remote_addr.sin_family       = AF_INET;
-  s->remote_addr.sin_addr.s_addr  = addr->s_addr;
-  if (!open_socket_and_connect(s))
-    goto error;
+    if (direct_tcp)
+        s->remote_addr.sin_port       = htons(NETBIOS_PORT_DIRECT);
+    else
+        s->remote_addr.sin_port       = htons(NETBIOS_PORT_SESSION);
+    s->remote_addr.sin_family       = AF_INET;
+    s->remote_addr.sin_addr.s_addr  = addr->s_addr;
+    if (!open_socket_and_connect(s))
+        goto error;
 
-  if (!direct_tcp)
-  {
-  // Send the Session Request message
-    netbios_session_packet_init(s);
-    s->packet->opcode = NETBIOS_OP_SESSION_REQ;
-    encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
-    netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
-    free(encoded_name);
-    encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
-    netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
-    free(encoded_name);
-
-    s->state = NETBIOS_SESSION_CONNECTING;
-    if (!netbios_session_packet_send(s))
-      goto error;
-
-    // Now receiving the reply from the server.
-    recv_size = netbios_session_packet_recv(s, NULL);
-    if (recv_size < 0)
-      goto error;
-
-    // Reply was negative, we are not connected :(
-    if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
+    if (!direct_tcp)
     {
-      s->state = NETBIOS_SESSION_REFUSED;
-      return (0);
+        // Send the Session Request message
+        netbios_session_packet_init(s);
+        s->packet->opcode = NETBIOS_OP_SESSION_REQ;
+        encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
+        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        free(encoded_name);
+        encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
+        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        free(encoded_name);
+
+        s->state = NETBIOS_SESSION_CONNECTING;
+        if (!netbios_session_packet_send(s))
+            goto error;
+
+        // Now receiving the reply from the server.
+        recv_size = netbios_session_packet_recv(s, NULL);
+        if (recv_size < 0)
+            goto error;
+
+        // Reply was negative, we are not connected :(
+        if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
+        {
+            s->state = NETBIOS_SESSION_REFUSED;
+            return (0);
+        }
     }
-  }
 
-  // Reply was OK or DirectTCP, a session has been established
-  s->state = NETBIOS_SESSION_CONNECTED;
-  return(1);
+    // Reply was OK or DirectTCP, a session has been established
+    s->state = NETBIOS_SESSION_CONNECTED;
+    return (1);
 
-  error:
+error:
     s->state = NETBIOS_SESSION_ERROR;
     return (0);
 }
 
 void              netbios_session_packet_init(netbios_session *s)
 {
-  assert(s != NULL);
+    assert(s != NULL);
 
-  s->packet_cursor  = 0;
-  s->packet->flags  = 0;
-  s->packet->opcode = NETBIOS_OP_SESSION_MSG;
+    s->packet_cursor  = 0;
+    s->packet->flags  = 0;
+    s->packet->opcode = NETBIOS_OP_SESSION_MSG;
 }
 
 int               netbios_session_packet_append(netbios_session *s,
-                                                const char *data, size_t size)
+        const char *data, size_t size)
 {
-  char  *start;
+    char  *start;
 
-  assert(s && s->packet);
+    assert(s && s->packet);
 
-  if (s->packet_payload_size - s->packet_cursor < size)
-    return (0);
+    if (s->packet_payload_size - s->packet_cursor < size)
+        return (0);
 
-  start = ((char *)&s->packet->payload) + s->packet_cursor;
-  memcpy(start, data, size);
-  s->packet_cursor += size;
+    start = ((char *)&s->packet->payload) + s->packet_cursor;
+    memcpy(start, data, size);
+    s->packet_cursor += size;
 
-  return (1);
+    return (1);
 }
 
 int               netbios_session_packet_send(netbios_session *s)
 {
-  ssize_t         to_send;
-  ssize_t         sent;
+    ssize_t         to_send;
+    ssize_t         sent;
 
-  assert(s && s->packet && s->socket && s->state > 0);
+    assert(s && s->packet && s->socket && s->state > 0);
 
-  s->packet->length = htons(s->packet_cursor);
-  to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
-  sent              = send(s->socket, (void *)s->packet, to_send, 0);
+    s->packet->length = htons(s->packet_cursor);
+    to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
+    sent              = send(s->socket, (void *)s->packet, to_send, 0);
 
-  if (sent != to_send)
-  {
-    perror("netbios_session_packet_send: Unable to send (full?) packet");
-    return (0);
-  }
+    if (sent != to_send)
+    {
+        perror("netbios_session_packet_send: Unable to send (full?) packet");
+        return (0);
+    }
 
-  return (sent);
+    return (sent);
 }
 
 ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 {
-  ssize_t         res;
-  size_t          total, sofar;
+    ssize_t         res;
+    size_t          total, sofar;
 
-  assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
+    assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
 
-  res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
-  if (res < 0)
-  {
-    perror("netbios_session_packet_recv: ");
-    return (-1);
-  }
-
-  if ((size_t)res > sizeof(netbios_session_packet) && data != NULL)
-    *data = (void *)s->packet->payload;
-  else if (data != NULL)
-    *data = NULL;
-
-  total  = ntohs(s->packet->length);
-  total |= (s->packet->flags & 0x01) << 16;
-  sofar  = res - sizeof(netbios_session_packet);
-
-  //fprintf(stderr, "Total = %ld, sofar = %ld\n", total, sofar);
-
-  while (sofar < total)
-  {
-    res = recv(s->socket, (void *)(s->packet) + 4 + sofar, total - sofar, 0);
-    //xfprintf(stderr, "Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
-
+    res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
     if (res < 0)
     {
-      perror("netbios_session_packet_recv: ");
-      return (-1);
+        perror("netbios_session_packet_recv: ");
+        return (-1);
     }
-    sofar += res;
-  }
 
-  if (sofar > total)
-  {
-    BDSM_dbg("netbios_session_packet_recv: Packet size mismatch (%ld/%ld)\n",
-              sofar, total);
-    return(-1);
-  }
+    if ((size_t)res > sizeof(netbios_session_packet) && data != NULL)
+        *data = (void *)s->packet->payload;
+    else if (data != NULL)
+        *data = NULL;
 
-  return (sofar);
+    total  = ntohs(s->packet->length);
+    total |= (s->packet->flags & 0x01) << 16;
+    sofar  = res - sizeof(netbios_session_packet);
+
+    //fprintf(stderr, "Total = %ld, sofar = %ld\n", total, sofar);
+
+    while (sofar < total)
+    {
+        res = recv(s->socket, (void *)(s->packet) + 4 + sofar, total - sofar, 0);
+        //xfprintf(stderr, "Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
+
+        if (res < 0)
+        {
+            perror("netbios_session_packet_recv: ");
+            return (-1);
+        }
+        sofar += res;
+    }
+
+    if (sofar > total)
+    {
+        BDSM_dbg("netbios_session_packet_recv: Packet size mismatch (%ld/%ld)\n",
+                 sofar, total);
+        return (-1);
+    }
+
+    return (sofar);
 }
 
