@@ -38,9 +38,10 @@ smb_session   *smb_session_new()
   assert(s != NULL);
   memset((void *)s, 0, sizeof(smb_session));
 
+  s->guest              = false;
+
   // Explicitly sets pointer to NULL, insted of 0
-  s->spnego.init        = NULL;
-  s->spnego.asn1_def    = NULL;
+  s->spnego_asn1        = NULL;
   s->transport.session  = NULL;
   s->shares             = NULL;
 
@@ -67,9 +68,8 @@ void            smb_session_destroy(smb_session *s)
       s->transport.session = NULL;
     }
 
-    free(s->spnego.init);
-    if (s->spnego.asn1_def != NULL)
-      asn1_delete_structure(&s->spnego.asn1_def);
+    if (s->spnego_asn1 != NULL)
+      asn1_delete_structure(&s->spnego_asn1);
 
     smb_buffer_free(&s->xsec_target);
 
@@ -164,7 +164,6 @@ static int        smb_negotiate(smb_session *s, int xsec)
   smb_message         *msg = NULL;
   smb_message         answer;
   smb_nego_resp       *nego;
-  smb_nego_xsec_resp  *nego_xsec;
 
 
   msg = smb_message_new(SMB_CMD_NEGOTIATE, 128);
@@ -198,16 +197,7 @@ static int        smb_negotiate(smb_session *s, int xsec)
 
   // Copy SPNEGO supported mechanisms  token for later usage (login_gss())
   if (smb_session_supports(s, SMB_SESSION_XSEC))
-  {
     BDSM_dbg("Server is supporting extended security\n");
-
-    nego_xsec             = (smb_nego_xsec_resp *)nego;
-    s->spnego.init_sz     = nego_xsec->bct - 16;
-    s->spnego.init        = malloc(s->spnego.init_sz);
-
-    assert(s->spnego.init != NULL);
-    memcpy(s->spnego.init, nego_xsec->gssapi, s->spnego.init_sz);
-  }
   else
     s->srv.challenge      = nego->challenge;
 
@@ -300,7 +290,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
   }
 
   if (r->action & 0x0001)
-    s->guest = 1;
+    s->guest = true;
 
   s->srv.uid  = answer.packet->header.uid;
   s->state    = SMB_STATE_SESSION_OK;

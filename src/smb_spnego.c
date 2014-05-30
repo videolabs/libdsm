@@ -41,10 +41,10 @@ static int      init_asn1(smb_session *s)
 
   assert (s != NULL);
 
-  if (s->spnego.asn1_def != NULL)
+  if (s->spnego_asn1 != NULL)
     return (1);
 
-  res = asn1_array2tree(spnego_asn1_conf, &s->spnego.asn1_def, NULL);
+  res = asn1_array2tree(spnego_asn1_conf, &s->spnego_asn1, NULL);
   if (res != ASN1_SUCCESS)
   {
     asn1_display_error("init_asn1", res);
@@ -61,8 +61,8 @@ static void     clean_asn1(smb_session *s)
 {
   assert (s != NULL);
 
-  if (s->spnego.asn1_def != NULL)
-    asn1_delete_structure(&s->spnego.asn1_def);
+  if (s->spnego_asn1 != NULL)
+    asn1_delete_structure(&s->spnego_asn1);
 }
 
 static int      negotiate(smb_session *s, const char *domain)
@@ -89,7 +89,7 @@ static int      negotiate(smb_session *s, const char *domain)
   smb_message_advance(msg, sizeof(smb_session_xsec_req));
 
 
-  asn1_create_element(s->spnego.asn1_def, "SPNEGO.GSSAPIContextToken", &token);
+  asn1_create_element(s->spnego_asn1, "SPNEGO.GSSAPIContextToken", &token);
 
   res = asn1_write_value(token, "thisMech", spnego_oid, 1);
   if (res != ASN1_SUCCESS) goto error;
@@ -173,8 +173,7 @@ static int      challenge(smb_session *s)
 
   resp = (smb_session_xsec_resp *)msg.packet->payload;
 
-  asn1_create_element(s->spnego.asn1_def, "SPNEGO.NegotiationToken",
-                      &token);
+  asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
   res = asn1_der_decoding(&token, resp->payload, resp->xsec_blob_size,
                           err_desc);
   if (res != ASN1_SUCCESS)
@@ -234,7 +233,7 @@ static int      auth(smb_session *s, const char *domain, const char *user,
   smb_message_advance(msg, sizeof(smb_session_xsec_req));
 
 
-  asn1_create_element(s->spnego.asn1_def, "SPNEGO.NegotiationToken", &token);
+  asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
 
   // Select a response message type
   res = asn1_write_value(token, "", "negTokenResp", 1);
