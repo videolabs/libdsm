@@ -241,13 +241,6 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     smb_message_append(msg, ntlm2, 16 + 8);
     free(ntlm2);
 
-    // NTLM2 Response (Win7 unsupported, replaced by extended security)
-    // blob_size = smb_ntlm_make_blob((smb_ntlm_blob *)blob, s->srv.ts,
-    //                                user_challenge, domain);
-    // ntlm2 = smb_ntlm2_response(&hash_v2, s->srv.challenge, blob, blob_size);
-    // smb_message_append(msg, ntlm2, 16 + blob_size);
-    // free(ntlm2);
-
     req->oem_pass_len = 16 + SMB_LM2_BLOB_SIZE;
     req->uni_pass_len = 0; //16 + blob_size; //SMB_NTLM2_BLOB_SIZE;
     if (msg->cursor / 2) // Padding !
