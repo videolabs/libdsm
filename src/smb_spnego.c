@@ -77,13 +77,12 @@ static int      negotiate(smb_session *s, const char *domain)
     msg = smb_message_new(SMB_CMD_SETUP, 512);
     smb_message_set_andx_members(msg);
     req = (smb_session_xsec_req *)msg->packet->payload;
-    //msg->packet->header.mux_id  = 1;
 
     req->wct              = 12;
     req->max_buffer       = SMB_SESSION_MAX_BUFFER;
-    req->mpx_count        = 16; // XXX ?
+    req->mpx_count        = 16;
     req->vc_count         = 1;
-    req->caps             = s->srv.caps; // XXX caps & our_caps_mask
+    req->caps             = s->srv.caps;
     req->session_key      = s->srv.session_key;
 
     smb_message_advance(msg, sizeof(smb_session_xsec_req));
