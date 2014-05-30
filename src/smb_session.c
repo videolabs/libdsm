@@ -41,13 +41,17 @@ smb_session   *smb_session_new()
   // Explicitly sets pointer to NULL, insted of 0
   s->spnego.init        = NULL;
   s->spnego.asn1_def    = NULL;
-  s->xsec.tgt_info      = NULL;
   s->transport.session  = NULL;
   s->shares             = NULL;
 
   s->creds.domain       = NULL;
   s->creds.login        = NULL;
   s->creds.password     = NULL;
+
+  smb_buffer_init(&s->xsec_target, NULL, 0);
+
+  // Until we know more, assume server supports everything.
+  // s->c
 
   return (s);
 }
@@ -67,8 +71,8 @@ void            smb_session_destroy(smb_session *s)
       free(s->spnego.init);
     if (s->spnego.asn1_def != NULL)
       asn1_delete_structure(&s->spnego.asn1_def);
-    if (s->xsec.tgt_info != NULL)
-      free(s->xsec.tgt_info);
+
+    smb_buffer_free(&s->xsec_target);
 
     // Free stored credentials.
     if (s->creds.domain != NULL)

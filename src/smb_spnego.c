@@ -69,9 +69,8 @@ static int      negotiate(smb_session *s, const char *domain)
 {
   smb_message           *msg = NULL;
   smb_session_xsec_req  *req = NULL;
+  smb_buffer            ntlm;
   ASN1_TYPE             token;
-  void                  *ntlm;
-  size_t                ntlm_size;
   int                   res, der_size = 128;
   char                  der[128], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
@@ -105,9 +104,10 @@ static int      negotiate(smb_session *s, const char *domain)
   res = asn1_write_value(token, "spnego.negTokenInit.mechListMIC", NULL, 0);
   if (res != ASN1_SUCCESS) goto error;
 
-  smb_ntlmssp_negotiate(domain, domain, &ntlm, &ntlm_size);
-  res = asn1_write_value(token, "spnego.negTokenInit.mechToken", ntlm, ntlm_size);
-  free(ntlm);
+  smb_ntlmssp_negotiate(domain, domain, &ntlm);
+  res = asn1_write_value(token, "spnego.negTokenInit.mechToken", ntlm.data,
+                         ntlm.size);
+  smb_buffer_free(&ntlm);
   if (res != ASN1_SUCCESS) goto error;
 
   res = asn1_der_coding(token, "", der, &der_size, err_desc);
@@ -198,13 +198,10 @@ static int      challenge(smb_session *s)
 
   // We got the server challenge, yeaaah.
   challenge = (smb_ntlmssp_challenge *)resp_token;
-  s->xsec.tgt_info_sz = challenge->tgt_len;
-  s->xsec.tgt_info = malloc(s->xsec.tgt_info_sz);
-  assert(s->xsec.tgt_info != NULL);
-  memcpy(s->xsec.tgt_info,
+  smb_buffer_alloc(&s->xsec_target, challenge->tgt_len);
+  memcpy(s->xsec_target.data,
          challenge->data + challenge->tgt_offset - sizeof(smb_ntlmssp_challenge),
-         s->xsec.tgt_info_sz);
-  //s->srv.challenge = *((uint64_t *)(resp_token + 24));
+         s->xsec_target.size);
   s->srv.challenge = challenge->challenge;
   s->srv.uid       = msg.packet->header.uid;
 
@@ -218,9 +215,8 @@ static int      auth(smb_session *s, const char *domain, const char *user,
 {
   smb_message           *msg = NULL, resp;
   smb_session_xsec_req  *req = NULL;
+  smb_buffer            ntlm;
   ASN1_TYPE             token;
-  void                  *ntlm;
-  size_t                ntlm_size;
   int                   res, der_size = 512;
   char                  der[512], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
@@ -254,9 +250,10 @@ static int      auth(smb_session *s, const char *domain, const char *user,
 
 
   smb_ntlmssp_response(s->srv.challenge, s->srv.ts - 4200, domain, domain, user,
-                       password, s->xsec.tgt_info, s->xsec.tgt_info_sz,
-                       &ntlm, &ntlm_size);
-  res = asn1_write_value(token, "negTokenResp.responseToken", ntlm, ntlm_size);
+                       password, &s->xsec_target, &ntlm);
+  res = asn1_write_value(token, "negTokenResp.responseToken", ntlm.data,
+                         ntlm.size);
+  smb_buffer_free(&ntlm);
   if (res != ASN1_SUCCESS) goto error;
 
   res = asn1_der_coding(token, "", der, &der_size, err_desc);

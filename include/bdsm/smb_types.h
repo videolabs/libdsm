@@ -28,6 +28,7 @@
 #include <stddef.h>
 #include <libtasn1.h>
 
+#include "bdsm/smb_buffer.h"
 #include "bdsm/smb_packets.h"
 
 /**
@@ -128,11 +129,7 @@ typedef struct
     ASN1_TYPE           asn1_def;
   }                   spnego;           // eXtended SECurity negociation data
 
-  struct {
-    uint32_t            flags;
-    void                *tgt_info;      // Target info buffer, given by server.
-    size_t              tgt_info_sz;    // The size of the buffer
-  }                   xsec;
+  smb_buffer          xsec_target;
 
   smb_creds           creds;
   smb_transport       transport;

@@ -81,6 +81,9 @@ bin_PROGRAMS =
 
 if PROGRAMS
 bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup dsm_ntlm_test
+if DEBUG
+bin_PROGRAMS += dsm_ntlm_test
+endif
 endif
 
 dsm_SOURCES = bin/dsm.c

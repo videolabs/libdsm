@@ -52,7 +52,11 @@ void    smb_buffer_alloc(smb_buffer *buf, size_t size);
  * @brief Allocate a size long memory area from the stack and place it in
  *  the buffer structure
  */
-void    smb_buffer_alloca(smb_buffer *buf, size_t size);
+#define smb_buffer_alloca(buf, sz)    \
+  (buf)->data = alloca(sz);           \
+  (buf)->size = sz;                   \
+  assert((buf)->data != NULL);
+
 
 /**
  * @brief Free the data of this buffer if necessary

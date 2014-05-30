@@ -19,6 +19,7 @@
 #ifndef __BDSM_SMB_NTLM_H_
 #define __BDSM_SMB_NTLM_H_
 
+#include "bdsm/smb_buffer.h"
 #include "bdsm/smb_defs.h"
 
 #define SMB_LM2_BLOB_SIZE         8
@@ -92,11 +93,10 @@ void        smb_ntlm2_hash(const char *username, const char *password,
 // Precompute the blob that will be HMAC'ed to produce NTLM2 Response
 // You have to free() the blob after usage
 size_t      smb_ntlm_make_blob(smb_ntlm_blob **blob, uint64_t ts,
-                               uint64_t user_challenge, void *tgt,
-                               size_t tgt_sz);
+                               uint64_t user_challenge, smb_buffer *target);
 // Returned response is blob_size + 16 long. You'll have to free it
 uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
-                                uint8_t *blob, size_t blob_size);
+                                smb_buffer *blob);
 // Returned response is 24 bytes long. You'll have to free it.
 uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
                               uint64_t user_challenge);
@@ -105,11 +105,10 @@ void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
                                   smb_ntlmh *xkey, smb_ntlmh *enc_xkey);
 
 void        smb_ntlmssp_negotiate(const char *host, const char *domain,
-                                  void **token, size_t *token_sz);
+                                  smb_buffer *token);
 void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
                                  const char *host, const char *domain,
                                  const char *user, const char *password,
-                                 void *tgt, size_t tgt_sz,
-                                 void **token, size_t *token_sz);
+                                 smb_buffer *target, smb_buffer *token);
 
 #endif

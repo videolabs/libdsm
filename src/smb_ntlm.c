@@ -112,24 +112,22 @@ void        smb_ntlm2_hash(const char *user, const char *password,
 }
 
 uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
-                                uint8_t *blob, size_t blob_size)
+                                smb_buffer *blob)
 {
-  uint8_t         *data, *response, hmac[16];
-  size_t          data_len;
+  smb_buffer      data;
+  uint8_t         *response, hmac[16];
 
 
-  data_len  = sizeof(uint64_t) + blob_size;
-  data      = alloca(data_len);
-  assert(data != NULL);
-  memcpy(data, (void *)&srv_challenge, sizeof(uint64_t));
-  memcpy(data + sizeof(uint64_t), blob, blob_size);
+  smb_buffer_alloca(&data, sizeof(uint64_t) + blob->size);
+  memcpy(data.data, (void *)&srv_challenge, sizeof(uint64_t));
+  memcpy(data.data + sizeof(uint64_t), blob->data, blob->size);
 
-  HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, data, data_len, &hmac);
+  HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, data.data, data.size, &hmac);
 
-  response = malloc(blob_size + 16);
+  response = malloc(blob->size + 16);
   assert(response != NULL);
   memcpy(response, (void *)hmac, 16);
-  memcpy(response + 16, blob, blob_size);
+  memcpy(response + 16, blob->data, blob->size);
 
   return (response);
 }
@@ -137,7 +135,10 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
 uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
                               uint64_t user_challenge)
 {
-  return (smb_ntlm2_response(hash_v2, srv_challenge, (void *)&user_challenge, 8));
+  smb_buffer buf;
+
+  smb_buffer_init(&buf, (void *)&user_challenge, 8);
+  return (smb_ntlm2_response(hash_v2, srv_challenge, &buf));
 }
 
 // static void   _wcamelcase(char *str)
@@ -215,24 +216,23 @@ uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
 // }
 
 size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
-                               uint64_t user_challenge, void *tgt_info,
-                               size_t tgt_sz)
+                               uint64_t user_challenge, smb_buffer *target)
 {
   smb_ntlm_blob *blob;
 
-  assert(out_blob != NULL && tgt_info != NULL);
+  assert(out_blob != NULL && target != NULL);
 
-  blob = malloc(tgt_sz + sizeof(smb_ntlm_blob));
+  blob = malloc(target->size + sizeof(smb_ntlm_blob));
 
   memset((void *)blob, 0, sizeof(smb_ntlm_blob));
   blob->header    = 0x101;
   blob->timestamp = ts;
   blob->challenge = user_challenge;
 
-  memcpy(blob->target, tgt_info, tgt_sz);
+  memcpy(blob->target, target->data, target->size);
 
   *out_blob = blob;
-  return (sizeof(smb_ntlm_blob) + tgt_sz);
+  return (sizeof(smb_ntlm_blob) + target->size);
 }
 
 void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
@@ -249,20 +249,20 @@ void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
 
 
 void        smb_ntlmssp_negotiate(const char *host, const char *domain,
-                                  void **token, size_t *token_sz)
+                                  smb_buffer *token)
 {
   smb_ntlmssp_nego  *nego;
 
-  assert(host != NULL && domain != NULL && token != NULL && token_sz != NULL);
+  assert(host != NULL && domain != NULL && token != NULL);
 
-  *token_sz = sizeof(smb_ntlmssp_nego) + strlen(host) + strlen(domain);
-  if (*token_sz % 2) // Align on Word
-    *token_sz += 1;
+  token->size = sizeof(smb_ntlmssp_nego) + strlen(host) + strlen(domain);
+  if (token->size % 2) // Align on Word
+    token->size += 1;
+  smb_buffer_alloc(token, token->size);
+  // fprintf(stderr, "Token size if %ld\n", token->size);
 
-  // fprintf(stderr, "Token size if %ld\n", *token_sz);
 
-  nego      = (smb_ntlmssp_nego *)malloc(*token_sz);
-  assert(nego != NULL);
+  nego      = (smb_ntlmssp_nego *)token->data;
 
   nego->type  = SMB_NTLMSSP_CMD_NEGO;
   nego->flags = 0x60088215;//0x20080205;
@@ -274,8 +274,6 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
   memcpy(nego->id, "NTLMSSP", 8);
   memcpy(nego->names, domain, strlen(domain));
   memcpy(nego->names + strlen(domain), domain, strlen(domain));
-
-  *token = (void *)nego;
 }
 
 #define __AUTH_APPEND(FIELD, value, size, cursor)           \
@@ -287,43 +285,48 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
 void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
                                  const char *host, const char *domain,
                                  const char *user, const char *password,
-                                 void *tgt, size_t tgt_sz,
-                                 void **token, size_t *token_sz)
+                                 smb_buffer *target, smb_buffer *token)
 {
   smb_ntlmssp_auth      *auth;
   smb_ntlm_blob         *blob;
   smb_ntlmh             hash_v2, xkey, xkey_crypt;
+  smb_buffer            buf;
   void                  *lm2, *ntlm2;
   size_t                blob_size, utf_sz, cursor = 0;
   uint64_t              user_challenge;
   char                  *utf;
 
   assert(host != NULL && domain != NULL && user != NULL && password != NULL);
-  assert(token != NULL && token_sz != NULL);
+  assert(token != NULL && target != NULL);
 
   //// We compute most of the data first to know the final token size
   smb_ntlm2_hash(user, password, domain, &hash_v2);
   user_challenge = smb_ntlm_generate_challenge();
   smb_ntlm_generate_xkey(&xkey);
-  blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, tgt, tgt_sz);
+  blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, target);
 
   lm2   = smb_lm2_response(&hash_v2, srv_challenge, smb_ntlm_generate_challenge());
-  ntlm2 = smb_ntlm2_response(&hash_v2, srv_challenge, (void *)blob, blob_size);
+  smb_buffer_init(&buf, blob, blob_size);
+  ntlm2 = smb_ntlm2_response(&hash_v2, srv_challenge, &buf);
   smb_ntlm2_session_key(&hash_v2, ntlm2, &xkey, &xkey_crypt);
 
-  *token_sz = sizeof(smb_ntlmssp_auth)
-              + strlen(host) * 2
-              + strlen(domain) * 2
-              + strlen(user) * 2
-              + blob_size + 16 // Blob + HMAC
-              + 8 + 16  // LM2 Response (miniblob=user_challenge + HMAC)
-              + 16;     // Session Key
-  if (*token_sz % 2) // Align on Word
-    *token_sz += 1;
+  smb_buffer_init(&buf, NULL, 0);
+  free(blob);
 
-  auth = (smb_ntlmssp_auth *)malloc(*token_sz);
-  assert(auth != NULL);
-  memset(auth, 0, *token_sz);
+  // Compute size of and allocate token
+  token->size = sizeof(smb_ntlmssp_auth)
+                + strlen(host) * 2
+                + strlen(domain) * 2
+                + strlen(user) * 2
+                + blob_size + 16 // Blob + HMAC
+                + 8 + 16  // LM2 Response (miniblob=user_challenge + HMAC)
+                + 16;     // Session Key
+  if (token->size % 2) // Align on Word
+    token->size += 1;
+  smb_buffer_alloc(token, token->size);
+
+  auth = (smb_ntlmssp_auth *)token->data;
+  memset(auth, 0, token->size);
 
   memcpy(auth->id, "NTLMSSP", 8);
   auth->type  = SMB_NTLMSSP_CMD_AUTH;
@@ -347,6 +350,4 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
 
   free(lm2);
   free(ntlm2);
-
-  *token = auth;
 }

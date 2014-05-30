@@ -39,7 +39,7 @@ int hexprint(const char *name, const char *data, size_t data_sz)
     {
       printf("\n0x");
     }
-    printf("%0.2hhx", *(data + i));
+    printf("%.2hhx", *(data + i));
   }
   printf("\n");
 }
@@ -60,19 +60,21 @@ int main(int argc, char const *argv[])
   uint64_t    usr_challenge   = htobe64(0x9a12f85759053d89);
   uint64_t    srv_ts          = htobe64(0x80b0dda51669cf01);
   uint64_t    srv_ts2         = htobe64(0x34fd56df1669cf01);
-  char        *lm2, *ntlm2;
+  void        *lm2, *ntlm2;
 
   smb_ntlm_blob *blob;
   size_t        blob_sz;
 
   smb_ntlmh   hashv1, hashv2, xkey, xkey_crypt;
+  smb_buffer  buf;
 
-  smb_ntlm_hash(password, hashv1);
-  smb_ntlm2_hash(user, password, domain, hashv2);
-  lm2 = smb_lm2_response(hashv2, srv_challenge, usr_challenge);
+  smb_ntlm_hash(password, &hashv1);
+  smb_ntlm2_hash(user, password, domain, &hashv2);
+  lm2 = smb_lm2_response(&hashv2, srv_challenge, usr_challenge);
 
   blob_sz = 16;//smb_ntlm_make_blob(&blob, srv_ts, usr_challenge, domain, domain, srv_ts2);
-  ntlm2 = smb_ntlm2_response(&hashv2, srv_challenge, lm2, blob_sz);
+  smb_buffer_init(&buf, lm2, blob_sz);
+  ntlm2 = smb_ntlm2_response(&hashv2, srv_challenge, &buf);
   //smb_ntlm2_session_key(&hashv2, ntlm2, &session_key);
 
   smb_ntlm_generate_xkey(xkey);
