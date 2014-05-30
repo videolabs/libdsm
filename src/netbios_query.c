@@ -49,8 +49,7 @@ void              netbios_query_destroy(netbios_query *q)
 {
   assert(q);
 
-  if (q->packet)
-    free(q->packet);
+  free(q->packet);
   free(q);
 }
 

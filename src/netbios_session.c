@@ -66,8 +66,8 @@ void              netbios_session_destroy(netbios_session *s)
   if (!s)
     return;
   close(s->socket);
-  if (s->packet)
-    free(s->packet);
+
+  free(s->packet);
   free(s);
 }
 

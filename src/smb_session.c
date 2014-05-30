@@ -67,21 +67,16 @@ void            smb_session_destroy(smb_session *s)
       s->transport.session = NULL;
     }
 
-    if (s->spnego.init != NULL)
-      free(s->spnego.init);
+    free(s->spnego.init);
     if (s->spnego.asn1_def != NULL)
       asn1_delete_structure(&s->spnego.asn1_def);
 
     smb_buffer_free(&s->xsec_target);
 
     // Free stored credentials.
-    if (s->creds.domain != NULL)
-      free(s->creds.domain);
-    if (s->creds.login != NULL)
-      free(s->creds.login);
-    if (s->creds.password != NULL)
-      free(s->creds.password);
-
+    free(s->creds.domain);
+    free(s->creds.login);
+    free(s->creds.password);
     free(s);
   }
 }

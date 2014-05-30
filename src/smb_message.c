@@ -72,11 +72,8 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
 void            smb_message_destroy(smb_message *msg)
 {
   if (msg != NULL)
-  {
-    if (msg->packet != NULL)
-      free(msg->packet);
-    free(msg);
-  }
+    free(msg->packet);
+  free(msg);
 }
 
 int             smb_message_append(smb_message *msg, const void *data,
