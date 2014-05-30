@@ -51,3 +51,4 @@ doc/html/*
 doc/Doxyfile
 dsm_ntlm
 contrib/spnego/spnego_asn1.c
+dsm_ntlm_test
