@@ -28,7 +28,7 @@
 #include "bdsm/smb_spnego.h"
 #include "bdsm/smb_transport.h"
 
-static int        smb_negotiate(smb_session *s, int xsec);
+static int        smb_negotiate(smb_session *s);
 
 smb_session   *smb_session_new()
 {
@@ -144,9 +144,8 @@ int             smb_session_connect(smb_session *s, const char *name,
     memcpy(s->srv.name, name, strlen(name) + 1);
     s->state = SMB_STATE_NETBIOS_OK;
 
-    if (!smb_negotiate(s, 1))     // Try to negotiate with extended security
-        if (!smb_negotiate(s, 0))   // Try to negotiate withOUT extended security
-            return (0);
+    if (!smb_negotiate(s))
+        return (0);
 
     return (1);
 
@@ -155,11 +154,8 @@ error:
     return (0);
 }
 
-// xsec == 1 -> add Extended security flag
-static int        smb_negotiate(smb_session *s, int xsec)
+static int        smb_negotiate(smb_session *s)
 {
-    (void)xsec; // FIXME
-
     const char          *dialects[] = SMB_DIALECTS;
     smb_message         *msg = NULL;
     smb_message         answer;
