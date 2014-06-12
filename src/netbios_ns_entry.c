@@ -56,7 +56,7 @@ void                netbios_ns_clear(netbios_ns *ns)
     while (ns->entries != NULL)
     {
         next = ns->entries->next;
-        free(ns->entries->next);
+        free(ns->entries);
         ns->entries = next;
     }
 }

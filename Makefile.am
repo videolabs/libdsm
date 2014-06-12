@@ -23,6 +23,7 @@ bdsm_HEADERS = \
     include/bdsm/netbios_query.h  \
     include/bdsm/netbios_session.h  \
     include/bdsm/netbios_utils.h  \
+    include/bdsm/smb_packets.h     \
     include/bdsm/smb_defs.h   \
     include/bdsm/smb_fd.h    \
     include/bdsm/smb_file.h   \
@@ -36,7 +37,6 @@ bdsm_HEADERS = \
     include/bdsm/smb_buffer.h
 noinst_HEADERS = \
 		include/bdsm/smb_session_msg.h \
-    include/bdsm/smb_packets.h     \
     include/bdsm/smb_transport.h   \
     include/bdsm/smb_spnego.h      \
     contrib/spnego/spnego_asn1.h   \
