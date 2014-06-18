@@ -18,6 +18,7 @@ few useless (yet) utils are also provided.
 * Autotools
 * libc with iconv
 * getopt_long
+* GNU asn1 compiler/support library
 
 Most of it can be installed on Debian(-based) systems using
 
@@ -32,18 +33,18 @@ Most of it can be installed on Debian(-based) systems using
 
 ## Goals
 
-Here's a list of features i intend to support in this project :
+Here's a list of supported features:
 * NETBIOS
-  * Basic bi-directionnal NETBIOS name resolution [Done]
-  * Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.) [Done]
-  * Basic NETBIOS Session transport layer [Done]
+  * Basic bi-directionnal NETBIOS name resolutio
+  * Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.)
+  * Basic NETBIOS Session transport layer
 * SMB
   * Support only required parts of 'NT LM 0.12' (aka CIFS?) dialect.
-  * User based authentication [Done]
-  * List Shares [Partial/Ugly]
-  * Browse folders [Done/Ugly]
-  * Read file [Done, can be improved :)]
-  * No write, lock, RPCs, etc. [Hum]
+  * User based authentication
+  * List Shares
+  * Browse folders
+  * Read file
+  * No write, lock, RPCs, etc. [Hum... yet]
 
 ## Support
 
@@ -53,9 +54,8 @@ liBDSM has been tested/reported to work witht the following devices/OSes:
 * Windows 8
 * A cheap NAS whose name i can't remember :)
 * Guest Login on French Orange 'Livebox' (more testing is welcome as i don't have the box password)
-
-OSX is not supported yet, since it doesn't seem to support Netbios transport.
-DirectTCP SMB is on the way, to fix this issue.
+* Samba
+* smbx (OSX new smb implementation)
 
 Feel free to contribute items to this list (or network trace of not working devices)
 
