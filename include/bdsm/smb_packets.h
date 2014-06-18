@@ -260,7 +260,7 @@ typedef struct
     uint32_t        reserved2;
     uint16_t        reserved3;
     uint16_t        bct;
-    uint8_t         padding;
+    //uint8_t         padding;
     uint8_t         file[];
 } __attribute__((packed))   smb_read_resp;
 
