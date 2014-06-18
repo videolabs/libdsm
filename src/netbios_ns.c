@@ -161,9 +161,9 @@ error:
 
 int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_t *addr)
 {
-    netbios_ns_entry  *cached;
+    netbios_ns_entry    *cached;
     struct timeval      timeout;
-    netbios_query     *q;
+    netbios_query       *q;
     char                *encoded_name;
     char                footer[4] = { 0x00, 0x20, 0x00, 0x01 };
     char                recv_buffer[512]; // Hu ?
@@ -175,10 +175,13 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
 
 
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
-        return (cached->address.s_addr);
+    {
+        *addr = cached->address.s_addr;
+        return (1);
+    }
 
     if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-        return (-1);
+        return (0);
 
     // Prepare packet
     q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);

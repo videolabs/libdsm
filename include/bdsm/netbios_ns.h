@@ -109,7 +109,7 @@ void          netbios_ns_destroy(netbios_ns *ns);
  * longer than 15 chars, it'll be truncated.
  * @param type The type of the name to look for. @see netbios_defs.h
  * @param[out] addr The IP address in network byte order of the machine if found.
- * @return the ipv4 address in network byte-order or 0 if it wasn't successfull.
+ * @return a value > 0 if successfull, or 0 otherwise
  */
 int           netbios_ns_resolve(netbios_ns *ns, const char *name,
                                  char type, uint32_t *addr);
