@@ -23,6 +23,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "mdx/md4.h"
 #include "rc4/rc4.h"
@@ -90,7 +91,7 @@ int main(int argc, char const *argv[])
   //printf("Server challenge = %.8lx\n", srv_challenge);
   //printf("User challenge = %.8lx\n", usr_challenge);
 
-  printf("Timestamp = %.8lx\n", srv_ts);
+  printf("Timestamp = %.8"PRIx64"\n", srv_ts);
   printf("-------------------------------------\n");
 
   hexprint("NT# v1", hashv1, 16);

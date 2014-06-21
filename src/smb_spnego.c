@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
@@ -203,7 +204,7 @@ static int      challenge(smb_session *s)
     s->srv.challenge = challenge->challenge;
     s->srv.uid       = msg.packet->header.uid;
 
-    fprintf(stderr, "Server challenge is 0x%lx\n", s->srv.challenge);
+    fprintf(stderr, "Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
 
     return (1);
 }

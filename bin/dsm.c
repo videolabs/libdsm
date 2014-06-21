@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <inttypes.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -136,7 +137,7 @@ int main(int ac, char **av)
   if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Successfully connected to %s\n", host);
-    fprintf(stderr, "Challenge key is 0x%lx\n", session->srv.challenge);
+    fprintf(stderr, "Challenge key is 0x%"PRIx64"\n", session->srv.challenge);
   }
   else
   {
@@ -217,7 +218,7 @@ int main(int ac, char **av)
   files = smb_fstat(session, test, fname);
 
   if (files != NULL)
-    printf("File '%s' is %lu bytes long\n", fname, files->size);
+    printf("File '%s' is %"PRIu64" bytes long\n", fname, files->size);
 
 
   smb_session_destroy(session);
