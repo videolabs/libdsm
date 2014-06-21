@@ -78,8 +78,8 @@ int main(int argc, char const *argv[])
   ntlm2 = smb_ntlm2_response(&hashv2, srv_challenge, &buf);
   //smb_ntlm2_session_key(&hashv2, ntlm2, &session_key);
 
-  smb_ntlm_generate_xkey(xkey);
-  smb_ntlm2_session_key(&hashv2, ntlm2, xkey, xkey_crypt);
+  smb_ntlm_generate_xkey(&xkey);
+  smb_ntlm2_session_key(&hashv2, ntlm2, &xkey, &xkey_crypt);
 
 
   // MD4_CTX ctx;
