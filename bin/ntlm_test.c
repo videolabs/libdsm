@@ -30,8 +30,9 @@
 #include "bdsm/debug.h"
 #include "bdsm/smb_ntlm.h"
 
-void hexprint(const char *name, const char *data, size_t data_sz)
+void hexprint(const char *name, const void *dataptr, size_t data_sz)
 {
+  const uint8_t *data = dataptr;
   printf("%s =", name);
 
   for(size_t i = 0; i < data_sz; i++)
