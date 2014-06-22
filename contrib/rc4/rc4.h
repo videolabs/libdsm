@@ -39,6 +39,8 @@
 #ifndef _SYS_CRYPTO_RC4_RC4_H_
 #define _SYS_CRYPTO_RC4_RC4_H_
 
+#include <sys/types.h>
+
 struct rc4_state
 {
     u_char  perm[256];

@@ -36,7 +36,6 @@
  * $FreeBSD: src/sys/crypto/rc4/rc4.c,v 1.2.2.1 2000/04/18 04:48:31 archie Exp $
  */
 
-#include <sys/types.h>
 #include "rc4/rc4.h"
 
 static __inline void
