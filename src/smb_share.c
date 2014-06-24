@@ -34,11 +34,11 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 {
     smb_tree_connect_req  *req;
     smb_tree_connect_resp *resp;
-    smb_message   resp_msg;
-    smb_message   *req_msg;
-    smb_share     *share;
-    size_t          path_len;
-    char            *path;
+    smb_message            resp_msg;
+    smb_message           *req_msg;
+    smb_share             *share;
+    size_t                 path_len, utf_path_len;
+    char                  *path;
 
     assert(s != NULL && name != NULL);
 
