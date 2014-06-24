@@ -35,8 +35,8 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     smb_message     *req_msg, resp_msg;
     smb_create_req  *req;
     smb_create_resp *resp;
-    size_t            path_len;
-    int               res;
+    size_t           path_len;
+    int              res;
 
     assert(s != NULL && path != NULL);
     if ((share = smb_session_share_get(s, tid)) == NULL)
@@ -106,7 +106,9 @@ void        smb_fclose(smb_session *s, smb_fd fd)
     smb_message     *msg;
     smb_close_req   *req;
 
-    assert(s != NULL && fd);
+    assert(s != NULL);
+    if (!fd)
+      return;
 
     // XXX Memory leak, destroy the file after removing it
     if ((file = smb_session_file_remove(s, fd)) == NULL)
@@ -138,7 +140,9 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     size_t            max_read;
     int               res;
 
-    assert(s != NULL && buf != NULL && fd);
+    assert(s != NULL && buf != NULL);
+    if (!fd)
+      return (-1);
     if ((file = smb_session_file_get(s, fd)) == NULL)
         return (-1);
 

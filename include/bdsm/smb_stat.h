@@ -98,6 +98,13 @@ size_t            smb_stat_list_count(smb_stat_list list);
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index);
 
 /**
+ * @brief Destroy and release a list of file stat returned by smb_find
+ *
+ * @param list The stat_list to free
+ */
+void            smb_stat_list_destroy(smb_stat_list list);
+
+/**
  * @brief Get the name of the file from its status
  *
  * @param info A file status

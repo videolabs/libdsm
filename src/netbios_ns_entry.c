@@ -74,6 +74,12 @@ netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
     {
         memcpy(entry->name, name, NETBIOS_NAME_LENGTH);
         entry->name[NETBIOS_NAME_LENGTH] = 0;
+
+        for (int i = 1; i < NETBIOS_NAME_LENGTH; i++ )
+          if (entry->name[NETBIOS_NAME_LENGTH - i] == ' ')
+            entry->name[NETBIOS_NAME_LENGTH - i] = 0;
+          else
+            break;
     }
 
     entry->type           = type;

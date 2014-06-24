@@ -41,6 +41,18 @@ size_t            smb_stat_list_count(smb_stat_list list)
     return (count);
 }
 
+void            smb_stat_list_destroy(smb_stat_list list)
+{
+    smb_stat_list tmp;
+
+    while(list != NULL)
+    {
+        tmp = list->next;
+        free(list);
+        list = tmp;
+    }
+}
+
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
 {
     size_t          pos = 0;
@@ -81,6 +93,8 @@ uint64_t          smb_stat_get(smb_stat info, int what)
             return (info->written);
         case SMB_STAT_MTIME:
             return (info->changed);
+        case SMB_STAT_ISDIR:
+            return (info->is_dir);
         default:
             return (0);
     }

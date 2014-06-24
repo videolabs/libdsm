@@ -289,6 +289,11 @@ int             smb_session_login(smb_session *s)
 {
     assert(s != NULL);
 
+    if (s->creds.domain == NULL
+        || s->creds.login == NULL
+        || s->creds.password == NULL)
+      return (0);
+
     if (smb_session_supports(s, SMB_SESSION_XSEC))
         return (smb_session_login_spnego(s, s->creds.domain, s->creds.login,
                                          s->creds.password));

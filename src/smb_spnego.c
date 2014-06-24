@@ -289,7 +289,13 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     if (resp.packet->header.status != NT_STATUS_SUCCESS)
         return (0);
     else
+    {
+        smb_session_xsec_resp *r = (smb_session_xsec_resp *)resp.packet->payload;
+        if (r->action & 0x0001)
+            s->guest = true;
+
         return (1);
+    }
 
 error:
     asn1_display_error("smb_session_login auth()", res);

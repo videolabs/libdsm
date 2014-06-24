@@ -89,12 +89,12 @@ typedef struct smb_transport_s
 {
     void              *session;
     void              *(*new)(size_t buf_size);
-    int (*connect)(struct in_addr *addr, void *s, const char *name);
-    void (*destroy)(void *s);
-    void (*pkt_init)(void *s);
-    int (*pkt_append)(void *s, void *data, size_t size);
-    int (*send)(void *s);
-    ssize_t (*recv)(void *s, void **data);
+    int               (*connect)(struct in_addr *addr, void *s, const char *name);
+    void              (*destroy)(void *s);
+    void              (*pkt_init)(void *s);
+    int               (*pkt_append)(void *s, void *data, size_t size);
+    int               (*send)(void *s);
+    ssize_t           (*recv)(void *s, void **data);
 }                   smb_transport;
 
 // An structure to store user credentials;
