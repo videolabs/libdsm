@@ -64,7 +64,8 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
 
     copy->packet = malloc(sizeof(smb_packet) + copy->payload_size);
     assert(copy->packet != NULL);
-    memcpy((void *)copy->packet, (void *)msg->packet, msg->payload_size);
+    memcpy((void *)copy->packet, (void *)msg->packet,
+           msg->payload_size + sizeof(smb_packet));
 
     return (copy);
 }
