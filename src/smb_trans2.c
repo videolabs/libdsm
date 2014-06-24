@@ -111,7 +111,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     smb_message           *msg;
     smb_trans2_req        *tr2;
     smb_tr2_find2         *find;
-    size_t                pattern_len, msg_len;
+    size_t                pattern_len, msg_len, utf_pattern_len;
     int                   res;
 
     assert(s != NULL && pattern != NULL && tid);
@@ -125,16 +125,14 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 
     tr2 = (smb_trans2_req *)msg->packet->payload;
     tr2->wct                = 15;
-    tr2->total_param_count  = pattern_len * 2 + sizeof(smb_tr2_find2);
+
     tr2->max_param_count    = 10; // ?? Why not the same or 12 ?
     tr2->max_data_count     = 0xffff;
-    tr2->param_count        = tr2->total_param_count;
     tr2->param_offset       = 68; // Offset of find_first_params in packet;
     tr2->data_count         = 0;
     tr2->data_offset        = 88; // Offset of pattern in packet
     tr2->setup_count        = 1;
     tr2->cmd                = SMB_TR2_FIND_FIRST;
-    tr2->bct                = sizeof(smb_tr2_find2) + pattern_len * 2;
 
     find = (smb_tr2_find2 *) tr2->payload;
     find->attrs     = SMB_FIND2_ATTR_DEFAULT;
@@ -144,10 +142,15 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 
     smb_message_advance(msg, sizeof(smb_trans2_req));
     smb_message_advance(msg, sizeof(smb_tr2_find2));
-    smb_message_put_utf16(msg, pattern, pattern_len);
+    utf_pattern_len = smb_message_put_utf16(msg, pattern, pattern_len);
+
+    tr2->bct = sizeof(smb_tr2_find2) + utf_pattern_len;
+    tr2->total_param_count = tr2->bct;
+    tr2->param_count       = tr2->bct;
+    tr2->bct += 3; //3 == padding
 
     // Adds padding at the end if necessary.
-    while (tr2->bct % 4)
+    while ((tr2->bct % 4) != 3)
     {
         smb_message_put8(msg, 0);
         tr2->bct++;
