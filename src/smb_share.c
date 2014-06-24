@@ -47,7 +47,9 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
     path      = alloca(path_len);
     snprintf(path, path_len, "\\\\%s\\%s", s->srv.name, name);
 
-    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT, 128);
+    size_t msg_len = sizeof(smb_packet) + sizeof(smb_tree_connect_req)
+                     + path_len * 2 + 1 + 6;
+    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT, msg_len);
 
     // Packet headers
     smb_message_set_andx_members(req_msg);
