@@ -63,9 +63,9 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
     req->passwd_len   = 1;    // Null byte
 
     smb_message_put8(req_msg, 0); // Ze null byte password;
-    smb_message_put_utf16(req_msg, path, strlen(path) + 1);
+    utf_path_len = smb_message_put_utf16(req_msg, path, strlen(path) + 1);
     smb_message_append(req_msg, "?????", strlen("?????") + 1);
-    req->bct = strlen(path) * 2 + 2 + 6 + 1;
+    req->bct = utf_path_len + 6 + 1;
 
     if (!smb_session_send_msg(s, req_msg))
     {
