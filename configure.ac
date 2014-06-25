@@ -51,6 +51,11 @@ AC_CONFIG_MACRO_DIR([m4])
 ## Checks for the ASN.1 parser
 PKG_CHECK_MODULES([TASN1], [libtasn1])
 
+AC_SEARCH_LIBS([strlcpy], [bsd], [], [
+  AC_MSG_ERROR([unable to find the strlcpy() function (missing libbsd?)])
+])
+AC_CHECK_HEADERS([bsd/string.h])
+
 ## Checks for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
