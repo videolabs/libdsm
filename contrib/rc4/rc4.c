@@ -36,13 +36,12 @@
  * $FreeBSD: src/sys/crypto/rc4/rc4.c,v 1.2.2.1 2000/04/18 04:48:31 archie Exp $
  */
 
-#include <sys/types.h>
 #include "rc4/rc4.h"
 
 static __inline void
-swap_bytes(u_char *a, u_char *b)
+swap_bytes(uint8_t *a, uint8_t *b)
 {
-    u_char temp;
+    uint8_t temp;
 
     temp = *a;
     *a = *b;
@@ -54,14 +53,14 @@ swap_bytes(u_char *a, u_char *b)
  * which can have arbitrary length.
  */
 void
-rc4_init(struct rc4_state *const state, const u_char *key, int keylen)
+rc4_init(struct rc4_state *const state, const uint8_t *key, int keylen)
 {
-    u_char j;
+    uint8_t j;
     int i;
 
     /* Initialize state with identity permutation */
     for (i = 0; i < 256; i++)
-        state->perm[i] = (u_char)i;
+        state->perm[i] = (uint8_t)i;
     state->index1 = 0;
     state->index2 = 0;
 
@@ -81,10 +80,10 @@ rc4_init(struct rc4_state *const state, const u_char *key, int keylen)
  */
 void
 rc4_crypt(struct rc4_state *const state,
-          const u_char *inbuf, u_char *outbuf, int buflen)
+          const uint8_t *inbuf, uint8_t *outbuf, int buflen)
 {
     int i;
-    u_char j;
+    uint8_t j;
 
     for (i = 0; i < buflen; i++)
     {

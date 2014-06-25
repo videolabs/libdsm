@@ -39,16 +39,18 @@
 #ifndef _SYS_CRYPTO_RC4_RC4_H_
 #define _SYS_CRYPTO_RC4_RC4_H_
 
+#include <stdint.h>
+
 struct rc4_state
 {
-    u_char  perm[256];
-    u_char  index1;
-    u_char  index2;
+    uint8_t  perm[256];
+    uint8_t  index1;
+    uint8_t  index2;
 };
 
-extern void rc4_init(struct rc4_state *state, const u_char *key, int keylen);
+extern void rc4_init(struct rc4_state *state, const uint8_t *key, int keylen);
 extern void rc4_crypt(struct rc4_state *state,
-                      const u_char *inbuf, u_char *outbuf, int buflen);
+                      const uint8_t *inbuf, uint8_t *outbuf, int buflen);
 
 #endif
 
