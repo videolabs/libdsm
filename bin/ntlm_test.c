@@ -30,7 +30,7 @@
 #include "bdsm/debug.h"
 #include "bdsm/smb_ntlm.h"
 
-int hexprint(const char *name, const char *data, size_t data_sz)
+void hexprint(const char *name, const char *data, size_t data_sz)
 {
   printf("%s =", name);
 
