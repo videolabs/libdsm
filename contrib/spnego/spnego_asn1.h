@@ -4,6 +4,6 @@
 
 #include <libtasn1.h>
 
-extern const asn1_static_node spnego_asn1_conf[];
+extern const ASN1_ARRAY_TYPE spnego_asn1_conf[];
 
 #endif

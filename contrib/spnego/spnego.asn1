@@ -1,7 +1,9 @@
 -- This file has been taken from heimdal gssapi implementation
 -- and modified by Julien 'Lta' BALLET <contact@lta.io> to work with libtasn1
 
-SPNEGO DEFINITIONS EXPLICIT TAGS ::=
+SPNEGO { }
+
+DEFINITIONS EXPLICIT TAGS ::=
 BEGIN
 
 MechType ::= OBJECT IDENTIFIER
