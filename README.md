@@ -22,7 +22,7 @@ few useless (yet) utils are also provided.
 
 The build dependencies can be installed on Debian(-based) systems using
 
-    sudo apt-get install build-essential autoconf gettext libtool pkg-config libtasn1-3-dev libtasn1-3-bin libbsd-dev
+    sudo apt-get install build-essential autoconf libtool pkg-config libtasn1-3-dev libtasn1-3-bin libbsd-dev
 
 ### HowTo
 
