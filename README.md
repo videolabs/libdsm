@@ -20,9 +20,9 @@ few useless (yet) utils are also provided.
 * getopt_long
 * GNU asn1 compiler/support library
 
-Most of it can be installed on Debian(-based) systems using
+The build dependencies can be installed on Debian(-based) systems using
 
-    sudo apt-get install build-essential
+    sudo apt-get install build-essential autoconf gettext libtool pkg-config libtasn1-3-dev libtasn1-3-bin libbsd-dev
 
 ### HowTo
 
