@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bdsm/debug.h"
 #include "bdsm/smb_utils.h"
 
 static const char *current_encoding()
@@ -67,7 +68,8 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
 
     assert(out != NULL);
     iconv(ic, (char **)&src, &src_len, &out, &outleft);
-    assert(src_len == 0);
+    if (src_len > 0)
+      BDSM_dbg("iconv: Some character were lost at encoding/decoding");
 
     return (dst_len - outleft);
 }
