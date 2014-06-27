@@ -80,10 +80,7 @@ libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIB
 bin_PROGRAMS =
 
 if PROGRAMS
-bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup dsm_ntlm_test
-if DEBUG
-bin_PROGRAMS += dsm_ntlm_test
-endif
+bin_PROGRAMS += dsm dsm_discover dsm_inverse dsm_lookup
 endif
 
 dsm_SOURCES = bin/dsm.c
@@ -93,8 +90,6 @@ dsm_discover_SOURCES = bin/discover.c
 dsm_inverse_SOURCES = bin/inverse.c
 
 dsm_lookup_SOURCES = bin/lookup.c
-
-dsm_ntlm_test_SOURCES = bin/ntlm_test.c
 
 LDADD = libdsm.la
 
