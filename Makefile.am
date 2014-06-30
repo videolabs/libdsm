@@ -2,7 +2,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 DISTCLEANFILES = @DOLT_CLEANFILES@
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	contrib/spnego/spnego_asn1.c
 
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
 
@@ -93,11 +94,13 @@ dsm_lookup_SOURCES = bin/lookup.c
 
 LDADD = libdsm.la
 
+clean-local:
+	rm -rf $(top_builddir)/doc/html
+	rm -rf $(top_builddir)/contrib/spnego/spnego_asn1.c
+
 if HAVE_DOXYGEN
 doc:
 	$(DOXYGEN) doc/Doxyfile
-clean-local:
-	rm -rf $(top_builddir)/doc/html
 else
 doc:
 	echo "Doxygen wasn't detected by configure, it's support has been disabled"
