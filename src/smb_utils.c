@@ -29,6 +29,9 @@
 
 static const char *current_encoding()
 {
+#ifdef __APPLE__
+    return ("UTF8");
+#else
     static int locale_set = 0;
 
     if (!locale_set)
@@ -38,6 +41,7 @@ static const char *current_encoding()
     }
     //fprintf(stderr, "%s\n", nl_langinfo(CODESET));
     return (nl_langinfo(CODESET));
+#endif
 }
 
 static size_t smb_iconv(const char *src, size_t src_len, char **dst,
