@@ -310,6 +310,9 @@ int             smb_session_login_spnego(smb_session *s, const char *domain,
     int           res;
     assert(s != NULL && domain != NULL && user != NULL && password != NULL);
 
+    // Clear User ID that might exists from previous authentication attempt
+    s->srv.uid = 0;
+
     if (!init_asn1(s))
         return (0);
 
