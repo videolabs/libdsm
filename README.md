@@ -53,9 +53,8 @@ liBDSM has been tested/reported to work witht the following devices/OSes:
 * Windows 7
 * Windows 8
 * A cheap NAS whose name i can't remember :)
-* Guest Login on French Orange 'Livebox' (more testing is welcome as i don't have the box password)
 * Samba
-* smbx (OSX new smb implementation)
+* smbX (OSX new smb implementation)
 
 Feel free to contribute items to this list (or network trace of not working devices)
 
@@ -65,7 +64,7 @@ Feel free to contribute items to this list (or network trace of not working devi
 
 ## Contributing
 
-* Fork elthariel/libdsm
+* Fork videolabs/libdsm
 * Make a feature branch
 * Commits your work there
 * Make a pull request
