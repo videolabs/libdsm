@@ -2,6 +2,7 @@ AC_PREREQ([2.53])
 
 AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])],
   [], [libdsm], [])
+AC_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR([include/bdsm.h])
 AM_INIT_AUTOMAKE([1.6 foreign subdir-objects tar-ustar dist-zip])
 m4_ifdef([AM_SILENT_RULES], [
@@ -24,7 +25,7 @@ AC_MSG_NOTICE([dsm ABI version: $BDSM_ABI_VERSION])
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
-## Where is iconv? In libc or separate lib?
+dnl Where is iconv? In libc or separate lib?
 AM_ICONV
 
 AC_ARG_ENABLE([programs],
@@ -36,7 +37,7 @@ AC_ARG_ENABLE([debug],
 )
 
 AS_IF([test x"$enable_debug" != x"no"], [
-  AC_DEFINE([BDSM_DEBUG], [1])
+  AC_DEFINE([BDSM_DEBUG], [1], [Enable debug message and compile flags])
 ])
 
 AM_CONDITIONAL([DEBUG], [test x"$enable_debug" != x"no"])
