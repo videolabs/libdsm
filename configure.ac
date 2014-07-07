@@ -49,8 +49,27 @@ DOLT
 
 AC_CONFIG_MACRO_DIR([m4])
 
+##############################
 ## Checks for the ASN.1 parser
 PKG_CHECK_MODULES([TASN1], [libtasn1])
+
+## Check if it supports new types
+AC_MSG_CHECKING([whether libtasn1 version >= 3.0])
+CFLAGS="$CFLAGS $TASN1_CFLAGS"
+AC_COMPILE_IFELSE([
+  AC_LANG_PROGRAM([#include <libtasn1.h>], [ asn1_node test; ])
+], [
+  AC_MSG_RESULT([yes])
+  HAS_TASN1_3PLUS=yes
+], [
+  AC_MSG_RESULT([no])
+  HAVE_TASN1_3PLUS=no
+])
+
+AM_CONDITIONAL([HAVE_TASN1_3PLUS],[test x"$HAVE_TASN1_3PLUS" = x"yes"])
+AS_IF([test x"$HAVE_TASN1_3PLUS" = x"yes"], [
+ AC_DEFINE([HAVE_TASN1_3PLUS], [1], [libtasn1 has v 3.0 downcase types])
+])
 
 AC_SEARCH_LIBS([strlcpy], [bsd], [], [
   AC_MSG_ERROR([unable to find the strlcpy() function (missing libbsd?)])
