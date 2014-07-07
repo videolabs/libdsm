@@ -60,15 +60,21 @@ AC_COMPILE_IFELSE([
   AC_LANG_PROGRAM([#include <libtasn1.h>], [ asn1_node test; ])
 ], [
   AC_MSG_RESULT([yes])
-  HAS_TASN1_3PLUS=yes
+  HAVE_TASN1_3PLUS=yes
 ], [
   AC_MSG_RESULT([no])
   HAVE_TASN1_3PLUS=no
 ])
 
-AM_CONDITIONAL([HAVE_TASN1_3PLUS],[test x"$HAVE_TASN1_3PLUS" = x"yes"])
+AM_CONDITIONAL([HAVE_TASN1_3PLUS],[test x$HAVE_TASN1_3PLUS = xyes])
 AS_IF([test x"$HAVE_TASN1_3PLUS" = x"yes"], [
- AC_DEFINE([HAVE_TASN1_3PLUS], [1], [libtasn1 has v 3.0 downcase types])
+  AC_DEFINE([HAVE_TASN1_3PLUS], [1], [libtasn1 has v 3.0 downcase types])
+
+  dnl Ugly compatibility with old 2.x types
+  AC_DEFINE([ASN1_ARRAY_TYPE], [asn1_static_node], [...])
+], [
+  dnl Ugly compatibility with new 3.x types
+  AC_DEFINE([asn1_static_node], [ASN1_ARRAY_TYPE], [...])
 ])
 
 AC_SEARCH_LIBS([strlcpy], [bsd], [], [
