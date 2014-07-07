@@ -3,6 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 DISTCLEANFILES = @DOLT_CLEANFILES@
 
 EXTRA_DIST = \
+	contrib/spnego/spnego.asn1
 	contrib/spnego/spnego_asn1.c
 
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
