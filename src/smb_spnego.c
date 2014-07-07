@@ -33,6 +33,10 @@ static const char ntlmssp_oid[] = "1.3.6.1.4.1.311.2.2.10";
 
 static void     asn1_display_error(const char *where, int errcode)
 {
+    // Avoids warning when not in debug mode
+    (void)where;
+    (void)errcode;
+
     BDSM_dbg("%s error: %s\n", where, asn1_strerror(errcode));
 }
 
