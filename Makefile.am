@@ -73,6 +73,10 @@ libdsm_la_SOURCES = \
     src/smb_transport.c     \
     src/smb_utils.c
 
+if COMPAT_STRLCPY
+libdsm_la_SOURCES += compat/strlcpy.c
+endif
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 

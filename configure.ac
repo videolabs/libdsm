@@ -77,9 +77,14 @@ AS_IF([test x"$HAVE_TASN1_3PLUS" = x"yes"], [
   AC_DEFINE([asn1_static_node], [ASN1_ARRAY_TYPE], [...])
 ])
 
-AC_SEARCH_LIBS([strlcpy], [bsd], [], [
-  AC_MSG_ERROR([unable to find the strlcpy() function (missing libbsd?)])
+AC_SEARCH_LIBS([strlcpy], [bsd], [
+  AC_DEFINE([HAVE_LIBBSD], [1], [Does this system have libbsd strl*** functions implementation])
+], [
+  compat_strlcpy=yes
+  AC_MSG_WARN([unable to find the strlcpy() function (missing libbsd?)])
 ])
+AM_CONDITIONAL(COMPAT_STRLCPY, [test x$compat_strlcpy = xyes])
+
 AC_CHECK_HEADERS([bsd/string.h])
 
 ## Checks for doxygen presence
