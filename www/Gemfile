@@ -22,4 +22,4 @@ gem 'slim'
 gem 'font-awesome-middleman'
 
 # Handle GitHub pages deployment
-gem 'middleman-gh-pages'
+gem 'middleman-gh-pages', github: 'elthariel/middleman-gh-pages'

@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/elthariel/middleman-gh-pages.git
+  revision: 7f70eaa27ff670f668b423620c14d19f059c7768
+  specs:
+    middleman-gh-pages (0.0.3)
+      rake (> 0.9.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -68,8 +75,6 @@ GEM
       rack-test (~> 0.6.2)
       thor (>= 0.15.2, < 2.0)
       tilt (~> 1.4.1, < 2.0)
-    middleman-gh-pages (0.0.3)
-      rake (> 0.9.3)
     middleman-livereload (3.1.1)
       em-websocket (>= 0.2.0)
       middleman-core (>= 3.0.2)
@@ -132,7 +137,7 @@ DEPENDENCIES
   font-awesome-middleman
   jquery-middleman
   middleman (~> 3.3.3)
-  middleman-gh-pages
+  middleman-gh-pages!
   middleman-livereload (~> 3.1.0)
   slim
   tzinfo-data
