@@ -18,7 +18,7 @@ few useless (yet) utils are also provided.
 * Autotools
 * libc with iconv
 * getopt_long
-* GNU asn1 compiler/support library
+* GNU tasn1 compiler/support library
 
 The build dependencies can be installed on Debian(-based) systems using
 
