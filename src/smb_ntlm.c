@@ -44,7 +44,7 @@ uint64_t    smb_ntlm_generate_challenge()
     // Get random data from uninitialized memory, and 'random' memory address
     memory = malloc(sizeof(uint64_t));
 
-    result = random() + (random() << 32) + (uint64_t)memory **memory;
+    result = (uint64_t)random() + ((uint64_t)random() << 32) + (uint64_t)memory **memory;
 
     return (result);
 }
