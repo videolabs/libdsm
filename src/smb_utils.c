@@ -19,17 +19,20 @@
 #include <assert.h>
 #include <iconv.h>
 #include <locale.h>
-#include <langinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if HAVE_LANGINFO_H && !defined( __APPLE__ )
+# include <langinfo.h>
+#endif
 
 #include "bdsm/debug.h"
 #include "bdsm/smb_utils.h"
 
 static const char *current_encoding()
 {
-#ifdef __APPLE__
+#if defined( __APPLE__ ) || !HAVE_LANGINFO_H
     return ("UTF8");
 #else
     static int locale_set = 0;

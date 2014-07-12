@@ -86,6 +86,7 @@ AC_SEARCH_LIBS([strlcpy], [bsd], [
 AM_CONDITIONAL(COMPAT_STRLCPY, [test x$compat_strlcpy = xyes])
 
 AC_CHECK_HEADERS([bsd/string.h])
+AC_CHECK_HEADERS([langinfo.h])
 
 ## Checks for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
