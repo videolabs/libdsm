@@ -1,0 +1,106 @@
+<!DOCTYPE html><html><head><meta charset="utf-8" /><meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" /><meta content="IE=edge" http-equiv="X-UA-Compatible" /><meta content="width=device-width, initial-scale=1" name="viewport" /><title>libdsm - minimalist smb client</title><link href="stylesheets/all-63e46d35.css" rel="stylesheet" type="text/css" /><link href="stylesheets/solarized_dark-8fb29427.css" rel="stylesheet" type="text/css" /></head><body><div class="container"><div class="col-md-6 col-md-offset-6"><a id="top"></a><nav class="navbar navbar-inverse navbar-static-top" role="navigation"><div class="container"><div class="navbar-header"><button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="#libdsm">libdsm</a></div><div class="collapse navbar-collapse"><ul class="nav navbar-nav"><li><a href="#features">Features</a></li><li><a href="#examples">Examples</a></li><li><a href="#doc">Doc</a></li><li><a href="#download">Download</a></li><li><a href="#contact">Contact</a></li></ul></div></div></nav></div></div><div class="container"><div class="row"><div class="jumbotron"><div class="row"><h1>Looking for a tiny smb library ?</h1><h2 class="pull-right">--You're at the right place</h2></div></div></div><div class="row"><div class="jumbotron"><div class="row"><div class="col-md-12 text-center"><a id="libdsm"></a><h1>Discover <span class="text-muted">li</span>bdsm</h1><br /><br /></div></div><div class="row"><div class="col-md-3 col-xs-6 text-center"><i class="fa fa-5x fa-magic"></i><h3>Simple</h3><p>Less than 42 API calls.</p><p>Documented</p></div><div class="col-md-3 col-xs-6 text-center"><i class="fa fa-5x fa-send"></i><h3>Lightweight</h3><p>Less than 150KB stripped</p><p>Low memory footprint</p></div><div class="col-md-3 col-xs-6 text-center"><i class="fa fa-5x fa-laptop"></i><h3>Portable </h3><div class="small text-muted">theorically</div><p>Only 2 dependencies</p><p>Only POSIX calls</p></div><div class="col-md-3 col-xs-6 text-center"><i class="fa fa-5x fa-chain-broken"></i><h3>Open-Source</h3><p>Dual LGPL </p><p>and commercial licensing</p></div><a class="gotop pull-right" href="#top"><i class="fa fa-angle-up"></i>Top</a></div></div></div><div class="row"><div class="well"><div class="row"><a name="features"></a><div class="col-md-12"><h1>Features</h1></div><div class="col-md-4"><ul><li>Speaking SMB v1</li><li>Read-only client</li><li>Discover hosts</li><li>List shares</li><li>List folders</li><li>Read files</li></ul></div><div class="col-md-4"><ul><li>Transport<ul><li>Netbios over TCP</li><li>Direct-TCP</li></ul></li><li>Server compatibility<ul><li>Samba 3 & 4</li><li>Apple SMBX</li><li>Windows 7 & 8</li><li>older Windows untested</li></ul></li></ul></div><div class="col-md-4"><ul><li>Netbios <ul><li>Name lookup</li><li>Reverse lookup</li></ul></li><li>Supported system<ul><li>Linux</li><li>OSX</li></ul></li><li>pkg-config enabled</li><li>Unicode path support</li></ul></div></div><a class="gotop pull-right" href="#top"><i class="fa fa-angle-up"></i>Top</a></div></div><div class="row"><div class="well"><div class="row"><a id="examples"></a><div class="col-md-12"><h1 class="pull-right">Examples</h1></div></div><div class="row"><div class="col-md-6"><pre class="examples"><code class="hljs c">&#x2F;* SMB Connect, login and read file example *&#x2F;
+
+#include &lt;arpa&#x2F;inet.h&gt;
+#include &lt;stdio.h&gt;
+
+#include &lt;bsdm&#x2F;bdsm.h&gt;
+
+int main()
+{
+    struct in_addr  addr;
+    smb_session     *session;
+    smb_tid         tid;
+    smb_fd          fd;
+    
+    session = smb_session_new();
+    if (session == NULL)
+        exit(1);
+
+    inet_aton(&quot;127.0.0.1&quot;, &amp;addr.sin_addr);
+
+    if (smb_session_connect(session, &quot;MYNAME&quot;, 
+            addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
+    {
+        printf(&quot;Unable to connect to host\n&quot;);
+        exit(2);
+    }
+    
+    smb_session_set_creds(session, &quot;MYNAME&quot;, &quot;login&quot;, 
+                          &quot;password&quot;);
+    if (smb_session_login(session))
+    {
+        if (session-&gt;guest)
+            printf(&quot;Logged in as GUEST \n&quot;);
+        else
+            printf(&quot;Successfully logged in\n&quot;);
+    }
+    else
+    {
+        printf(&quot;Auth failed\n&quot;);
+        exit(3);
+    }
+
+    tid = smb_tree_connect(session, &quot;MyShare&quot;);
+    if (!tid)
+    {
+        printf(&quot;Unable to connect to share\n&quot;);
+        exit(4);
+    }
+
+    fd = smb_fopen(session, tid, &quot;\\My\\File&quot;);
+    if (!fd)
+    {
+        printf(&quot;Unable to open file\n&quot;);
+        exit(5);
+    }
+
+    char buffer[512];
+    smb_fread(session, fd, buffer, 512);
+
+    &#x2F;* Use data *&#x2F;
+
+    smb_fclose(session, fd);
+    smb_tree_disconnect(session, tid);
+    smb_session_destroy(session);
+
+    return(0);
+}
+</code></pre></div><div class="col-md-6"><pre class="examples"><code class="hljs c">&#x2F;* Netbios Discover *&#x2F;
+
+#include &lt;stdio.h&gt;
+
+#include &lt;bsdm&#x2F;bdsm.h&gt;
+
+int main()
+{
+  netbios_ns        *ns;
+  netbios_ns_entry  *entry;
+
+  ns = netbios_ns_new();
+
+  if (!netbios_ns_discover(ns))
+  {
+    fprintf(stderr, &quot;Error while discovering local network\n&quot;);
+    exit(42);
+  }
+
+  for (int i = 0; i &lt; netbios_ns_entry_count(ns); i++)
+  {
+    struct in_addr addr;
+
+    entry       = netbios_ns_entry_at(ns, i);
+    addr.s_addr = netbios_ns_entry_ip(entry);
+
+    printf(&quot;Ip: %s, name: %s&lt;%x&gt; \n&quot;,
+      inet_ntoa(addr),
+      netbios_ns_entry_name(entry),
+      netbios_ns_entry_type(entry));
+  }
+
+  return (0);
+}
+</code></pre></div><div class="col-md-12">Click <a href="http://github.com/videolabs/libdsm/bin">here</a> for complete code of examples. </div></div><a class="gotop pull-right" href="#top"><i class="fa fa-angle-up"></i>Top</a></div></div><div class="row"><div class="well"><div class="row"><a id="doc"></a><div class="col-md-12 text-center"><h1>Documentation</h1></div></div><div class="row"><div class="col-md-6"><h2>Building</h2><p>While the most up-to-date documentation can be found in the README of the project on <a href="https://github.com/videolabs/libdsm/">the github page, </a>here's a brief summary</p><h3>Requirements</h3><ul><li>A Unix system with a shell</li><li>A C99 compiler (gcc and clang tested)</li><li>autotools</li><li>libiconv</li><li><a href="http://www.gnu.org/software/libtasn1/">libtasn1</a></li><li optionnal="">doxygen to generate documentation</li><li optionnal="">getopt_long for example programs</li></ul><h3>Building</h3>Here you just have to roll the traditional<pre>$> ./bootstrap
+$> ./configure --prefix=/usr/local/libdsm
+$> make && make install</pre></div><div class="col-md-6"><h2>API Documentation</h2>You can find a few examples in the bin/ folder of the source code but you'll likely enjoy the
+extensive API documentation you can fond by clicking the link below:<div class="text-center"><a class="btn btn-lg btn-primary" href="doc/index.html">Doxygen documentation</a></div></div></div></div></div><div class="row"><div class="well"><div class="row"><a id="download"></a><div class="col-md-12 text-center"><h1>Download</h1></div></div><div class="row"><div class="col-md-4 col-md-offset-1 text-center">You can download one of our stable release as a tarbal by clicking on the following link<div class="text-muted">Last stable release : 0.0.2</div><br /><a class="btn btn-lg btn-primary" href="https://github.com/videolabs/libdsm/releases/"><i class="fa fa-download"></i> View the releases</a></div><div class="col-md-2 hidden-xs hidden-sm text-center"><i class="fa fa-3x fa-heart"></i></div><div class="col-md-4 text-center">If you're more of a warrior or want to contribute, you can find this project's code on GitHub. 
+As always Pull Requests are always welcome :)<div class="div"></div><br /><a class="btn btn-lg btn-info" href="https://github.com/videolabs/libdsm/"><i class="fa fa-github"></i> Fork me on GitHub</a></div></div><a class="gotop pull-right" href="#top"><i class="fa fa-angle-up"></i>Top</a></div></div><div class="row"><div class="well"><div class="row"><a id="contact"></a><div class="col-md-12 text-center"><h1>Contact us</h1><h3>Having some troubles with libdsm ?</h3>Please browse the existing<a href="https://github.com/videolabs/libdsm/issues"> issues on GitHub</a> and, if you doesn't find a solution to your problem, you can open a <a href="https://github.com/videolabs/libdsm/issues/new">new one.</a><div class="small text-muted">For other concerns, you can  mail 'contact' _AT_ lta _DOT_ io</div></div></div><a class="gotop pull-right" href="#top"><i class="fa fa-angle-up"></i>Top</a></div></div></div><div class="container"><footer class="footer"><p>© Julien 'Lta' Ballet & VideoLabs SAS</p></footer></div><script src="javascripts/all-18c6f088.js" type="text/javascript"></script></body></html>
