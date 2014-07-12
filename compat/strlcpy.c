@@ -1,52 +1,51 @@
-/*****************************************************************************
- * strlcpy.c: BSD strlcpy() replacement
- *****************************************************************************
- * Copyright © 2006, 2009 Rémi Denis-Courmont
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
- *****************************************************************************/
+/*	$OpenBSD: strlcpy.c,v 1.11 2006/05/05 15:27:38 millert Exp $	*/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#include <stddef.h>
-
-/**
- * Copy a string to a sized buffer. The result is always nul-terminated
- * (contrary to strncpy()).
+/*
+ * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
  *
- * @param dest destination buffer
- * @param src string to be copied
- * @param len maximum number of characters to be copied plus one for the
- * terminating nul.
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * @return strlen(src)
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-size_t strlcpy (char *tgt, const char *src, size_t bufsize)
+
+#include <sys/types.h>
+#include <string.h>
+
+/*
+ * Copy src to string dst of size siz.  At most siz-1 characters
+ * will be copied.  Always NUL terminates (unless siz == 0).
+ * Returns strlen(src); if retval >= siz, truncation occurred.
+ */
+size_t
+strlcpy(char *dst, const char *src, size_t siz)
 {
-    size_t length;
+	char *d = dst;
+	const char *s = src;
+	size_t n = siz;
 
-    for (length = 1; (length < bufsize) && *src; length++)
-        *tgt++ = *src++;
+	/* Copy as many bytes as will fit */
+	if (n != 0) {
+		while (--n != 0) {
+			if ((*d++ = *s++) == '\0')
+				break;
+		}
+	}
 
-    if (bufsize)
-        *tgt = '\0';
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+		if (siz != 0)
+			*d = '\0';		/* NUL-terminate dst */
+		while (*s++)
+			;
+	}
 
-    while (*src++)
-        length++;
-
-    return length - 1;
+	return(s - src - 1);	/* count does not include NUL */
 }
