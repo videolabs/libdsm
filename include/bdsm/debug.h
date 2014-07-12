@@ -23,7 +23,7 @@
 #  include <stdio.h>
 #  define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
 # else
-#  define BDSM_dbg(...) (0)
+#  define BDSM_dbg(...) do { } while(0)
 # endif
 
 #endif
