@@ -24,7 +24,14 @@
 
 #include <sys/socket.h>
 #include <netinet/ip.h>
-#include <netinet/udp.h>
+#if __APPLE__
+  #include "TargetConditionals.h"
+  #ifndef TARGET_OS_IPHONE
+    #include <netinet/udp.h>
+  #endif
+#else
+  #include <netinet/udp.h>
+#endif
 
 /**
  * @file netbios_ns.h

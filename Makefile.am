@@ -6,7 +6,7 @@ EXTRA_DIST = \
 	contrib/spnego/spnego.asn1
 	contrib/spnego/spnego_asn1.c
 
-CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
+CFLAGS = @CFLAGS@ -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@
 
 if DEBUG
 AM_CFLAGS = -O0 -g3 -Wall -Wextra #-Werror
