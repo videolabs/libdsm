@@ -97,7 +97,7 @@ static smb_message *smb_tr2_recv(smb_session *s)
         if (remaining)
         {
             tr2   = (smb_trans2_resp *)recv.packet->payload;
-            smb_message_append(res, tr2->payload + 2 /*pad*/, tr2->data_count);
+            smb_message_append(res, tr2->payload, tr2->data_count);
             remaining = (int)tr2->total_data_count -
                         (tr2->data_displacement + tr2->data_count);
         }
