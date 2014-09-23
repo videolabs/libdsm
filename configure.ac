@@ -88,7 +88,14 @@ AM_CONDITIONAL(COMPAT_STRLCPY, [test x$compat_strlcpy = xyes])
 AC_CHECK_HEADERS([bsd/string.h])
 AC_CHECK_HEADERS([langinfo.h])
 
-## Checks for doxygen presence
+## Configure random device path
+AC_ARG_WITH([urandom], 
+    [AS_HELP_STRING([--with-urandom=PATH], 
+        [Configure the path of the random generation device used @<:@default=/dev/urandom@:>@ ])],
+    [], [with_urandom=/dev/urandom])
+AC_DEFINE_UNQUOTED([URANDOM], ["$with_urandom"], [Path of the random number generation device])
+
+## Check for doxygen presence
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 if test -z "$DOXYGEN";
