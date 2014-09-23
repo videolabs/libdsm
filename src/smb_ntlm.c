@@ -22,10 +22,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <unistd.h>
+#include <fcntl.h>
 #ifdef HAVE_BSD_STRING_H
 #include <bsd/string.h>
 #endif
 
+#include "config.h"
 #include "mdx/md4.h"
 #include "rc4/rc4.h"
 #include "bdsm/debug.h"
@@ -36,17 +39,20 @@
 uint64_t    smb_ntlm_generate_challenge()
 {
     uint64_t        result;
-    uint64_t        *memory;
-    struct timeval  t;
+    int             fd;
 
-    gettimeofday(&t, NULL);
-    srandom(t.tv_usec);
-    // Get random data from uninitialized memory, and 'random' memory address
-    memory = malloc(sizeof(uint64_t));
+    fd = open(URANDOM, O_RDONLY);
+    if (fd < 0)
+        /* FIXME: Wrong on a arch with long is 32 bits */
+        return random();
+    else
+    {
+        while(read(fd, (void *)&result, sizeof(result)) != sizeof(result))
+            ;
 
-    result = (uint64_t)random() + ((uint64_t)random() << 32) + (uint64_t)memory **memory;
-
-    return (result);
+        close(fd);
+        return result;
+    }
 }
 
 void        smb_ntlm_generate_xkey(smb_ntlmh *cli_session_key)
