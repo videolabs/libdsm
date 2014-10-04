@@ -26,7 +26,7 @@
 
 #include <bdsm/smb_packets.h>
 
-#define SMB_IO_BUFSIZE    8192
+#define SMB_IO_BUFSIZE    (2 >> 16)
 
 enum
 {
