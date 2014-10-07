@@ -141,7 +141,8 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     find = (smb_tr2_find2 *) tr2->payload;
     find->attrs     = SMB_FIND2_ATTR_DEFAULT;
     find->count     = 1366;     // ??
-    find->flags     = SMB_FIND2_FLAG_DEFAULT;
+    // XXX: Here we close search until we implement FIND_NEXT2
+    find->flags     = SMB_FIND2_FLAG_DEFAULT | SMB_FIND2_FLAG_CLOSE;
     find->interest  = 0x0104;   // 'Find file both directory info'
 
     smb_message_advance(msg, sizeof(smb_trans2_req));
