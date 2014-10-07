@@ -56,11 +56,9 @@
  */
 #define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
 
-#define SMB_SESSION_MAX_BUFFER (SMB_IO_BUFSIZE                    \
-                                - sizeof(smb_header)              \
-                                - sizeof(netbios_session_packet)  \
-                                - sizeof(smb_packet))
-
+/* Our reception buffer grows as necessary, so we can put the max here */
+#define SMB_SESSION_MAX_BUFFER (0xffff)
+ 
 /**
  * @brief Allocates a new Session object
  * @details To be able to perform actions on shares and file, you'll need to

@@ -44,6 +44,25 @@ error:
     return (0);
 }
 
+static int	session_buffer_realloc(netbios_session *s, size_t new_size)
+{
+    void        *new_ptr;
+
+    assert(s != NULL);
+
+    /* BDSM_dbg("session_buffer_realloc: from %ld bytes to %ld bytes\n", */
+    /* 	     s->packet_payload_size, new_size); */
+
+    new_ptr  = realloc(s->packet, new_size);
+    if (new_ptr != NULL)
+    {
+        s->packet_payload_size = new_size;
+        s->packet = new_ptr;
+	return (1);
+    }
+    return (0);
+}
+
 netbios_session *netbios_session_new(size_t buf_size)
 {
     netbios_session   *session;
@@ -187,15 +206,25 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
         perror("netbios_session_packet_recv: ");
         return (-1);
     }
-
-    if ((size_t)res > sizeof(netbios_session_packet) && data != NULL)
-        *data = (void *)s->packet->payload;
-    else if (data != NULL)
-        *data = NULL;
-
+    if ((size_t)res < sizeof(netbios_session_packet))
+    {
+        BDSM_dbg("netbios_session_packet_recv: packet received too small: %ld bytes",
+	         res);
+	if (data != NULL) 
+             *data = NULL;
+	return (-1);
+    }
+  
     total  = ntohs(s->packet->length);
     total |= (s->packet->flags & 0x01) << 16;
     sofar  = res - sizeof(netbios_session_packet);
+
+    if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
+        if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
+            return (-1);
+
+    if (data != NULL)
+      *data = (void *) s->packet->payload;
 
     //fprintf(stderr, "Total = %ld, sofar = %ld\n", total, sofar);
 

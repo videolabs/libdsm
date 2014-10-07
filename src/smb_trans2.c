@@ -131,7 +131,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     tr2->wct                = 15;
 
     tr2->max_param_count    = 10; // ?? Why not the same or 12 ?
-    tr2->max_data_count     = 0xffff;
+    tr2->max_data_count     = 0xffff;;
     tr2->param_offset       = 68; // Offset of find_first_params in packet;
     tr2->data_count         = 0;
     tr2->data_offset        = 88; // Offset of pattern in packet

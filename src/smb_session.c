@@ -136,7 +136,7 @@ int             smb_session_connect(smb_session *s, const char *name,
             goto error;
     }
 
-    if ((s->transport.session = s->transport.new(SMB_IO_BUFSIZE)) == NULL)
+    if ((s->transport.session = s->transport.new(SMB_DEFAULT_BUFSIZE)) == NULL)
         goto error;
     if (!s->transport.connect((struct in_addr *)&ip, s->transport.session, name))
         goto error;

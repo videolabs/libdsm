@@ -21,6 +21,8 @@
 #include "bdsm/smb_transport.h"
 #include "bdsm/netbios_session.h"
 
+// XXX: This can be simplified, since we have only one function that differs
+
 int               transport_connect_nbt(struct in_addr *addr,
                                         netbios_session *s,
                                         const char *name)

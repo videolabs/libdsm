@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
+
 #if HAVE_LANGINFO_H && !defined( __APPLE__ )
 # include <langinfo.h>
 #endif

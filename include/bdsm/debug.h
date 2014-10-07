@@ -19,6 +19,8 @@
 #ifndef __BDSM_DEBUG_H__
 # define __BDSM_DEBUG_H__
 
+# include "config.h"
+
 # ifdef BDSM_DEBUG
 #  include <stdio.h>
 #  define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
