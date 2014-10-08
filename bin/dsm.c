@@ -219,10 +219,12 @@ int main(int ac, char **av)
 
   fprintf(stderr, "Query file info for path: %s\n", fname);
   files = smb_fstat(session, test, fname);
-  smb_stat_destroy(files);
 
   if (files != NULL)
+  {
     printf("File '%s' is %"PRIu64" bytes long\n", fname, files->size);
+    smb_stat_destroy(files);
+  }
 
 
   smb_session_destroy(session);

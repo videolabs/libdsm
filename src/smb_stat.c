@@ -46,6 +46,7 @@ size_t            smb_stat_list_count(smb_stat_list list)
     return (count);
 }
 
+// XXX: Duplicate some code of smb_session_share_clear
 void            smb_stat_list_destroy(smb_stat_list list)
 {
     smb_stat_list tmp;

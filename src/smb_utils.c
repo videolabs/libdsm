@@ -77,6 +77,8 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
 
     assert(out != NULL);
     iconv(ic, (char **)&src, &src_len, &out, &outleft);
+    iconv_close(ic);
+
     if (src_len > 0)
       BDSM_dbg("iconv: Some character were lost at encoding/decoding");
 
