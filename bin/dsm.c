@@ -215,9 +215,11 @@ int main(int ac, char **av)
     }
   else
     fprintf(stderr, "Unable to list files\n");
+  smb_stat_list_destroy(files);
 
   fprintf(stderr, "Query file info for path: %s\n", fname);
   files = smb_fstat(session, test, fname);
+  smb_stat_destroy(files);
 
   if (files != NULL)
     printf("File '%s' is %"PRIu64" bytes long\n", fname, files->size);

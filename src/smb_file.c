@@ -129,6 +129,10 @@ void        smb_fclose(smb_session *s, smb_fd fd)
     // care about creating a potentiel leak server side.
     smb_session_send_msg(s, msg);
     smb_session_recv_msg(s, 0);
+    smb_message_destroy(msg);
+
+    free(file->name);
+    free(file);
 }
 
 ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)

@@ -78,6 +78,32 @@ smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
     return (NULL);
 }
 
+void            smb_session_share_clear(smb_session *s)
+{
+    smb_share   *iter, *tmp;
+    smb_file    *fiter, *ftmp;
+
+    assert(s != NULL);
+
+    iter = s->shares;
+    while(iter != NULL)
+    {        
+        fiter = iter->files;
+        while(fiter != NULL)
+        {
+            ftmp = fiter;
+            fiter = fiter->next;
+
+            free(ftmp->name);
+            free(ftmp);
+        }   
+
+        tmp = iter;
+        iter = iter->next;
+        free(tmp);
+    }
+}
+
 int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
 {
     smb_share *share;

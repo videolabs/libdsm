@@ -24,6 +24,7 @@
 #include "bdsm/debug.h"
 #include "bdsm/smb_session.h"
 #include "bdsm/smb_session_msg.h"
+#include "bdsm/smb_fd.h"
 #include "bdsm/smb_ntlm.h"
 #include "bdsm/smb_spnego.h"
 #include "bdsm/smb_transport.h"
@@ -61,6 +62,8 @@ void            smb_session_destroy(smb_session *s)
 {
     if (s != NULL)
     {
+        smb_session_share_clear(s);
+
         // FIXME Free smb_share and smb_file
         if (s->transport.session != NULL)
         {

@@ -64,7 +64,9 @@ smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
  * @param tid The tree id of a share obtained by smb_tree_connect()
  * @param path The full path of the file relative to the root of the share
  * (e.g. '\\folder\\file.ext')
- * @return An opaque smb_stat or NULL in case of error
+ *
+ * @return An opaque smb_stat or NULL in case of error. You need to
+ * destory this object with smb_stat_destroy after usage.
  */
 smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
 
@@ -75,9 +77,17 @@ smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
  * @param s The session object
  * @param fd The smb_fd from which you want infos/status
  *
- * @return  An opaque smb_stat or NULL in case of error
+ * @return An opaque smb_stat or NULL in case of error. You don't own
+ * this object memory, and then don't have to destory it
  */
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd);
+
+/**
+ * @brief Clear a smb_stat object, reclaiming its memory
+ *
+ * @param stat A smb_stat object returned by smb_fstat. 
+ */
+void            smb_stat_destroy(smb_stat stat);
 
 /**
  * @brief Get the number of item in a smb_stat_list file info
