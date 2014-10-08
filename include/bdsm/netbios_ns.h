@@ -24,7 +24,15 @@
 
 #include <sys/socket.h>
 #include <netinet/ip.h>
-#include <netinet/udp.h>
+#if HAVE_TARGETCONDITIONALS_H
+  #include "TargetConditionals.h"
+  // Header does not exist in the iOS SDK
+  #ifndef TARGET_OS_IPHONE
+    #include <netinet/udp.h>
+  #endif
+#else
+  #include <netinet/udp.h>
+#endif
 
 /**
  * @file netbios_ns.h
