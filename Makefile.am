@@ -6,7 +6,7 @@ EXTRA_DIST = \
 	contrib/spnego/spnego.asn1
 	contrib/spnego/spnego_asn1.c
 
-CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include @TASN1_CFLAGS@ @CFLAGS@
+CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include -I$(top_srcdir)/compat @TASN1_CFLAGS@ @CFLAGS@
 
 if DEBUG
 AM_CFLAGS = -O0 -g3 -Wall -Wextra #-Werror
@@ -73,15 +73,15 @@ libdsm_la_SOURCES = \
     src/smb_transport.c     \
     src/smb_utils.c
 
-if COMPAT_STRLCPY
-libdsm_la_SOURCES += compat/strlcpy.c
-endif
+noinst_LTLIBRARIES = libcompat.la
+libcompat_la_SOURCES = compat/compat.c
+libcompat_la_LIBADD = $(LTLIBOBJS)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
+libdsm_la_LIBADD = libcompat.la
 libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIBS@
-
 
 bin_PROGRAMS =
 

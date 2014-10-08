@@ -24,11 +24,14 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <fcntl.h>
-#ifdef HAVE_BSD_STRING_H
-#include <bsd/string.h>
-#endif
 
 #include "config.h"
+#ifdef HAVE_BSD_STRING_H
+#include <bsd/string.h>
+#else
+#include "compat.h"
+#endif
+
 #include "mdx/md4.h"
 #include "rc4/rc4.h"
 #include "bdsm/debug.h"

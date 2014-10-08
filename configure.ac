@@ -4,6 +4,7 @@ AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])],
   [], [libdsm], [])
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR([include/bdsm.h])
+AC_CONFIG_LIBOBJ_DIR([compat])
 AM_INIT_AUTOMAKE([1.6 foreign subdir-objects tar-ustar dist-zip])
 m4_ifdef([AM_SILENT_RULES], [
   AM_SILENT_RULES([yes])
@@ -79,11 +80,8 @@ AS_IF([test x"$HAVE_TASN1_3PLUS" = x"yes"], [
 
 AC_SEARCH_LIBS([strlcpy], [bsd], [
   AC_DEFINE([HAVE_LIBBSD], [1], [Does this system have libbsd strl*** functions implementation])
-], [
-  compat_strlcpy=yes
-  AC_MSG_WARN([unable to find the strlcpy() function (missing libbsd?)])
 ])
-AM_CONDITIONAL(COMPAT_STRLCPY, [test x$compat_strlcpy = xyes])
+AC_REPLACE_FUNCS([strlcpy])
 
 AC_CHECK_HEADERS([bsd/string.h])
 AC_CHECK_HEADERS([langinfo.h])
