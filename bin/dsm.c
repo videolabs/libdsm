@@ -95,7 +95,7 @@ int main(int ac, char **av)
   smb_session         *session;
   int                 argoffset;
   char                **share_list;
-  smb_file            *files;
+  smb_file            *files, *fiter;
 
 
   pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
@@ -206,12 +206,12 @@ int main(int ac, char **av)
   // smb_fclose(session, fd);
 
   fprintf(stderr, "Let's find files at share's root :\n");
-  files = smb_find(session, test, "\\*");
-  if (files != NULL)
-    while(files)
+  files = fiter = smb_find(session, test, "\\*");
+  if (fiter != NULL)
+    while(fiter)
     {
-      fprintf(stdout, "Found a file %s \n", files->name);
-      files = files->next;
+      fprintf(stdout, "Found a file %s \n", fiter->name);
+      fiter = fiter->next;
     }
   else
     fprintf(stderr, "Unable to list files\n");

@@ -112,6 +112,7 @@ static smb_message *smb_tr2_recv(smb_session *s)
 
 smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 {
+    smb_file              *files;
     smb_message           *msg;
     smb_trans2_req        *tr2;
     smb_tr2_find2         *find;
@@ -172,7 +173,9 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     if ((msg = smb_tr2_recv(s)) == NULL)
         return (NULL);
 
-    return (smb_find_parse(msg));
+    files = smb_find_parse(msg);
+    smb_message_destroy(msg);
+    return (files);
 }
 
 
@@ -247,7 +250,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
     file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
                                      &file->name);
-    file->name[info->name_len] = 0;
+    file->name[info->name_len / 2] = 0;
 
     file->created     = info->created;
     file->accessed    = info->accessed;

@@ -192,9 +192,9 @@ static int      challenge(smb_session *s)
 
     res = asn1_read_value(token, "negTokenResp.responseToken", resp_token,
                           &resp_token_size);
+    asn1_delete_structure(&token);
     if (res != ASN1_SUCCESS)
     {
-        asn1_delete_structure(&token);
         asn1_display_error("NegTokenResp read responseToken", res);
         return (0);
     }
@@ -287,6 +287,7 @@ static int      auth(smb_session *s, const char *domain, const char *user,
         BDSM_dbg("Unable to send Session Setup AndX (NTLMSSP_AUTH) message\n");
         return (0);
     }
+    smb_message_destroy(msg);
 
     if (smb_session_recv_msg(s, &resp) == 0)
         return (0);
