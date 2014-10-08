@@ -31,7 +31,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#if HAVE_TARGETCONDITIONALS_H
+#ifdef HAVE_TARGETCONDITIONALS_H
   #include "TargetConditionals.h"
   // Header does not exist in the iOS SDK
   #ifndef TARGET_OS_IPHONE
