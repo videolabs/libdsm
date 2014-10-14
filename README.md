@@ -1,9 +1,9 @@
 # liBDSM
 
-A small project of SMB protocol client implementation in C, with a _lot_ less
-features than Samba but also a more permissive license (WTFL/MIT). The initial
-goal of this project is to have a lib with an iOS compatible license to be
-intgrated into VLC for iOS.
+lib Defective SMb (libDSM) is a SMB protocol client implementation in pure C, with
+a _lot_ less features than Samba and also a more permissive license (currently LGPL).
+The initial goal of this project is to have a lib with an iOS/Android compatible license
+to be intgrated into VLC for iOS and VLC for Android.
 
 The lib is provided as a static library or as a dynamically linked library. A
 few useless (yet) utils are also provided.
