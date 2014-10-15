@@ -86,6 +86,11 @@ AC_REPLACE_FUNCS([strlcpy])
 AC_CHECK_HEADERS([bsd/string.h])
 AC_CHECK_HEADERS([langinfo.h])
 
+## Checks for OS X
+AC_CHECK_HEADER([TargetConditionals.h], [
+  AC_DEFINE([HAVE_TARGETCONDITIONALS_H], [1], [
+    Apple system-specific defines when compiling on OS X])])
+
 ## Configure random device path
 AC_ARG_WITH([urandom], 
     [AS_HELP_STRING([--with-urandom=PATH], 
