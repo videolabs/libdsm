@@ -35,8 +35,10 @@
 
 static const char *current_encoding()
 {
-#if defined( __APPLE__ ) || !HAVE_LANGINFO_H
+#if defined( __APPLE__ )
     return ("UTF8");
+#elif !HAVE_LANGINFO_H
+    return ("UTF-8");
 #else
     static int locale_set = 0;
 
