@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "config.h"
 
@@ -50,12 +51,10 @@ static const char *current_encoding()
 }
 
 static size_t smb_iconv(const char *src, size_t src_len, char **dst,
-                        size_t dst_len, const char *src_enc,
-                        const char *dst_enc)
+                        const char *src_enc, const char *dst_enc)
 {
     iconv_t   ic;
-    char      *out;
-    size_t    outleft;
+    size_t    ret = 0;
 
     assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
 
@@ -72,28 +71,42 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
         *dst = NULL;
         return (0);
     }
+    for (unsigned mul = 4; mul < 16; mul++)
+    {
+        size_t outlen = mul * src_len;
+        char *out = malloc(outlen);
 
-    outleft = dst_len; // The utf-16 str is at most 2x bigger than the utf-8 one. (i think ?)
-    out     = *dst = malloc(outleft);
+        const char *inp = src;
+        size_t inb = src_len;
+        char *outp = out;
+        size_t outb = outlen;
 
-    assert(out != NULL);
-    iconv(ic, (char **)&src, &src_len, &out, &outleft);
+        if (!out)
+            break;
+        if (iconv(ic, (char **)&inp, &inb, &outp, &outb) != (size_t)(-1)) {
+            ret = outlen - outb;
+            *dst = out;
+            break;
+        }
+        free(out);
+        if (errno != E2BIG)
+            break;
+    }
     iconv_close(ic);
 
-    if (src_len > 0)
-      BDSM_dbg("iconv: Some character were lost at encoding/decoding");
-
-    return (dst_len - outleft);
+    if (ret == 0)
+        *dst = NULL;
+    return (ret);
 }
 
 size_t      smb_to_utf16(const char *src, size_t src_len, char **dst)
 {
-    return (smb_iconv(src, src_len, dst, src_len * 2,
+    return (smb_iconv(src, src_len, dst,
                       current_encoding(), "UCS-2LE"));
 }
 
 size_t      smb_from_utf16(const char *src, size_t src_len, char **dst)
 {
-    return (smb_iconv(src, src_len, dst, src_len,
+    return (smb_iconv(src, src_len, dst,
                       "UCS-2LE", current_encoding()));
 }
