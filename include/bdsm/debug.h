@@ -22,8 +22,14 @@
 # include "config.h"
 
 # ifdef BDSM_DEBUG
-#  include <stdio.h>
-#  define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
+#  ifdef __ANDROID__
+#   define LOG_TAG "libdsm"
+#   include <android/log.h>
+#   define BDSM_dbg(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#  else
+#   include <stdio.h>
+#   define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
+#  endif
 # else
 #  define BDSM_dbg(...) do { } while(0)
 # endif

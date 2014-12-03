@@ -102,6 +102,13 @@ else
   AC_CONFIG_FILES([doc/Doxyfile])
 fi
 
+case "${host_os}" in
+  *android*)
+    BDSM_LIB_LOG="-llog"
+    LDFLAGS="${LDFLAGS} ${BDSM_LIB_LOG}"
+    ;;
+esac
+AC_SUBST(BDSM_LIB_LOG)
 
 AC_OUTPUT([
 Makefile
