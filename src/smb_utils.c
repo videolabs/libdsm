@@ -44,7 +44,7 @@ static const char *current_encoding()
         setlocale(LC_ALL, "");
         locale_set = 1;
     }
-    //fprintf(stderr, "%s\n", nl_langinfo(CODESET));
+    //BDSM_dbg("%s\n", nl_langinfo(CODESET));
     return (nl_langinfo(CODESET));
 #endif
 }
@@ -67,8 +67,8 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
 
     if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
     {
-        fprintf(stderr, "Unable to open iconv to convert from %s to %s\n",
-                src_enc, dst_enc);
+        BDSM_dbg("Unable to open iconv to convert from %s to %s\n",
+                 src_enc, dst_enc);
         return (0);
     }
 

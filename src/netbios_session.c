@@ -226,12 +226,12 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     if (data != NULL)
       *data = (void *) s->packet->payload;
 
-    //fprintf(stderr, "Total = %ld, sofar = %ld\n", total, sofar);
+    //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
 
     while (sofar < total)
     {
         res = recv(s->socket, (void *)(s->packet) + 4 + sofar, total - sofar, 0);
-        //xfprintf(stderr, "Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
+        //BDSM_dbg("Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
 
         if (res < 0)
         {

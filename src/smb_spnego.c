@@ -208,7 +208,7 @@ static int      challenge(smb_session *s)
     s->srv.challenge = challenge->challenge;
     s->srv.uid       = msg.packet->header.uid;
 
-    fprintf(stderr, "Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
+    BDSM_dbg("Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
 
     return (1);
 }

@@ -88,7 +88,7 @@ int             smb_message_append(smb_message *msg, const void *data,
     memcpy(msg->packet->payload + msg->cursor, data, data_size);
     msg->cursor += data_size;
 
-    //fprintf(stderr, "Cursor is at %d (append)\n", msg->cursor);
+    //BDSM_dbg("Cursor is at %d (append)\n", msg->cursor);
 
     return (1);
 }
@@ -102,7 +102,7 @@ int             smb_message_advance(smb_message *msg, size_t size)
 
     msg->cursor += size;
 
-    //fprintf(stderr, "Cursor is at %d (advance)\n", msg->cursor);
+    //BDSM_dbg("Cursor is at %d (advance)\n", msg->cursor);
     return (1);
 }
 
@@ -137,7 +137,7 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *str,
     res = smb_message_append(msg, utf_str, utf_str_len);
     free(utf_str);
 
-    // fprintf(stderr, "put_utf16, adds %d bytes, cursor is at %d\n",
+    // BDSM_dbg("put_utf16, adds %d bytes, cursor is at %d\n",
     //         utf_str_len, msg->cursor);
 
     if (res)

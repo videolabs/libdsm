@@ -270,7 +270,7 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
     if (token->size % 2) // Align on Word
         token->size += 1;
     smb_buffer_alloc(token, token->size);
-    // fprintf(stderr, "Token size if %ld\n", token->size);
+    // BDSM_dbg("Token size if %ld\n", token->size);
 
 
     nego      = (smb_ntlmssp_nego *)token->data;
