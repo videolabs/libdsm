@@ -69,6 +69,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
     {
         BDSM_dbg("Unable to open iconv to convert from %s to %s\n",
                  src_enc, dst_enc);
+        *dst = NULL;
         return (0);
     }
 
