@@ -53,6 +53,7 @@ struct netbios_ns
     struct sockaddr_in  addr;
     uint16_t            last_trn_id;  // Last transaction id used;
     netbios_ns_entry    *entries;     // NS entries cache, mainly used by discover()
+    int                 abort_pipe[2];
 };
 
 /**

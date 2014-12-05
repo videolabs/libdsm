@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -65,13 +66,40 @@ error:
     return (0);
 }
 
+static int    ns_open_abort_pipe(netbios_ns *ns)
+{
+    int flags;
+
+    if (pipe(ns->abort_pipe) == -1)
+        return -1;
+
+    if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
+        return -1;
+
+    if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
+        return -1;
+
+    return 0;
+}
+
+static void   ns_close_abort_pipe(netbios_ns *ns)
+{
+    if (ns->abort_pipe[0] != -1 && ns->abort_pipe[1] != -1)
+    {
+        close(ns->abort_pipe[0]);
+        close(ns->abort_pipe[1]);
+        ns->abort_pipe[0] = ns->abort_pipe[1] -1;
+    }
+}
+
 netbios_ns  *netbios_ns_new()
 {
     netbios_ns  *ns;
 
     assert(ns = calloc(1, sizeof(netbios_ns)));
+    ns->abort_pipe[0] = ns->abort_pipe[1] -1;
 
-    if (!ns_open_socket(ns))
+    if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
         netbios_ns_destroy(ns);
         return (0);
@@ -91,6 +119,9 @@ void          netbios_ns_destroy(netbios_ns *ns)
     netbios_ns_clear(ns);
 
     close(ns->socket);
+
+    ns_close_abort_pipe(ns);
+
     free(ns);
 }
 
@@ -125,28 +156,44 @@ static int        netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
     return (1);
 }
 
-static ssize_t    netbios_ns_recv(int sock, void *buf, size_t buf_size,
+static ssize_t    netbios_ns_recv(int sock, int abort_fd,
+                                  void *buf, size_t buf_size,
                                   struct timeval *timeout, struct sockaddr *addr,
                                   socklen_t *addr_len)
 {
     fd_set        read_fds, error_fds;
-    int           res;
+    int           res, nfds;
 
     assert(sock && buf != NULL && buf_size > 0);
 
     FD_ZERO(&read_fds);
     FD_ZERO(&error_fds);
     FD_SET(sock, &read_fds);
+    FD_SET(abort_fd, &read_fds);
     FD_SET(sock, &error_fds);
+    nfds = (sock > abort_fd ? sock : abort_fd) + 1;
 
-    res = select(sock + 1, &read_fds, 0, &error_fds, timeout);
+    res = select(nfds, &read_fds, 0, &error_fds, timeout);
 
     if (res < 0)
         goto error;
     if (FD_ISSET(sock, &error_fds))
         goto error;
 
-    if (FD_ISSET(sock, &read_fds))
+    if (FD_ISSET(abort_fd, &read_fds))
+    {
+        ssize_t nread;
+        do {
+            uint8_t buf;
+
+            nread = read(abort_fd, &buf, sizeof(uint8_t)); 
+        } while (nread > 0);
+        if (nread == -1)
+            goto error;
+        else
+            return (0);
+    }
+    else if (FD_ISSET(sock, &read_fds))
     {
         return (recvfrom(sock, buf, buf_size, 0, addr, addr_len));
     }
@@ -208,9 +255,10 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     // Now wait for a reply and pray
     timeout.tv_sec = 2;
     timeout.tv_usec = 420;
-    recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
+    recv = netbios_ns_recv(ns->socket, ns->abort_pipe[0],
+                           (void *)recv_buffer, 512, &timeout, 0, 0);
 
-    if (recv <= 0)
+    if (recv < 0)
         BDSM_perror("netbios_ns_resolve:");
     else if (recv == 0)
         BDSM_dbg("netbios_ns_resolve, received NO reply for '%s' !\n", name);
@@ -234,7 +282,8 @@ static void   netbios_ns_discover_rec(netbios_ns *ns, struct timeval *timeout,
     int                 res;
 
     recv_addr_len = sizeof(recv_addr);
-    res = netbios_ns_recv(ns->socket, recv_buffer, 256, timeout,
+    res = netbios_ns_recv(ns->socket, ns->abort_pipe[0],
+                          recv_buffer, 256, timeout,
                           (struct sockaddr *)&recv_addr, &recv_addr_len);
     if (res > 0 && timeout->tv_sec && timeout->tv_usec)
     {
@@ -293,6 +342,12 @@ int           netbios_ns_discover(netbios_ns *ns)
     return (1);
 }
 
+void          netbios_ns_abort(netbios_ns *ns)
+{
+    uint8_t buf = '\0';
+    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+}
+
 // Perform inverse name resolution. Grap an IP and return the first <20> field
 // returned by the host
 const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
@@ -327,7 +382,8 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
     // Now wait for a reply and pray
     timeout.tv_sec = 1;
     timeout.tv_usec = 500;
-    recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
+    recv = netbios_ns_recv(ns->socket, ns->abort_pipe[0],
+                           (void *)recv_buffer, 512, &timeout, 0, 0);
 
     if (recv <= 0)
         goto error;
