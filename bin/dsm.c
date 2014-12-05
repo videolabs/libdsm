@@ -95,7 +95,8 @@ int main(int ac, char **av)
   smb_session         *session;
   int                 argoffset;
   char                **share_list;
-  smb_file            *files, *fiter;
+  smb_file            *files;
+  smb_stat            st;
 
 
   pname     = ((pname = strrchr(av[0], '/')) != NULL) ? pname + 1 : av[0];
@@ -139,7 +140,6 @@ int main(int ac, char **av)
   if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Successfully connected to %s\n", host);
-    fprintf(stderr, "Challenge key is 0x%"PRIx64"\n", session->srv.challenge);
   }
   else
   {
@@ -150,7 +150,7 @@ int main(int ac, char **av)
   smb_session_set_creds(session, host, login, password);
   if (smb_session_login(session))
   {
-    if (session->guest)
+    if (smb_session_is_guest(session))
       printf("Login FAILED but we were logged in as GUEST \n");
     else
       printf("Successfully logged in as %s\\%s\n", host, login);
@@ -206,23 +206,31 @@ int main(int ac, char **av)
   // smb_fclose(session, fd);
 
   fprintf(stderr, "Let's find files at share's root :\n");
-  files = fiter = smb_find(session, test, "\\*");
-  if (fiter != NULL)
-    while(fiter)
-    {
-      fprintf(stdout, "Found a file %s \n", fiter->name);
-      fiter = fiter->next;
-    }
-  else
+  files = smb_find(session, test, "\\*");
+
+  size_t files_count = smb_stat_list_count( files );
+  if (files_count <= 0)
     fprintf(stderr, "Unable to list files\n");
+  else
+  {
+    for( size_t i = 0; i < files_count; i++ )
+    {
+      st = smb_stat_list_at( files, i );
+      if( st == NULL ) {
+        fprintf(stderr, "smb_stat_list_at failed\n");
+        break;
+      }
+      fprintf(stdout, "Found a file %s \n", smb_stat_name( st ));
+    }
+  }
   smb_stat_list_destroy(files);
 
   fprintf(stderr, "Query file info for path: %s\n", fname);
-  files = smb_fstat(session, test, fname);
+  st = smb_fstat(session, test, fname);
 
-  if (files != NULL)
+  if (st != NULL)
   {
-    printf("File '%s' is %"PRIu64" bytes long\n", fname, files->size);
+    printf("File '%s' is %"PRIu64" bytes long\n", fname, smb_stat_get(st, SMB_STAT_SIZE));
     smb_stat_destroy(files);
   }
 
