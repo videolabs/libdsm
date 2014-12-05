@@ -95,7 +95,7 @@ void          netbios_ns_destroy(netbios_ns *ns)
     free(ns);
 }
 
-int               netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
+static int        netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
                                         uint32_t ip)
 {
     struct sockaddr_in  addr;
@@ -126,7 +126,7 @@ int               netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
     return (1);
 }
 
-ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
+static ssize_t    netbios_ns_recv(int sock, void *buf, size_t buf_size,
                                   struct timeval *timeout, struct sockaddr *addr,
                                   socklen_t *addr_len)
 {
