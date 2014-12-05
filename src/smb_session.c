@@ -35,9 +35,8 @@ smb_session   *smb_session_new()
 {
     smb_session *s;
 
-    s = malloc(sizeof(smb_session));
+    s = calloc(1, sizeof(smb_session));
     assert(s != NULL);
-    memset((void *)s, 0, sizeof(smb_session));
 
     s->guest              = false;
 

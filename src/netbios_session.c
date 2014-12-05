@@ -68,9 +68,8 @@ netbios_session *netbios_session_new(size_t buf_size)
     netbios_session   *session;
     size_t            packet_size;
 
-    session = (netbios_session *)malloc(sizeof(netbios_session));
+    session = (netbios_session *)calloc(1, sizeof(netbios_session));
     assert(session != NULL);
-    memset((void *) session, 0, sizeof(netbios_session));
 
     session->packet_payload_size = buf_size;
     packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;

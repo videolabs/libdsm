@@ -29,13 +29,11 @@ netbios_query   *netbios_query_new(size_t payload_size,
 {
     netbios_query *q;
 
-    q = malloc(sizeof(netbios_query));
+    q = calloc(1, sizeof(netbios_query));
     assert(q);
-    memset((void *)q, 0, sizeof(netbios_query));
 
-    q->packet = malloc(sizeof(netbios_query_packet) + payload_size);
+    q->packet = calloc(1, sizeof(netbios_query_packet) + payload_size);
     assert(q->packet);
-    memset((void *)q->packet, 0, sizeof(netbios_query_packet) + payload_size);
 
     q->payload_size = payload_size;
 

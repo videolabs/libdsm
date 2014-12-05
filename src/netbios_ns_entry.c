@@ -66,9 +66,8 @@ netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
 {
     netbios_ns_entry  *entry;
 
-    entry = malloc(sizeof(netbios_ns_entry));
+    entry = calloc(1, sizeof(netbios_ns_entry));
     assert(entry != NULL);
-    memset((void *)entry, 0, sizeof(netbios_ns_entry));
 
     if (name != NULL)
     {
