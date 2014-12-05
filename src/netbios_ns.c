@@ -69,8 +69,7 @@ netbios_ns  *netbios_ns_new()
 {
     netbios_ns  *ns;
 
-    assert(ns = malloc(sizeof(netbios_ns)));
-    memset((void *)ns, 0, sizeof(netbios_ns));
+    assert(ns = calloc(1, sizeof(netbios_ns)));
 
     if (!ns_open_socket(ns))
     {
