@@ -29,9 +29,9 @@
 enum
 {
     /// SMB with Direct-TCP connection (OSX supports only this)
-    SMB_TRANSPORT_TCP	        = 1,
+    SMB_TRANSPORT_TCP           = 1,
     /// SMB with Netbios over TCP (older mechanism)
-    SMB_TRANSPORT_NBT	        = 2
+    SMB_TRANSPORT_NBT           = 2
 };
 
 //-----------------------------------------------------------------------------/

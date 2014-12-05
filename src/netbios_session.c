@@ -44,21 +44,21 @@ error:
     return (0);
 }
 
-static int	session_buffer_realloc(netbios_session *s, size_t new_size)
+static int        session_buffer_realloc(netbios_session *s, size_t new_size)
 {
     void        *new_ptr;
 
     assert(s != NULL);
 
     /* BDSM_dbg("session_buffer_realloc: from %ld bytes to %ld bytes\n", */
-    /* 	     s->packet_payload_size, new_size); */
+    /*          s->packet_payload_size, new_size); */
 
     new_ptr  = realloc(s->packet, new_size);
     if (new_ptr != NULL)
     {
         s->packet_payload_size = new_size;
         s->packet = new_ptr;
-	return (1);
+        return (1);
     }
     return (0);
 }
@@ -209,10 +209,10 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     if ((size_t)res < sizeof(netbios_session_packet))
     {
         BDSM_dbg("netbios_session_packet_recv: packet received too small: %ld bytes",
-	         res);
-	if (data != NULL) 
+                 res);
+        if (data != NULL)
              *data = NULL;
-	return (-1);
+        return (-1);
     }
   
     total  = ntohs(s->packet->length);
