@@ -59,7 +59,8 @@ static int        session_buffer_realloc(netbios_session *s, size_t new_size)
         s->packet_payload_size = new_size;
         s->packet = new_ptr;
         return (1);
-    }
+    } else
+        free(s->packet);
     return (0);
 }
 
@@ -69,12 +70,16 @@ netbios_session *netbios_session_new(size_t buf_size)
     size_t            packet_size;
 
     session = (netbios_session *)calloc(1, sizeof(netbios_session));
-    assert(session != NULL);
+    if (!session)
+        return NULL;
 
     session->packet_payload_size = buf_size;
     packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
     session->packet = (netbios_session_packet *)malloc(packet_size);
-    assert(session->packet != NULL);
+    if (!session->packet) {
+        free(session);
+        return NULL;
+    }
 
     return (session);
 }

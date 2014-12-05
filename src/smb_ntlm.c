@@ -136,7 +136,10 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
     HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, data.data, data.size, &hmac);
 
     response = malloc(blob->size + 16);
-    assert(response != NULL);
+    if (!response) {
+        smb_buffer_free(&data);
+        return NULL;
+    }
     memcpy(response, (void *)hmac, 16);
     memcpy(response + 16, blob->data, blob->size);
 
@@ -234,6 +237,8 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
     assert(out_blob != NULL && target != NULL);
 
     blob = malloc(target->size + sizeof(smb_ntlm_blob));
+    if (!blob)
+        return (0);
 
     memset((void *)blob, 0, sizeof(smb_ntlm_blob));
     blob->header    = 0x101;

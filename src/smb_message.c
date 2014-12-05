@@ -34,10 +34,14 @@ smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
     smb_message *msg;
 
     msg = (smb_message *)calloc(1, sizeof(smb_message));
-    assert(msg != NULL);
+    if (!msg)
+        return NULL;
 
     msg->packet = (smb_packet *)calloc(1, sizeof(smb_packet) + payload_size);
-    assert(msg != NULL);
+    if (!msg->packet) {
+        free(msg);
+        return NULL;
+    }
 
     msg->payload_size = payload_size;
     msg->cursor = 0;
@@ -58,12 +62,16 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
     assert(msg != NULL && msg->packet != NULL);
 
     copy = malloc(sizeof(smb_message));
-    assert(copy != NULL);
+    if (!copy)
+        return NULL;
     copy->cursor        = msg->cursor;
     copy->payload_size  = msg->payload_size + size;
 
     copy->packet = malloc(sizeof(smb_packet) + copy->payload_size);
-    assert(copy->packet != NULL);
+    if (!copy->packet) {
+        free(copy);
+        return NULL;
+    }
     memcpy((void *)copy->packet, (void *)msg->packet,
            msg->payload_size + sizeof(smb_packet));
 

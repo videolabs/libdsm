@@ -30,10 +30,14 @@ netbios_query   *netbios_query_new(size_t payload_size,
     netbios_query *q;
 
     q = calloc(1, sizeof(netbios_query));
-    assert(q);
+    if (!q)
+        return NULL;
 
     q->packet = calloc(1, sizeof(netbios_query_packet) + payload_size);
-    assert(q->packet);
+    if (!q->packet) {
+        free(q);
+        return NULL;
+    }
 
     q->payload_size = payload_size;
 

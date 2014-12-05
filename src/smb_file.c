@@ -82,7 +82,8 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
 
     resp = (smb_create_resp *)resp_msg.packet->payload;
     file = calloc(1, sizeof(smb_file));
-    assert(file != NULL);
+    if (!file)
+        return (0);
 
     file->fid           = resp->fid;
     file->tid           = tid;

@@ -81,7 +81,8 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
     resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
     share = calloc(1, sizeof(smb_share));
-    assert(share != NULL);
+    if (!share)
+        return (0);
 
     share->tid          = resp_msg.packet->header.tid;
     share->opts         = resp->opt_support;
@@ -116,6 +117,8 @@ static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
     eod         = msg->packet->payload + msg->payload_size;
 
     *list       = calloc(share_count + 1, sizeof(char *));
+    if (!list)
+        return (0);
     assert(*list != NULL);
 
     for (i = 0; i < share_count && data < eod; i++)

@@ -91,6 +91,8 @@ char  *netbios_name_encode(const char *name, char *domain,
         return (0);
 
     encoded_name = malloc(encoded_size);
+    if (!encoded_name)
+        return (0);
     encoded_name[0] = 32; // length of the field;
     netbios_name_level1_encode(name, encoded_name + 1, type);
     encoded_name[33] = 0;

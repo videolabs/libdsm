@@ -36,7 +36,8 @@ smb_session   *smb_session_new()
     smb_session *s;
 
     s = calloc(1, sizeof(smb_session));
-    assert(s != NULL);
+    if (!s)
+        return NULL;
 
     s->guest              = false;
 

@@ -50,7 +50,8 @@ static smb_file *smb_find_parse(smb_message *msg)
     {
         // Create a smb_file and fill it
         tmp = calloc(1, sizeof(smb_file));
-        assert(tmp != NULL);
+        if (!tmp)
+            return NULL;
 
         tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
                                        &tmp->name);
@@ -246,7 +247,8 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     tr2_resp  = (smb_trans2_resp *)reply.packet->payload;
     info      = (smb_tr2_path_info *)(tr2_resp->payload + 4); //+4 is padding
     file      = calloc(1, sizeof(smb_file));
-    assert(file != NULL);
+    if (!file)
+        return (NULL);
 
     file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
                                      &file->name);

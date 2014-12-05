@@ -52,7 +52,8 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
 
     // Concatenate inner padded key with message
     cat = malloc(msg_len + 64);
-    assert(cat != NULL);
+    if (!cat)
+        return NULL;
     memcpy(cat, i_key_pad, 64);
     memcpy(cat + 64, msg, msg_len);
 
