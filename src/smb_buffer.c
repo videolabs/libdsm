@@ -30,13 +30,28 @@ void    smb_buffer_init(smb_buffer *buf, void *data, size_t size)
     buf->size = size;
 }
 
-void    smb_buffer_alloc(smb_buffer *buf, size_t size)
+int     smb_buffer_alloc(smb_buffer *buf, size_t size)
 {
     assert(buf != NULL);
 
     buf->data = malloc(size);
-    if (buf->data)
+    if (buf->data) {
         buf->size = size;
+        return (1);
+    } else
+        return (0);
+}
+
+int     smb_buffer_alloca(smb_buffer *buf, size_t size)
+{
+    assert(buf != NULL);
+
+    buf->data = alloca(size);
+    if (buf->data) {
+        buf->size = size;
+        return (1);
+    } else
+        return (0);
 }
 
 void    smb_buffer_free(smb_buffer *buf)

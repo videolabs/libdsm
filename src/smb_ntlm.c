@@ -129,7 +129,8 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
     uint8_t         *response, hmac[16];
 
 
-    smb_buffer_alloca(&data, sizeof(uint64_t) + blob->size);
+    if (smb_buffer_alloca(&data, sizeof(uint64_t) + blob->size) == 0)
+        return NULL;
     memcpy(data.data, (void *)&srv_challenge, sizeof(uint64_t));
     memcpy(data.data + sizeof(uint64_t), blob->data, blob->size);
 
@@ -274,7 +275,8 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
     token->size = sizeof(smb_ntlmssp_nego) + strlen(host) + strlen(domain);
     if (token->size % 2) // Align on Word
         token->size += 1;
-    smb_buffer_alloc(token, token->size);
+    if (smb_buffer_alloc(token, token->size) == 0)
+        return;
     // BDSM_dbg("Token size if %ld\n", token->size);
 
 
@@ -339,7 +341,11 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
                   + 16;     // Session Key
     if (token->size % 2) // Align on Word
         token->size += 1;
-    smb_buffer_alloc(token, token->size);
+    if (smb_buffer_alloc(token, token->size) == 0) {
+        free(lm2);
+        free(ntlm2);
+        return;
+    }
 
     auth = (smb_ntlmssp_auth *)token->data;
     memset(auth, 0, token->size);

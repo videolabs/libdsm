@@ -202,7 +202,8 @@ static int      challenge(smb_session *s)
 
     // We got the server challenge, yeaaah.
     challenge = (smb_ntlmssp_challenge *)resp_token;
-    smb_buffer_alloc(&s->xsec_target, challenge->tgt_len);
+    if (smb_buffer_alloc(&s->xsec_target, challenge->tgt_len) == 0)
+        return (0);
     memcpy(s->xsec_target.data,
            challenge->data + challenge->tgt_offset - sizeof(smb_ntlmssp_challenge),
            s->xsec_target.size);
