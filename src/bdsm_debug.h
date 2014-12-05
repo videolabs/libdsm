@@ -21,13 +21,36 @@
 
 # include "config.h"
 
+# ifdef __ANDROID__
+#  define LOG_TAG "libdsm"
+#  include <android/log.h>
+#  include <stdio.h>
+#  include <errno.h>
+#  include <stdarg.h>
+   static inline void BDSM_perror(const char *format, ...)
+   {
+       va_list ap;
+       char *buf;
+
+       va_start(ap, format);
+       if (vasprintf(&buf, format, ap) == -1) {
+           va_end(ap);
+           return -1;
+       }
+       va_end(ap);
+       __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s%s",
+                           buf, strerror(errno));
+       free(buf);
+   }
+# else
+#   include <stdio.h>
+#   define BDSM_perror(...) perror(__VA_ARGS__)
+# endif
+
 # ifdef BDSM_DEBUG
 #  ifdef __ANDROID__
-#   define LOG_TAG "libdsm"
-#   include <android/log.h>
 #   define BDSM_dbg(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #  else
-#   include <stdio.h>
 #   define BDSM_dbg(...) fprintf(stderr, __VA_ARGS__)
 #  endif
 # else

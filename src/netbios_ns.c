@@ -61,7 +61,7 @@ static int    ns_open_socket(netbios_ns *ns)
     return (1);
 
 error:
-    perror("netbios_ns_new, open_socket: ");
+    BDSM_perror("netbios_ns_new, open_socket: ");
     return (0);
 }
 
@@ -118,7 +118,7 @@ int               netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
 
     if (sent < 0)
     {
-        perror("netbios_ns_send_query: ");
+        BDSM_perror("netbios_ns_send_query: ");
         return (0);
     }
 
@@ -155,7 +155,7 @@ ssize_t           netbios_ns_recv(int sock, void *buf, size_t buf_size,
         return (0);
 
 error:
-    perror("netbios_ns_recv: ");
+    BDSM_perror("netbios_ns_recv: ");
     return (-1);
 }
 
@@ -212,7 +212,7 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     recv = netbios_ns_recv(ns->socket, (void *)recv_buffer, 512, &timeout, 0, 0);
 
     if (recv <= 0)
-        perror("netbios_ns_resolve:");
+        BDSM_perror("netbios_ns_resolve:");
     else if (recv == 0)
         BDSM_dbg("netbios_ns_resolve, received NO reply for '%s' !\n", name);
     else
@@ -371,7 +371,7 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
         return (NULL);
 
 error:
-    perror("netbios_ns_inverse: ");
+    BDSM_perror("netbios_ns_inverse: ");
     return (NULL);
 }
 

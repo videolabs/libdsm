@@ -40,7 +40,7 @@ static int        open_socket_and_connect(netbios_session *s)
     return (1);
 
 error:
-    perror("netbios_session_new, open_socket: ");
+    BDSM_perror("netbios_session_new, open_socket: ");
     return (0);
 }
 
@@ -186,7 +186,7 @@ int               netbios_session_packet_send(netbios_session *s)
 
     if (sent != to_send)
     {
-        perror("netbios_session_packet_send: Unable to send (full?) packet");
+        BDSM_perror("netbios_session_packet_send: Unable to send (full?) packet");
         return (0);
     }
 
@@ -203,7 +203,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
     if (res < 0)
     {
-        perror("netbios_session_packet_recv: ");
+        BDSM_perror("netbios_session_packet_recv: ");
         return (-1);
     }
     if ((size_t)res < sizeof(netbios_session_packet))
@@ -235,7 +235,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 
         if (res < 0)
         {
-            perror("netbios_session_packet_recv: ");
+            BDSM_perror("netbios_session_packet_recv: ");
             return (-1);
         }
         sofar += res;
