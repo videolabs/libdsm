@@ -26,9 +26,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/netbios_session.h"
-#include "bdsm/netbios_utils.h"
+#include "bdsm_debug.h"
+#include "netbios_session.h"
+#include "netbios_utils.h"
 
 static int        open_socket_and_connect(netbios_session *s)
 {

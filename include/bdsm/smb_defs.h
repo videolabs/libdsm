@@ -24,8 +24,6 @@
 #ifndef __BSDM_SMB_DEFS_H_
 #define __BSDM_SMB_DEFS_H_
 
-#include <bdsm/smb_packets.h>
-
 #define SMB_DEFAULT_BUFSIZE     (8192)
 
 enum

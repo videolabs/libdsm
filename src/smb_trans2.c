@@ -21,11 +21,11 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/smb_message.h"
-#include "bdsm/smb_session_msg.h"
-#include "bdsm/smb_utils.h"
-#include "bdsm/smb_stat.h"
+#include "bdsm_debug.h"
+#include "smb_message.h"
+#include "smb_session_msg.h"
+#include "smb_utils.h"
+#include "smb_stat.h"
 
 static smb_file *smb_find_parse(smb_message *msg)
 {

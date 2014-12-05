@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bdsm/hmac_md5.h"
+#include "hmac_md5.h"
 
 unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
                         size_t msg_len, void *hmac)

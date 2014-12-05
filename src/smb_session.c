@@ -21,13 +21,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_session_msg.h"
-#include "bdsm/smb_fd.h"
-#include "bdsm/smb_ntlm.h"
-#include "bdsm/smb_spnego.h"
-#include "bdsm/smb_transport.h"
+#include "bdsm_debug.h"
+#include "smb_session.h"
+#include "smb_session_msg.h"
+#include "smb_fd.h"
+#include "smb_ntlm.h"
+#include "smb_spnego.h"
+#include "smb_transport.h"
 
 static int        smb_negotiate(smb_session *s);
 

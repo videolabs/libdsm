@@ -18,7 +18,8 @@
 
 #include <assert.h>
 
-#include "bdsm/smb_session.h"
+#include "smb_session.h"
+#include "smb_message.h"
 
 int             smb_session_send_msg(smb_session *s, smb_message *msg)
 {

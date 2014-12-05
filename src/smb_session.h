@@ -16,14 +16,42 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
+#ifndef _SMB_SESSION_H_
+#define _SMB_SESSION_H_
 
-#ifndef __BDSM_SMB_SPNEGO_H_
-#define __BDSM_SMB_SPNEGO_H_
+#include "bdsm/smb_session.h"
 
-#include "bdsm/smb_types.h"
+/**
+ * @file smb_session.h
+ * @brief Functions to connect and authenticate to an SMB server
+ */
 
-int             smb_session_login_spnego(smb_session *s, const char *domain,
-        const char *user, const char *password);
+/**
+ * @internal
+ * @brief Get a smb_tid from a smb_fd
+ *
+ * @param fd a smb_fd
+ * @return A smb_tid
+ */
+#define SMB_FD_TID(fd)    ((smb_tid)(fd >> 16))
+/**
+ * @internal
+ * @brief Get a smb_fid from a smb_fd
+ *
+ * @param fd a smb_fid
+ * @return A smb_fid
+ */
+#define SMB_FD_FID(fd)    ((smb_fid)(fd & 0x0000ffff))
+/**
+ * @internal
+ * @brief Compute the smb_fd for the given smb_tid and smb_fid
+ * @param tid a smb_tid
+ * @param fid a smb_fid *
+ * @return A smb_fd
+ */
+#define SMB_FD(tid, fid)  ((((smb_fd)tid) << 16) | (((smb_fd) fid)))
 
-
+/* Our reception buffer grows as necessary, so we can put the max here */
+#define SMB_SESSION_MAX_BUFFER (0xffff)
+ 
 #endif

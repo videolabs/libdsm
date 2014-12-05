@@ -34,10 +34,10 @@
 
 #include "mdx/md4.h"
 #include "rc4/rc4.h"
-#include "bdsm/debug.h"
-#include "bdsm/hmac_md5.h"
-#include "bdsm/smb_utils.h"
-#include "bdsm/smb_ntlm.h"
+#include "bdsm_debug.h"
+#include "hmac_md5.h"
+#include "smb_utils.h"
+#include "smb_ntlm.h"
 
 uint64_t    smb_ntlm_generate_challenge()
 {

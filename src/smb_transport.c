@@ -18,8 +18,8 @@
 
 #include <assert.h>
 
-#include "bdsm/smb_transport.h"
-#include "bdsm/netbios_session.h"
+#include "smb_transport.h"
+#include "netbios_session.h"
 
 // XXX: This can be simplified, since we have only one function that differs
 

@@ -22,12 +22,12 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/smb_session_msg.h"
-#include "bdsm/smb_utils.h"
-#include "bdsm/smb_fd.h"
-#include "bdsm/smb_share.h"
-#include "bdsm/smb_file.h"
+#include "bdsm_debug.h"
+#include "smb_session_msg.h"
+#include "smb_utils.h"
+#include "smb_fd.h"
+#include "smb_share.h"
+#include "smb_file.h"
 
 
 smb_tid         smb_tree_connect(smb_session *s, const char *name)

@@ -18,29 +18,37 @@ bdsmdir = $(includedir)/bdsm
 
 bdsm_HEADERS = \
     include/bdsm.h      \
-    include/bdsm/debug.h    \
-    include/bdsm/hmac_md5.h   \
     include/bdsm/netbios_defs.h   \
     include/bdsm/netbios_ns.h   \
-    include/bdsm/netbios_query.h  \
-    include/bdsm/netbios_session.h  \
-    include/bdsm/netbios_utils.h  \
-    include/bdsm/smb_packets.h     \
     include/bdsm/smb_defs.h   \
-    include/bdsm/smb_fd.h    \
     include/bdsm/smb_file.h   \
-    include/bdsm/smb_message.h    \
-    include/bdsm/smb_ntlm.h   \
     include/bdsm/smb_session.h    \
     include/bdsm/smb_share.h    \
     include/bdsm/smb_stat.h   \
-    include/bdsm/smb_types.h    \
-    include/bdsm/smb_utils.h    \
-    include/bdsm/smb_buffer.h
+    include/bdsm/smb_types.h
 noinst_HEADERS = \
-    include/bdsm/smb_session_msg.h \
-    include/bdsm/smb_transport.h   \
-    include/bdsm/smb_spnego.h      \
+    src/bdsm_debug.h    \
+    src/hmac_md5.h   \
+    src/netbios_defs.h   \
+    src/netbios_ns.h   \
+    src/netbios_query.h  \
+    src/netbios_session.h  \
+    src/netbios_utils.h  \
+    src/smb_buffer.h \
+    src/smb_defs.h   \
+    src/smb_fd.h    \
+    src/smb_file.h   \
+    src/smb_message.h    \
+    src/smb_packets.h     \
+    src/smb_ntlm.h   \
+    src/smb_session.h    \
+    src/smb_share.h    \
+    src/smb_stat.h   \
+    src/smb_session_msg.h \
+    src/smb_spnego.h      \
+    src/smb_types.h    \
+    src/smb_transport.h   \
+    src/smb_utils.h    \
     contrib/spnego/spnego_asn1.h   \
     contrib/mdx/md4.h              \
     contrib/mdx/md5.h              \

@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "bdsm/smb_buffer.h"
+#include "smb_buffer.h"
 
 void    smb_buffer_init(smb_buffer *buf, void *data, size_t size)
 {

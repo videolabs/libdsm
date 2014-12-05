@@ -22,8 +22,8 @@
  * @brief SMB helper functions
  */
 
-#ifndef __BDSM_SMB_UTILS_H_
-#define __BDSM_SMB_UTILS_H_
+#ifndef _SMB_UTILS_H_
+#define _SMB_UTILS_H_
 
 #include <stdint.h>
 

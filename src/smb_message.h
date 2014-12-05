@@ -16,11 +16,11 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_MESSAGE_H_
-#define __BDSM_SMB_MESSAGE_H_
+#ifndef _SMB_MESSAGE_H_
+#define _SMB_MESSAGE_H_
 
-#include "bdsm/smb_defs.h"
-#include "bdsm/smb_types.h"
+#include "smb_defs.h"
+#include "smb_types.h"
 
 smb_message     *smb_message_new(uint8_t cmd, size_t payload_size);
 smb_message     *smb_message_grow(smb_message *msg, size_t size);

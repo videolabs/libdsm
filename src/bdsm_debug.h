@@ -16,8 +16,8 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_DEBUG_H__
-# define __BDSM_DEBUG_H__
+#ifndef _BDSM_DEBUG_H_
+# define _BDSM_DEBUG_H_
 
 # include "config.h"
 

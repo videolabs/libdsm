@@ -16,11 +16,11 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_NTLM_H_
-#define __BDSM_SMB_NTLM_H_
+#ifndef _SMB_NTLM_H_
+#define _SMB_NTLM_H_
 
-#include "bdsm/smb_buffer.h"
-#include "bdsm/smb_defs.h"
+#include "smb_defs.h"
+#include "smb_buffer.h"
 
 #define SMB_LM2_BLOB_SIZE         8
 #define SMB_NTLM_HASH_SIZE        16

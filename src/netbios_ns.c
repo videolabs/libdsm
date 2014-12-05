@@ -29,10 +29,10 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/netbios_ns.h"
-#include "bdsm/netbios_query.h"
-#include "bdsm/netbios_utils.h"
+#include "bdsm_debug.h"
+#include "netbios_ns.h"
+#include "netbios_query.h"
+#include "netbios_utils.h"
 
 
 static int    ns_open_socket(netbios_ns *ns)

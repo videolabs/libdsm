@@ -18,8 +18,8 @@
 
 #include <assert.h>
 
-#include "bdsm/smb_stat.h"
-#include "bdsm/smb_fd.h"
+#include "smb_stat.h"
+#include "smb_fd.h"
 
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {

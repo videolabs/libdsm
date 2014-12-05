@@ -22,10 +22,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "bdsm/smb_session_msg.h"
-#include "bdsm/smb_fd.h"
-#include "bdsm/smb_utils.h"
-#include "bdsm/smb_file.h"
+#include "smb_session_msg.h"
+#include "smb_fd.h"
+#include "smb_utils.h"
+#include "smb_file.h"
 
 smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
                       uint32_t o_flags)

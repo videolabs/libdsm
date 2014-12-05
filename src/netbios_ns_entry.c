@@ -21,7 +21,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "bdsm/netbios_ns.h"
+#include "netbios_ns.h"
 
 const char          *netbios_ns_entry_name(netbios_ns_entry *entry)
 {

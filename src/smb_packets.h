@@ -16,8 +16,8 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BSDM_SMB_PACKETS_H_
-#define __BSDM_SMB_PACKETS_H_
+#ifndef _SMB_PACKETS_H_
+#define _SMB_PACKETS_H_
 
 #include <stdint.h>
 

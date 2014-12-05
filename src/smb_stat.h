@@ -16,18 +16,14 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_H_
-#define __BDSM_H_
+/**
+ * @file smb_stat.h
+ * @brief File status / listing
+ */
 
-#define BDSM_VERSION_CURRENT  0
-#define BDSM_VERSION_REVISION 0
-#define BDSM_VERSION_AGE      0
+#ifndef _SMB_STAT_H_
+#define _SMB_STAT_H_
 
-#include "bdsm/netbios_ns.h"
-#include "bdsm/netbios_defs.h"
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_share.h"
-#include "bdsm/smb_file.h"
 #include "bdsm/smb_stat.h"
 
 #endif

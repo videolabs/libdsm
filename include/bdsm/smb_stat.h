@@ -21,8 +21,8 @@
  * @brief File status / listing
  */
 
-#ifndef __BDSM_SMB_TRANS2_H_
-#define __BDSM_SMB_TRANS2_H_
+#ifndef __BDSM_SMB_STAT_H_
+#define __BDSM_SMB_STAT_H_
 
 #include "bdsm/smb_defs.h"
 #include "bdsm/smb_session.h"

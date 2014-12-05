@@ -23,10 +23,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "bdsm/debug.h"
-#include "bdsm/netbios_session.h"
-#include "bdsm/smb_message.h"
-#include "bdsm/smb_utils.h"
+#include "bdsm_debug.h"
+#include "netbios_session.h"
+#include "smb_message.h"
+#include "smb_utils.h"
 
 smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
 {

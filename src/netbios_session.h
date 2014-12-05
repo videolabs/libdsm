@@ -16,8 +16,8 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_NETBIOS_SESSION_H_
-#define __BDSM_NETBIOS_SESSION_H_
+#ifndef _NETBIOS_SESSION_H_
+#define _NETBIOS_SESSION_H_
 
 #include <stdint.h>
 #include <stddef.h>
@@ -25,7 +25,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "bdsm/netbios_defs.h"
+#include "netbios_defs.h"
 
 #define NETBIOS_SESSION_NEW         0
 #define NETBIOS_SESSION_CONNECTING  1

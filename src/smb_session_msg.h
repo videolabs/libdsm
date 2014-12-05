@@ -16,18 +16,17 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_H_
-#define __BDSM_H_
+#ifndef _SMB_SESSION_MSG_H_
+#define _SMB_SESSION_MSG_H_
 
-#define BDSM_VERSION_CURRENT  0
-#define BDSM_VERSION_REVISION 0
-#define BDSM_VERSION_AGE      0
+#include "smb_types.h"
 
-#include "bdsm/netbios_ns.h"
-#include "bdsm/netbios_defs.h"
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_share.h"
-#include "bdsm/smb_file.h"
-#include "bdsm/smb_stat.h"
+// Send a smb message for the provided smb_session
+int             smb_session_send_msg(smb_session *s, smb_message *msg);
+
+// msg->packet will be updated to point on received data. You don't own this
+// memory. It'll be reused on next recv_msg
+ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
+
 
 #endif

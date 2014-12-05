@@ -21,8 +21,8 @@
  * @brief liBDSM types and structures
  */
 
-#ifndef __BDSM_SMB_BUFFER_H_
-#define __BDSM_SMB_BUFFER_H_
+#ifndef _SMB_BUFFER_H_
+#define _SMB_BUFFER_H_
 
 #include <stdlib.h>
 

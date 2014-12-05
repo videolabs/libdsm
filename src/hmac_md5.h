@@ -16,18 +16,15 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_FD_H_
-#define __BDSM_SMB_FD_H_
+#ifndef _HMAC_MD5_H_
+#define _HMAC_MD5_H_
 
-#include "bdsm/smb_session.h"
+#include <stdint.h>
+#include <mdx/md5.h>
 
-void            smb_session_share_add(smb_session *s, smb_share *share);
-smb_share       *smb_session_share_get(smb_session *s, smb_tid tid);
-smb_share       *smb_session_share_remove(smb_session *s, smb_tid tid);
-void            smb_session_share_clear(smb_session *s);
-
-int             smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f);
-smb_file        *smb_session_file_get(smb_session *s, smb_fd fd);
-smb_file        *smb_session_file_remove(smb_session *s, smb_fd fd);
+// Pay attention that this is not HMAC_MD5 stricto sensus, this is a variation
+// to respect MS non-standard implementation in NTLMv2 auth.
+unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
+                        size_t msg_len, void *hmac);
 
 #endif

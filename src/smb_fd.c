@@ -18,7 +18,7 @@
 
 #include <assert.h>
 
-#include "bdsm/smb_fd.h"
+#include "smb_fd.h"
 
 void        smb_session_share_add(smb_session *s, smb_share *share)
 {

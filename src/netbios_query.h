@@ -16,13 +16,13 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_NETBIOS_QUERY_H_
-#define __BDSM_NETBIOS_QUERY_H_
+#ifndef _NETBIOS_QUERY_H_
+#define _NETBIOS_QUERY_H_
 
 #include <stdint.h>
 #include <stddef.h>
 
-#include "bdsm/netbios_defs.h"
+#include "netbios_defs.h"
 
 typedef struct              netbios_query_s
 {

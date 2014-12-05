@@ -16,22 +16,14 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_TRANSPORT_H_
-#define __BDSM_SMB_TRANSPORT_H_
-
-#include "bdsm/smb_types.h"
-
 /**
- * @internal
- * @brief Fill the smb_transport structure with the fun pointers for using
- * NBT transport
+ * @file smb_defs.h
+ * @brief SMB usefull constants
  */
-void              smb_transport_nbt(smb_transport *tr);
-/**
- * @internal
- * @brief Fill the smb_transport structure with the fun pointers for using
- * DirectTCP transport
- */
-void              smb_transport_tcp(smb_transport *tr);
+
+#ifndef _SMB_DEFS_H_
+#define _SMB_DEFS_H_
+
+#include "bdsm/smb_defs.h"
 
 #endif

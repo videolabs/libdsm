@@ -16,17 +16,22 @@
 // published by Sam Hocevar. See the COPYING file for more details.
 //----------------------------------------------------------------------------
 
-#ifndef __BDSM_SMB_SESSION_MSG_H_
-#define __BDSM_SMB_SESSION_MSG_H_
+#ifndef __SMB_TRANSPORT_H_
+#define __SMB_TRANSPORT_H_
 
-#include "bdsm/smb_types.h"
+#include "smb_types.h"
 
-// Send a smb message for the provided smb_session
-int             smb_session_send_msg(smb_session *s, smb_message *msg);
-
-// msg->packet will be updated to point on received data. You don't own this
-// memory. It'll be reused on next recv_msg
-ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
-
+/**
+ * @internal
+ * @brief Fill the smb_transport structure with the fun pointers for using
+ * NBT transport
+ */
+void              smb_transport_nbt(smb_transport *tr);
+/**
+ * @internal
+ * @brief Fill the smb_transport structure with the fun pointers for using
+ * DirectTCP transport
+ */
+void              smb_transport_tcp(smb_transport *tr);
 
 #endif

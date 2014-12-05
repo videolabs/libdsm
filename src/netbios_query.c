@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <arpa/inet.h>
 
-#include "bdsm/netbios_query.h"
+#include "netbios_query.h"
 
 netbios_query   *netbios_query_new(size_t payload_size,
                                    int is_query, char opcode)
