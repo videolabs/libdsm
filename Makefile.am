@@ -27,6 +27,7 @@ bdsm_HEADERS = \
     include/bdsm/smb_stat.h   \
     include/bdsm/smb_types.h
 noinst_HEADERS = \
+    compat/compat.h \
     src/bdsm_debug.h    \
     src/hmac_md5.h   \
     src/netbios_defs.h   \
