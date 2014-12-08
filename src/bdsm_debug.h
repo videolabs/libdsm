@@ -35,7 +35,7 @@
        va_start(ap, format);
        if (vasprintf(&buf, format, ap) == -1) {
            va_end(ap);
-           return -1;
+           return;
        }
        va_end(ap);
        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s%s",
