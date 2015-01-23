@@ -28,7 +28,25 @@
 #include "smb_message.h"
 #include "smb_utils.h"
 
-smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
+#define PAYLOAD_BLOCK_SIZE 256
+
+static int     smb_message_expand_payload(smb_message *msg, size_t cursor, size_t data_size)
+{
+    if (data_size == 0 || data_size > msg->payload_size - cursor)
+    {
+        size_t new_size = data_size + cursor - msg->payload_size;
+        size_t nb_blocks = (new_size / PAYLOAD_BLOCK_SIZE) + 1;
+        size_t new_payload_size = msg->payload_size + nb_blocks * PAYLOAD_BLOCK_SIZE;
+        void *new_packet = realloc(msg->packet, sizeof(smb_packet) + new_payload_size);
+        if (!new_packet)
+            return (0);
+        msg->packet = new_packet;
+        msg->payload_size = new_payload_size;
+    }
+    return (1);
+}
+
+smb_message   *smb_message_new(uint8_t cmd)
 {
     const char    magic[4] = SMB_MAGIC;
     smb_message *msg;
@@ -37,14 +55,11 @@ smb_message   *smb_message_new(uint8_t cmd, size_t payload_size)
     if (!msg)
         return NULL;
 
-    msg->packet = (smb_packet *)calloc(1, sizeof(smb_packet) + payload_size);
-    if (!msg->packet) {
+    if (smb_message_expand_payload(msg, msg->cursor, 0) == 0) {
         free(msg);
         return NULL;
     }
-
-    msg->payload_size = payload_size;
-    msg->cursor = 0;
+    memset(msg->packet, 0, sizeof(smb_packet));
 
     for (unsigned i = 0; i < 4; i++)
         msg->packet->header.magic[i] = magic[i];
@@ -90,7 +105,7 @@ int             smb_message_append(smb_message *msg, const void *data,
 {
     assert(msg != NULL && data != NULL);
 
-    if (data_size > msg->payload_size - msg->cursor)
+    if (smb_message_expand_payload(msg, msg->cursor, data_size) == 0)
         return (0);
 
     memcpy(msg->packet->payload + msg->cursor, data, data_size);
@@ -101,11 +116,24 @@ int             smb_message_append(smb_message *msg, const void *data,
     return (1);
 }
 
+int             smb_message_insert(smb_message *msg, size_t cursor,
+                                   const void *data, size_t data_size)
+{
+    assert(msg != NULL && data != NULL);
+
+    if (smb_message_expand_payload(msg, cursor, data_size) == 0)
+        return (0);
+
+    memcpy(msg->packet->payload + cursor, data, data_size);
+
+    return (1);
+}
+
 int             smb_message_advance(smb_message *msg, size_t size)
 {
     assert(msg != NULL);
 
-    if (msg->payload_size < msg->cursor + size)
+    if (smb_message_expand_payload(msg, msg->cursor, size) == 0)
         return (0);
 
     msg->cursor += size;

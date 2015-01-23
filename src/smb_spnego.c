@@ -74,25 +74,16 @@ static void     clean_asn1(smb_session *s)
 static int      negotiate(smb_session *s, const char *domain)
 {
     smb_message           *msg = NULL;
-    smb_session_xsec_req  *req = NULL;
+    smb_session_xsec_req  req;
     smb_buffer            ntlm;
     ASN1_TYPE             token;
     int                   res, der_size = 128;
     char                  der[128], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
-    msg = smb_message_new(SMB_CMD_SETUP, 512);
-    smb_message_set_andx_members(msg);
-    req = (smb_session_xsec_req *)msg->packet->payload;
+    msg = smb_message_new(SMB_CMD_SETUP);
 
-    req->wct              = 12;
-    req->max_buffer       = SMB_SESSION_MAX_BUFFER;
-    req->mpx_count        = 16;
-    req->vc_count         = 1;
-    req->caps             = s->srv.caps;
-    req->session_key      = s->srv.session_key;
-
-    smb_message_advance(msg, sizeof(smb_session_xsec_req));
-
+    // this struct will be set at the end when we know the payload size
+    SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
 
     asn1_create_element(s->spnego_asn1, "SPNEGO.GSSAPIContextToken", &token);
 
@@ -130,8 +121,16 @@ static int      negotiate(smb_session *s, const char *domain)
     smb_message_put16(msg, 0);
     smb_message_put16(msg, 0);
 
-    req->xsec_blob_size = der_size;
-    req->payload_size   = msg->cursor - sizeof(smb_session_xsec_req);
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct              = 12;
+    req.max_buffer       = SMB_SESSION_MAX_BUFFER;
+    req.mpx_count        = 16;
+    req.vc_count         = 1;
+    req.caps             = s->srv.caps;
+    req.session_key      = s->srv.session_key;
+    req.xsec_blob_size = der_size;
+    req.payload_size   = msg->cursor - sizeof(smb_session_xsec_req);
+    SMB_MSG_INSERT_PKT(msg, 0, req);
 
     asn1_delete_structure(&token);
 
@@ -219,25 +218,15 @@ static int      auth(smb_session *s, const char *domain, const char *user,
                      const char *password)
 {
     smb_message           *msg = NULL, resp;
-    smb_session_xsec_req  *req = NULL;
+    smb_session_xsec_req  req;
     smb_buffer            ntlm;
     ASN1_TYPE             token;
     int                   res, der_size = 512;
     char                  der[512], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
-    msg = smb_message_new(SMB_CMD_SETUP, 512);
-    smb_message_set_andx_members(msg);
-    req = (smb_session_xsec_req *)msg->packet->payload;
-
-    req->wct              = 12;
-    req->max_buffer       = SMB_SESSION_MAX_BUFFER;
-    req->mpx_count        = 16; // XXX ?
-    req->vc_count         = 1;
-    req->caps             = s->srv.caps; // XXX caps & our_caps_mask
-    req->session_key      = s->srv.session_key;
-
-    smb_message_advance(msg, sizeof(smb_session_xsec_req));
-
+    msg = smb_message_new(SMB_CMD_SETUP);
+    // this struct will be set at the end when we know the payload size
+    SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
 
     asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
 
@@ -278,8 +267,16 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     smb_message_put16(msg, 0);
     smb_message_put16(msg, 0); // Empty PDC name
 
-    req->xsec_blob_size = der_size;
-    req->payload_size   = msg->cursor - sizeof(smb_session_xsec_req);
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct              = 12;
+    req.max_buffer       = SMB_SESSION_MAX_BUFFER;
+    req.mpx_count        = 16; // XXX ?
+    req.vc_count         = 1;
+    req.caps             = s->srv.caps; // XXX caps & our_caps_mask
+    req.session_key      = s->srv.session_key;
+    req.xsec_blob_size = der_size;
+    req.payload_size   = msg->cursor - sizeof(smb_session_xsec_req);
+    SMB_MSG_INSERT_PKT(msg, 0, req);
 
     asn1_delete_structure(&token);
 

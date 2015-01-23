@@ -33,42 +33,47 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     smb_share       *share;
     smb_file        *file;
     smb_message     *req_msg, resp_msg;
-    smb_create_req  *req;
+    smb_create_req req;
     smb_create_resp *resp;
     size_t           path_len;
     int              res;
+    char            *utf_path;
 
     assert(s != NULL && path != NULL);
     if ((share = smb_session_share_get(s, tid)) == NULL)
         return (0);
 
-    req_msg = smb_message_new(SMB_CMD_CREATE, 128);
+    path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
+    if (path_len == 0)
+        return (0);
+    req_msg = smb_message_new(SMB_CMD_CREATE);
 
     // Set SMB Headers
-    smb_message_set_andx_members(req_msg);
     req_msg->packet->header.tid = tid;
 
     // Create AndX Params
-    req = (smb_create_req *)req_msg->packet->payload;
-    req->wct            = 24;
-    req->flags          = 0;
-    req->root_fid       = 0;
-    req->access_mask    = o_flags;
-    req->alloc_size     = 0;
-    req->file_attr      = 0;
-    req->share_access   = SMB_SHARE_READ | SMB_SHARE_WRITE;
-    req->disposition    = 1;  // 1 = Open and file if doesn't exist
-    req->create_opts    = 0;  // We dont't support create
-    req->impersonation  = 2;  // ?????
-    req->security_flags = 0;  // ???
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct            = 24;
+    req.flags          = 0;
+    req.root_fid       = 0;
+    req.access_mask    = o_flags;
+    req.alloc_size     = 0;
+    req.file_attr      = 0;
+    req.share_access   = SMB_SHARE_READ | SMB_SHARE_WRITE;
+    req.disposition    = 1;  // 1 = Open and file if doesn't exist
+    req.create_opts    = 0;  // We dont't support create
+    req.impersonation  = 2;  // ?????
+    req.security_flags = 0;  // ???
+    req.path_length    = path_len;
+    req.bct            = path_len + 1;
+    SMB_MSG_PUT_PKT(req_msg, req);
 
     // Create AndX 'Body'
-    smb_message_advance(req_msg, sizeof(smb_create_req));
     smb_message_put8(req_msg, 0);   // Align beginning of path
-    path_len = smb_message_put_utf16(req_msg, path, strlen(path) + 1);
+    smb_message_append(req_msg, utf_path, path_len);
+    free(utf_path);
+
     // smb_message_put16(req_msg, 0);  // ??
-    req->path_length  = path_len;
-    req->bct          = path_len + 1;
 
     res = smb_session_send_msg(s, req_msg);
     smb_message_destroy(req_msg);
@@ -105,7 +110,7 @@ void        smb_fclose(smb_session *s, smb_fd fd)
 {
     smb_file        *file;
     smb_message     *msg;
-    smb_close_req   *req;
+    smb_close_req   req;
 
     assert(s != NULL);
     if (!fd)
@@ -115,16 +120,16 @@ void        smb_fclose(smb_session *s, smb_fd fd)
     if ((file = smb_session_file_remove(s, fd)) == NULL)
         return;
 
-    msg = smb_message_new(SMB_CMD_CLOSE, 64);
-    req = (smb_close_req *)msg->packet->payload;
+    msg = smb_message_new(SMB_CMD_CLOSE);
 
     msg->packet->header.tid = SMB_FD_TID(fd);
 
-    smb_message_advance(msg, sizeof(smb_close_req));
-    req->wct        = 3;
-    req->fid        = SMB_FD_FID(fd);
-    req->last_write = ~0;
-    req->bct        = 0;
+    SMB_MSG_INIT_PKT(req);
+    req.wct        = 3;
+    req.fid        = SMB_FD_FID(fd);
+    req.last_write = ~0;
+    req.bct        = 0;
+    SMB_MSG_PUT_PKT(msg, req);
 
     // We don't check for succes or failure, since we actually don't really
     // care about creating a potentiel leak server side.
@@ -140,7 +145,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 {
     smb_file        *file;
     smb_message     *req_msg, resp_msg;
-    smb_read_req    *req;
+    smb_read_req    req;
     smb_read_resp   *resp;
     size_t          max_read;
     int             res;
@@ -151,24 +156,23 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     if ((file = smb_session_file_get(s, fd)) == NULL)
         return (-1);
 
-    req_msg = smb_message_new(SMB_CMD_READ, 64);
+    req_msg = smb_message_new(SMB_CMD_READ);
     req_msg->packet->header.tid = file->tid;
-    smb_message_set_andx_members(req_msg);
-    smb_message_advance(req_msg, sizeof(smb_read_req));
 
     max_read = 0xffff;
     max_read = max_read < buf_size ? max_read : buf_size;
 
-    req = (smb_read_req *)req_msg->packet->payload;
-    req->wct              = 12;
-    req->fid              = file->fid;
-    req->offset           = file->readp;
-    req->max_count        = max_read;
-    req->min_count        = max_read;
-    req->max_count_high   = 0;
-    req->remaining        = 0;
-    req->offset_high      = 0;
-    req->bct              = 0;
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct              = 12;
+    req.fid              = file->fid;
+    req.offset           = file->readp;
+    req.max_count        = max_read;
+    req.min_count        = max_read;
+    req.max_count_high   = 0;
+    req.remaining        = 0;
+    req.offset_high      = 0;
+    req.bct              = 0;
+    SMB_MSG_PUT_PKT(req_msg, req);
 
     res = smb_session_send_msg(s, req_msg);
     smb_message_destroy(req_msg);

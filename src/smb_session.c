@@ -163,16 +163,18 @@ static int        smb_negotiate(smb_session *s)
     smb_message         *msg = NULL;
     smb_message         answer;
     smb_nego_resp       *nego;
+    uint16_t *p_payload_size;
 
 
-    msg = smb_message_new(SMB_CMD_NEGOTIATE, 128);
+    msg = smb_message_new(SMB_CMD_NEGOTIATE);
 
     smb_message_put8(msg, 0);   // wct
     smb_message_put16(msg, 0);  // bct, will be updated later
 
     for (unsigned i = 0; dialects[i] != NULL; i++)
         smb_message_append(msg, dialects[i], strlen(dialects[i]) + 1);
-    *((uint16_t *)(msg->packet->payload + 1)) = msg->cursor - 3;
+    p_payload_size = (uint16_t *)(msg->packet->payload + 1);
+    *p_payload_size = msg->cursor - 3;
 
     if (!smb_session_send_msg(s, msg))
     {
@@ -216,23 +218,15 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 {
     smb_message           answer;
     smb_message           *msg = NULL;
-    smb_session_req       *req = NULL;
+    smb_session_req       req;
     uint8_t               *ntlm2 = NULL;
     smb_ntlmh             hash_v2;
     uint64_t              user_challenge;
 
-    msg = smb_message_new(SMB_CMD_SETUP, 512);
-    smb_message_set_andx_members(msg);
+    msg = smb_message_new(SMB_CMD_SETUP);
 
-    req = (smb_session_req *)msg->packet->payload;
-    req->wct              = 13;
-    req->max_buffer       = SMB_SESSION_MAX_BUFFER;
-    req->mpx_count        = 16; // XXX ?
-    req->vc_count         = 1;
-    //req->session_key      = s->srv.session_key; // XXX Useless on the wire?
-    req->caps             = s->srv.caps; // XXX caps & our_caps_mask
-
-    smb_message_advance(msg, sizeof(smb_session_req));
+    // this struct will be set at the end when we know the payload size
+    SMB_MSG_ADVANCE_PKT(msg, smb_session_req);
 
     user_challenge = smb_ntlm_generate_challenge();
 
@@ -242,8 +236,6 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     smb_message_append(msg, ntlm2, 16 + 8);
     free(ntlm2);
 
-    req->oem_pass_len = 16 + SMB_LM2_BLOB_SIZE;
-    req->uni_pass_len = 0; //16 + blob_size; //SMB_NTLM2_BLOB_SIZE;
     if (msg->cursor / 2) // Padding !
         smb_message_put8(msg, 0);
 
@@ -256,7 +248,17 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     smb_message_put_utf16(msg, SMB_LANMAN, strlen(SMB_LANMAN));
     smb_message_put16(msg, 0);
 
-    req->payload_size = msg->cursor - sizeof(smb_session_req);
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct              = 13;
+    req.max_buffer       = SMB_SESSION_MAX_BUFFER;
+    req.mpx_count        = 16; // XXX ?
+    req.vc_count         = 1;
+    //req.session_key      = s->srv.session_key; // XXX Useless on the wire?
+    req.caps             = s->srv.caps; // XXX caps & our_caps_mask
+    req.oem_pass_len = 16 + SMB_LM2_BLOB_SIZE;
+    req.uni_pass_len = 0; //16 + blob_size; //SMB_NTLM2_BLOB_SIZE;
+    req.payload_size = msg->cursor - sizeof(smb_session_req);
+    SMB_MSG_INSERT_PKT(msg, 0, req);
 
     if (!smb_session_send_msg(s, msg))
     {

@@ -32,13 +32,13 @@
 
 smb_tid         smb_tree_connect(smb_session *s, const char *name)
 {
-    smb_tree_connect_req  *req;
+    smb_tree_connect_req  req;
     smb_tree_connect_resp *resp;
     smb_message            resp_msg;
     smb_message           *req_msg;
     smb_share             *share;
     size_t                 path_len, utf_path_len;
-    char                  *path;
+    char                  *path, *utf_path;
 
     assert(s != NULL && name != NULL);
 
@@ -46,26 +46,27 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
     path_len  = strlen(name) + strlen(s->srv.name) + 4;
     path      = alloca(path_len);
     snprintf(path, path_len, "\\\\%s\\%s", s->srv.name, name);
+    utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
 
-    size_t msg_len = sizeof(smb_packet) + sizeof(smb_tree_connect_req)
-                     + path_len * 2 + 1 + 6;
-    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT, msg_len);
+    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
 
     // Packet headers
-    smb_message_set_andx_members(req_msg);
     req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
 
+    smb_message_set_andx_members(req_msg);
+
     // Packet payload
-    req = (smb_tree_connect_req *)req_msg->packet->payload;
-    smb_message_advance(req_msg, sizeof(smb_tree_connect_req));
-    req->wct          = 4;
-    req->flags        = 0x0c; // (??)
-    req->passwd_len   = 1;    // Null byte
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct          = 4;
+    req.flags        = 0x0c; // (??)
+    req.passwd_len   = 1;    // Null byte
+    req.bct = utf_path_len + 6 + 1;
+    SMB_MSG_PUT_PKT(req_msg, req);
 
     smb_message_put8(req_msg, 0); // Ze null byte password;
-    utf_path_len = smb_message_put_utf16(req_msg, path, strlen(path) + 1);
+    smb_message_append(req_msg, utf_path, utf_path_len);
+    free(utf_path);
     smb_message_append(req_msg, "?????", strlen("?????") + 1);
-    req->bct = utf_path_len + 6 + 1;
 
     if (!smb_session_send_msg(s, req_msg))
     {
@@ -107,12 +108,15 @@ static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
 {
     uint32_t          share_count, i;
     uint8_t           *data, *eod;
+    uint32_t          *p_share_count;
+
 
     assert(msg != NULL && list != NULL);
     // Let's skip smb parameters and DCE/RPC stuff until we are at the begginning of
     // NetShareCtrl
 
-    share_count = *((uint32_t *)(msg->packet->payload + 60));
+    p_share_count = (uint32_t *)(msg->packet->payload + 60);
+    share_count = *p_share_count;
     data        = msg->packet->payload + 72 + share_count * 12;
     eod         = msg->packet->payload + msg->payload_size;
 
@@ -177,7 +181,7 @@ void            smb_share_list_destroy(smb_share_list list)
 size_t          smb_share_get_list(smb_session *s, char ***list)
 {
     smb_message           *req, resp;
-    smb_trans_req         *trans;
+    smb_trans_req         trans;
     smb_tid               ipc_tid;
     smb_fd                srvscv_fd;
     uint16_t              rpc_len;
@@ -198,26 +202,22 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     //// Phase 1:
     // We bind a context or whatever for DCE/RPC
 
-    req = smb_message_new(SMD_CMD_TRANS, 256);
+    req = smb_message_new(SMD_CMD_TRANS);
     req->packet->header.tid = ipc_tid;
 
-    smb_message_advance(req, sizeof(smb_trans_req));
-    trans = (smb_trans_req *)req->packet->payload;
-
-    memset((void *)trans, 0, sizeof(smb_trans_req));
-
     rpc_len = 0xffff;
-
-    trans->wct                    = 16;
-    trans->total_data_count       = 72;
-    trans->max_data_count         = rpc_len;
-    trans->param_offset           = 84;
-    trans->data_count             = 72;
-    trans->data_offset            = 84;
-    trans->setup_count            = 2;
-    trans->pipe_function          = 0x26;
-    trans->fid                    = SMB_FD_FID(srvscv_fd);
-    trans->bct                    = 89;
+    SMB_MSG_INIT_PKT(trans);
+    trans.wct                    = 16;
+    trans.total_data_count       = 72;
+    trans.max_data_count         = rpc_len;
+    trans.param_offset           = 84;
+    trans.data_count             = 72;
+    trans.data_offset            = 84;
+    trans.setup_count            = 2;
+    trans.pipe_function          = 0x26;
+    trans.fid                    = SMB_FD_FID(srvscv_fd);
+    trans.bct                    = 89;
+    SMB_MSG_PUT_PKT(req, trans);
 
     smb_message_put8(req, 0);   // Padding
     smb_message_put_utf16(req, "\\PIPE\\", strlen("\\PIPE\\") + 1);
@@ -271,19 +271,11 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     // Now we have the 'bind' done (regarless of what it is), we'll call
     // NetShareEnumAll
 
-    req = smb_message_new(SMD_CMD_TRANS, 256);
+    req = smb_message_new(SMD_CMD_TRANS);
     req->packet->header.tid = ipc_tid;
 
-    smb_message_advance(req, sizeof(smb_trans_req));
-    trans = (smb_trans_req *)req->packet->payload;
-
-    memset((void *)trans, 0, sizeof(smb_trans_req));
-
-    trans->wct              = 16;
-    trans->max_data_count   = 4280;
-    trans->setup_count      = 2;
-    trans->pipe_function    = 0x26; // TransactNmPipe;
-    trans->fid              = SMB_FD_FID(srvscv_fd);
+    // this struct will be set at the end when we know the data size
+    SMB_MSG_ADVANCE_PKT(req, smb_trans_req);
 
     smb_message_put8(req, 0);  // Padding
     smb_message_put_utf16(req, "\\PIPE\\", strlen("\\PIPE\\") + 1);
@@ -325,14 +317,22 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     smb_message_put32(req, 0x00020008);   // Referent ID ?
     smb_message_put32(req, 0);            // Resume ?
 
-    // Sets length values
-    trans->bct              = req->cursor - sizeof(smb_trans_req);
-    trans->data_count       = trans->bct - 17; // 17 -> padding + \PIPE\ + padding
-    trans->total_data_count = trans->data_count;
-    req->packet->payload[frag_len_cursor] = trans->data_count; // (data_count SHOULD stay < 256)
-    trans->data_offset      = 84;
-    trans->param_offset     = 84;
+    // fill trans pkt at the end since we know the size at the end
+    SMB_MSG_INIT_PKT(trans);
+    trans.wct              = 16;
+    trans.max_data_count   = 4280;
+    trans.setup_count      = 2;
+    trans.pipe_function    = 0x26; // TransactNmPipe;
+    trans.fid              = SMB_FD_FID(srvscv_fd);
+    trans.bct              = req->cursor - sizeof(smb_trans_req);
+    trans.data_count       = trans.bct - 17; // 17 -> padding + \PIPE\ + padding
+    trans.total_data_count = trans.data_count;
+    trans.data_offset      = 84;
+    trans.param_offset     = 84;
+    // but insert it at the begining
+    SMB_MSG_INSERT_PKT(req, 0, trans);
 
+    req->packet->payload[frag_len_cursor] = trans.data_count; // (data_count SHOULD stay < 256)
 
     // Let's send this ugly pile of shit over the network !
     res = smb_session_send_msg(s, req);
