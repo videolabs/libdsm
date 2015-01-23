@@ -46,7 +46,12 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
     if (path_len == 0)
         return (0);
+
     req_msg = smb_message_new(SMB_CMD_CREATE);
+    if (!req_msg) {
+        free(utf_path);
+        return (0);
+    }
 
     // Set SMB Headers
     req_msg->packet->header.tid = tid;
@@ -121,6 +126,11 @@ void        smb_fclose(smb_session *s, smb_fd fd)
         return;
 
     msg = smb_message_new(SMB_CMD_CLOSE);
+    if (!msg) {
+        free(file->name);
+        free(file);
+        return;
+    }
 
     msg->packet->header.tid = SMB_FD_TID(fd);
 
@@ -157,6 +167,8 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
         return (-1);
 
     req_msg = smb_message_new(SMB_CMD_READ);
+    if (!req_msg)
+        return (-1);
     req_msg->packet->header.tid = file->tid;
 
     max_read = 0xffff;

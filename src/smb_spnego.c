@@ -81,6 +81,8 @@ static int      negotiate(smb_session *s, const char *domain)
     char                  der[128], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
     msg = smb_message_new(SMB_CMD_SETUP);
+    if (!msg)
+        return (0);
 
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
@@ -225,6 +227,9 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     char                  der[512], err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 
     msg = smb_message_new(SMB_CMD_SETUP);
+    if (!msg)
+        return (0);
+
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
 

@@ -167,6 +167,8 @@ static int        smb_negotiate(smb_session *s)
 
 
     msg = smb_message_new(SMB_CMD_NEGOTIATE);
+    if (!msg)
+        goto error;
 
     smb_message_put8(msg, 0);   // wct
     smb_message_put16(msg, 0);  // bct, will be updated later
@@ -224,6 +226,8 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     uint64_t              user_challenge;
 
     msg = smb_message_new(SMB_CMD_SETUP);
+    if (!msg)
+        return (0);
 
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_req);

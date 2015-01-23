@@ -49,6 +49,8 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
     utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
 
     req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
+    if (!req_msg)
+        return (0);
 
     // Packet headers
     req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
@@ -203,6 +205,8 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     // We bind a context or whatever for DCE/RPC
 
     req = smb_message_new(SMD_CMD_TRANS);
+    if (!req)
+        return (0);
     req->packet->header.tid = ipc_tid;
 
     rpc_len = 0xffff;
@@ -272,6 +276,8 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     // NetShareEnumAll
 
     req = smb_message_new(SMD_CMD_TRANS);
+    if (!req)
+        return (0);
     req->packet->header.tid = ipc_tid;
 
     // this struct will be set at the end when we know the data size

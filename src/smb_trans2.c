@@ -87,6 +87,8 @@ static smb_message *smb_tr2_recv(smb_session *s)
     tr2         = (smb_trans2_resp *)recv.packet->payload;
     growth      = tr2->total_data_count - tr2->data_count;
     res         = smb_message_grow(&recv, growth);
+    if (!res)
+        return (NULL);
     res->cursor = recv.payload_size;
     remaining   = (int)tr2->total_data_count -
                   (tr2->data_displacement + tr2->data_count);
@@ -137,6 +139,10 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     }
 
     msg = smb_message_new(SMB_CMD_TRANS2);
+    if (!msg) {
+        free(utf_pattern);
+        return (0);
+    }
     msg->packet->header.tid = tid;
 
     SMB_MSG_INIT_PKT(tr2);
@@ -207,6 +213,10 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
         padding = 4 - msg_len % 4;
 
     msg = smb_message_new(SMB_CMD_TRANS2);
+    if (!msg) {
+        free(utf_path);
+        return (0);
+    }
     msg->packet->header.tid = tid;
 
     SMB_MSG_INIT_PKT(tr2);
