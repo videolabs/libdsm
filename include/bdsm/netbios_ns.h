@@ -39,6 +39,15 @@ typedef struct netbios_ns netbios_ns;
 const char          *netbios_ns_entry_name(netbios_ns_entry *entry);
 
 /**
+ * @brief Get the name of the entry referenced by the iterator iter.
+ * @details The pointer points to an area of memory owned by the netbios name
+ * service
+ *
+ * @return A null-terminated ASCII string representing the group of a netbios machine.
+ */
+const char          *netbios_ns_entry_group(netbios_ns_entry *entry);
+
+/**
  * @brief Return the IP address of the correspondance referenced by the iterator
  *
  * @return The ip address of this entry, in network byte order.

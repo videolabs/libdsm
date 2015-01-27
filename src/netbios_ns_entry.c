@@ -31,6 +31,14 @@ const char          *netbios_ns_entry_name(netbios_ns_entry *entry)
         return (NULL);
 }
 
+const char          *netbios_ns_entry_group(netbios_ns_entry *entry)
+{
+    if (entry != NULL)
+        return (entry->group);
+    else
+        return (NULL);
+}
+
 uint32_t            netbios_ns_entry_ip(netbios_ns_entry *entry)
 {
     if (entry != NULL)
@@ -61,7 +69,20 @@ void                netbios_ns_clear(netbios_ns *ns)
     }
 }
 
+static void netbios_ns_copy_name(char *dest, const char *src)
+{
+    memcpy(dest, src, NETBIOS_NAME_LENGTH);
+    dest[NETBIOS_NAME_LENGTH] = 0;
+
+    for (int i = 1; i < NETBIOS_NAME_LENGTH; i++ )
+      if (dest[NETBIOS_NAME_LENGTH - i] == ' ')
+        dest[NETBIOS_NAME_LENGTH - i] = 0;
+      else
+        break;
+}
+
 netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
+                                       const char *group,
                                        char type, uint32_t ip)
 {
     netbios_ns_entry  *entry;
@@ -71,16 +92,9 @@ netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
         return NULL;
 
     if (name != NULL)
-    {
-        memcpy(entry->name, name, NETBIOS_NAME_LENGTH);
-        entry->name[NETBIOS_NAME_LENGTH] = 0;
-
-        for (int i = 1; i < NETBIOS_NAME_LENGTH; i++ )
-          if (entry->name[NETBIOS_NAME_LENGTH - i] == ' ')
-            entry->name[NETBIOS_NAME_LENGTH - i] = 0;
-          else
-            break;
-    }
+        netbios_ns_copy_name(entry->name, name);
+    if (group != NULL)
+        netbios_ns_copy_name(entry->group, group);
 
     entry->type           = type;
     entry->address.s_addr = ip;

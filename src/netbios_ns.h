@@ -44,6 +44,7 @@ struct netbios_ns_entry
     netbios_ns_entry              *next;
     struct in_addr                address;
     char                          name[NETBIOS_NAME_LENGTH + 1];
+    char                          group[NETBIOS_NAME_LENGTH + 1];
     char                          type;
 };
 
@@ -68,7 +69,7 @@ struct netbios_ns
  * @return The added entry
  */
 netbios_ns_entry    *netbios_ns_entry_add(netbios_ns *ns, const char *name,
-        char type, uint32_t ip);
+        const char *group, char type, uint32_t ip);
 /**
  * @internal
  * @brief Find an entry in

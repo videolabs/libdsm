@@ -29,6 +29,8 @@
 
 #define NETBIOS_NAME_LENGTH   15
 
+#define NETBIOS_NAME_FLAG_GROUP (1 << 15)
+
 // http://ubiqx.org/cifs/rfc-draft/rfc1001.html#s17.2
 #define NETBIOS_WILDCARD      { 32, 'C', 'K', 'A', 'A', 'A', 'A', 'A', 'A',    \
     'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', \

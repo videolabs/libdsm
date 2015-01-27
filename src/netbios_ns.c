@@ -398,9 +398,8 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
     netbios_query_packet  *p = (netbios_query_packet *)recv_buffer;
     uint8_t                 name_count;
     uint8_t                 name_idx;
-    char                    *names;
-    char                    *current_name;
-    char                    current_type;
+    const char              *names;
+    const char              *group = NULL;
     netbios_ns_entry        *entry = NULL;
 
     BDSM_dbg("Queried name length: %u\n", p->payload[0]);
@@ -408,14 +407,29 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
     BDSM_dbg("Number of names: %hhu\n", name_count);
     names = p->payload + p->payload[0] + 13;
 
+    // first search for a group in the name list
     for (name_idx = 0; name_idx < name_count; name_idx++)
     {
-        current_name = names + name_idx * 18;
-        current_type = current_name[15];
+        const char *current_name = names + name_idx * 18;
+        uint16_t current_flags = (current_name[16] << 8) | current_name[17];
+        if (current_flags & NETBIOS_NAME_FLAG_GROUP) {
+            group = current_name;
+            BDSM_dbg("Found group: %s\n", group);
+            break;
+        }
+    }
+    // then search for file servers
+    for (name_idx = 0; name_idx < name_count; name_idx++)
+    {
+        const char *current_name = names + name_idx * 18;
+        char current_type = current_name[15];
+        uint16_t current_flags = (current_name[16] << 8) | current_name[17];
 
+        if (current_flags & NETBIOS_NAME_FLAG_GROUP)
+            continue;
         BDSM_dbg("Found name : %s (type == 0x%x)\n", current_name, current_type);
         if (current_type == NETBIOS_FILESERVER)
-            entry = netbios_ns_entry_add(ns, current_name, current_type, ip);
+            entry = netbios_ns_entry_add(ns, current_name, group, current_type, ip);
     }
 
     return (entry->name);
