@@ -35,6 +35,12 @@
 #include "netbios_query.h"
 #include "netbios_utils.h"
 
+enum name_query_type {
+    NAME_QUERY_TYPE_INVALID,
+    NAME_QUERY_TYPE_NB,
+    NAME_QUERY_TYPE_NBSTAT
+};
+static char name_query_broadcast[] = NETBIOS_WILDCARD;
 
 static int    ns_open_socket(netbios_ns *ns)
 {
@@ -92,6 +98,75 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
     }
 }
 
+static int netbios_ns_send_name_query(netbios_ns *ns,
+                                      uint32_t ip,
+                                      enum name_query_type type,
+                                      const char *name,
+                                      uint16_t query_flag)
+{
+    struct sockaddr_in  addr;
+    ssize_t             sent;
+    uint16_t            trn_id;
+    const char          *query_type;
+    static char         query_type_nb[4] = { 0x00, 0x20, 0x00, 0x01 };
+    static char         query_type_nbstat[4] = { 0x00, 0x21, 0x00, 0x01 };
+    netbios_query       *q;
+
+    assert(ns != NULL);
+
+    switch (type)
+    {
+        case NAME_QUERY_TYPE_NB:
+            query_type = query_type_nb;
+            break;
+        case NAME_QUERY_TYPE_NBSTAT:
+            query_type = query_type_nbstat; // NBSTAT/IP;
+            break;
+        default:
+            BDSM_dbg("netbios_ns_send_name_query: unknow name_query_type");
+            return -1;
+    }
+
+    // Prepare packet
+    q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
+    if (query_flag)
+        netbios_query_set_flag(q, query_flag, 1);
+
+    // Append the queried name to the packet
+    netbios_query_append(q, name, strlen(name) + 1);
+
+    // Magic footer (i.e. Question type (Netbios) / class (IP)
+    netbios_query_append(q, query_type, 4);
+    q->packet->queries = htons(1);
+
+    if (ip == 0)
+        inet_aton("255.255.255.255", (struct in_addr *)&ip);
+
+    trn_id = ns->last_trn_id + 1; // Increment transaction ID, not to reuse them
+    q->packet->trn_id = htons(trn_id);
+
+    addr.sin_addr.s_addr  = ip;
+    addr.sin_family       = AF_INET;
+    addr.sin_port         = htons(NETBIOS_PORT_NAME);
+
+    sent = sendto(ns->socket, (void *)q->packet,
+                  sizeof(netbios_query_packet) + q->cursor, 0,
+                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+
+    netbios_query_destroy(q);
+
+    if (sent < 0)
+    {
+        BDSM_perror("netbios_ns_send_name_query: ");
+        return -1;
+    }
+    else
+        BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
+
+    ns->last_trn_id = trn_id; // Remember the last transaction id.
+    return 0;
+}
+
 netbios_ns  *netbios_ns_new()
 {
     netbios_ns  *ns;
@@ -125,37 +200,6 @@ void          netbios_ns_destroy(netbios_ns *ns)
     ns_close_abort_pipe(ns);
 
     free(ns);
-}
-
-static int        netbios_ns_send_query(netbios_ns *ns, netbios_query *q,
-                                        uint32_t ip)
-{
-    struct sockaddr_in  addr;
-    ssize_t             sent;
-    uint16_t            trn_id;
-
-    assert(ns != NULL && q != NULL);
-
-    trn_id = ns->last_trn_id + 1; // Increment transaction ID, not to reuse them
-    q->packet->trn_id = htons(trn_id);
-
-    addr.sin_addr.s_addr  = ip;
-    addr.sin_family       = AF_INET;
-    addr.sin_port         = htons(NETBIOS_PORT_NAME);
-
-    sent = sendto(ns->socket, (void *)q->packet,
-                  sizeof(netbios_query_packet) + q->cursor, 0,
-                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-    netbios_query_destroy(q);
-
-    if (sent < 0)
-    {
-        BDSM_perror("netbios_ns_send_query: ");
-        return (0);
-    }
-
-    ns->last_trn_id = trn_id; // Remember the last transaction id.
-    return (1);
 }
 
 static ssize_t    netbios_ns_recv(int sock, int abort_fd,
@@ -202,12 +246,9 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
 {
     netbios_ns_entry    *cached;
     struct timeval      timeout;
-    netbios_query       *q;
     char                *encoded_name;
-    char                footer[4] = { 0x00, 0x20, 0x00, 0x01 };
     char                recv_buffer[512]; // Hu ?
     ssize_t             recv;
-    uint32_t            ip;
 
 
     assert(ns != NULL);
@@ -222,27 +263,13 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
         return (0);
 
-    // Prepare packet
-    q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
-    netbios_query_set_flag(q, NETBIOS_FLAG_RECURSIVE, 1);
-    netbios_query_set_flag(q, NETBIOS_FLAG_BROADCAST, 1);
-
-    // Append the queried name to the packet
-    netbios_query_append(q, encoded_name, strlen(encoded_name) + 1);
-
-    // Magic footer (i.e. Question type (Netbios) / class (IP)
-    netbios_query_append(q, footer, 4);
-    q->packet->queries = htons(1);
-
-    // We broadcast this query
-    inet_aton("255.255.255.255", (struct in_addr *)&ip);
-
-    // Let's send it
-    if (!netbios_ns_send_query(ns, q, ip))
+    if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
+                                   NETBIOS_FLAG_RECURSIVE |
+                                   NETBIOS_FLAG_BROADCAST) == -1)
+    {
+        free(encoded_name);
         return (0);
-    else
-        BDSM_dbg("netbios_ns_resolve, name query sent for '%s' !\n", name);
-
+    }
     free(encoded_name);
 
     // Now wait for a reply and pray
@@ -290,13 +317,8 @@ static void   netbios_ns_discover_rec(netbios_ns *ns, struct timeval *timeout,
 
 int           netbios_ns_discover(netbios_ns *ns)
 {
-    const char  broadcast_name[] = NETBIOS_WILDCARD;
-    char        footer[4]        = { 0x00, 0x20, 0x00, 0x01 };
-
     struct timeval      timeout;
-    netbios_query     *q;
-    char                recv_buffer[256]; // Hu ?
-    uint32_t            ip;
+    char                recv_buffer[256];
 
     assert(ns != NULL);
 
@@ -304,26 +326,9 @@ int           netbios_ns_discover(netbios_ns *ns)
     // First step, we broadcast a packet to receive a message from every
     // NETBIOS nodes on the local network
     //
-    q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
-    // Append the queried name to the packet
-    netbios_query_append(q, broadcast_name, strlen(broadcast_name) + 1);
-    // Magic footer (i.e. Question type (Netbios) / class (IP)
-    netbios_query_append(q, footer, 4);
-    q->packet->queries = htons(1);
-
-    // We broadcast this query
-    inet_aton("255.255.255.255", (struct in_addr *)&ip);
-
-    // Let's send it
-    if (!netbios_ns_send_query(ns, q, ip))
-    {
-        BDSM_dbg("Unable to send netbios 'discovery query'.\n");
+    if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB,
+                                   name_query_broadcast, 0) == -1)
         return (0);
-    }
-    else
-        BDSM_dbg("netbios_ns_discover, name query sent for '*'.\n");
-
-
 
     //
     // Second step, we list every IP that answered to our broadcast.
@@ -345,12 +350,8 @@ void          netbios_ns_abort(netbios_ns *ns)
 // returned by the host
 const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
 {
-    const char  broadcast_name[] = NETBIOS_WILDCARD;
-    char        footer[4]        = { 0x00, 0x21, 0x00, 0x01 }; // NBSTAT/IP
-
     netbios_ns_entry  *cached;
     struct timeval      timeout;
-    netbios_query     *q;
     char                recv_buffer[512]; // Hu ?
     ssize_t             recv;
 
@@ -359,18 +360,9 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
     if ((cached = netbios_ns_entry_find(ns, NULL, ip)) != NULL)
         return (cached->name);
 
-    // Prepare NBSTAT query packet
-    q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
-    netbios_query_append(q, broadcast_name, strlen(broadcast_name) + 1);
-    netbios_query_append(q, footer, 4);
-    q->packet->queries = htons(1);
-
-    // Let's send it
-    if (!netbios_ns_send_query(ns, q, ip))
-        return (NULL);
-    else
-        BDSM_dbg("netbios_ns_inverse, reverse name query sent for '%s' !\n",
-                 inet_ntoa(*(struct in_addr *)&ip));
+    if (netbios_ns_send_name_query(ns, ip, NAME_QUERY_TYPE_NBSTAT,
+                                   name_query_broadcast, 0) == -1)
+        goto error;
 
     // Now wait for a reply and pray
     timeout.tv_sec = 1;
@@ -429,4 +421,3 @@ error:
     BDSM_perror("netbios_ns_inverse: ");
     return (NULL);
 }
-
