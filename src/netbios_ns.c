@@ -42,6 +42,9 @@ enum name_query_type {
 };
 static char name_query_broadcast[] = NETBIOS_WILDCARD;
 
+static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns,
+                                                     uint32_t ip);
+
 static int    ns_open_socket(netbios_ns *ns)
 {
     int sock_opt;
@@ -311,7 +314,7 @@ static void   netbios_ns_discover_rec(netbios_ns *ns, struct timeval *timeout,
 
         BDSM_dbg("Discover: received a reply from %s\n",
                  inet_ntoa(recv_addr.sin_addr));
-        netbios_ns_inverse(ns, recv_addr.sin_addr.s_addr);
+        netbios_ns_inverse_internal(ns, recv_addr.sin_addr.s_addr);
     }
 }
 
@@ -348,17 +351,15 @@ void          netbios_ns_abort(netbios_ns *ns)
 
 // Perform inverse name resolution. Grap an IP and return the first <20> field
 // returned by the host
-const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
+static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip)
 {
     netbios_ns_entry  *cached;
     struct timeval      timeout;
     char                recv_buffer[512]; // Hu ?
     ssize_t             recv;
 
-    assert(ns != NULL && ip != 0);
-
     if ((cached = netbios_ns_entry_find(ns, NULL, ip)) != NULL)
-        return (cached->name);
+        return (cached);
 
     if (netbios_ns_send_name_query(ns, ip, NAME_QUERY_TYPE_NBSTAT,
                                    name_query_broadcast, 0) == -1)
@@ -415,9 +416,16 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
             entry = netbios_ns_entry_add(ns, current_name, group, current_type, ip);
     }
 
-    return (entry->name);
+    return (entry);
 
 error:
     BDSM_perror("netbios_ns_inverse: ");
     return (NULL);
+}
+
+const char *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
+{
+    assert(ns != NULL && ip != 0);
+    netbios_ns_entry *entry = netbios_ns_inverse_internal(ns, ip);
+    return entry ? entry->name : NULL;
 }
