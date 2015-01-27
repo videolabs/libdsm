@@ -401,7 +401,7 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
     char                    *names;
     char                    *current_name;
     char                    current_type;
-    netbios_ns_entry      *entry = NULL, *res = NULL;
+    netbios_ns_entry        *entry = NULL;
 
     BDSM_dbg("Queried name length: %u\n", p->payload[0]);
     name_count = p->payload[p->payload[0] + 12];
@@ -414,18 +414,11 @@ const char        *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
         current_type = current_name[15];
 
         BDSM_dbg("Found name : %s (type == 0x%x)\n", current_name, current_type);
-        if (current_type == 0x20 || current_type == 0)
+        if (current_type == NETBIOS_FILESERVER)
             entry = netbios_ns_entry_add(ns, current_name, current_type, ip);
-        if (current_type == 0x20)
-            res = entry;
     }
 
-    if (res)        // We prefer a <20> name.
-        return (res->name);
-    else if (entry) // Did we found a <0> or <20> name ?
-        return (entry->name);
-    else
-        return (NULL);
+    return (entry->name);
 
 error:
     BDSM_perror("netbios_ns_inverse: ");
