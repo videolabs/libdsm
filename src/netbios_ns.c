@@ -184,16 +184,7 @@ static ssize_t    netbios_ns_recv(int sock, int abort_fd,
 
     if (FD_ISSET(abort_fd, &read_fds))
     {
-        ssize_t nread;
-        do {
-            uint8_t buf;
-
-            nread = read(abort_fd, &buf, sizeof(uint8_t)); 
-        } while (nread > 0);
-        if (nread == -1)
-            goto error;
-        else
-            return (0);
+        return (-1);
     }
     else if (FD_ISSET(sock, &read_fds))
     {
