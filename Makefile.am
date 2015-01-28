@@ -31,7 +31,6 @@ noinst_HEADERS = \
     src/bdsm_debug.h    \
     src/hmac_md5.h   \
     src/netbios_defs.h   \
-    src/netbios_ns.h   \
     src/netbios_query.h  \
     src/netbios_session.h  \
     src/netbios_utils.h  \
@@ -64,7 +63,6 @@ libdsm_la_SOURCES = \
     contrib/spnego/spnego_asn1.c  \
     src/hmac_md5.c      \
     src/netbios_ns.c    \
-    src/netbios_ns_entry.c  \
     src/netbios_query.c     \
     src/netbios_session.c   \
     src/netbios_utils.c     \
