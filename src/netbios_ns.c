@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/queue.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -46,13 +47,14 @@ static char name_query_broadcast[] = NETBIOS_WILDCARD;
 
 struct netbios_ns_entry
 {
-    netbios_ns_entry              *next;
+    TAILQ_ENTRY(netbios_ns_entry) next;
     struct in_addr                address;
     char                          name[NETBIOS_NAME_LENGTH + 1];
     char                          group[NETBIOS_NAME_LENGTH + 1];
     char                          type;
     time_t                        last_time_seen;
 };
+typedef TAILQ_HEAD(, netbios_ns_entry) NS_ENTRY_QUEUE;
 
 #define RECV_BUFFER_SIZE 1500 // Max MTU frame size for ethernet
 
@@ -61,7 +63,7 @@ struct netbios_ns
     int                 socket;
     struct sockaddr_in  addr;
     uint16_t            last_trn_id;  // Last transaction id used;
-    netbios_ns_entry    *entries;     // NS entries cache, mainly used by discover()
+    NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
     int                 abort_pipe[2];
 };
@@ -440,11 +442,10 @@ static netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
 
     entry->type           = type;
     entry->address.s_addr = ip;
-    entry->next           = ns->entries;
 
-    ns->entries = entry;
+    TAILQ_INSERT_HEAD(&ns->entry_queue, entry, next);
 
-    return (ns->entries);
+    return entry;
 }
 
 // Find an entry in the list. Search by name if name is not NULL,
@@ -452,26 +453,22 @@ static netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
 static netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_name,
                                                uint32_t ip)
 {
-    netbios_ns_entry  *found = NULL;
     netbios_ns_entry  *iter;
 
     assert(ns != NULL);
 
-    iter = ns->entries;
-    while (iter != NULL && found == NULL)
+    TAILQ_FOREACH(iter, &ns->entry_queue, next)
     {
         if (by_name != NULL)
         {
             if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
-                found = iter;
+                return iter;
         }
         else if (iter->address.s_addr == ip)
-            found = iter;
-
-        iter = iter->next;
+            return iter;
     }
 
-    return (found);
+    return NULL;
 }
 
 netbios_ns  *netbios_ns_new()
@@ -489,7 +486,7 @@ netbios_ns  *netbios_ns_new()
         return (0);
     }
 
-    ns->entries       = NULL;
+    TAILQ_INIT(&ns->entry_queue);
     ns->last_trn_id   = rand();
 
     return (ns);
@@ -676,15 +673,16 @@ char netbios_ns_entry_type(netbios_ns_entry *entry)
 
 void                netbios_ns_clear(netbios_ns *ns)
 {
-    netbios_ns_entry  *next;
+    netbios_ns_entry  *entry, *entry_next;
 
     assert(ns != NULL);
 
-    while (ns->entries != NULL)
+    for (entry = TAILQ_FIRST(&ns->entry_queue);
+         entry != NULL; entry = entry_next)
     {
-        next = ns->entries->next;
-        free(ns->entries);
-        ns->entries = next;
+        entry_next = TAILQ_NEXT(entry, next);
+        TAILQ_REMOVE(&ns->entry_queue, entry, next);
+        free(entry);
     }
 }
 
@@ -695,12 +693,10 @@ int             netbios_ns_entry_count(netbios_ns *ns)
 
     assert(ns != NULL);
 
-    iter  = ns->entries;
     res   = 0;
-    while (iter != NULL)
+    TAILQ_FOREACH(iter, &ns->entry_queue, next)
     {
         res++;
-        iter = iter->next;
     }
 
     return (res);
@@ -713,11 +709,11 @@ netbios_ns_entry  *netbios_ns_entry_at(netbios_ns *ns, int pos)
 
     assert(ns != NULL);
 
-    iter = ns->entries;
+    iter = TAILQ_FIRST(&ns->entry_queue);
     while (i < pos && iter != NULL)
     {
         i++;
-        iter = iter->next;
+        iter = TAILQ_NEXT(iter, next);
     }
 
     return (iter);
