@@ -45,6 +45,12 @@ enum name_query_type {
 };
 static char name_query_broadcast[] = NETBIOS_WILDCARD;
 
+enum ns_entry_flag {
+    NS_ENTRY_FLAG_INVALID = 0x00,
+    NS_ENTRY_FLAG_VALID_IP = 0x01,
+    NS_ENTRY_FLAG_VALID_NAME = 0x02,
+};
+
 struct netbios_ns_entry
 {
     TAILQ_ENTRY(netbios_ns_entry) next;
@@ -52,6 +58,7 @@ struct netbios_ns_entry
     char                          name[NETBIOS_NAME_LENGTH + 1];
     char                          group[NETBIOS_NAME_LENGTH + 1];
     char                          type;
+    int                           flag;
     time_t                        last_time_seen;
 };
 typedef TAILQ_HEAD(, netbios_ns_entry) NS_ENTRY_QUEUE;
@@ -425,9 +432,20 @@ static void netbios_ns_copy_name(char *dest, const char *src)
         break;
 }
 
-static netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
-                                              const char *group,
-                                              char type, uint32_t ip)
+static void netbios_ns_entry_set_name(netbios_ns_entry *entry,
+                                      const char *name, const char *group,
+                                      char type)
+{
+    if (name != NULL)
+        netbios_ns_copy_name(entry->name, name);
+    if (group != NULL)
+        netbios_ns_copy_name(entry->group, group);
+
+    entry->type = type;
+    entry->flag |= NS_ENTRY_FLAG_VALID_NAME;
+}
+
+static netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, uint32_t ip)
 {
     netbios_ns_entry  *entry;
 
@@ -435,13 +453,8 @@ static netbios_ns_entry *netbios_ns_entry_add(netbios_ns *ns, const char *name,
     if (!entry)
         return NULL;
 
-    if (name != NULL)
-        netbios_ns_copy_name(entry->name, name);
-    if (group != NULL)
-        netbios_ns_copy_name(entry->group, group);
-
-    entry->type           = type;
     entry->address.s_addr = ip;
+    entry->flag |= NS_ENTRY_FLAG_VALID_IP;
 
     TAILQ_INSERT_HEAD(&ns->entry_queue, entry, next);
 
@@ -461,10 +474,12 @@ static netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_na
     {
         if (by_name != NULL)
         {
-            if (!strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
+            if (iter->flag & NS_ENTRY_FLAG_VALID_NAME
+                && !strncmp(by_name, iter->name, NETBIOS_NAME_LENGTH))
                 return iter;
         }
-        else if (iter->address.s_addr == ip)
+        else if (iter->flag & NS_ENTRY_FLAG_VALID_IP
+                 && iter->address.s_addr == ip)
             return iter;
     }
 
@@ -611,6 +626,7 @@ static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip
     struct timeval      timeout;
     ssize_t             recv;
     netbios_ns_name_query name_query;
+    netbios_ns_entry *entry;
 
     if ((cached = netbios_ns_entry_find(ns, NULL, ip)) != NULL)
         return (cached);
@@ -636,9 +652,12 @@ static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip
         BDSM_dbg("netbios_ns_inverse, received a reply for '%s' !\n",
                  inet_ntoa(*(struct in_addr *)&ip));
 
-    return netbios_ns_entry_add(ns, name_query.u.nbstat.name,
-                                name_query.u.nbstat.group,
-                                name_query.u.nbstat.type, ip);
+    entry = netbios_ns_entry_add(ns, ip);
+    if (entry)
+        netbios_ns_entry_set_name(entry, name_query.u.nbstat.name,
+                                  name_query.u.nbstat.group,
+                                  name_query.u.nbstat.type);
+    return entry;
 error:
     BDSM_perror("netbios_ns_inverse: ");
     return (NULL);
