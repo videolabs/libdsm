@@ -495,6 +495,21 @@ static netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_na
     return NULL;
 }
 
+static void netbios_ns_entry_clear(netbios_ns *ns)
+{
+    netbios_ns_entry  *entry, *entry_next;
+
+    assert(ns != NULL);
+
+    for (entry = TAILQ_FIRST(&ns->entry_queue);
+         entry != NULL; entry = entry_next)
+    {
+        entry_next = TAILQ_NEXT(entry, next);
+        TAILQ_REMOVE(&ns->entry_queue, entry, next);
+        free(entry);
+    }
+}
+
 netbios_ns  *netbios_ns_new()
 {
     netbios_ns  *ns;
@@ -521,7 +536,7 @@ void          netbios_ns_destroy(netbios_ns *ns)
     if (!ns)
         return;
 
-    netbios_ns_clear(ns);
+    netbios_ns_entry_clear(ns);
 
     close(ns->socket);
 
@@ -577,48 +592,6 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     }
 
     return (0);
-}
-
-// We have a small recursive function for discovery, to stack received reply
-// when descending, and performing reverse lookup when ascending
-static void netbios_ns_discover_rec(netbios_ns *ns, struct timeval *timeout )
-{
-    struct sockaddr_in  recv_addr;
-    int                 res;
-
-    res = netbios_ns_recv(ns, timeout, &recv_addr, true, 0, NULL);
-    if (res > 0 && timeout->tv_sec && timeout->tv_usec)
-    {
-        netbios_ns_discover_rec(ns, timeout);
-
-        BDSM_dbg("Discover: received a reply from %s\n",
-                 inet_ntoa(recv_addr.sin_addr));
-        netbios_ns_inverse_internal(ns, recv_addr.sin_addr.s_addr);
-    }
-}
-
-int           netbios_ns_discover(netbios_ns *ns)
-{
-    struct timeval      timeout;
-
-    assert(ns != NULL);
-
-    //
-    // First step, we broadcast a packet to receive a message from every
-    // NETBIOS nodes on the local network
-    //
-    if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB,
-                                   name_query_broadcast, 0) == -1)
-        return (0);
-
-    //
-    // Second step, we list every IP that answered to our broadcast.
-    //
-    timeout.tv_sec = 2;
-    timeout.tv_usec = 420;
-    netbios_ns_discover_rec(ns, &timeout);
-
-    return (1);
 }
 
 static int    netbios_ns_is_aborted(netbios_ns *ns)
@@ -711,54 +684,6 @@ uint32_t netbios_ns_entry_ip(netbios_ns_entry *entry)
 char netbios_ns_entry_type(netbios_ns_entry *entry)
 {
     return entry ? entry->type : -1;
-}
-
-void netbios_ns_clear(netbios_ns *ns)
-{
-    netbios_ns_entry  *entry, *entry_next;
-
-    assert(ns != NULL);
-
-    for (entry = TAILQ_FIRST(&ns->entry_queue);
-         entry != NULL; entry = entry_next)
-    {
-        entry_next = TAILQ_NEXT(entry, next);
-        TAILQ_REMOVE(&ns->entry_queue, entry, next);
-        free(entry);
-    }
-}
-
-int             netbios_ns_entry_count(netbios_ns *ns)
-{
-    netbios_ns_entry  *iter;
-    int                 res;
-
-    assert(ns != NULL);
-
-    res   = 0;
-    TAILQ_FOREACH(iter, &ns->entry_queue, next)
-    {
-        res++;
-    }
-
-    return (res);
-}
-
-netbios_ns_entry  *netbios_ns_entry_at(netbios_ns *ns, int pos)
-{
-    netbios_ns_entry  *iter = NULL;
-    int                 i = 0;
-
-    assert(ns != NULL);
-
-    iter = TAILQ_FIRST(&ns->entry_queue);
-    while (i < pos && iter != NULL)
-    {
-        i++;
-        iter = TAILQ_NEXT(iter, next);
-    }
-
-    return (iter);
 }
 
 static void *netbios_ns_discover_thread(void *opaque)

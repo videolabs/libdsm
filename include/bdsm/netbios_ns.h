@@ -92,42 +92,6 @@ int           netbios_ns_resolve(netbios_ns *ns, const char *name,
                                  char type, uint32_t *addr);
 
 /**
- * @brief Try to discover all the Netbios/SMB speaking machine on the LAN.
- * @details This functions sends a message to '*' Netbios name, and waits for
- * the machine on the LAN to answer. It then performs a reverse lookup on all
- * the ip he received packet from. It stores the results inside of the name
- * service, allowing you to list them
- *
- *
- * @param ns The name service object.
- * @return It returns 0 in case of error.
- */
-int           netbios_ns_discover(netbios_ns *ns);
-
-/**
- * @brief Get the list of entries (know machine) for this name service object
- * @details You might want to call discover before-hand if you don't want
- * the lit to be empty
- *
- * @return The list of entries in the name service.
- */
-int           netbios_ns_entry_count(netbios_ns *ns);
-
-/**
- * @brief Get the entry at a certain position in the entry list
- * @details You might want to call discover before-hand if you don't want
- * the lit to be empty. The entry list contains all the record known to the
- * name service (including resolved, reverse resolved and discovered) since the
- * creation of the name service object or the last call to clear
- *
- * @param ns The nameservice object.
- * @param pos The index/position of the item to access in the list. Must be <
- * netbios_ns_entry_count(ns) or the pointer returned will be NULL.
- * @return A pointer to a opaque netbios_ns_entry structure
- */
-netbios_ns_entry *netbios_ns_entry_at(netbios_ns *ns, int pos);
-
-/**
  * @brief Perform an inverse netbios lookup (get name from ip)
  * @details This function does a NBSTAT and stores all the returned entry in
  * the internal list of entries. It returns one of the name found. (Normally
@@ -140,13 +104,6 @@ netbios_ns_entry *netbios_ns_entry_at(netbios_ns *ns, int pos);
  * own the it (it'll be freed when destroying/clearing the name service)
  */
 const char          *netbios_ns_inverse(netbios_ns *ns, uint32_t ip);
-
-/**
- * @brief Clear all the existing entries from the name service
- *
- * @param ns The nameservice object
- */
-void                netbios_ns_clear(netbios_ns *ns);
 
 /**
  * @brief abort any pending netbios_ns_* operations
