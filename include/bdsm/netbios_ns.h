@@ -156,4 +156,37 @@ void                netbios_ns_clear(netbios_ns *ns);
  */
 void          netbios_ns_abort(netbios_ns *ns);
 
+typedef struct
+{
+    // Opaque pointer that will be passed to callbacks
+    void *p_opaque;
+    // Called when a new entry is added
+    void (*pf_on_entry_added) (void *p_opaque, netbios_ns_entry *entry);
+    // Called when an entry is removed
+    void (*pf_on_entry_removed)(void *p_opaque, netbios_ns_entry *entry);
+} netbios_ns_discover_callbacks;
+
+/** @brief Perform a NETBIOS discovery in a separate thread.
+ *
+ * @details This functions starts a new thread that will send a message to '*'
+ * Netbios name (broadcast NB query on 255.255.255.255). It'll wait for the
+ * machine on the LAN to answer. It'll then perform a reverse lookup on all the
+ * ip he received packet from. Once a name and an ip is found, this function
+ * will notify the caller by a callback.
+ *
+ * @param ns The name service object.  @param broadcast_timeout Do a broadcast
+ * every timeout seconds @param callbacks The callbacks previously setup by the
+ * caller
+ *
+ * @return a value > 0 if successfull, or 0 otherwise
+ */
+int netbios_ns_discover_start(netbios_ns *ns, unsigned int broadcast_timeout,
+                              netbios_ns_discover_callbacks *callbacks);
+
+/**
+ * @brief Stop the NETBIOS discovery.
+ * @param ns The name service object.
+ */
+int netbios_ns_discover_stop(netbios_ns *ns);
+
 #endif

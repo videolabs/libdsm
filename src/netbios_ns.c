@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pthread.h>
+#include <sys/time.h>
 #include <sys/queue.h>
 
 #include <unistd.h>
@@ -31,12 +33,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
+#include <sys/queue.h>
 
 #include <bdsm/netbios_ns.h>
 
 #include "bdsm_debug.h"
 #include "netbios_query.h"
 #include "netbios_utils.h"
+
+#define DISCOVER_REMOVE_TIMEOUT 60 // in sec
 
 enum name_query_type {
     NAME_QUERY_TYPE_INVALID,
@@ -73,6 +78,10 @@ struct netbios_ns
     NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
     int                 abort_pipe[2];
+    unsigned int        discover_broadcast_timeout;
+    pthread_t           discover_thread;
+    bool                discover_started;
+    netbios_ns_discover_callbacks discover_callbacks;
 };
 
 typedef struct netbios_ns_name_query netbios_ns_name_query;
@@ -529,7 +538,7 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     ssize_t             recv;
     netbios_ns_name_query name_query;
 
-    assert(ns != NULL);
+    assert(ns != NULL && !ns->discover_started);
 
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
     {
@@ -612,6 +621,20 @@ int           netbios_ns_discover(netbios_ns *ns)
     return (1);
 }
 
+static int    netbios_ns_is_aborted(netbios_ns *ns)
+{
+    fd_set        read_fds;
+    int           res;
+    struct timeval timeout = {0, 0};
+
+    FD_ZERO(&read_fds);
+    FD_SET(ns->abort_pipe[0], &read_fds);
+
+    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
+
+    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds)) ? 1 : 0;
+}
+
 void          netbios_ns_abort(netbios_ns *ns)
 {
     uint8_t buf = '\0';
@@ -665,7 +688,7 @@ error:
 
 const char *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
 {
-    assert(ns != NULL && ip != 0);
+    assert(ns != NULL && ip != 0 && !ns->discover_started);
     netbios_ns_entry *entry = netbios_ns_inverse_internal(ns, ip);
     return entry ? entry->name : NULL;
 }
@@ -690,7 +713,7 @@ char netbios_ns_entry_type(netbios_ns_entry *entry)
     return entry ? entry->type : -1;
 }
 
-void                netbios_ns_clear(netbios_ns *ns)
+void netbios_ns_clear(netbios_ns *ns)
 {
     netbios_ns_entry  *entry, *entry_next;
 
@@ -736,4 +759,144 @@ netbios_ns_entry  *netbios_ns_entry_at(netbios_ns *ns, int pos)
     }
 
     return (iter);
+}
+
+static void *netbios_ns_discover_thread(void *opaque)
+{
+    netbios_ns *ns = (netbios_ns *) opaque;
+    while (true)
+    {
+        struct timespec tp;
+        netbios_ns_entry  *entry, *entry_next;
+
+        if (netbios_ns_is_aborted(ns))
+            return NULL;
+
+        // check if cached entries timeout
+        clock_gettime(CLOCK_REALTIME, &tp);
+        for (entry = TAILQ_FIRST(&ns->entry_queue);
+             entry != NULL; entry = entry_next)
+        {
+            entry_next = TAILQ_NEXT(entry, next);
+            if (tp.tv_sec - entry->last_time_seen > DISCOVER_REMOVE_TIMEOUT)
+            {
+                BDSM_dbg("Discover: on_entry_removed: %s\n", entry->name);
+                ns->discover_callbacks.pf_on_entry_removed(
+                        ns->discover_callbacks.p_opaque, entry);
+                TAILQ_REMOVE(&ns->entry_queue, entry, next);
+                free(entry);
+            }
+        }
+
+        // send broadbast
+        if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB,
+                                       name_query_broadcast, 0) == -1)
+            return NULL;
+
+        while (true)
+        {
+            struct timeval      timeout;
+            struct sockaddr_in  recv_addr;
+            int                 res;
+            netbios_ns_name_query name_query;
+
+            timeout.tv_sec = ns->discover_broadcast_timeout;
+            timeout.tv_usec = 0;
+
+            // receive NB or NBSTAT answers
+            res = netbios_ns_recv(ns, ns->discover_broadcast_timeout == 0 ?
+                                  NULL : &timeout,
+                                  &recv_addr,
+                                  false, 0, &name_query);
+            // error or abort
+            if (res == -1)
+                return NULL;
+
+            // timeout reached, broadcast again
+            if (res == 0)
+                break;
+
+            clock_gettime(CLOCK_REALTIME, &tp);
+
+            if (name_query.type == NAME_QUERY_TYPE_NB)
+            {
+                uint32_t ip = name_query.u.nb.ip;
+                entry = netbios_ns_entry_find(ns, NULL, ip);
+
+                if (!entry)
+                {
+                    entry = netbios_ns_entry_add(ns, ip);
+                    if (!entry)
+                        return NULL;
+                }
+                entry->last_time_seen = tp.tv_sec;
+
+                // if entry is already valid, don't send NBSTAT query
+                if (entry->flag & NS_ENTRY_FLAG_VALID_NAME)
+                    continue;
+
+                // send NBSTAT query
+                if (netbios_ns_send_name_query(ns, ip, NAME_QUERY_TYPE_NBSTAT,
+                                               name_query_broadcast, 0) == -1)
+                    return NULL;
+
+            }
+            else if (name_query.type == NAME_QUERY_TYPE_NBSTAT)
+            {
+                bool send_callback;
+
+                entry = netbios_ns_entry_find(ns, NULL,
+                                              recv_addr.sin_addr.s_addr);
+
+                // ignore NBSTAT answers that didn't answered to NB query first.
+                if (!entry)
+                    continue;
+
+                entry->last_time_seen = tp.tv_sec;
+
+                send_callback = !(entry->flag & NS_ENTRY_FLAG_VALID_NAME);
+
+                netbios_ns_entry_set_name(entry, name_query.u.nbstat.name,
+                                          name_query.u.nbstat.group,
+                                          name_query.u.nbstat.type);
+                if (send_callback)
+                    ns->discover_callbacks.pf_on_entry_added(
+                            ns->discover_callbacks.p_opaque, entry);
+            }
+        }
+        if (ns->discover_broadcast_timeout == 0)
+            break;
+    }
+    return NULL;
+}
+
+int netbios_ns_discover_start(netbios_ns *ns,
+                              unsigned int broadcast_timeout,
+                              netbios_ns_discover_callbacks *callbacks)
+{
+    if (ns->discover_started || !callbacks)
+        return (0);
+
+    ns->discover_callbacks = *callbacks;
+    ns->discover_broadcast_timeout = broadcast_timeout;
+    if (pthread_create(&ns->discover_thread, NULL,
+                       netbios_ns_discover_thread, ns) != 0)
+        return (0);
+    ns->discover_started = true;
+
+    return (1);
+}
+
+int netbios_ns_discover_stop(netbios_ns *ns)
+{
+    if (ns->discover_started)
+    {
+        netbios_ns_abort(ns);
+        pthread_join(ns->discover_thread, NULL);
+        ns->discover_started = false;
+
+        return (1);
+    }
+    else
+        return (0);
 }
