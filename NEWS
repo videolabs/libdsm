@@ -1,0 +1,14 @@
+Changes between 0.0.4 and 0.0.3:
+--------------------------------
+
+ * Improve discovery that is now done in a separate thread and lot more robust
+ * API: Add netbios_ns_discover_start and netbios_ns_discover_stop to start and
+   stop a discovery
+ * API: Remove netbios_ns_discover, netbios_ns_entry_count, netbios_ns_entry_at,
+   netbios_ns_clear, netbios_ns_abort. Deprecated by new discovers calls
+
+Changes between 0.0.3 and 0.0.3:
+--------------------------------
+
+ * Port to Android, simplification of the API, add abort mechanism, and
+   numerous cleanup
