@@ -19,7 +19,7 @@
 #ifndef __BDSM_H_
 #define __BDSM_H_
 
-#define BDSM_VERSION_CURRENT  1
+#define BDSM_VERSION_CURRENT  2
 #define BDSM_VERSION_REVISION 0
 #define BDSM_VERSION_AGE      0
 
