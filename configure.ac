@@ -50,6 +50,9 @@ DOLT
 
 AC_CONFIG_MACRO_DIR([m4])
 
+dnl Check for pthreads
+AX_PTHREAD
+
 ##############################
 ## Checks for the ASN.1 parser
 PKG_CHECK_MODULES([TASN1], [libtasn1])
