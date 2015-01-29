@@ -117,14 +117,6 @@ int           netbios_ns_resolve(netbios_ns *ns, const char *name,
  */
 const char          *netbios_ns_inverse(netbios_ns *ns, uint32_t ip);
 
-/**
- * @brief abort any pending netbios_ns_* operations
- *
- *
- * @param ns The name service object.
- */
-void          netbios_ns_abort(netbios_ns *ns);
-
 typedef struct
 {
     // Opaque pointer that will be passed to callbacks

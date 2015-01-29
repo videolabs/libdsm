@@ -621,7 +621,7 @@ static int    netbios_ns_is_aborted(netbios_ns *ns)
     return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds)) ? 1 : 0;
 }
 
-void          netbios_ns_abort(netbios_ns *ns)
+static void netbios_ns_abort(netbios_ns *ns)
 {
     uint8_t buf = '\0';
     write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
