@@ -54,8 +54,6 @@
 #include "netbios_query.h"
 #include "netbios_utils.h"
 
-#define DISCOVER_REMOVE_TIMEOUT 60 // in sec
-
 enum name_query_type {
     NAME_QUERY_TYPE_INVALID,
     NAME_QUERY_TYPE_NB,
@@ -705,18 +703,20 @@ static void *netbios_ns_discover_thread(void *opaque)
     while (true)
     {
         struct timespec tp;
+        const int remove_timeout = 5 * ns->discover_broadcast_timeout;
         netbios_ns_entry  *entry, *entry_next;
 
         if (netbios_ns_is_aborted(ns))
             return NULL;
 
-        // check if cached entries timeout
+        // check if cached entries timeout, the timeout value is 5 times the
+        // broadcast timeout.
         clock_gettime(CLOCK_REALTIME, &tp);
         for (entry = TAILQ_FIRST(&ns->entry_queue);
              entry != NULL; entry = entry_next)
         {
             entry_next = TAILQ_NEXT(entry, next);
-            if (tp.tv_sec - entry->last_time_seen > DISCOVER_REMOVE_TIMEOUT)
+            if (tp.tv_sec - entry->last_time_seen > remove_timeout)
             {
                 BDSM_dbg("Discover: on_entry_removed: %s\n", entry->name);
                 ns->discover_callbacks.pf_on_entry_removed(
