@@ -718,9 +718,12 @@ static void *netbios_ns_discover_thread(void *opaque)
             entry_next = TAILQ_NEXT(entry, next);
             if (tp.tv_sec - entry->last_time_seen > remove_timeout)
             {
-                BDSM_dbg("Discover: on_entry_removed: %s\n", entry->name);
-                ns->discover_callbacks.pf_on_entry_removed(
-                        ns->discover_callbacks.p_opaque, entry);
+                if (entry->flag & NS_ENTRY_FLAG_VALID_NAME)
+                {
+                    BDSM_dbg("Discover: on_entry_removed: %s\n", entry->name);
+                    ns->discover_callbacks.pf_on_entry_removed(
+                            ns->discover_callbacks.p_opaque, entry);
+                }
                 TAILQ_REMOVE(&ns->entry_queue, entry, next);
                 free(entry);
             }
