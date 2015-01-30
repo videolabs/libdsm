@@ -1,6 +1,7 @@
 Changes between 0.0.4 and 0.0.3:
 --------------------------------
 
+ * Fix smb_fopen failing to open long path
  * Improve discovery that is now done in a separate thread and lot more robust
  * API: Add netbios_ns_discover_start and netbios_ns_discover_stop to start and
    stop a discovery
