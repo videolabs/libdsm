@@ -8,13 +8,12 @@
 var indexSectionsWithContent =
 {
   0: "ns",
-  1: "ns",
+  1: "s",
   2: "ns",
   3: "ns",
   4: "s",
-  5: "n",
-  6: "s",
-  7: "s"
+  5: "s",
+  6: "s"
 };
 
 var indexSectionNames =
@@ -23,10 +22,9 @@ var indexSectionNames =
   1: "classes",
   2: "files",
   3: "functions",
-  4: "variables",
-  5: "typedefs",
-  6: "enumvalues",
-  7: "defines"
+  4: "typedefs",
+  5: "enumvalues",
+  6: "defines"
 };
 
 function convertToId(search)

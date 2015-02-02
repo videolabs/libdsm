@@ -22,7 +22,6 @@ var searchData=
   ['smb_5fmod_5fwrite_5fattr',['SMB_MOD_WRITE_ATTR',['../smb__defs_8h.html#af98e47413e55dee9c52988c75d939c66',1,'smb_defs.h']]],
   ['smb_5fmod_5fwrite_5fdac',['SMB_MOD_WRITE_DAC',['../smb__defs_8h.html#a9aca84c9346a6442cc6e0e8fa0495ea1',1,'smb_defs.h']]],
   ['smb_5fmod_5fwrite_5fext',['SMB_MOD_WRITE_EXT',['../smb__defs_8h.html#a7b53dbba5920ceccc915fed35f180aa8',1,'smb_defs.h']]],
-  ['smb_5fos',['SMB_OS',['../smb__defs_8h.html#a8c1b00e826c55d685030bb39b334c4b3',1,'smb_defs.h']]],
   ['smb_5fstat_5falloc_5fsize',['SMB_STAT_ALLOC_SIZE',['../smb__stat_8h.html#a919ce960251272b619eb064458ee0fe0',1,'smb_stat.h']]],
   ['smb_5fstat_5fatime',['SMB_STAT_ATIME',['../smb__stat_8h.html#aba3c65a543821aa5a50099746d46b57b',1,'smb_stat.h']]],
   ['smb_5fstat_5fctime',['SMB_STAT_CTIME',['../smb__stat_8h.html#a34415654455513f7a0afa19bb6a4c7fa',1,'smb_stat.h']]],
