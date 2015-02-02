@@ -49,6 +49,7 @@ libdsm.pc
 
 doc/html/*
 doc/Doxyfile
+doc/doxygen_sqlite3.db
 dsm_ntlm
 contrib/spnego/spnego_asn1.c
 dsm_ntlm_test
