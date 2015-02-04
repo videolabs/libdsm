@@ -30,6 +30,16 @@
 
 #include "config.h"
 
-#if !defined HAVE_strlcpy && !defined HAVE_LIBBSD
+#if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
+#endif
+
+#if !defined HAVE_CLOCK_GETTIME
+typedef enum {
+    CLOCK_REALTIME,
+    CLOCK_MONOTONIC,
+    CLOCK_PROCESS_CPUTIME_ID,
+    CLOCK_THREAD_CPUTIME_ID
+} clockid_t;
+int clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif

@@ -85,6 +85,7 @@ AC_SEARCH_LIBS([strlcpy], [bsd], [
   AC_DEFINE([HAVE_LIBBSD], [1], [Does this system have libbsd strl*** functions implementation])
 ])
 AC_REPLACE_FUNCS([strlcpy])
+AC_REPLACE_FUNCS([clock_gettime])
 
 AC_CHECK_HEADERS([bsd/string.h])
 AC_CHECK_HEADERS([langinfo.h])
