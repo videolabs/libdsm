@@ -243,7 +243,6 @@ int main(int ac, char **av)
   if (st != NULL)
   {
     printf("File '%s' is %"PRIu64" bytes long\n", fname, smb_stat_get(st, SMB_STAT_SIZE));
-    smb_stat_destroy(files);
   }
 
 
