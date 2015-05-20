@@ -61,12 +61,6 @@ void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
 int     smb_buffer_alloc(smb_buffer *buf, size_t size);
 
 /**
- * @brief Allocate a size long memory area from the stack and place it in
- *  the buffer structure
- */
-int    smb_buffer_alloca(smb_buffer *buf, size_t size);
-
-/**
  * @brief Free the data of this buffer if necessary
  *
  * @param buf Pointer to a buffer to free

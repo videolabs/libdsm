@@ -54,18 +54,6 @@ int     smb_buffer_alloc(smb_buffer *buf, size_t size)
         return (0);
 }
 
-int     smb_buffer_alloca(smb_buffer *buf, size_t size)
-{
-    assert(buf != NULL);
-
-    buf->data = alloca(size);
-    if (buf->data) {
-        buf->size = size;
-        return (1);
-    } else
-        return (0);
-}
-
 void    smb_buffer_free(smb_buffer *buf)
 {
     if (buf == NULL || buf->data == NULL)
