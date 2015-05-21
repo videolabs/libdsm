@@ -1,9 +1,12 @@
 # liBDSM
 
-lib Defective SMb (libDSM) is a SMB protocol client implementation in pure old C, with
-a _lot_ less features than Samba but with a more permissive license (currently LGPL + proprietary).
-The initial goal of this project is to have a lib with a license compatible with the
-iOS/Android/WinRT appstores in order to integrate it into VLC for iOS and VLC for Android.
+lib Defective SMb (__libDSM__) is a [SMB protocol](https://en.wikipedia.org/wiki/Server_Message_Block) client implementation in pure old __C__, with
+a _lot_ less features than [Samba](https://www.samba.org/) but is simpler, and
+has with a more permissive license (currently __LGPL__ + __proprietary__).
+
+The initial goal of this project is to have a library that can access most SMB shares to
+read files and that has with a license compatible with the iOS/Android/WinRT appstores in
+order to integrate it into _VLC for iOS_ and _VLC for Android_.
 
 This library is also licensable under a proprietary license, if LGPL is not good enough
 for you.
@@ -11,30 +14,7 @@ for you.
 The lib is provided as a static library or as a dynamically linked library.
 A few useless (yet) utils are also provided, mostly for testing purpose.
 
-## Building
-
-### Requirements
-
-* A Unix system with a bash-compatible shell
-* C99 C compiler
-* (GNU) Make
-* Autotools
-* libc with iconv
-* getopt_long
-* GNU tasn1 compiler/support library
-
-The build dependencies can be installed on Debian(-based) systems using
-
-    sudo apt-get install build-essential autoconf libtool pkg-config libtasn1-3-dev libtasn1-3-bin libbsd-dev
-
-### HowTo
-
-    $> ./bootstrap
-    $> ./configure --prefix=/your/prefix
-    $> make
-    $> make install # maybe
-
-## Goals
+## Features
 
 Here's a list of the currently supported features:
 * NETBIOS
@@ -61,6 +41,30 @@ liBDSM has been tested/reported to work with the following devices/OSes:
 * A cheap NAS whose name i can't remember :)
 
 Feel free to contribute items to this list (or network trace of not working devices)
+
+## Building
+
+### Requirements
+
+* A Unix system with a bash-compatible shell
+* C99 C compiler
+* (GNU) Make
+* Autotools
+* libc with iconv
+* getopt_long
+* GNU tasn1 compiler/support library
+
+The build dependencies can be installed on Debian(-based) systems using
+
+    sudo apt-get install build-essential autoconf libtool pkg-config libtasn1-3-dev libtasn1-3-bin libbsd-dev
+
+### HowTo
+
+    $> ./bootstrap
+    $> ./configure --prefix=/your/prefix
+    $> make
+    $> make install # maybe
+
 
 ## TODO
 
