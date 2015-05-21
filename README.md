@@ -1,18 +1,21 @@
 # liBDSM
 
-lib Defective SMb (libDSM) is a SMB protocol client implementation in pure C, with
-a _lot_ less features than Samba and also a more permissive license (currently LGPL).
-The initial goal of this project is to have a lib with an iOS/Android compatible license
-to be intgrated into VLC for iOS and VLC for Android.
+lib Defective SMb (libDSM) is a SMB protocol client implementation in pure old C, with
+a _lot_ less features than Samba but with a more permissive license (currently LGPL + proprietary).
+The initial goal of this project is to have a lib with a license compatible with the
+iOS/Android/WinRT appstores in order to integrate it into VLC for iOS and VLC for Android.
 
-The lib is provided as a static library or as a dynamically linked library. A
-few useless (yet) utils are also provided.
+This library is also licensable under a proprietary license, if LGPL is not good enough
+for you.
+
+The lib is provided as a static library or as a dynamically linked library.
+A few useless (yet) utils are also provided, mostly for testing purpose.
 
 ## Building
 
 ### Requirements
 
-* A Unix system with a bash-shell (i guess)
+* A Unix system with a bash-compatible shell
 * C99 C compiler
 * (GNU) Make
 * Autotools
@@ -27,15 +30,15 @@ The build dependencies can be installed on Debian(-based) systems using
 ### HowTo
 
     $> ./bootstrap
-    $> ./configure --prefix=/your/ass
+    $> ./configure --prefix=/your/prefix
     $> make
     $> make install # maybe
 
 ## Goals
 
-Here's a list of supported features:
+Here's a list of the currently supported features:
 * NETBIOS
-  * Basic bi-directionnal NETBIOS name resolutio
+  * Basic bi-directionnal NETBIOS name resolution
   * Hacky LAN SMB servers discovery (Listing all the smb servers on the LAN, no WINS, etc.)
   * Basic NETBIOS Session transport layer
 * SMB
@@ -48,19 +51,21 @@ Here's a list of supported features:
 
 ## Support
 
-liBDSM has been tested/reported to work witht the following devices/OSes:
+liBDSM has been tested/reported to work with the following devices/OSes:
 
 * Windows 7
-* Windows 8
-* A cheap NAS whose name i can't remember :)
+* Windows 8/8.1
 * Samba
 * smbX (OSX new smb implementation)
+* QNAP TS-212
+* A cheap NAS whose name i can't remember :)
 
 Feel free to contribute items to this list (or network trace of not working devices)
 
 ## TODO
 
 * HEAVILY refactor. Any help is welcome.
+* Support more of the SMBv2 and v3 protocols.
 
 ## Contributing
 
