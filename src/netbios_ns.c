@@ -295,19 +295,8 @@ static int netbios_ns_handle_query(netbios_ns *ns, size_t size,
     p_data = q->payload + name_size + 12;
 
     if (type == query_type_nb) {
-        uint32_t ip;
-
-        // get ip addr
-        if (data_length < 6)
-            ip = recv_ip;
-        else
-        {
-            uint32_t *p_ip = (uint32_t *) (p_data + 2);
-            ip = *p_ip;
-        }
-
         out_name_query->type = NAME_QUERY_TYPE_NB;
-        out_name_query->u.nb.ip = ip;
+        out_name_query->u.nb.ip = recv_ip;
     } else if (type == query_type_nbstat) {
         uint8_t name_count;
         const char *names = p_data +  1;
