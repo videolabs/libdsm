@@ -11,7 +11,7 @@ EXTRA_DIST = \
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include -I$(top_srcdir)/compat @TASN1_CFLAGS@ @CFLAGS@ @PTHREAD_CFLAGS@
 
 if DEBUG
-AM_CFLAGS = -O0 -g3 -Wall -Wextra #-Werror
+AM_CFLAGS = -O0 -g3
 else
 AM_CFLAGS = -O2
 endif
