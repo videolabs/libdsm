@@ -26,6 +26,9 @@ AC_MSG_NOTICE([dsm ABI version: $BDSM_ABI_VERSION])
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
+dnl check for -Wall -Wextra support
+CC_CHECK_CFLAG_APPEND([-Wall -Wsign-compare -Wextra])
+
 dnl Where is iconv? In libc or separate lib?
 AM_ICONV
 
