@@ -43,7 +43,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <netinet/udp.h>
 #include <arpa/inet.h>
 
 #include <getopt.h>
