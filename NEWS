@@ -1,15 +1,52 @@
-Changes between 0.0.4 and 0.0.3:
+Changes between 0.0.5 and 0.0.6:
 --------------------------------
 
- * Fix smb_fopen failing to open long path
+ * Fix iOS compilation
+ * Fix regression on smb_buffer_alloca that introduced login and discovery
+   issues
+ * Fix double-free crash
+
+
+Changes between 0.0.4 and 0.0.5:
+--------------------------------
+
+ * Rework netbios_ns timeouts
+ * Expose less APIs and defines
+ * Fix support for Darwin OS missing clock_gettime()
+
+
+Changes between 0.0.3 and 0.0.4:
+--------------------------------
+
  * Improve discovery that is now done in a separate thread and lot more robust
  * API: Add netbios_ns_discover_start and netbios_ns_discover_stop to start and
-   stop a discovery
+   stop a discovery task
  * API: Remove netbios_ns_discover, netbios_ns_entry_count, netbios_ns_entry_at,
-   netbios_ns_clear, netbios_ns_abort. Deprecated by new discovers calls
+   netbios_ns_clear, netbios_ns_abort. Use the new discovers calls instead
+ * Fix smb_fopen failing to open long path
 
-Changes between 0.0.3 and 0.0.3:
+
+Changes between 0.0.2 and 0.0.3:
 --------------------------------
 
- * Port to Android, simplification of the API, add abort mechanism, and
-   numerous cleanup
+ * Port to Android
+ * Simplification of the NetBios discovery API
+ * New abort mechanism when discovery: netbios_ns_abort
+ * Numerous cleanups, include headers and API
+ * Provide a replacement for strlcpy
+ * Fix numerous warnings, build issues and leaks
+ * Support SMBX servers
+
+
+Changes between 0.0.1 and 0.0.2:
+--------------------------------
+
+ * Fix various build failures
+
+
+First release 0.0.1:
+--------------------
+
+ * This is the first basic release.
+ * It should provide the basics for this library, but is not ready yet for
+   prime-time
