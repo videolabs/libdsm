@@ -9,6 +9,7 @@
  * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
+ *         Sylver BRUNEAU <sylver.bruneau@gmail.com>
  *
  * liBDSM is released under LGPLv2.1 (or later) and is also available
  * under a commercial license.
@@ -39,52 +40,88 @@
 #include "smb_utils.h"
 #include "smb_stat.h"
 
-static smb_file *smb_find_parse(smb_message *msg)
+// parse the file entries
+static int smb_tr2_find2_parse_entries(smb_file **files, smb_tr2_find2_entry *iter, size_t count, uint8_t *eod)
+{
+    smb_file *tmp = NULL;
+    size_t   i;
+    
+    for (i = 0; i < count && (uint8_t *)iter < eod; i++)
+    {
+        if (iter->name_len != 0)
+        {
+            // Create a smb_file and fill it
+            tmp = calloc(1, sizeof(smb_file));
+            assert(tmp != NULL);
+            
+            char *dst = NULL;
+            tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
+                                           &dst);
+            tmp->name = calloc(1, tmp->name_len+1);
+            memcpy(tmp->name, dst, tmp->name_len);
+            
+            tmp->created    = iter->created;
+            tmp->accessed   = iter->accessed;
+            tmp->written    = iter->written;
+            tmp->changed    = iter->changed;
+            tmp->size       = iter->size;
+            tmp->alloc_size = iter->alloc_size;
+            tmp->attr       = iter->attr;
+            tmp->is_dir     = tmp->attr & SMB_ATTR_DIR;
+            
+            tmp->next = *files;
+            *files     = tmp;
+        }
+        else
+        {
+            fprintf(stdout, "skip file %s\n",tmp->name);
+        }
+        iter = (smb_tr2_find2_entry *)(((char *)iter) + iter->next_entry);
+    }
+    
+    return 1;
+}
+
+static int smb_find_first_parse(smb_message *msg, smb_file **files_p)
 {
     smb_trans2_resp       *tr2;
-    smb_tr2_find2_params  *params;
+    smb_tr2_findfirst2_params  *params;
     smb_tr2_find2_entry   *iter;
-    smb_file              *files, *tmp;
     uint8_t               *eod;
-    size_t                count, i;
+    size_t                count;
 
     assert(msg != NULL);
 
     // Let's parse the answer we got from server
     tr2     = (smb_trans2_resp *)msg->packet->payload;
-    params  = (smb_tr2_find2_params *)tr2->payload;
-    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_find2_params));
+    params  = (smb_tr2_findfirst2_params *)tr2->payload;
+    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findfirst2_params));
     eod     = msg->packet->payload + msg->payload_size;
     count   = params->count;
-    files   = NULL;
+    
+    smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+    return 1;
+}
 
-    for (i = 0; i < count && (uint8_t *)iter < eod; i++)
-    {
-        // Create a smb_file and fill it
-        tmp = calloc(1, sizeof(smb_file));
-        if (!tmp)
-            return NULL;
-
-        tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
-                                       &tmp->name);
-        tmp->name[tmp->name_len] = 0;
-
-        tmp->created    = iter->created;
-        tmp->accessed   = iter->accessed;
-        tmp->written    = iter->written;
-        tmp->changed    = iter->changed;
-        tmp->size       = iter->size;
-        tmp->alloc_size = iter->alloc_size;
-        tmp->attr       = iter->attr;
-        tmp->is_dir     = tmp->attr & SMB_ATTR_DIR;
-
-        tmp->next = files;
-        files     = tmp;
-
-        iter = (smb_tr2_find2_entry *)(((char *)iter) + iter->next_entry);
-    }
-
-    return (files);
+static int smb_find_next_parse(smb_message *msg, smb_file **files_p)
+{
+    smb_trans2_resp       *tr2;
+    smb_tr2_findnext2_params  *params;
+    smb_tr2_find2_entry   *iter;
+    uint8_t               *eod;
+    size_t                count;
+    
+    assert(msg != NULL);
+    
+    // Let's parse the answer we got from server
+    tr2     = (smb_trans2_resp *)msg->packet->payload;
+    params  = (smb_tr2_findnext2_params *)tr2->payload;
+    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findnext2_params));
+    eod     = msg->packet->payload + msg->payload_size;
+    count   = params->count;
+    smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+    
+    return 1;
 }
 
 static smb_message *smb_tr2_recv(smb_session *s)
@@ -124,23 +161,23 @@ static smb_message *smb_tr2_recv(smb_session *s)
     return (res);
 }
 
-smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
+static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const char *pattern)
 {
-    smb_file              *files;
     smb_message           *msg;
     smb_trans2_req        tr2;
-    smb_tr2_find2         find;
+    smb_tr2_findfirst2    find;
     size_t                utf_pattern_len, tr2_bct, tr2_param_count;
     char                  *utf_pattern;
-    int                   res, padding = 0;
+    int                   res;
+    unsigned int          padding = 0;
 
     assert(s != NULL && pattern != NULL && tid);
-
+    
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
         return (0);
-
-    tr2_bct = sizeof(smb_tr2_find2) + utf_pattern_len;
+    
+    tr2_bct = sizeof(smb_tr2_findfirst2) + utf_pattern_len;
     tr2_param_count = tr2_bct;
     tr2_bct += 3;
     // Adds padding at the end if necessary.
@@ -149,14 +186,14 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
         padding++;
         tr2_bct++;
     }
-
+    
     msg = smb_message_new(SMB_CMD_TRANS2);
     if (!msg) {
         free(utf_pattern);
         return (0);
     }
     msg->packet->header.tid = tid;
-
+    
     SMB_MSG_INIT_PKT(tr2);
     tr2.wct                = 15;
     tr2.max_param_count    = 10; // ?? Why not the same or 12 ?
@@ -170,36 +207,151 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     tr2.param_count       = tr2_param_count;
     tr2.bct = tr2_bct; //3 == padding
     SMB_MSG_PUT_PKT(msg, tr2);
-
-
+    
+    
     SMB_MSG_INIT_PKT(find);
     find.attrs     = SMB_FIND2_ATTR_DEFAULT;
     find.count     = 1366;     // ??
-    // XXX: Here we close search until we implement FIND_NEXT2
-    find.flags     = SMB_FIND2_FLAG_DEFAULT | SMB_FIND2_FLAG_CLOSE;
+    find.flags     = SMB_FIND2_FLAG_CLOSE_EOS | SMB_FIND2_FLAG_RESUME;
     find.interest  = 0x0104;   // 'Find file both directory info'
     SMB_MSG_PUT_PKT(msg, find);
     smb_message_append(msg, utf_pattern, utf_pattern_len);
-    free(utf_pattern);
     while (padding--)
         smb_message_put8(msg, 0);
-
+    
     res = smb_session_send_msg(s, msg);
     smb_message_destroy(msg);
+    free(utf_pattern);
+
     if (!res)
     {
         BDSM_dbg("Unable to query pattern: %s\n", pattern);
         return (NULL);
     }
-
-    if ((msg = smb_tr2_recv(s)) == NULL)
-        return (NULL);
-
-    files = smb_find_parse(msg);
-    smb_message_destroy(msg);
-    return (files);
+    
+    msg = smb_tr2_recv(s);
+    return msg;
 }
 
+static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t resume_key, uint16_t sid, const char *pattern)
+{
+    smb_message           *msg_find_next2 = NULL;
+    smb_trans2_req        tr2_find_next2;
+    smb_tr2_findnext2     find_next2;
+    size_t                utf_pattern_len, tr2_bct, tr2_param_count;
+    char                  *utf_pattern;
+    int                   res;
+    unsigned int          padding = 0;
+    
+    assert(s != NULL && pattern != NULL && tid);
+    
+    utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
+    if (utf_pattern_len == 0)
+        return (0);
+
+    tr2_bct = sizeof(smb_tr2_findnext2) + utf_pattern_len;
+    tr2_param_count = tr2_bct;
+    tr2_bct += 3;
+    // Adds padding at the end if necessary.
+    while ((tr2_bct % 4) != 3)
+    {
+        padding++;
+        tr2_bct++;
+    }
+    
+    msg_find_next2 = smb_message_new(SMB_CMD_TRANS2);
+    msg_find_next2->packet->header.tid = tid;
+    
+    SMB_MSG_INIT_PKT(tr2_find_next2);
+    tr2_find_next2.wct                = 0x0f;
+    tr2_find_next2.total_param_count = tr2_param_count;
+    tr2_find_next2.total_data_count   = 0x0000;
+    tr2_find_next2.max_param_count    = 10; // ?? Why not the same or 12 ?
+    tr2_find_next2.max_data_count     = 0xf0f0;
+    //max_setup_count
+    //reserved
+    //flags
+    //timeout
+    //reserve2
+    tr2_find_next2.param_count       = tr2_param_count;
+    tr2_find_next2.param_offset       = 68; // Offset of find_next_params in packet;
+    tr2_find_next2.data_count         = 0;
+    tr2_find_next2.data_offset        = 88; // Offset of pattern in packet
+    tr2_find_next2.setup_count        = 1;
+    //reserve3
+    tr2_find_next2.cmd                = SMB_TR2_FIND_NEXT;
+    tr2_find_next2.bct = tr2_bct; //3 == padding
+    SMB_MSG_PUT_PKT(msg_find_next2, tr2_find_next2);
+    
+    SMB_MSG_INIT_PKT(find_next2);
+    find_next2.sid        = sid;
+    find_next2.count      = 255;
+    find_next2.interest   = 0x0104;   // 'Find file both directory info'
+    find_next2.flags      = SMB_FIND2_FLAG_CLOSE_EOS|SMB_FIND2_FLAG_CONTINUE;
+    find_next2.resume_key = resume_key;
+    SMB_MSG_PUT_PKT(msg_find_next2, find_next2);
+    smb_message_append(msg_find_next2, utf_pattern, utf_pattern_len);
+    while (padding--)
+        smb_message_put8(msg_find_next2, 0);
+    
+    res = smb_session_send_msg(s, msg_find_next2);
+    smb_message_destroy(msg_find_next2);
+    free(utf_pattern);
+
+    if (!res)
+    {
+        BDSM_dbg("Unable to query pattern: %s\n", pattern);
+        return (0);
+    }
+    
+    msg_find_next2 = smb_tr2_recv(s);
+    return msg_find_next2;
+}
+
+smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
+{
+    smb_file              *files = NULL;
+    smb_message           *msg;
+
+    smb_trans2_resp       *tr2_resp;
+    smb_tr2_findfirst2_params  *find2_params;
+    smb_tr2_findnext2_params  *findnext2_params;
+    bool continue_find;
+
+    assert(s != NULL && pattern != NULL && tid);
+
+    msg = smb_trans2_find_first(s,tid,pattern);
+
+    if (smb_find_first_parse(msg,&files))
+    {
+        tr2_resp      = (smb_trans2_resp *)msg->packet->payload;
+        find2_params  = (smb_tr2_findfirst2_params *)tr2_resp->payload;
+        continue_find = !find2_params->eos;
+        
+        smb_message_destroy(msg);
+        
+        // Send FIND_NEXT until the find is finished
+        while (continue_find)
+        {
+            msg = smb_trans2_find_next(s, tid, find2_params->last_name_offset, find2_params->id, pattern);
+            
+            // parse the result
+            smb_find_next_parse(msg, &files);
+            
+            tr2_resp      = (smb_trans2_resp *)msg->packet->payload;
+            findnext2_params  = (smb_tr2_findnext2_params *)tr2_resp->payload;
+            continue_find = !findnext2_params->eos;
+            
+            smb_message_destroy(msg);
+        }
+    }
+    else
+    {
+        smb_message_destroy(msg);
+    }
+    
+    return (files);
+}
 
 smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 {
