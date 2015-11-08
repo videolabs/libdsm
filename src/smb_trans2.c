@@ -96,12 +96,24 @@ static void smb_tr2_find2_parse_entries(smb_file **files_p, smb_tr2_find2_entry 
             // Create a smb_file and fill it
             tmp = calloc(1, sizeof(smb_file));
             if (!tmp)
-                return NULL;
+            {
+                BDSM_dbg("Unable to alloc block for file\n");
+                smb_stat_list_destroy(*files_p);
+                *files_p = NULL;
+                return;
+            }
 
             char *dst = NULL;
             tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
                                            &dst);
             tmp->name = calloc(1, tmp->name_len+1);
+            if (!tmp->name)
+            {
+                BDSM_dbg("Unable to alloc block for filename\n");
+                smb_stat_list_destroy(*files_p);
+                *files_p = NULL;
+                return;
+            }
             memcpy(tmp->name, dst, tmp->name_len);
 
             tmp->created    = iter->created;
