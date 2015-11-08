@@ -41,19 +41,19 @@
 
 static smb_file *smb_find_parse(smb_message *msg)
 {
-    smb_trans2_resp       *tr2;
-    smb_tr2_find2_params  *params;
-    smb_tr2_find2_entry   *iter;
-    smb_file              *files, *tmp;
-    uint8_t               *eod;
-    size_t                count, i;
+    smb_trans2_resp           *tr2;
+    smb_tr2_findfirst2_params *params;
+    smb_tr2_find2_entry       *iter;
+    smb_file                  *files, *tmp;
+    uint8_t                   *eod;
+    size_t                    count, i;
 
     assert(msg != NULL);
 
     // Let's parse the answer we got from server
     tr2     = (smb_trans2_resp *)msg->packet->payload;
-    params  = (smb_tr2_find2_params *)tr2->payload;
-    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_find2_params));
+    params  = (smb_tr2_findfirst2_params *)tr2->payload;
+    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findfirst2_params));
     eod     = msg->packet->payload + msg->payload_size;
     count   = params->count;
     files   = NULL;
@@ -129,7 +129,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     smb_file              *files;
     smb_message           *msg;
     smb_trans2_req        tr2;
-    smb_tr2_find2         find;
+    smb_tr2_findfirst2    find;
     size_t                utf_pattern_len, tr2_bct, tr2_param_count;
     char                  *utf_pattern;
     int                   res, padding = 0;
@@ -140,7 +140,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     if (utf_pattern_len == 0)
         return (0);
 
-    tr2_bct = sizeof(smb_tr2_find2) + utf_pattern_len;
+    tr2_bct = sizeof(smb_tr2_findfirst2) + utf_pattern_len;
     tr2_param_count = tr2_bct;
     tr2_bct += 3;
     // Adds padding at the end if necessary.
