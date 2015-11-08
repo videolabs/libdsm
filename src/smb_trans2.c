@@ -155,6 +155,26 @@ static void smb_find_first_parse(smb_message *msg, smb_file **files_p)
     return;
 }
 
+static void smb_find_next_parse(smb_message *msg, smb_file **files_p)
+{
+    smb_trans2_resp       *tr2;
+    smb_tr2_findnext2_params  *params;
+    smb_tr2_find2_entry   *iter;
+    uint8_t               *eod;
+    size_t                count;
+
+    assert(msg != NULL);
+
+    // Let's parse the answer we got from server
+    tr2     = (smb_trans2_resp *)msg->packet->payload;
+    params  = (smb_tr2_findnext2_params *)tr2->payload;
+    iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findnext2_params));
+    eod     = msg->packet->payload + msg->payload_size;
+    count   = params->count;
+    smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+    return;
+}
+
 static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const char *pattern)
 {
     smb_message           *msg;
@@ -205,7 +225,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     SMB_MSG_INIT_PKT(find);
     find.attrs     = SMB_FIND2_ATTR_DEFAULT;
     find.count     = 1366;     // ??
-    find.flags     = SMB_FIND2_FLAG_DEFAULT | SMB_FIND2_FLAG_CLOSE;
+    find.flags     = SMB_FIND2_FLAG_CLOSE_EOS | SMB_FIND2_FLAG_RESUME;;
     find.interest  = 0x0104;   // 'Find file both directory info'
     SMB_MSG_PUT_PKT(msg, find);
     smb_message_append(msg, utf_pattern, utf_pattern_len);
@@ -226,17 +246,156 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     return msg;
 }
 
-smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
+static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t resume_key, uint16_t sid, const char *pattern)
 {
-    smb_file              *files = NULL;
-    smb_message           *msg;
+    smb_message           *msg_find_next2 = NULL;
+    smb_trans2_req        tr2_find_next2;
+    smb_tr2_findnext2     find_next2;
+    size_t                utf_pattern_len, tr2_bct, tr2_param_count;
+    char                  *utf_pattern;
+    int                   res;
+    unsigned int          padding = 0;
 
     assert(s != NULL && pattern != NULL && tid);
 
+    utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
+    if (utf_pattern_len == 0)
+        return (0);
+
+    tr2_bct = sizeof(smb_tr2_findnext2) + utf_pattern_len;
+    tr2_param_count = tr2_bct;
+    tr2_bct += 3;
+    // Adds padding at the end if necessary.
+    while ((tr2_bct % 4) != 3)
+    {
+        padding++;
+        tr2_bct++;
+    }
+
+    msg_find_next2 = smb_message_new(SMB_CMD_TRANS2);
+    msg_find_next2->packet->header.tid = tid;
+
+    SMB_MSG_INIT_PKT(tr2_find_next2);
+    tr2_find_next2.wct                = 0x0f;
+    tr2_find_next2.total_param_count  = tr2_param_count;
+    tr2_find_next2.total_data_count   = 0x0000;
+    tr2_find_next2.max_param_count    = 10; // ?? Why not the same or 12 ?
+    tr2_find_next2.max_data_count     = 0xffff;
+    //max_setup_count
+    //reserved
+    //flags
+    //timeout
+    //reserve2
+    tr2_find_next2.param_count        = tr2_param_count;
+    tr2_find_next2.param_offset       = 68; // Offset of find_next_params in packet;
+    tr2_find_next2.data_count         = 0;
+    tr2_find_next2.data_offset        = 88; // Offset of pattern in packet
+    tr2_find_next2.setup_count        = 1;
+    //reserve3
+    tr2_find_next2.cmd                = SMB_TR2_FIND_NEXT;
+    tr2_find_next2.bct = tr2_bct; //3 == padding
+    SMB_MSG_PUT_PKT(msg_find_next2, tr2_find_next2);
+
+    SMB_MSG_INIT_PKT(find_next2);
+    find_next2.sid        = sid;
+    find_next2.count      = 255;
+    find_next2.interest   = 0x0104;   // 'Find file both directory info'
+    find_next2.flags      = SMB_FIND2_FLAG_CLOSE_EOS|SMB_FIND2_FLAG_CONTINUE;
+    find_next2.resume_key = resume_key;
+    SMB_MSG_PUT_PKT(msg_find_next2, find_next2);
+    smb_message_append(msg_find_next2, utf_pattern, utf_pattern_len);
+    while (padding--)
+        smb_message_put8(msg_find_next2, 0);
+
+    res = smb_session_send_msg(s, msg_find_next2);
+    smb_message_destroy(msg_find_next2);
+    free(utf_pattern);
+
+    if (!res)
+    {
+        BDSM_dbg("Unable to query pattern: %s\n", pattern);
+        return (0);
+    }
+
+    msg_find_next2 = smb_tr2_recv(s);
+    return msg_find_next2;
+}
+
+smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
+{
+    smb_file                  *files = NULL;
+    smb_message               *msg;
+    smb_trans2_resp           *tr2_resp;
+    smb_tr2_findfirst2_params *findfirst2_params;
+    smb_tr2_findnext2_params  *findnext2_params;
+    bool                      end_of_search;
+    uint16_t                  sid;
+    uint16_t                  resume_key;
+    uint16_t                  error_offset;
+
+    assert(s != NULL && pattern != NULL && tid);
+
+    // Send FIND_FIRST request
     msg = smb_trans2_find_first(s,tid,pattern);
-    if (msg != NULL)
+    if (msg)
     {
         smb_find_first_parse(msg,&files);
+        if (files)
+        {
+            // Check if we shall send a FIND_NEXT request
+            tr2_resp          = (smb_trans2_resp *)msg->packet->payload;
+            findfirst2_params = (smb_tr2_findfirst2_params *)tr2_resp->payload;
+
+            sid               = findfirst2_params->id;
+            end_of_search     = findfirst2_params->eos;
+            resume_key        = findfirst2_params->last_name_offset;
+            error_offset      = findfirst2_params->ea_error_offset;
+
+            smb_message_destroy(msg);
+
+            // Send FIND_NEXT queries until the find is finished
+            // or until an error occurs
+            while ((!end_of_search) && (error_offset == 0))
+            {
+                msg = smb_trans2_find_next(s, tid, resume_key, sid, pattern);
+
+                if (msg)
+                {
+                    // Update info for next FIND_NEXT query
+                    tr2_resp         = (smb_trans2_resp *)msg->packet->payload;
+                    findnext2_params = (smb_tr2_findnext2_params *)tr2_resp->payload;
+                    end_of_search    = findnext2_params->eos;
+                    resume_key       = findnext2_params->last_name_offset;
+                    error_offset     = findnext2_params->ea_error_offset;
+
+                    // parse the result for files
+                    smb_find_next_parse(msg, &files);
+                    smb_message_destroy(msg);
+
+                    if (!files)
+                    {
+                        BDSM_dbg("Error during FIND_NEXT answer parsing\n");
+                        end_of_search = true;
+                    }
+                }
+                else
+                {
+                    BDSM_dbg("Error during FIND_NEXT request\n");
+                    smb_stat_list_destroy(files);
+                    end_of_search = true;
+                }
+            }
+        }
+        else
+        {
+            BDSM_dbg("Error during FIND_FIRST answer parsing\n");
+            smb_message_destroy(msg);
+        }
+    }
+    else
+    {
+        BDSM_dbg("Error during FIND_FIRST request\n");
+        smb_stat_list_destroy(files);
         smb_message_destroy(msg);
     }
 
