@@ -78,8 +78,28 @@
 // SMB TRANS2 SubCommands
 //-----------------------------------------------------------------------------/
 #define SMB_TR2_FIND_FIRST      0x0001
+#define SMB_TR2_FIND_NEXT       0x0002
 #define SMB_TR2_QUERY_PATH      0x0005
 
+//-----------------------------------------------------------------------------/
+// SMB TRANS2 FIND interest values
+//-----------------------------------------------------------------------------/
+#define SMB_FIND2_INTEREST_DIRECTORY_INFO      0x0101
+#define SMB_FIND2_INTEREST_FULL_DIRECTORY_INFO 0x0102
+#define SMB_FIND2_INTEREST_NAMES_INFO          0x0103
+#define SMB_FIND2_INTEREST_BOTH_DIRECTORY_INFO 0x0104
+
+//-----------------------------------------------------------------------------/
+// SMB TRANS2 QUERY (FILE & PATH) interest values
+//-----------------------------------------------------------------------------/
+#define SMB_FIND2_QUERY_FILE_BASIC_INFO       0x0101
+#define SMB_FIND2_QUERY_FILE_STANDARD_INFO    0x0102
+#define SMB_FIND2_QUERY_FILE_EA_INFO          0x0103
+#define SMB_FIND2_QUERY_FILE_NAME_INFO        0x0104
+#define SMB_FIND2_QUERY_FILE_ALL_INFO         0x0107
+#define SMB_FIND2_QUERY_FILE_ALT_NAME_INFO    0x0108
+#define SMB_FIND2_QUERY_FILE_STREAM_INFO      0x0109
+#define SMB_FIND2_QUERY_FILE_COMPRESSION_INFO 0x010B
 
 //-----------------------------------------------------------------------------/
 // NTSTATUS Codes
@@ -169,8 +189,6 @@
 #define SMB_FIND2_FLAG_CLOSE_EOS  (1 << 1)  // Close after End Of Search ?
 #define SMB_FIND2_FLAG_RESUME     (1 << 2)  // Send resume keys ?
 #define SMB_FIND2_FLAG_CONTINUE   (1 << 3)  // not set == new search
-#define SMB_FIND2_FLAG_BACKUP     (1 << 3)  // Backup intent ?
-#define SMB_FIND2_FLAG_DEFAULT    (SMB_FIND2_FLAG_CLOSE_EOS | \
-                                   SMB_FIND2_FLAG_RESUME)
+#define SMB_FIND2_FLAG_BACKUP     (1 << 4)  // Backup intent ?
 
 #endif

@@ -66,7 +66,8 @@ void            smb_stat_list_destroy(smb_stat_list list)
     while(list != NULL)
     {
         tmp = list->next;
-        free(list->name);
+        if (list->name != NULL)
+            free(list->name);
         free(list);
         list = tmp;
     }
