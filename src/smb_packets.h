@@ -339,7 +339,7 @@ typedef struct
     uint16_t      interest;           // What kind of info do we want ?
     uint32_t      storage;            // ? => 0
     uint8_t       pattern[];          // The queried pattern "\\folder\\*"
-} __attribute__((packed))   smb_tr2_find2;
+} __attribute__((packed))   smb_tr2_findfirst2;
 
 //// -> Trans2|QueryPathInfo
 typedef struct
@@ -379,7 +379,7 @@ typedef struct
     uint16_t      ea_error_offset;
     uint16_t      last_name_offset;
     uint16_t      padding;
-} __attribute__((packed))   smb_tr2_find2_params;
+} __attribute__((packed))   smb_tr2_findfirst2_params;
 
 //// <- Trans2|FindFirst2FileInfo
 typedef struct
