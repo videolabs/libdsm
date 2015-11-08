@@ -341,6 +341,17 @@ typedef struct
     uint8_t       pattern[];          // The queried pattern "\\folder\\*"
 } __attribute__((packed))   smb_tr2_findfirst2;
 
+//// -> Trans2|FindNext2
+typedef struct
+{
+    uint16_t      sid;                // Search handle
+    uint16_t      count;              // Search count
+    uint16_t      interest;           // What kind of info do we want ?
+    uint32_t      resume_key;         // Value returned by previous find2 call
+    uint16_t      flags;
+    uint8_t       pattern[];          // The queried pattern "\\folder\\*"
+} __attribute__((packed))   smb_tr2_findnext2;
+
 //// -> Trans2|QueryPathInfo
 typedef struct
 {
@@ -380,6 +391,15 @@ typedef struct
     uint16_t      last_name_offset;
     uint16_t      padding;
 } __attribute__((packed))   smb_tr2_findfirst2_params;
+
+//// <- Trans2|FindNext2Params
+typedef struct
+{
+    uint16_t      count;
+    uint16_t      eos;
+    uint16_t      ea_error_offset;
+    uint16_t      last_name_offset;
+} __attribute__((packed))   smb_tr2_findnext2_params;
 
 //// <- Trans2|FindFirst2FileInfo
 typedef struct
