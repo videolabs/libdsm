@@ -78,6 +78,7 @@
 // SMB TRANS2 SubCommands
 //-----------------------------------------------------------------------------/
 #define SMB_TR2_FIND_FIRST      0x0001
+#define SMB_TR2_FIND_NEXT       0x0002
 #define SMB_TR2_QUERY_PATH      0x0005
 
 
@@ -169,8 +170,6 @@
 #define SMB_FIND2_FLAG_CLOSE_EOS  (1 << 1)  // Close after End Of Search ?
 #define SMB_FIND2_FLAG_RESUME     (1 << 2)  // Send resume keys ?
 #define SMB_FIND2_FLAG_CONTINUE   (1 << 3)  // not set == new search
-#define SMB_FIND2_FLAG_BACKUP     (1 << 3)  // Backup intent ?
-#define SMB_FIND2_FLAG_DEFAULT    (SMB_FIND2_FLAG_CLOSE_EOS | \
-                                   SMB_FIND2_FLAG_RESUME)
+#define SMB_FIND2_FLAG_BACKUP     (1 << 4)  // Backup intent ?
 
 #endif
