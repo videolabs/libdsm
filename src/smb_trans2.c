@@ -210,7 +210,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     find.attrs     = SMB_FIND2_ATTR_DEFAULT;
     find.count     = 1366;     // ??
     find.flags     = SMB_FIND2_FLAG_CLOSE_EOS | SMB_FIND2_FLAG_RESUME;
-    find.interest  = 0x0104;   // 'Find file both directory info'
+    find.interest  = SMB_FIND2_INTEREST_BOTH_DIRECTORY_INFO;
     SMB_MSG_PUT_PKT(msg, find);
     smb_message_append(msg, utf_pattern, utf_pattern_len);
     while (padding--)
@@ -283,7 +283,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     SMB_MSG_INIT_PKT(find_next2);
     find_next2.sid        = sid;
     find_next2.count      = 255;
-    find_next2.interest   = 0x0104;   // 'Find file both directory info'
+    find_next2.interest   = SMB_FIND2_INTEREST_BOTH_DIRECTORY_INFO;
     find_next2.flags      = SMB_FIND2_FLAG_CLOSE_EOS|SMB_FIND2_FLAG_CONTINUE;
     find_next2.resume_key = resume_key;
     SMB_MSG_PUT_PKT(msg_find_next2, find_next2);
@@ -435,7 +435,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     SMB_MSG_PUT_PKT(msg, tr2);
 
     SMB_MSG_INIT_PKT(query);
-    query.interest   = 0x0107;   // Query File All Info
+    query.interest   = SMB_FIND2_QUERY_FILE_ALL_INFO;
     SMB_MSG_PUT_PKT(msg, query);
 
     smb_message_append(msg, utf_path, utf_path_len);
