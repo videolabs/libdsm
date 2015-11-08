@@ -209,7 +209,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
         return (-1);
 
     resp = (smb_read_resp *)resp_msg.packet->payload;
-    memcpy(buf, resp->file, resp->data_len);
+    memcpy(buf, (char *)resp_msg.packet + resp->data_offset, resp->data_len);
     smb_fseek(s, fd, resp->data_len, SEEK_CUR);
 
     return (resp->data_len);
