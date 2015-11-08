@@ -39,6 +39,10 @@
 #include "smb_utils.h"
 #include "smb_stat.h"
 
+/*
+ * Receive trans2 management
+ */
+
 static smb_message *smb_tr2_recv(smb_session *s)
 {
     smb_message           recv, *res;
@@ -75,6 +79,10 @@ static smb_message *smb_tr2_recv(smb_session *s)
 
     return (res);
 }
+
+/*
+ * Find management
+ */
 
 static void smb_tr2_find2_parse_entries(smb_file **files_p, smb_tr2_find2_entry *iter, size_t count, uint8_t *eod)
 {
@@ -377,6 +385,10 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 
     return (files);
 }
+
+/*
+ * Query management
+ */
 
 smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 {
