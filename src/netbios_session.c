@@ -318,6 +318,12 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 
     size = netbios_session_get_next_packet(s);
 
+    // If received message is a keepalive, ignore message and get next one
+    while (s->packet_recv->opcode == NETBIOS_OP_SESSION_KEEPALIVE)
+    {
+        size = netbios_session_get_next_packet(s);
+    }
+
     if ((size > 0) && (data != NULL))
         *data = (void *) s->packet_recv->payload;
 
