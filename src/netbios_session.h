@@ -53,12 +53,14 @@ typedef struct              netbios_session_s
     int                         socket;
     // The current sessions state; See macro before (eg. NETBIOS_SESSION_ERROR)
     int                         state;
-    // What is the size of the allocated payload;
-    size_t                      packet_payload_size;
+    // What are the sizes of the allocated payloads;
+    size_t                      packet_send_payload_size;
+    size_t                      packet_recv_payload_size;
     // Where is the write cursor relative to the beginning of the payload
-    size_t                      packet_cursor;
-    // Our allocated packet, this is where the magic happen (both send and recv :)
-    netbios_session_packet      *packet;
+    size_t                      packet_send_cursor;
+    // Our allocated packets
+    netbios_session_packet      *packet_send;
+    netbios_session_packet      *packet_recv;
 }                           netbios_session;
 
 
