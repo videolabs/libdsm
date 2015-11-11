@@ -189,12 +189,12 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     SMB_MSG_INIT_PKT_ANDX(req);
     req.wct              = 12;
     req.fid              = file->fid;
-    req.offset           = file->readp;
+    req.offset           = (uint32_t)(file->readp);
     req.max_count        = max_read;
     req.min_count        = max_read;
     req.max_count_high   = 0;
     req.remaining        = 0;
-    req.offset_high      = 0;
+    req.offset_high      = (uint32_t)(file->readp >> 32);
     req.bct              = 0;
     SMB_MSG_PUT_PKT(req_msg, req);
 
