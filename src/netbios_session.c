@@ -209,7 +209,7 @@ int               netbios_session_packet_send(netbios_session *s)
     return (sent);
 }
 
-ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
+ssize_t           netbios_session_get_next_packet(netbios_session *s)
 {
     ssize_t         res;
     size_t          total, sofar;
@@ -228,8 +228,6 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     {
         BDSM_dbg("netbios_session_packet_recv: incorrect size for received packet: %ld bytes",
                  res);
-        if (data != NULL)
-             *data = NULL;
         return (-1);
     }
   
@@ -240,9 +238,6 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
         if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
             return (-1);
-
-    if (data != NULL)
-      *data = (void *) s->packet->payload;
 
     //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
 
@@ -269,3 +264,18 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     return (sofar);
 }
 
+ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
+{
+    ssize_t         size;
+
+    // ignore keepalive messages if needed
+    do
+    {
+        size = netbios_session_get_next_packet(s);
+    } while (s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
+
+    if ((size >= 0) && (data != NULL))
+        *data = (void *) s->packet->payload;
+
+    return (size);
+}
