@@ -209,38 +209,35 @@ int               netbios_session_packet_send(netbios_session *s)
     return (sent);
 }
 
-ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
+ssize_t           netbios_session_get_next_packet(netbios_session *s)
 {
     ssize_t         res;
     size_t          total, sofar;
 
     assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
 
-    res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
+    // Only get packet header and analyze it to get only needed number of bytes
+    // needed for the packet. This will prevent losing a part of next packet
+    res = recv(s->socket, (void *)(s->packet), sizeof(netbios_session_packet), 0);
     if (res < 0)
     {
         BDSM_perror("netbios_session_packet_recv: ");
         return (-1);
     }
-    if ((size_t)res < sizeof(netbios_session_packet))
+    if ((size_t)res != sizeof(netbios_session_packet))
     {
-        BDSM_dbg("netbios_session_packet_recv: packet received too small: %ld bytes",
+        BDSM_dbg("netbios_session_packet_recv: incorrect size for received packet: %ld bytes",
                  res);
-        if (data != NULL)
-             *data = NULL;
         return (-1);
     }
   
     total  = ntohs(s->packet->length);
     total |= (s->packet->flags & 0x01) << 16;
-    sofar  = res - sizeof(netbios_session_packet);
+    sofar  = 0;
 
     if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
         if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
             return (-1);
-
-    if (data != NULL)
-      *data = (void *) s->packet->payload;
 
     //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
 
@@ -267,3 +264,18 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     return (sofar);
 }
 
+ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
+{
+    ssize_t         size;
+
+    // ignore keepalive messages if needed
+    do
+    {
+        size = netbios_session_get_next_packet(s);
+    } while (s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
+
+    if ((size >= 0) && (data != NULL))
+        *data = (void *) s->packet->payload;
+
+    return (size);
+}
