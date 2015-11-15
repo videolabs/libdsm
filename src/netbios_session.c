@@ -216,15 +216,17 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
 
     assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
 
-    res = recv(s->socket, (void *)(s->packet), s->packet_payload_size, 0);
+    // Only get packet header and analyze it to get only needed number of bytes
+    // needed for the packet. This will prevent losing a part of next packet
+    res = recv(s->socket, (void *)(s->packet), sizeof(netbios_session_packet), 0);
     if (res < 0)
     {
         BDSM_perror("netbios_session_packet_recv: ");
         return (-1);
     }
-    if ((size_t)res < sizeof(netbios_session_packet))
+    if ((size_t)res != sizeof(netbios_session_packet))
     {
-        BDSM_dbg("netbios_session_packet_recv: packet received too small: %ld bytes",
+        BDSM_dbg("netbios_session_packet_recv: incorrect size for received packet: %ld bytes",
                  res);
         if (data != NULL)
              *data = NULL;
@@ -233,7 +235,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
   
     total  = ntohs(s->packet->length);
     total |= (s->packet->flags & 0x01) << 16;
-    sofar  = res - sizeof(netbios_session_packet);
+    sofar  = 0;
 
     if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
         if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
