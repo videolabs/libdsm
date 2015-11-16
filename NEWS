@@ -1,3 +1,13 @@
+Changes between 0.0.6 and 0.0.7:
+--------------------------------
+
+ * Rework folders opening with large number of files (FIND_NEXT)
+ * Fix for reading from OS X SMB Sharing
+ * Fix build for old glibc versions
+ * Fix support for large files (fix for >1GiB and for >4GiB)
+ * Fix potential deadlock when server disconnects
+
+
 Changes between 0.0.5 and 0.0.6:
 --------------------------------
 
