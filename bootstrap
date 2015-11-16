@@ -13,6 +13,8 @@
 
 set -e
 
+cd "$(dirname "$0")"
+
 autoreconf --install --force --verbose ${ACLOCAL_ARGS}
 
 set +x
