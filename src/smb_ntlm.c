@@ -70,7 +70,7 @@ uint64_t    smb_ntlm_generate_challenge()
     }
 }
 
-void        smb_ntlm_generate_xkey(smb_ntlmh *cli_session_key)
+void        smb_ntlm_generate_xkey(smb_ntlmh cli_session_key)
 {
     uint64_t  *key = (uint64_t *)cli_session_key;
 
@@ -78,7 +78,7 @@ void        smb_ntlm_generate_xkey(smb_ntlmh *cli_session_key)
     key[1] = smb_ntlm_generate_challenge();
 }
 
-void        smb_ntlm_hash(const char *password, smb_ntlmh *hash)
+void        smb_ntlm_hash(const char *password, smb_ntlmh hash)
 {
     MD4_CTX   ctx;
     char      *ucs2le_pass;
@@ -109,13 +109,13 @@ static void _upcase(char *str)
 }
 
 void        smb_ntlm2_hash(const char *user, const char *password,
-                           const char *dest, smb_ntlmh *hash)
+                           const char *dest, smb_ntlmh hash)
 {
     smb_ntlmh     hash_v1;
     char          *ucs_user, *ucs_dest, *data, user_upper[64];
     size_t        ucs_user_len, ucs_dest_len, data_len;
 
-    smb_ntlm_hash(password, &hash_v1);
+    smb_ntlm_hash(password, hash_v1);
 
     strlcpy(user_upper, user, 64);
     _upcase(user_upper);
@@ -134,7 +134,7 @@ void        smb_ntlm2_hash(const char *user, const char *password,
     free(ucs_dest);
 }
 
-uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
+uint8_t     *smb_ntlm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
                                 smb_buffer *blob)
 {
     smb_buffer      data;
@@ -159,7 +159,7 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
     return (response);
 }
 
-uint8_t     *smb_lm2_response(smb_ntlmh *hash_v2, uint64_t srv_challenge,
+uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
                               uint64_t user_challenge)
 {
     smb_buffer buf;
@@ -264,13 +264,13 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
     return (sizeof(smb_ntlm_blob) + target->size);
 }
 
-void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
-                                  smb_ntlmh *xkey, smb_ntlmh *xkey_crypt)
+void        smb_ntlm2_session_key(smb_ntlmh hash_v2, void *ntlm2,
+                                  smb_ntlmh xkey, smb_ntlmh xkey_crypt)
 {
     struct rc4_state  rc4;
     smb_ntlmh         hmac_ntlm2;
 
-    HMAC_MD5(&hash_v2, SMB_NTLM_HASH_SIZE, ntlm2, SMB_NTLM_HASH_SIZE, &hmac_ntlm2);
+    HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, ntlm2, SMB_NTLM_HASH_SIZE, hmac_ntlm2);
 
     rc4_init(&rc4, hmac_ntlm2, 16);
     rc4_crypt(&rc4, (void *)xkey, (void *)xkey_crypt, 16);
@@ -330,15 +330,15 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
     assert(token != NULL && target != NULL);
 
     //// We compute most of the data first to know the final token size
-    smb_ntlm2_hash(user, password, domain, &hash_v2);
+    smb_ntlm2_hash(user, password, domain, hash_v2);
     user_challenge = smb_ntlm_generate_challenge();
-    smb_ntlm_generate_xkey(&xkey);
+    smb_ntlm_generate_xkey(xkey);
     blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, target);
 
-    lm2   = smb_lm2_response(&hash_v2, srv_challenge, smb_ntlm_generate_challenge());
+    lm2   = smb_lm2_response(hash_v2, srv_challenge, smb_ntlm_generate_challenge());
     smb_buffer_init(&buf, blob, blob_size);
-    ntlm2 = smb_ntlm2_response(&hash_v2, srv_challenge, &buf);
-    smb_ntlm2_session_key(&hash_v2, ntlm2, &xkey, &xkey_crypt);
+    ntlm2 = smb_ntlm2_response(hash_v2, srv_challenge, &buf);
+    smb_ntlm2_session_key(hash_v2, ntlm2, xkey, xkey_crypt);
 
     smb_buffer_init(&buf, NULL, 0);
     free(blob);

@@ -247,8 +247,8 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     user_challenge = smb_ntlm_generate_challenge();
 
     // LM2 Response
-    smb_ntlm2_hash(user, password, domain, &hash_v2);
-    ntlm2 = smb_lm2_response(&hash_v2, s->srv.challenge, user_challenge);
+    smb_ntlm2_hash(user, password, domain, hash_v2);
+    ntlm2 = smb_lm2_response(hash_v2, s->srv.challenge, user_challenge);
     smb_message_append(msg, ntlm2, 16 + 8);
     free(ntlm2);
 
