@@ -318,7 +318,7 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
                                  smb_buffer *target, smb_buffer *token)
 {
     smb_ntlmssp_auth      *auth;
-    smb_ntlm_blob         *blob;
+    smb_ntlm_blob         *blob = NULL;
     smb_ntlmh             hash_v2, xkey, xkey_crypt;
     smb_buffer            buf;
     void                  *lm2, *ntlm2;
