@@ -270,7 +270,7 @@ void        smb_ntlm2_session_key(smb_ntlmh *hash_v2, void *ntlm2,
     struct rc4_state  rc4;
     smb_ntlmh         hmac_ntlm2;
 
-    HMAC_MD5(&hash_v2, 16, ntlm2, 16, &hmac_ntlm2);
+    HMAC_MD5(&hash_v2, SMB_NTLM_HASH_SIZE, ntlm2, SMB_NTLM_HASH_SIZE, &hmac_ntlm2);
 
     rc4_init(&rc4, hmac_ntlm2, 16);
     rc4_crypt(&rc4, (void *)xkey, (void *)xkey_crypt, 16);
@@ -318,7 +318,7 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
                                  smb_buffer *target, smb_buffer *token)
 {
     smb_ntlmssp_auth      *auth;
-    smb_ntlm_blob         *blob;
+    smb_ntlm_blob         *blob = NULL;
     smb_ntlmh             hash_v2, xkey, xkey_crypt;
     smb_buffer            buf;
     void                  *lm2, *ntlm2;

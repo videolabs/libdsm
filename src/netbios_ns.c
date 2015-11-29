@@ -299,7 +299,7 @@ static int netbios_ns_handle_query(netbios_ns *ns, size_t size,
         out_name_query->u.nb.ip = recv_ip;
     } else if (type == query_type_nbstat) {
         uint8_t name_count;
-        const char *names = p_data +  1;
+        const char *names = NULL;
         const char *group = NULL, *name = NULL;;
 
         // get the number of names
