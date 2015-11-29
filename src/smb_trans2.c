@@ -190,7 +190,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
         free(utf_pattern);
         return (NULL);
     }
-    msg->packet->header.tid = tid;
+    msg->packet->header.tid = (uint16_t)tid;
 
     SMB_MSG_INIT_PKT(tr2);
     tr2.wct                = 15;
@@ -257,7 +257,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     }
 
     msg_find_next2 = smb_message_new(SMB_CMD_TRANS2);
-    msg_find_next2->packet->header.tid = tid;
+    msg_find_next2->packet->header.tid = (uint16_t)tid;
 
     SMB_MSG_INIT_PKT(tr2_find_next2);
     tr2_find_next2.wct                = 0x0f;
@@ -418,7 +418,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
         free(utf_path);
         return (0);
     }
-    msg->packet->header.tid = tid;
+    msg->packet->header.tid = (uint16_t)tid;
 
     SMB_MSG_INIT_PKT(tr2);
     tr2.wct                = 15;

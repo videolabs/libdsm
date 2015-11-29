@@ -62,7 +62,7 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
     req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
     if (!req_msg)
-        return (0);
+        return (-1);
 
     // Packet headers
     req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
@@ -85,19 +85,19 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
     if (!smb_session_send_msg(s, req_msg))
     {
         smb_message_destroy(req_msg);
-        return (0);
+        return (-1);
     }
     smb_message_destroy(req_msg);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return (0);
+        return (-1);
     if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
-        return (0);
+        return (-1);
 
     resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
     share = calloc(1, sizeof(smb_share));
     if (!share)
-        return (0);
+        return (-1);
 
     share->tid          = resp_msg.packet->header.tid;
     share->opts         = resp->opt_support;
@@ -111,7 +111,7 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
 int           smb_tree_disconnect(smb_session *s, smb_tid tid)
 {
-    assert(s != NULL && tid);
+    assert(s != NULL && tid != -1);
     BDSM_dbg("smb_tree_disconnect: NOT IMPLEMENTED YET\n");
     return (0);
 }
@@ -206,7 +206,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     *list = NULL;
 
     ipc_tid = smb_tree_connect(s, "IPC$");
-    if (!ipc_tid)
+    if (ipc_tid == -1)
         return (0);
 
     srvscv_fd = smb_fopen(s, ipc_tid, "\\srvsvc", SMB_MOD_RW);
@@ -219,7 +219,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     req = smb_message_new(SMD_CMD_TRANS);
     if (!req)
         return (0);
-    req->packet->header.tid = ipc_tid;
+    req->packet->header.tid = (uint16_t)ipc_tid;
 
     rpc_len = 0xffff;
     SMB_MSG_INIT_PKT(trans);
@@ -290,7 +290,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     req = smb_message_new(SMD_CMD_TRANS);
     if (!req)
         return (0);
-    req->packet->header.tid = ipc_tid;
+    req->packet->header.tid = (uint16_t)ipc_tid;
 
     // this struct will be set at the end when we know the data size
     SMB_MSG_ADVANCE_PKT(req, smb_trans_req);
