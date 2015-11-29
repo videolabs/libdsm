@@ -66,7 +66,7 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     }
 
     // Set SMB Headers
-    req_msg->packet->header.tid = tid;
+    req_msg->packet->header.tid = (uint16_t)tid;
 
     // Create AndX Params
     SMB_MSG_INIT_PKT_ANDX(req);
@@ -144,7 +144,7 @@ void        smb_fclose(smb_session *s, smb_fd fd)
         return;
     }
 
-    msg->packet->header.tid = SMB_FD_TID(fd);
+    msg->packet->header.tid = (uint16_t)SMB_FD_TID(fd);
 
     SMB_MSG_INIT_PKT(req);
     req.wct        = 3;
@@ -181,7 +181,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     req_msg = smb_message_new(SMB_CMD_READ);
     if (!req_msg)
         return (-1);
-    req_msg->packet->header.tid = file->tid;
+    req_msg->packet->header.tid = (uint16_t)file->tid;
 
     max_read = 0xffff;
     max_read = max_read < buf_size ? max_read : buf_size;
