@@ -49,11 +49,9 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     // It seems they truncate over-sized keys instead of rehashing
     if (key_len > 64)
         key_len = 64;
-    else
-    {
-        memcpy(key_pad, key, key_len);
-        memset(key_pad + key_len, 0, 64 - key_len);
-    }
+
+    memcpy(key_pad, key, key_len);
+    memset(key_pad + key_len, 0, 64 - key_len);
 
     // Compute the o/i XORed padded keys
     for (unsigned i = 0; i < 64; i++)
