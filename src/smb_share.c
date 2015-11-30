@@ -111,7 +111,10 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
 int           smb_tree_disconnect(smb_session *s, smb_tid tid)
 {
-    assert(s != NULL && tid != -1);
+    assert(s != NULL);
+    (void)tid;
+    /* FIXME: handle tid == -1 error case once function is implemented */
+
     BDSM_dbg("smb_tree_disconnect: NOT IMPLEMENTED YET\n");
     return (0);
 }
