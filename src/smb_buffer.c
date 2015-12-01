@@ -28,9 +28,12 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include <alloca.h>
 #include <assert.h>
 #include <stdlib.h>
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include "smb_buffer.h"
 
