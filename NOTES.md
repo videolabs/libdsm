@@ -1,4 +1,4 @@
-== SMB/NBT Notes.
+# SMB/NBT Notes.
 
 I will here throw various notes regarding SMB protocol implementation and
 compatibility issues, with the hope it could be usefull to and reduce of pain
@@ -7,7 +7,7 @@ of somebody else. There are no particular order.
 Most (if not all) of these notes apply mostly to Win7 (the network i work on has
 only Win7 boxes except my Linux one)
 
-=== Discovering network hosts.
+## Discovering network hosts.
 
 Maybe this information is well known around the net, but it found it by randomly
 experimenting with NBNS packets. There a special case of NetBIOS name which is
@@ -23,7 +23,7 @@ have thei're netbios name. Cool, you know everyone on the LAN.
 PS: I've no idea (yet) of how Samba, older versions of Windows and/or NAS are
 behaving regarding this.
 
-=== Windows 7 NTLM2
+## Windows 7 NTLM2
 
 Although Win7 is supposed to support the old NTLM2 authentication, it seems
 they actually doesn't handle it oustide of GSSAPI/SPNEGO, which i would like
