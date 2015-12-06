@@ -138,4 +138,46 @@ enum smb_session_supports_what
 #define SMB_MOD_RO              (SMB_MOD_READ | SMB_MOD_READ_EXT \
                                 | SMB_MOD_READ_ATTR | SMB_MOD_READ_CTL )
 
+//-----------------------------------------------------------------------------/
+// NTSTATUS & internal return codes
+//-----------------------------------------------------------------------------/
+#define NT_STATUS_SUCCESS                   0x00000000
+#define NT_STATUS_INVALID_SMB               0x00010002
+#define NT_STATUS_SMB_BAD_TID               0x00050002
+#define NT_STATUS_SMB_BAD_UID               0x005b0002
+#define NT_STATUS_NOT_IMPLEMENTED           0xc0000002
+#define NT_STATUS_INVALID_DEVICE_REQUEST    0xc0000010
+#define NT_STATUS_NO_SUCH_DEVICE            0xc000000e
+#define NT_STATUS_NO_SUCH_FILE              0xc000000f
+#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
+#define NT_STATUS_INVALID_LOCK_SEQUENCE     0xc000001e
+#define NT_STATUS_INVALID_VIEW_SIZE         0xc000001f
+#define NT_STATUS_ALREADY_COMMITTED         0xc0000021
+#define NT_STATUS_ACCESS_DENIED             0xc0000022
+#define NT_STATUS_OBJECT_NAME_NOT_FOUND     0xc0000034
+#define NT_STATUS_OBJECT_PATH_INVALID       0xc0000039
+#define NT_STATUS_OBJECT_PATH_NOT_FOUND     0xc000003a
+#define NT_STATUS_OBJECT_PATH_SYNTAX_BAD    0xc000003b
+#define NT_STATUS_PORT_CONNECTION_REFUSED   0xc0000041
+#define NT_STATUS_THREAD_IS_TERMINATING     0xc000004b
+#define NT_STATUS_DELETE_PENDING            0xc0000056
+#define NT_STATUS_PRIVILEGE_NOT_HELD        0xc0000061
+#define NT_STATUS_LOGON_FAILURE             0xc000006D
+#define NT_STATUS_DFS_EXIT_PATH_FOUND       0xc000009b
+#define NT_STATUS_MEDIA_WRITE_PROTECTED     0xc00000a2
+#define NT_STATUS_ILLEGAL_FUNCTION          0xc00000af
+#define NT_STATUS_FILE_IS_A_DIRECTORY       0xc00000ba
+#define NT_STATUS_FILE_RENAMED              0xc00000d5
+#define NT_STATUS_REDIRECTOR_NOT_STARTED    0xc00000fb
+#define NT_STATUS_DIRECTORY_NOT_EMPTY       0xc0000101
+#define NT_STATUS_PROCESS_IS_TERMINATING    0xc000010a
+#define NT_STATUS_TOO_MANY_OPENED_FILES     0xc000011f
+#define NT_STATUS_CANNOT_DELETE             0xc0000121
+#define NT_STATUS_FILE_DELETED              0xc0000123
+#define NT_STATUS_INSUFF_SERVER_RESOURCES   0xc0000205
+
+#define DSM_ERROR_INTERNAL                  0xff000001
+#define DSM_ERROR_INCORRECT_RCV_MESS        0xff000002
+#define DSM_ERROR_UTF8_CONV_FAILED          0xff000003
+
 #endif

@@ -72,7 +72,16 @@
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
+#define SMB_CMD_MKDIR           0x00
+#define SMB_CMD_RMDIR           0x01
+#define SMB_CMD_RMFILE          0x06
+#define SMB_CMD_MOVE            0x07 // Move or rename
 
+//-----------------------------------------------------------------------------/
+// SMB FLAGS2 values
+//-----------------------------------------------------------------------------/
+#define SMB_FLAGS2_SHORT_NAMES  0x0000
+#define SMB_FLAGS2_LONG_NAMES   0x0001
 
 //-----------------------------------------------------------------------------/
 // SMB TRANS2 SubCommands
@@ -102,14 +111,6 @@
 #define SMB_FIND2_QUERY_FILE_ALT_NAME_INFO    0x0108
 #define SMB_FIND2_QUERY_FILE_STREAM_INFO      0x0109
 #define SMB_FIND2_QUERY_FILE_COMPRESSION_INFO 0x010B
-
-
-//-----------------------------------------------------------------------------/
-// NTSTATUS Codes
-//-----------------------------------------------------------------------------/
-#define NT_STATUS_SUCCESS                   0x00000000
-#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
-#define NT_STATUS_ACCESS_DENIED             0xc0000022
 
 
 ///////////////////////////////////////////////////////////////////////////////

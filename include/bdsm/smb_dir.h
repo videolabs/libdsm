@@ -8,7 +8,7 @@
  *
  * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
  *
- * Author: Julien 'Lta' BALLET <contact@lta.io>
+ * Author: Sylve Bruneau <sylver.bruneau@gmail.com>
  *
  * liBDSM is released under LGPLv2.1 (or later) and is also available
  * under a commercial license.
@@ -28,19 +28,26 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef __BDSM_H_
-#define __BDSM_H_
+/**
+ * @file smb_dir.h
+ * @brief Directory operations
+ */
 
-#define BDSM_VERSION_CURRENT  2
-#define BDSM_VERSION_REVISION 1
-#define BDSM_VERSION_AGE      0
+#ifndef __BDSM_SMB_DIR_H_
+#define __BDSM_SMB_DIR_H_
 
-#include "bdsm/netbios_ns.h"
-#include "bdsm/netbios_defs.h"
 #include "bdsm/smb_session.h"
-#include "bdsm/smb_share.h"
-#include "bdsm/smb_file.h"
-#include "bdsm/smb_stat.h"
-#include "bdsm/smb_dir.h"
+
+
+/**
+ * @brief remove a directory on a share.
+ * @details Use this function to delete an empty directory
+ *
+ * @param s The session object
+ * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
+ * @param path The path of the file to delete
+ * @return 0 if delete OK or "NT" error code
+ */
+uint32_t  smb_rm_dir(smb_session *s, smb_tid tid, const char *path);
 
 #endif
