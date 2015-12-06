@@ -100,4 +100,15 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
  */
 ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
 
+/**
+ * @brief remove a file on a share.
+ * @details Use this function to delete a file
+ *
+ * @param s The session object
+ * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
+ * @param path The path of the file to delete
+ * @return 0 if delete OK or "NT" error code
+ */
+uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path);
+
 #endif

@@ -72,7 +72,16 @@
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
+#define SMB_CMD_MKDIR           0x00
+#define SMB_CMD_RMDIR           0x01
+#define SMB_CMD_RMFILE          0x06
+#define SMB_CMD_MOVE            0x07 // Move or rename
 
+//-----------------------------------------------------------------------------/
+// SMB FLAGS2 values
+//-----------------------------------------------------------------------------/
+#define SMB_FLAGS2_SHORT_NAMES  0x0000
+#define SMB_FLAGS2_LONG_NAMES   0x0001
 
 //-----------------------------------------------------------------------------/
 // SMB TRANS2 SubCommands
@@ -102,14 +111,6 @@
 #define SMB_FIND2_QUERY_FILE_ALT_NAME_INFO    0x0108
 #define SMB_FIND2_QUERY_FILE_STREAM_INFO      0x0109
 #define SMB_FIND2_QUERY_FILE_COMPRESSION_INFO 0x010B
-
-
-//-----------------------------------------------------------------------------/
-// NTSTATUS Codes
-//-----------------------------------------------------------------------------/
-#define NT_STATUS_SUCCESS                   0x00000000
-#define NT_STATUS_MORE_PROCESSING_REQUIRED  0xc0000016
-#define NT_STATUS_ACCESS_DENIED             0xc0000022
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,23 +156,31 @@
 #define SMB_CREATE_EXT_RESP     (1 << 4)
 #define SMB_CREATE_DEFAULTS     (0)
 
+//-----------------------------------------------------------------------------/
+// SMB FILE_ATTRIBUTES
+//-----------------------------------------------------------------------------/
+#define SMB_FILE_ATTRIBUTE_NORMAL      0x0000
+#define SMB_FILE_ATTRIBUTE_READONLY    0x0001
+#define SMB_FILE_ATTRIBUTE_HIDDEN      0x0002
+#define SMB_FILE_ATTRIBUTE_SYSTEM      0x0004
+#define SMB_FILE_ATTRIBUTE_VOLUME      0x0008
+#define SMB_FILE_ATTRIBUTE_DIRECTORY   0x0010
+#define SMB_FILE_ATTRIBUTE_ARCHIVE     0x0020
+#define SMB_SEARCH_ATTRIBUTE_READONLY  0x0100
+#define SMB_SEARCH_ATTRIBUTE_HIDDEN    0x0200
+#define SMB_SEARCH_ATTRIBUTE_SYSTEM    0x0400
+#define SMB_SEARCH_ATTRIBUTE_DIRECTORY 0x1000
+#define SMB_SEARCH_ATTRIBUTE_ARCHIVE   0x2000
+
 
 // File attributes
+#define SMB_ATTR_NORMAL         0
 #define SMB_ATTR_RO             (1 << 0)
 #define SMB_ATTR_HIDDEN         (1 << 1)
 #define SMB_ATTR_SYS            (1 << 2)
 #define SMB_ATTR_VOLID          (1 << 3)  // Volume ID
 #define SMB_ATTR_DIR            (1 << 4)
 #define SMB_ATTR_ARCHIVE        (1 << 5)  // Modified since last archive (!?)
-#define SMB_ATTR_DEVICE         (1 << 6)
-#define SMB_ATTR_NORMAL         (1 << 7)
-#define SMB_ATTR_TEMP           (1 << 8)
-#define SMB_ATTR_SPARSE         (1 << 9)
-#define SMB_ATTR_REPARSE_PT     (1 << 10)
-#define SMB_ATTR_COMPRESSED     (1 << 11)
-#define SMB_ATTR_OFFLINE        (1 << 12)
-#define SMB_ATTR_INDEXED        (1 << 13) // Not set = May be indexed
-#define SMB_ATTR_ENCRYPTED      (1 << 14)
 // Share access flags
 #define SMB_SHARE_READ          (1 << 0)
 #define SMB_SHARE_WRITE         (1 << 1)

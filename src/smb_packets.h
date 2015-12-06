@@ -274,6 +274,39 @@ typedef struct
     uint16_t        bct;
 } __attribute__((packed))   smb_read_resp;
 
+//-> Remove File
+typedef struct
+{
+    uint8_t         wct;                // 0x01
+    uint16_t        search_attributes;   // 0x0000 for "normal" (not hidden/ystem) files
+    uint16_t        bct;                // >= 2
+    uint8_t         buffer_format;       // 0x04
+    uint8_t         path[];             // UTF16 file path
+} __attribute__((packed))   smb_rm_file_req;
+
+//<- Remove File
+typedef struct
+{
+    uint8_t         wct;                // 0x00
+    uint16_t        bct;                // 0x0000
+} __attribute__((packed))   smb_rm_file_resp;
+
+//-> Remove Directroy
+typedef struct
+{
+    uint8_t         wct;                // 0x01
+    uint16_t        bct;                // >= 2
+    uint8_t         buffer_format;      // 0x04
+    uint8_t         path[];             // UTF16 directory path
+} __attribute__((packed))   smb_rm_dir_req;
+
+//<- Remove File
+typedef struct
+{
+    uint8_t         wct;                // 0x00
+    uint16_t        bct;                // 0x0000
+} __attribute__((packed))   smb_rm_dir_resp;
+
 //-> Trans
 typedef struct
 {
