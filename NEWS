@@ -1,3 +1,12 @@
+Changes between 0.0.7 and 0.1.0:
+--------------------------------
+
+ * Fix shares listing when server returns a tid equal to 0
+   Notably TimeCapsule and AirPort Express/Extreme servers
+ * Fix crashes and wrong assertions
+ * Improve BSD compatibility
+
+
 Changes between 0.0.6 and 0.0.7:
 --------------------------------
 
