@@ -231,3 +231,58 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
 
     return (file->readp);
 }
+
+uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path)
+{
+    smb_message           *req_msg, resp_msg;
+    smb_rm_file_req       req;
+    smb_rm_file_resp      *resp;
+    size_t                utf_pattern_len;
+    char                  *utf_pattern;
+
+    if (s == NULL)
+        return DSM_ERROR_INVALID_SESSION;
+    if (tid == -1)
+        return DSM_ERROR_INVALID_TID;
+    if (path == NULL)
+        return DSM_ERROR_INVALID_PATH;
+
+    utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
+    if (utf_pattern_len == 0)
+        return DSM_ERROR_UTF16_CONV_FAILED;
+
+    req_msg = smb_message_new(SMB_CMD_RMFILE);
+    if (!req_msg)
+    {
+        free(utf_pattern);
+        return (DSM_ERROR_INTERNAL);
+    }
+
+    req_msg->packet->header.tid = (uint16_t)tid;
+    req_msg->packet->header.flags2 = SMB_FLAGS2_LONG_NAMES;
+
+    SMB_MSG_INIT_PKT(req);
+    req.wct               = 0x01; // Must be 1
+    req.search_attributes = SMB_ATTR_NORMAL;
+    req.bct               = (uint16_t)(utf_pattern_len + 1);
+    req.buffer_format     = 0x04; // Must be 4
+    SMB_MSG_PUT_PKT(req_msg, req);
+    smb_message_append(req_msg, utf_pattern, utf_pattern_len);
+
+    smb_session_send_msg(s, req_msg);
+    smb_message_destroy(req_msg);
+
+    free(utf_pattern);
+
+    if (!smb_session_recv_msg(s, &resp_msg))
+        return DSM_ERROR_INVALID_RCV_MESS;
+
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return (resp_msg.packet->header.status);
+
+    resp = (smb_rm_file_resp *)resp_msg.packet->payload;
+    if ((resp->wct != 0) || (resp->bct != 0))
+        return DSM_ERROR_INVALID_RCV_MESS;
+
+    return NT_STATUS_SUCCESS;
+}
