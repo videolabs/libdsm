@@ -50,4 +50,15 @@
  */
 uint32_t  smb_rm_dir(smb_session *s, smb_tid tid, const char *path);
 
+/**
+ * @brief create a directory on a share.
+ * @details Use this function to create a directory
+ *
+ * @param s The session object
+ * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
+ * @param path The path of the directory to create
+ * @return 0 if directory creation OK or "NT" error code
+ */
+uint32_t  smb_mk_dir(smb_session *s, smb_tid tid, const char *path);
+
 #endif

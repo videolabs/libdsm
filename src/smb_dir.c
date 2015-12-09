@@ -42,8 +42,8 @@
 uint32_t  smb_rm_dir(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message           *req_msg, resp_msg;
-    smb_rm_dir_req       req;
-    smb_rm_dir_resp      *resp;
+    smb_rm_dir_req        req;
+    smb_rm_dir_resp       *resp;
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
@@ -90,4 +90,70 @@ uint32_t  smb_rm_dir(smb_session *s, smb_tid tid, const char *path)
         return DSM_ERROR_INVALID_RCV_MESS;
 
     return NT_STATUS_SUCCESS;
+}
+
+uint32_t  smb_mk_dir(smb_session *s, smb_tid tid, const char *path)
+{
+    smb_message              *req_msg, resp_msg;
+    smb_trans2_req           tr2;
+    smb_tr2_create_directory create_dir;
+    size_t                   utf_path_len, msg_len;
+    char                     *utf_path;
+    int                      padding = 0;
+
+    if (s == NULL)
+        return DSM_ERROR_INVALID_SESSION;
+    if (tid == -1)
+        return DSM_ERROR_INVALID_TID;
+    if (path == NULL)
+        return DSM_ERROR_INVALID_PATH;
+
+    utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
+    if (utf_path_len == 0)
+        return DSM_ERROR_UTF16_CONV_FAILED;
+
+    msg_len   = sizeof(smb_trans2_req) + sizeof(smb_tr2_query);
+    msg_len  += utf_path_len;
+    if (msg_len %4)
+        padding = 4 - msg_len % 4;
+
+    req_msg = smb_message_new(SMB_CMD_TRANS2);
+    if (!req_msg) {
+        free(utf_path);
+        return DSM_ERROR_INTERNAL;
+    }
+    req_msg->packet->header.tid = (uint16_t)tid;
+
+    SMB_MSG_INIT_PKT(tr2);
+    tr2.wct                = 15;
+    tr2.total_param_count  = (uint16_t)(utf_path_len + sizeof(smb_tr2_create_directory));
+    tr2.param_count        = tr2.total_param_count;
+    tr2.max_param_count    = 2; // ?? Why not the same or 12 ?
+    tr2.max_data_count     = 0xffff;
+    tr2.param_offset       = 68; // Offset of find_first_params in packet;
+    tr2.data_count         = 0;
+    tr2.data_offset        = 96; // Offset of pattern in packet
+    tr2.setup_count        = 1;
+    tr2.cmd                = SMB_TR2_CREATE_DIRECTORY;
+    tr2.bct                = (uint16_t)(sizeof(smb_tr2_create_directory) + utf_path_len + padding);
+    SMB_MSG_PUT_PKT(req_msg, tr2);
+
+    SMB_MSG_INIT_PKT(create_dir);
+    create_dir.reserved = 0x00000000; // Must be 0
+    SMB_MSG_PUT_PKT(req_msg, create_dir);
+
+    smb_message_append(req_msg, utf_path, utf_path_len);
+    free(utf_path);
+
+    // Adds padding at the end if necessary.
+    while (padding--)
+        smb_message_put8(req_msg, 0);
+
+    smb_session_send_msg(s, req_msg);
+    smb_message_destroy(req_msg);
+
+    if (!smb_session_recv_msg(s, &resp_msg))
+        return DSM_ERROR_INVALID_RCV_MESS;
+
+    return (resp_msg.packet->header.status);
 }

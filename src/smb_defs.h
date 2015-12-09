@@ -72,7 +72,7 @@
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
-#define SMB_CMD_MKDIR           0x00
+#define SMB_CMD_MKDIR           0x00 // Depecated
 #define SMB_CMD_RMDIR           0x01
 #define SMB_CMD_RMFILE          0x06
 #define SMB_CMD_MOVE            0x07 // Move or rename
@@ -86,9 +86,10 @@
 //-----------------------------------------------------------------------------/
 // SMB TRANS2 SubCommands
 //-----------------------------------------------------------------------------/
-#define SMB_TR2_FIND_FIRST      0x0001
-#define SMB_TR2_FIND_NEXT       0x0002
-#define SMB_TR2_QUERY_PATH      0x0005
+#define SMB_TR2_FIND_FIRST        0x0001
+#define SMB_TR2_FIND_NEXT         0x0002
+#define SMB_TR2_QUERY_PATH        0x0005
+#define SMB_TR2_CREATE_DIRECTORY  0x000d
 
 
 //-----------------------------------------------------------------------------/

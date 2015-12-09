@@ -293,7 +293,7 @@ typedef struct
 //-> Remove Directory
 typedef struct
 {
-    uint8_t         wct;                // 0x01
+    uint8_t         wct;                // 0x00
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
 } __attribute__((packed))   smb_rm_dir_req;
@@ -389,6 +389,13 @@ typedef struct
     uint8_t       path[];
 } __attribute__((packed))   smb_tr2_query;
 
+//// -> Trans2|CreateDirectory
+typedef struct
+{
+    uint32_t      reserved;   // 0x00000000
+    uint8_t       path[];
+} __attribute__((packed))   smb_tr2_create_directory;
+
 //<- Trans2
 
 typedef struct
@@ -471,6 +478,11 @@ typedef struct
     uint8_t       name[];
 } __attribute__((packed))   smb_tr2_path_info;
 
+//// <- Trans2|CreateDirectory
+typedef struct
+{
+    uint16_t      ea_error_offset;
+} __attribute__((packed))   smb_tr2_create_directory_params;
 
 //-> Example
 typedef struct
