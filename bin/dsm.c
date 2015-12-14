@@ -192,7 +192,7 @@ int main(int ac, char **av)
 
 
   smb_tid test = smb_tree_connect(session, share);
-  if (test)
+  if (test != -1)
     fprintf(stderr, "Connected to %s share\n", share);
   else
   {
