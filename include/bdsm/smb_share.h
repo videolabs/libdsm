@@ -89,7 +89,7 @@ void            smb_share_list_destroy(smb_share_list list);
  * @param name The share name @see smb_share_list
  *
  * @return An opaque value representing an open share (like a file descriptor)
- * or 0 if there was an error
+ * or -1 if there was an error
  */
 smb_tid         smb_tree_connect(smb_session *s, const char *name);
 
