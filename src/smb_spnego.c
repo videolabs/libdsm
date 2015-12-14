@@ -317,6 +317,7 @@ static int      auth(smb_session *s, const char *domain, const char *user,
             s->guest = true;
 
         s->srv.uid  = resp.packet->header.uid;
+        s->state    = SMB_STATE_SESSION_OK;
 
         return (1);
     }
