@@ -232,11 +232,11 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
     return (file->readp);
 }
 
-uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path)
+uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message           *req_msg, resp_msg;
-    smb_rm_file_req       req;
-    smb_rm_file_resp      *resp;
+    smb_file_rm_req       req;
+    smb_file_rm_resp      *resp;
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
@@ -280,7 +280,7 @@ uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path)
     if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
         return (resp_msg.packet->header.status);
 
-    resp = (smb_rm_file_resp *)resp_msg.packet->payload;
+    resp = (smb_file_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
         return DSM_ERROR_INVALID_RCV_MESS;
 

@@ -281,14 +281,14 @@ typedef struct
     uint16_t        search_attributes;  // 0x0000 for "normal" (not hidden/ystem) files
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
-} __attribute__((packed))   smb_rm_file_req;
+} __attribute__((packed))   smb_file_rm_req;
 
 //<- Remove File
 typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // 0x0000
-} __attribute__((packed))   smb_rm_file_resp;
+} __attribute__((packed))   smb_file_rm_resp;
 
 //-> Remove Directory
 typedef struct

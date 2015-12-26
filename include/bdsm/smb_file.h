@@ -109,6 +109,6 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
  * @param path The path of the file to delete
  * @return 0 if delete OK or "NT" error code
  */
-uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path);
+uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path);
 
 #endif
