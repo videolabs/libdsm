@@ -209,7 +209,7 @@ int               netbios_session_packet_send(netbios_session *s)
     return (sent);
 }
 
-ssize_t           netbios_session_get_next_packet(netbios_session *s)
+static ssize_t    netbios_session_get_next_packet(netbios_session *s)
 {
     ssize_t         res;
     size_t          total, sofar;
