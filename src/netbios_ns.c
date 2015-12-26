@@ -640,7 +640,7 @@ static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip
 
     if (recv <= 0)
         goto error;
-    
+
     if (name_query.type != NAME_QUERY_TYPE_NBSTAT)
     {
         BDSM_dbg("netbios_ns_inverse, wrong query type received\n");
