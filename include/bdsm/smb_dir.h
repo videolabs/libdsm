@@ -59,6 +59,6 @@ uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
  * @param path The path of the directory to create
  * @return 0 if directory creation OK or "NT" error code
  */
-uint32_t  smb_mk_dir(smb_session *s, smb_tid tid, const char *path);
+uint32_t  smb_directory_create(smb_session *s, smb_tid tid, const char *path);
 
 #endif

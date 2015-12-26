@@ -92,7 +92,7 @@ uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
     return NT_STATUS_SUCCESS;
 }
 
-uint32_t  smb_mk_dir(smb_session *s, smb_tid tid, const char *path)
+uint32_t  smb_directory_create(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message              *req_msg, resp_msg;
     smb_trans2_req           tr2;
