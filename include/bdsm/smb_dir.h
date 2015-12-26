@@ -48,7 +48,7 @@
  * @param path The path of the file to delete
  * @return 0 if delete OK or "NT" error code
  */
-uint32_t  smb_rm_dir(smb_session *s, smb_tid tid, const char *path);
+uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
 
 /**
  * @brief create a directory on a share.

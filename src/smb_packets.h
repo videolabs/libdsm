@@ -296,14 +296,14 @@ typedef struct
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
-} __attribute__((packed))   smb_rm_dir_req;
+} __attribute__((packed))   smb_directory_rm_req;
 
 //<- Remove Directory
 typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // 0x0000
-} __attribute__((packed))   smb_rm_dir_resp;
+} __attribute__((packed))   smb_directory_rm_resp;
 
 //-> Trans
 typedef struct
