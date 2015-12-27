@@ -263,7 +263,7 @@ uint32_t  smb_rm_file(smb_session *s, smb_tid tid, const char *path)
 
     SMB_MSG_INIT_PKT(req);
     req.wct               = 0x01; // Must be 1
-    req.search_attributes = SMB_ATTR_NORMAL;
+    req.search_attributes = SMB_ATTR_HIDDEN | SMB_ATTR_SYS;
     req.bct               = (uint16_t)(utf_pattern_len + 1);
     req.buffer_format     = 0x04; // Must be 4
     SMB_MSG_PUT_PKT(req_msg, req);
