@@ -186,6 +186,13 @@ typedef struct
     uint8_t         payload[];
 } __attribute__((packed))   smb_tree_connect_resp;
 
+//-> Tree Disconnect / <- Tree Disconnect (params are the same)
+typedef struct
+{
+    uint8_t         wct;              // 0
+    uint16_t        bct;
+} __attribute__((packed))   smb_tree_disconnect_req_resp;
+
 
 
 //-> Create File

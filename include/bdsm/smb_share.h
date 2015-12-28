@@ -97,7 +97,7 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name);
  * @brief Disconnect from a share
  * @details UNIMPLEMENTED
  *
- * @return ?
+ * @return 0 if OK or -1 if there was an error
  */
 int             smb_tree_disconnect(smb_session *s, smb_tid tid);
 

@@ -111,12 +111,43 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
 int           smb_tree_disconnect(smb_session *s, smb_tid tid)
 {
-    assert(s != NULL);
-    (void)tid;
-    /* FIXME: handle tid == -1 error case once function is implemented */
+    smb_tree_disconnect_req_resp   req;
+    smb_tree_disconnect_req_resp *resp;
+    smb_message                  *req_msg;
+    smb_message                   resp_msg;
 
-    BDSM_dbg("smb_tree_disconnect: NOT IMPLEMENTED YET\n");
-    return (0);
+    if ((s == NULL) || (tid == -1))
+        return -1;
+
+    req_msg = smb_message_new(SMB_CMD_TREE_DISCONNECT);
+    if (!req_msg)
+        return -1;
+
+    // Packet headers
+    req_msg->packet->header.tid = (uint16_t)tid;
+
+    // Packet payload
+    req.wct = 0; // Must be 0
+    req.bct = 0; // Must be 0
+    SMB_MSG_PUT_PKT(req_msg, req);
+
+    if (!smb_session_send_msg(s, req_msg))
+    {
+        smb_message_destroy(req_msg);
+        return -1;
+    }
+    smb_message_destroy(req_msg);
+
+    if (!smb_session_recv_msg(s, &resp_msg))
+        return -1;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return -1;
+
+    resp  = (smb_tree_disconnect_req_resp *)resp_msg.packet->payload;
+    if ((resp->wct != 0) || (resp->bct != 0))
+        return -1;
+
+    return 0;
 }
 
 // Here we parse the NetShareEnumAll response packet payload to extract
