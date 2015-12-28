@@ -1,7 +1,8 @@
 AC_PREREQ([2.53])
 
-AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])],
-  [], [libdsm], [])
+AC_COPYRIGHT([Copyright 2014-2015 VideoLabs])
+
+AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])], [], [libdsm], [])
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR([include/bdsm.h])
 AC_CONFIG_LIBOBJ_DIR([compat])
