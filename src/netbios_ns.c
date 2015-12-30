@@ -524,7 +524,7 @@ netbios_ns  *netbios_ns_new()
     if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
         netbios_ns_destroy(ns);
-        return 0;
+        return NULL;
     }
 
     TAILQ_INIT(&ns->entry_queue);
