@@ -77,10 +77,10 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     req.alloc_size     = 0;
     req.file_attr      = 0;
     req.share_access   = SMB_SHARE_READ | SMB_SHARE_WRITE;
-    req.disposition    = 1;  // 1 = Open and file if doesn't exist
-    req.create_opts    = 0;  // We dont't support create
-    req.impersonation  = 2;  // ?????
-    req.security_flags = 0;  // ???
+    req.disposition    = SMB_DISPOSITION_FILE_OPEN;  // Open and fails if doesn't exist
+    req.create_opts    = 0;                          // We dont't support create
+    req.impersonation  = SMB_IMPERSONATION_SEC_IMPERSONATE;
+    req.security_flags = SMB_SECURITY_NO_TRACKING;
     req.path_length    = path_len;
     req.bct            = path_len + 1;
     SMB_MSG_PUT_PKT(req_msg, req);

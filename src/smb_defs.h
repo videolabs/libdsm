@@ -113,6 +113,13 @@
 #define SMB_FIND2_QUERY_FILE_STREAM_INFO      0x0109
 #define SMB_FIND2_QUERY_FILE_COMPRESSION_INFO 0x010B
 
+//-----------------------------------------------------------------------------/
+// SMB CMD CREATE Impersonation level values
+//-----------------------------------------------------------------------------/
+#define SMB_IMPERSONATION_SEC_ANONYMOUS       0
+#define SMB_IMPERSONATION_SEC_IDENTIFY        1
+#define SMB_IMPERSONATION_SEC_IMPERSONATE     2
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //// Flags definitions
@@ -165,10 +172,51 @@
 #define SMB_ATTR_VOLID          (1 << 3)  // Volume ID
 #define SMB_ATTR_DIR            (1 << 4)
 #define SMB_ATTR_ARCHIVE        (1 << 5)  // Modified since last archive (!?)
+
 // Share access flags
 #define SMB_SHARE_READ          (1 << 0)
 #define SMB_SHARE_WRITE         (1 << 1)
 #define SMB_SHARE_DELETE        (1 << 2)
+
+// Create disposition flags
+#define SMB_DISPOSITION_FILE_SUPERSEDE      0
+#define SMB_DISPOSITION_FILE_OPEN           (1 << 0)
+#define SMB_DISPOSITION_FILE_CREATE         (1 << 1)
+#define SMB_DISPOSITION_FILE_OPEN_IF        (1 << 2)
+#define SMB_DISPOSITION_FILE_OVERWRITE      (1 << 3)
+#define SMB_DISPOSITION_FILE_OVERWRITE_IF   (1 << 4)
+
+// Create options flags
+#define SMB_CREATEOPT_DIRECTORY_FILE             (1 << 0)
+#define SMB_CREATEOPT_WRITE_THROUGH              (1 << 1)
+#define SMB_CREATEOPT_SEQUENTIAL_ONLY            (1 << 2)
+#define SMB_CREATEOPT_NO_INTERMEDIATE_BUFFERING  (1 << 3)
+#define SMB_CREATEOPT_SYNCHRONOUS_IO_ALERT       (1 << 3)
+#define SMB_CREATEOPT_SYNCHRONOUS_IO_NONALERTIF  (1 << 4)
+#define SMB_CREATEOPT_NON_DIRECTORY_FILE         (1 << 5)
+#define SMB_CREATEOPT_CREATE_TREE_CONNECTION     (1 << 6)
+#define SMB_CREATEOPT_COMPLETE_IF_OPLOCKED       (1 << 7)
+#define SMB_CREATEOPT_NO_EA_KNOWLEDGE            (1 << 8)
+#define SMB_CREATEOPT_OPEN_FOR_RECOVERY          (1 << 9)
+#define SMB_CREATEOPT_RANDOM_ACCESS              (1 << 10)
+#define SMB_CREATEOPT_DELETE_ON_CLOSE            (1 << 11)
+#define SMB_CREATEOPT_OPEN_BY_FILE_ID            (1 << 12)
+#define SMB_CREATEOPT_OPEN_FOR_BACKUP_INTENT     (1 << 13)
+#define SMB_CREATEOPT_NO_COMPRESSION             (1 << 14)
+#define SMB_CREATEOPT_RESERVE_OPFILTER           (1 << 15)
+#define SMB_CREATEOPT_OPEN_NO_RECALL             (1 << 16)
+#define SMB_CREATEOPT_OPEN_FOR_FREE_SPACE_QUERY  (1 << 17)
+
+// Security flags
+#define SMB_SECURITY_NO_TRACKING            0
+#define SMB_SECURITY_CONTEXT_TRACKING       (1 << 0)
+#define SMB_SECURITY_EFFECTIVE_ONLY         (1 << 1)
+
+// Write mode flags
+#define SMB_WRITEMODE_WRITETHROUGH          (1 << 0)
+#define SMB_WRITEMODE_READBYTESAVAILABLE    (1 << 1)
+#define SMB_WRITEMODE_RAW                   (1 << 2)
+#define SMB_WRITEMODE_MSG_START             (1 << 3)
 
 // Trans 2 flags
 //// Find First 2
