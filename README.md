@@ -27,10 +27,11 @@ Here's a list of the currently supported features:
   * List Shares
   * Browse folders
   * Read file
-  * delete file
-  * delete empty folder
-  * create new folder
-  * No write, copy, move, rename, lock, RPCs, etc. [Hum... yet]
+  * Write file
+  * Delete file
+  * Delete empty folder
+  * Create new folder
+  * No copy, move, rename, lock, RPCs, etc. [Hum... yet]
 
 ## Support
 
