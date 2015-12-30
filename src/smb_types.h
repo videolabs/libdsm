@@ -64,7 +64,7 @@ struct smb_file
     uint64_t            alloc_size;
     uint64_t            size;
     uint32_t            attr;
-    uint64_t            readp;          // Current read pointer (position);
+    uint64_t            offset;          // Current position pointer
     int                 is_dir;         // 0 -> file, 1 -> directory
 };
 

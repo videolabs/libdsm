@@ -189,12 +189,12 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     SMB_MSG_INIT_PKT_ANDX(req);
     req.wct              = 12;
     req.fid              = file->fid;
-    req.offset           = file->readp;
+    req.offset           = file->offset;
     req.max_count        = max_read;
     req.min_count        = max_read;
     req.max_count_high   = 0;
     req.remaining        = 0;
-    req.offset_high      = (file->readp >> 32) & 0xffffffff;
+    req.offset_high      = (file->offset >> 32) & 0xffffffff;
     req.bct              = 0;
     SMB_MSG_PUT_PKT(req_msg, req);
 
@@ -225,11 +225,11 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
         return (0);
 
     if (whence == SMB_SEEK_SET)
-        file->readp = offset;
+        file->offset = offset;
     else if (whence == SMB_SEEK_CUR)
-        file->readp += offset;
+        file->offset += offset;
 
-    return (file->readp);
+    return (file->offset);
 }
 
 uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
