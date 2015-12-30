@@ -243,7 +243,7 @@ size_t          smb_share_get_list(smb_session *s, char ***list)
     if (ipc_tid == -1)
         return 0;
 
-    srvscv_fd = smb_fopen(s, ipc_tid, "\\srvsvc", SMB_MOD_RW);
+    srvscv_fd = smb_fopen(s, ipc_tid, "\\srvsvc", SMB_MOD_READ | SMB_MOD_WRITE);
     if (!srvscv_fd)
         return 0;
 
