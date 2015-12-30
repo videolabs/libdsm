@@ -281,6 +281,36 @@ typedef struct
     uint16_t        bct;
 } __attribute__((packed))   smb_read_resp;
 
+//-> Write File
+typedef struct
+{
+    uint8_t         wct;                // 14
+    SMB_ANDX_MEMBERS
+    uint16_t        fid;
+    uint32_t        offset;
+    uint32_t        timeout;
+    uint16_t        write_mode;
+    uint16_t        remaining;
+    uint16_t        reserved;
+    uint16_t        data_len;
+    uint16_t        data_offset;
+    uint32_t        offset_high;        // Continuation of offset field'
+    uint16_t        bct;
+    uint8_t         padding;
+} __attribute__((packed))   smb_write_req;
+
+//<- Write File
+typedef struct
+{
+    uint8_t         wct;                // 6
+    SMB_ANDX_MEMBERS
+    
+    uint16_t        data_len;
+    uint16_t        available;
+    uint32_t        reserved;
+    uint16_t        bct;
+} __attribute__((packed))   smb_write_resp;
+
 //-> Remove File
 typedef struct
 {

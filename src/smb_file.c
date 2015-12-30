@@ -77,8 +77,16 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     req.alloc_size     = 0;
     req.file_attr      = 0;
     req.share_access   = SMB_SHARE_READ | SMB_SHARE_WRITE;
-    req.disposition    = SMB_DISPOSITION_FILE_OPEN;  // Open and fails if doesn't exist
-    req.create_opts    = 0;                          // We dont't support create
+    if ((o_flags & SMB_MOD_RW) == SMB_MOD_RW)
+    {
+        req.disposition    = SMB_DISPOSITION_FILE_CREATE; // Create if doesn't exist, fails if exists
+        req.create_opts    = SMB_CREATEOPT_WRITE_THROUGH;
+    }
+    else
+    {
+        req.disposition    = SMB_DISPOSITION_FILE_OPEN;  // Open and fails if doesn't exist
+        req.create_opts    = 0;                          // We dont't support create
+    }
     req.impersonation  = SMB_IMPERSONATION_SEC_IMPERSONATE;
     req.security_flags = SMB_SECURITY_NO_TRACKING;
     req.path_length    = path_len;
@@ -210,6 +218,63 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 
     resp = (smb_read_resp *)resp_msg.packet->payload;
     memcpy(buf, (char *)resp_msg.packet + resp->data_offset, resp->data_len);
+    smb_fseek(s, fd, resp->data_len, SEEK_CUR);
+
+    return (resp->data_len);
+}
+
+ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
+{
+    smb_file       *file;
+    smb_message    *req_msg, resp_msg;
+    smb_write_req   req;
+    smb_write_resp *resp;
+    uint16_t        max_write;
+    int             res;
+
+    if ((s == NULL) || (buf == NULL) || !fd)
+        return -1;
+
+    file = smb_session_file_get(s, fd);
+    if (file == NULL)
+        return -1;
+
+    req_msg = smb_message_new(SMB_CMD_WRITE);
+    if (!req_msg)
+        return (-1);
+    req_msg->packet->header.tid = (uint16_t)file->tid;
+
+    // total size of SMB message shall not exceed maximum size of netbios data payload
+    max_write = UINT16_MAX - sizeof(smb_packet) - sizeof(smb_write_req);
+    max_write = max_write < buf_size ? max_write : (uint16_t)buf_size;
+
+    SMB_MSG_INIT_PKT_ANDX(req);
+    req.wct              = 14; // Must be 14
+    req.fid              = file->fid;
+    req.offset           = file->offset & 0xffffffff;
+    req.timeout          = 0;
+    req.write_mode       = SMB_WRITEMODE_WRITETHROUGH;
+    req.remaining        = 0;
+    req.reserved         = 0;
+    req.data_len         = max_write;
+    req.data_offset      = sizeof(smb_packet) + sizeof(smb_write_req);
+    req.offset_high      = (file->offset >> 32) & 0xffffffff;
+    req.bct              = max_write;
+    SMB_MSG_PUT_PKT(req_msg, req);
+    smb_message_append(req_msg, buf, max_write);
+
+    res = smb_session_send_msg(s, req_msg);
+    smb_message_destroy(req_msg);
+    if (!res)
+        return -1;
+
+    if (!smb_session_recv_msg(s, &resp_msg))
+        return -1;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return -1;
+
+    resp = (smb_write_resp *)resp_msg.packet->payload;
+
     smb_fseek(s, fd, resp->data_len, SEEK_CUR);
 
     return (resp->data_len);

@@ -71,6 +71,7 @@
 #define SMB_CMD_TREE_CONNECT    0x75 // Tree Connect AndX
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX
+#define SMB_CMD_WRITE           0x2f // Write AndX
 #define SMB_CMD_CREATE          0xa2 // NT Create AndX
 #define SMB_CMD_MKDIR           0x00 // Depecated
 #define SMB_CMD_RMDIR           0x01
