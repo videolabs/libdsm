@@ -180,7 +180,8 @@ int               netbios_session_packet_append(netbios_session *s,
     assert(s && s->packet);
 
     if (s->packet_payload_size - s->packet_cursor < size)
-        return (0);
+        if (!session_buffer_realloc(s, size + s->packet_cursor))
+            return 0;
 
     start = ((char *)&s->packet->payload) + s->packet_cursor;
     memcpy(start, data, size);
