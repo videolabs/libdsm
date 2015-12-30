@@ -79,7 +79,7 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     req.share_access   = SMB_SHARE_READ | SMB_SHARE_WRITE;
     if ((o_flags & SMB_MOD_RW) == SMB_MOD_RW)
     {
-        req.disposition    = SMB_DISPOSITION_FILE_CREATE; // Create if doesn't exist, fails if exists
+        req.disposition    = SMB_DISPOSITION_FILE_SUPERSEDE; // Create if doesn't exist
         req.create_opts    = SMB_CREATEOPT_WRITE_THROUGH;
     }
     else
