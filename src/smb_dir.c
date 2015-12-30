@@ -83,7 +83,7 @@ uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
         return DSM_ERROR_INVALID_RCV_MESS;
 
     if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
-        return (resp_msg.packet->header.status);
+        return resp_msg.packet->header.status;
 
     resp = (smb_directory_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
@@ -155,5 +155,5 @@ uint32_t  smb_directory_create(smb_session *s, smb_tid tid, const char *path)
     if (!smb_session_recv_msg(s, &resp_msg))
         return DSM_ERROR_INVALID_RCV_MESS;
 
-    return (resp_msg.packet->header.status);
+    return resp_msg.packet->header.status;
 }

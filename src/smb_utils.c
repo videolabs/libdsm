@@ -48,9 +48,9 @@
 static const char *current_encoding()
 {
 #if defined( __APPLE__ )
-    return ("UTF8");
+    return "UTF8";
 #elif !HAVE_LANGINFO_H
-    return ("UTF-8");
+    return "UTF-8";
 #else
     static int locale_set = 0;
 
@@ -60,7 +60,7 @@ static const char *current_encoding()
         locale_set = 1;
     }
     //BDSM_dbg("%s\n", nl_langinfo(CODESET));
-    return (nl_langinfo(CODESET));
+    return nl_langinfo(CODESET);
 #endif
 }
 
@@ -75,7 +75,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
     if (!src_len)
     {
         *dst = NULL;
-        return (0);
+        return 0;
     }
 
     if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
@@ -83,7 +83,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
         BDSM_dbg("Unable to open iconv to convert from %s to %s\n",
                  src_enc, dst_enc);
         *dst = NULL;
-        return (0);
+        return 0;
     }
     for (unsigned mul = 4; mul < 16; mul++)
     {
@@ -110,7 +110,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
 
     if (ret == 0)
         *dst = NULL;
-    return (ret);
+    return ret;
 }
 
 size_t      smb_to_utf16(const char *src, size_t src_len, char **dst)

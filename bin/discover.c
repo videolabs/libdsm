@@ -89,5 +89,5 @@ int main()
 
   netbios_ns_discover_stop(ns);
 
-  return (0);
+  return 0;
 }

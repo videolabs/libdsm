@@ -64,5 +64,5 @@ int main(int ac, char **av)
 
   printf("%s's IP address is : %s\n", av[1], inet_ntoa(addr));
   netbios_ns_destroy(ns);
-  return (0);
+  return 0;
 }

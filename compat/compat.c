@@ -4,5 +4,5 @@
    libcompat.a to be empty, which is illegal */
 int not_empty()
 {
-    return (42);
+    return 42;
 }

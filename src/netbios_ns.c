@@ -139,11 +139,11 @@ static int    ns_open_socket(netbios_ns *ns)
     if (bind(ns->socket, (struct sockaddr *)&ns->addr, sizeof(ns->addr)) < 0)
         goto error;
 
-    return (1);
+    return 1;
 
 error:
     BDSM_perror("netbios_ns_new, open_socket: ");
-    return (0);
+    return 0;
 }
 
 static int    ns_open_abort_pipe(netbios_ns *ns)
@@ -423,12 +423,12 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
             return size;
         }
         else
-            return (0);
+            return 0;
     }
 
 error:
     BDSM_perror("netbios_ns_recv: ");
-    return (-1);
+    return -1;
 }
 
 static void netbios_ns_copy_name(char *dest, const char *src)
@@ -524,13 +524,13 @@ netbios_ns  *netbios_ns_new()
     if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
         netbios_ns_destroy(ns);
-        return (0);
+        return 0;
     }
 
     TAILQ_INIT(&ns->entry_queue);
     ns->last_trn_id   = rand();
 
-    return (ns);
+    return ns;
 }
 
 void          netbios_ns_destroy(netbios_ns *ns)
@@ -560,18 +560,18 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
     {
         *addr = cached->address.s_addr;
-        return (1);
+        return 1;
     }
 
     if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-        return (0);
+        return 0;
 
     if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
                                    NETBIOS_FLAG_RECURSIVE |
                                    NETBIOS_FLAG_BROADCAST) == -1)
     {
         free(encoded_name);
-        return (0);
+        return 0;
     }
     free(encoded_name);
 
@@ -588,12 +588,12 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
         {
             *addr = name_query.u.nb.ip;
             BDSM_dbg("netbios_ns_resolve, received a reply for '%s', ip: 0x%X!\n", name, *addr);
-            return (1);
+            return 1;
         } else
             BDSM_dbg("netbios_ns_resolve, wrong query type received\n");
     }
 
-    return (0);
+    return 0;
 }
 
 static int    netbios_ns_is_aborted(netbios_ns *ns)
@@ -627,7 +627,7 @@ static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip
     netbios_ns_entry *entry;
 
     if ((cached = netbios_ns_entry_find(ns, NULL, ip)) != NULL)
-        return (cached);
+        return cached;
 
     if (netbios_ns_send_name_query(ns, ip, NAME_QUERY_TYPE_NBSTAT,
                                    name_query_broadcast, 0) == -1)
@@ -658,7 +658,7 @@ static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns, uint32_t ip
     return entry;
 error:
     BDSM_perror("netbios_ns_inverse: ");
-    return (NULL);
+    return NULL;
 }
 
 const char *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
@@ -807,16 +807,16 @@ int netbios_ns_discover_start(netbios_ns *ns,
                               netbios_ns_discover_callbacks *callbacks)
 {
     if (ns->discover_started || !callbacks)
-        return (0);
+        return 0;
 
     ns->discover_callbacks = *callbacks;
     ns->discover_broadcast_timeout = broadcast_timeout;
     if (pthread_create(&ns->discover_thread, NULL,
                        netbios_ns_discover_thread, ns) != 0)
-        return (0);
+        return 0;
     ns->discover_started = true;
 
-    return (1);
+    return 1;
 }
 
 int netbios_ns_discover_stop(netbios_ns *ns)
@@ -827,8 +827,8 @@ int netbios_ns_discover_stop(netbios_ns *ns)
         pthread_join(ns->discover_thread, NULL);
         ns->discover_started = false;
 
-        return (1);
+        return 1;
     }
     else
-        return (0);
+        return 0;
 }

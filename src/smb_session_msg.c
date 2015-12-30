@@ -49,11 +49,11 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
 
     pkt_sz = sizeof(smb_packet) + msg->cursor;
     if (!s->transport.pkt_append(s->transport.session, (void *)msg->packet, pkt_sz))
-        return (0);
+        return 0;
     if (!s->transport.send(s->transport.session))
-        return (0);
+        return 0;
 
-    return (1);
+    return 1;
 }
 
 ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
@@ -65,7 +65,7 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
 
     payload_size = s->transport.recv(s->transport.session, &data);
     if (payload_size <= 0)
-        return (0);
+        return 0;
 
     if (msg != NULL)
     {
@@ -74,5 +74,5 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
         msg->cursor       = 0;
     }
 
-    return (payload_size - sizeof(smb_header));
+    return payload_size - sizeof(smb_header);
 }

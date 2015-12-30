@@ -63,7 +63,7 @@ smb_share *smb_session_share_get(smb_session *s, smb_tid tid)
     while (iter != NULL && iter->tid != tid)
         iter = iter->next;
 
-    return (iter);
+    return iter;
 }
 
 smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
@@ -78,11 +78,11 @@ smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
     iter = s->shares;
 
     if (iter == NULL)
-        return (NULL);
+        return NULL;
     if (iter->tid == tid)
     {
         s->shares = s->shares->next;
-        return (iter);
+        return iter;
     }
 
     while (iter->next != NULL && iter->next->tid != tid)
@@ -92,9 +92,9 @@ smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
     {
         keep = iter->next;
         iter->next = iter->next->next;
-        return (keep);
+        return keep;
     }
-    return (NULL);
+    return NULL;
 }
 
 void            smb_session_share_clear(smb_session *s)
@@ -134,7 +134,7 @@ int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
         return -1;
 
     if ((share = smb_session_share_get(s, tid)) == NULL)
-        return (0);
+        return 0;
 
     if (share->files == NULL)
         share->files = f;
@@ -146,7 +146,7 @@ int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
         iter->next = f;
     }
 
-    return (1);
+    return 1;
 }
 
 smb_file  *smb_session_file_get(smb_session *s, smb_fd fd)
@@ -157,13 +157,13 @@ smb_file  *smb_session_file_get(smb_session *s, smb_fd fd)
     assert(s != NULL && fd);
 
     if ((share = smb_session_share_get(s, SMB_FD_TID(fd))) == NULL)
-        return (NULL);
+        return NULL;
 
     iter = share->files;
     while (iter != NULL && iter->fid != SMB_FD_FID(fd))
         iter = iter->next;
 
-    return (iter);
+    return iter;
 }
 
 smb_file  *smb_session_file_remove(smb_session *s, smb_fd fd)
@@ -174,16 +174,16 @@ smb_file  *smb_session_file_remove(smb_session *s, smb_fd fd)
     assert(s != NULL && fd);
 
     if ((share = smb_session_share_get(s, SMB_FD_TID(fd))) == NULL)
-        return (NULL);
+        return NULL;
 
     iter = share->files;
 
     if (iter == NULL)
-        return (NULL);
+        return NULL;
     if (iter->fid == SMB_FD_FID(fd))
     {
         share->files = iter->next;
-        return (iter);
+        return iter;
     }
 
     while (iter->next != NULL && iter->next->fid != SMB_FD_TID(fd))
@@ -192,8 +192,8 @@ smb_file  *smb_session_file_remove(smb_session *s, smb_fd fd)
     {
         keep = iter->next;
         iter->next = iter->next->next;
-        return (keep);
+        return keep;
     }
     else
-        return (NULL);
+        return NULL;
 }

@@ -67,7 +67,7 @@ smb_session   *smb_session_new()
     // Until we know more, assume server supports everything.
     // s->c
 
-    return (s);
+    return s;
 }
 
 void            smb_session_destroy(smb_session *s)
@@ -99,9 +99,9 @@ void            smb_session_destroy(smb_session *s)
 int             smb_session_state(smb_session *s)
 {
     if (s != NULL)
-        return (s->state);
+        return s->state;
     else
-        return (SMB_STATE_ERROR);
+        return SMB_STATE_ERROR;
 }
 
 void            smb_session_set_creds(smb_session *s, const char *domain,
@@ -160,13 +160,13 @@ int             smb_session_connect(smb_session *s, const char *name,
     s->state = SMB_STATE_NETBIOS_OK;
 
     if (!smb_negotiate(s))
-        return (0);
+        return 0;
 
-    return (1);
+    return 1;
 
 error:
     s->state = SMB_STATE_ERROR;
-    return (0);
+    return 0;
 }
 
 static int        smb_negotiate(smb_session *s)
@@ -219,11 +219,11 @@ static int        smb_negotiate(smb_session *s)
     // Yeah !
     s->state              = SMB_STATE_DIALECT_OK;
 
-    return (1);
+    return 1;
 
 error:
     s->state = SMB_STATE_ERROR;
-    return (0);
+    return 0;
 }
 
 
@@ -239,7 +239,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 
     msg = smb_message_new(SMB_CMD_SETUP);
     if (!msg)
-        return (0);
+        return 0;
 
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_req);
@@ -280,21 +280,21 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     {
         smb_message_destroy(msg);
         BDSM_dbg("Unable to send Session Setup AndX message\n");
-        return (0);
+        return 0;
     }
     smb_message_destroy(msg);
 
     if (smb_session_recv_msg(s, &answer) == 0)
     {
         BDSM_dbg("Unable to get Session Setup AndX reply\n");
-        return (0);
+        return 0;
     }
 
     smb_session_resp *r = (smb_session_resp *)answer.packet->payload;
     if (answer.packet->header.status != NT_STATUS_SUCCESS)
     {
         BDSM_dbg("Session Setup AndX : failure.\n");
-        return (0);
+        return 0;
     }
 
     if (r->action & 0x0001)
@@ -303,7 +303,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     s->srv.uid  = answer.packet->header.uid;
     s->state    = SMB_STATE_SESSION_OK;
 
-    return (1);
+    return 1;
 }
 
 int             smb_session_login(smb_session *s)
@@ -313,7 +313,7 @@ int             smb_session_login(smb_session *s)
     if (s->creds.domain == NULL
         || s->creds.login == NULL
         || s->creds.password == NULL)
-      return (0);
+      return 0;
 
     if (smb_session_supports(s, SMB_SESSION_XSEC))
         return (smb_session_login_spnego(s, s->creds.domain, s->creds.login,
@@ -328,38 +328,38 @@ int             smb_session_is_guest(smb_session *s)
 {
     // Invalid session object
     if (s == NULL)
-        return (-1);
+        return -1;
 
     // We're not logged in yet.
     if (smb_session_state(s) != SMB_STATE_SESSION_OK)
-        return (-1);
+        return -1;
 
     // We're logged in as guest
     if (s->guest)
-        return (1);
+        return 1;
 
     // We're logged in as regular user
-    return (0);
+    return 0;
 }
 
 const char      *smb_session_server_name(smb_session *s)
 {
     if (s == NULL)
-        return (NULL);
+        return NULL;
     else
-        return (s->srv.name);
+        return s->srv.name;
 }
 
 int             smb_session_supports(smb_session *s, int what)
 {
     if (s == NULL)
-        return (0);
+        return 0;
 
     switch (what)
     {
         case SMB_SESSION_XSEC:
-            return (s->srv.caps & SMB_CAPS_XSEC);
+            return s->srv.caps & SMB_CAPS_XSEC;
         default:
-            return (0);
+            return 0;
     }
 }

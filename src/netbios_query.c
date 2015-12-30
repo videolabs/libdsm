@@ -56,7 +56,7 @@ netbios_query   *netbios_query_new(size_t payload_size,
     q->packet->flags  = htons(opcode << 11);
     netbios_query_set_flag(q, NETBIOS_FLAG_QUERY, !is_query);
 
-    return (q);
+    return q;
 }
 
 void              netbios_query_destroy(netbios_query *q)
@@ -108,9 +108,9 @@ int               netbios_query_append(netbios_query *q, const char *data,
     assert(q && q->packet);
 
     if (q->payload_size - q->cursor < data_size)
-        return (-1);
+        return -1;
 
     memcpy(((char *)&q->packet->payload) + q->cursor, data, data_size);
     q->cursor += data_size;
-    return (0);
+    return 0;
 }

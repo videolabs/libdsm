@@ -63,5 +63,5 @@ int main(int ac, char **av)
 
   printf("%s\n", name);
   netbios_ns_destroy(ns);
-  return (0);
+  return 0;
 }

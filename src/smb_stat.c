@@ -37,7 +37,7 @@ smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {
     assert(s != NULL && fd);
 
-    return (smb_session_file_get(s, fd));
+    return smb_session_file_get(s, fd);
 }
 
 void            smb_stat_destroy(smb_stat stat) 
@@ -55,7 +55,7 @@ size_t            smb_stat_list_count(smb_stat_list list)
         ++count;
     }
 
-    return (count);
+    return count;
 }
 
 // XXX: Duplicate some code of smb_session_share_clear
@@ -82,39 +82,39 @@ smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
         pos++;
     }
 
-    return (list);
+    return list;
 }
 
 const char        *smb_stat_name(smb_stat info)
 {
     if (info == NULL)
-        return (NULL);
+        return NULL;
     else
-        return (info->name);
+        return info->name;
 }
 
 uint64_t          smb_stat_get(smb_stat info, int what)
 {
     if (info == NULL)
-        return (0);
+        return 0;
 
     switch (what)
     {
         case SMB_STAT_SIZE:
-            return (info->size);
+            return info->size;
         case SMB_STAT_ALLOC_SIZE:
-            return (info->alloc_size);
+            return info->alloc_size;
         case SMB_STAT_CTIME:
-            return (info->created);
+            return info->created;
         case SMB_STAT_ATIME:
-            return (info->accessed);
+            return info->accessed;
         case SMB_STAT_WTIME:
-            return (info->written);
+            return info->written;
         case SMB_STAT_MTIME:
-            return (info->changed);
+            return info->changed;
         case SMB_STAT_ISDIR:
-            return (info->is_dir);
+            return info->is_dir;
         default:
-            return (0);
+            return 0;
     }
 }

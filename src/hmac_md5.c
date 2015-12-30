@@ -85,5 +85,5 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     MD5_Update(&ctx, kcat, 80);
     MD5_Final(out, &ctx);
 
-    return (out);
+    return out;
 }

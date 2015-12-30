@@ -49,11 +49,11 @@ static int        open_socket_and_connect(netbios_session *s)
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
 
-    return (1);
+    return 1;
 
 error:
     BDSM_perror("netbios_session_new, open_socket: ");
-    return (0);
+    return 0;
 }
 
 static int        session_buffer_realloc(netbios_session *s, size_t new_size)
@@ -70,10 +70,10 @@ static int        session_buffer_realloc(netbios_session *s, size_t new_size)
     {
         s->packet_payload_size = new_size;
         s->packet = new_ptr;
-        return (1);
+        return 1;
     } else
         free(s->packet);
-    return (0);
+    return 0;
 }
 
 netbios_session *netbios_session_new(size_t buf_size)
@@ -93,7 +93,7 @@ netbios_session *netbios_session_new(size_t buf_size)
         return NULL;
     }
 
-    return (session);
+    return session;
 }
 
 void              netbios_session_destroy(netbios_session *s)
@@ -150,17 +150,17 @@ int               netbios_session_connect(struct in_addr *addr,
         if (s->packet->opcode != NETBIOS_OP_SESSION_REQ_OK)
         {
             s->state = NETBIOS_SESSION_REFUSED;
-            return (0);
+            return 0;
         }
     }
 
     // Reply was OK or DirectTCP, a session has been established
     s->state = NETBIOS_SESSION_CONNECTED;
-    return (1);
+    return 1;
 
 error:
     s->state = NETBIOS_SESSION_ERROR;
-    return (0);
+    return 0;
 }
 
 void              netbios_session_packet_init(netbios_session *s)
@@ -187,7 +187,7 @@ int               netbios_session_packet_append(netbios_session *s,
     memcpy(start, data, size);
     s->packet_cursor += size;
 
-    return (1);
+    return 1;
 }
 
 int               netbios_session_packet_send(netbios_session *s)
@@ -204,10 +204,10 @@ int               netbios_session_packet_send(netbios_session *s)
     if (sent != to_send)
     {
         BDSM_perror("netbios_session_packet_send: Unable to send (full?) packet");
-        return (0);
+        return 0;
     }
 
-    return (sent);
+    return sent;
 }
 
 static ssize_t    netbios_session_get_next_packet(netbios_session *s)
@@ -223,13 +223,13 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     if (res <= 0)
     {
         BDSM_perror("netbios_session_packet_recv: ");
-        return (-1);
+        return -1;
     }
     else if ((size_t)res != sizeof(netbios_session_packet))
     {
         BDSM_dbg("netbios_session_packet_recv: incorrect size for received packet: %ld bytes",
                  res);
-        return (-1);
+        return -1;
     }
 
     total  = ntohs(s->packet->length);
@@ -238,7 +238,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
 
     if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
         if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
-            return (-1);
+            return -1;
 
     //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
 
@@ -250,7 +250,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
         if (res <= 0)
         {
             BDSM_perror("netbios_session_packet_recv: ");
-            return (-1);
+            return -1;
         }
         sofar += res;
     }
@@ -259,10 +259,10 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     {
         BDSM_dbg("netbios_session_packet_recv: Packet size mismatch (%ld/%ld)\n",
                  sofar, total);
-        return (-1);
+        return -1;
     }
 
-    return (sofar);
+    return sofar;
 }
 
 ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
@@ -278,5 +278,5 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     if ((size >= 0) && (data != NULL))
         *data = (void *) s->packet->payload;
 
-    return (size);
+    return size;
 }

@@ -156,7 +156,7 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
     memcpy(response, (void *)hmac, 16);
     memcpy(response + 16, blob->data, blob->size);
 
-    return (response);
+    return response;
 }
 
 uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
@@ -165,7 +165,7 @@ uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
     smb_buffer buf;
 
     smb_buffer_init(&buf, (void *)&user_challenge, 8);
-    return (smb_ntlm2_response(hash_v2, srv_challenge, &buf));
+    return smb_ntlm2_response(hash_v2, srv_challenge, &buf);
 }
 
 // static void   _wcamelcase(char *str)
@@ -239,7 +239,7 @@ uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
 //   free(whost);
 //   free(whost_camel);
 
-//   return (res_sz);
+//   return res_sz;
 // }
 
 size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
@@ -251,7 +251,7 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
 
     blob = malloc(target->size + sizeof(smb_ntlm_blob));
     if (!blob)
-        return (0);
+        return 0;
 
     memset((void *)blob, 0, sizeof(smb_ntlm_blob));
     blob->header    = 0x101;
@@ -261,7 +261,7 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
     memcpy(blob->target, target->data, target->size);
 
     *out_blob = blob;
-    return (sizeof(smb_ntlm_blob) + target->size);
+    return sizeof(smb_ntlm_blob) + target->size;
 }
 
 void        smb_ntlm2_session_key(smb_ntlmh hash_v2, void *ntlm2,

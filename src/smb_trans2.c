@@ -51,12 +51,12 @@ static smb_message *smb_tr2_recv(smb_session *s)
     int                   remaining;
 
     if (!smb_session_recv_msg(s, &recv))
-        return (NULL);
+        return NULL;
     tr2         = (smb_trans2_resp *)recv.packet->payload;
     growth      = tr2->total_data_count - tr2->data_count;
     res         = smb_message_grow(&recv, growth);
     if (!res)
-        return (NULL);
+        return NULL;
     res->cursor = recv.payload_size;
     remaining   = (int)tr2->total_data_count -
                   (tr2->data_displacement + tr2->data_count);
@@ -77,7 +77,7 @@ static smb_message *smb_tr2_recv(smb_session *s)
         }
     }
 
-    return (res);
+    return res;
 }
 
 /*
@@ -173,7 +173,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
-        return (NULL);
+        return NULL;
 
     tr2_bct = sizeof(smb_tr2_findfirst2) + utf_pattern_len;
     tr2_param_count = tr2_bct;
@@ -188,7 +188,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     msg = smb_message_new(SMB_CMD_TRANS2);
     if (!msg) {
         free(utf_pattern);
-        return (NULL);
+        return NULL;
     }
     msg->packet->header.tid = (uint16_t)tid;
 
@@ -223,7 +223,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     if (!res)
     {
         BDSM_dbg("Unable to query pattern: %s\n", pattern);
-        return (NULL);
+        return NULL;
     }
 
     msg = smb_tr2_recv(s);
@@ -244,7 +244,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
-        return (NULL);
+        return NULL;
 
     tr2_bct = sizeof(smb_tr2_findnext2) + utf_pattern_len;
     tr2_param_count = tr2_bct;
@@ -298,7 +298,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     if (!res)
     {
         BDSM_dbg("Unable to query pattern: %s\n", pattern);
-        return (NULL);
+        return NULL;
     }
 
     msg_find_next2 = smb_tr2_recv(s);
@@ -383,7 +383,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
         smb_message_destroy(msg);
     }
 
-    return (files);
+    return files;
 }
 
 /*
@@ -406,7 +406,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
     utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
     if (utf_path_len == 0)
-        return (0);
+        return 0;
 
     msg_len   = sizeof(smb_trans2_req) + sizeof(smb_tr2_query);
     msg_len  += utf_path_len;
@@ -416,7 +416,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     msg = smb_message_new(SMB_CMD_TRANS2);
     if (!msg) {
         free(utf_path);
-        return (0);
+        return 0;
     }
     msg->packet->header.tid = (uint16_t)tid;
 
@@ -450,21 +450,21 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     if (!res)
     {
         BDSM_dbg("Unable to query pattern: %s\n", path);
-        return (NULL);
+        return NULL;
     }
 
     if (!smb_session_recv_msg(s, &reply)
         || reply.packet->header.status != NT_STATUS_SUCCESS)
     {
         BDSM_dbg("Unable to recv msg or failure for %s\n", path);
-        return (NULL);
+        return NULL;
     }
 
     tr2_resp  = (smb_trans2_resp *)reply.packet->payload;
     info      = (smb_tr2_path_info *)(tr2_resp->payload + 4); //+4 is padding
     file      = calloc(1, sizeof(smb_file));
     if (!file)
-        return (NULL);
+        return NULL;
 
     file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
                                      &file->name);
@@ -479,5 +479,5 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     file->attr        = info->attr;
     file->is_dir      = info->is_dir;
 
-    return (file);
+    return file;
 }

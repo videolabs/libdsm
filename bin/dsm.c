@@ -248,5 +248,5 @@ int main(int ac, char **av)
   smb_session_destroy(session);
   netbios_ns_destroy(ns);
 
-  return (0);
+  return 0;
 }

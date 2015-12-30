@@ -51,11 +51,11 @@ static int     smb_message_expand_payload(smb_message *msg, size_t cursor, size_
         size_t new_payload_size = msg->payload_size + nb_blocks * PAYLOAD_BLOCK_SIZE;
         void *new_packet = realloc(msg->packet, sizeof(smb_packet) + new_payload_size);
         if (!new_packet)
-            return (0);
+            return 0;
         msg->packet = new_packet;
         msg->payload_size = new_payload_size;
     }
-    return (1);
+    return 1;
 }
 
 smb_message   *smb_message_new(uint8_t cmd)
@@ -78,7 +78,7 @@ smb_message   *smb_message_new(uint8_t cmd)
     msg->packet->header.command   = cmd;
     msg->packet->header.pid       = getpid();
 
-    return (msg);
+    return msg;
 }
 
 // Duplicate a message while growing payload_size.
@@ -102,7 +102,7 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
     memcpy((void *)copy->packet, (void *)msg->packet,
            msg->payload_size + sizeof(smb_packet));
 
-    return (copy);
+    return copy;
 }
 
 void            smb_message_destroy(smb_message *msg)
@@ -118,14 +118,14 @@ int             smb_message_append(smb_message *msg, const void *data,
     assert(msg != NULL && data != NULL);
 
     if (smb_message_expand_payload(msg, msg->cursor, data_size) == 0)
-        return (0);
+        return 0;
 
     memcpy(msg->packet->payload + msg->cursor, data, data_size);
     msg->cursor += data_size;
 
     //BDSM_dbg("Cursor is at %d (append)\n", msg->cursor);
 
-    return (1);
+    return 1;
 }
 
 int             smb_message_insert(smb_message *msg, size_t cursor,
@@ -134,11 +134,11 @@ int             smb_message_insert(smb_message *msg, size_t cursor,
     assert(msg != NULL && data != NULL);
 
     if (smb_message_expand_payload(msg, cursor, data_size) == 0)
-        return (0);
+        return 0;
 
     memcpy(msg->packet->payload + cursor, data, data_size);
 
-    return (1);
+    return 1;
 }
 
 int             smb_message_advance(smb_message *msg, size_t size)
@@ -146,32 +146,32 @@ int             smb_message_advance(smb_message *msg, size_t size)
     assert(msg != NULL);
 
     if (smb_message_expand_payload(msg, msg->cursor, size) == 0)
-        return (0);
+        return 0;
 
     msg->cursor += size;
 
     //BDSM_dbg("Cursor is at %d (advance)\n", msg->cursor);
-    return (1);
+    return 1;
 }
 
 int             smb_message_put8(smb_message *msg, uint8_t data)
 {
-    return (smb_message_append(msg, (void *)&data, 1));
+    return smb_message_append(msg, (void *)&data, 1);
 }
 
 int             smb_message_put16(smb_message *msg, uint16_t data)
 {
-    return (smb_message_append(msg, (void *)&data, 2));
+    return smb_message_append(msg, (void *)&data, 2);
 }
 
 int             smb_message_put32(smb_message *msg, uint32_t data)
 {
-    return (smb_message_append(msg, (void *)&data, 4));
+    return smb_message_append(msg, (void *)&data, 4);
 }
 
 int             smb_message_put64(smb_message *msg, uint64_t data)
 {
-    return (smb_message_append(msg, (void *)&data, 8));
+    return smb_message_append(msg, (void *)&data, 8);
 }
 
 size_t          smb_message_put_utf16(smb_message *msg, const char *str,
@@ -189,8 +189,8 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *str,
     //         utf_str_len, msg->cursor);
 
     if (res)
-        return (utf_str_len);
-    return (0);
+        return utf_str_len;
+    return 0;
 }
 
 int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
@@ -199,16 +199,16 @@ int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
     assert(msg != NULL);
 
     if (!smb_message_put32(msg, a))
-        return (0);
+        return 0;
     if (!smb_message_put16(msg, b))
-        return (0);
+        return 0;
     if (!smb_message_put16(msg, c))
-        return (0);
+        return 0;
     for (int i = 0; i < 8; i++)
         if (!smb_message_put8(msg, d[i]))
-            return (0);
+            return 0;
 
-    return (1);
+    return 1;
 }
 
 void            smb_message_flag(smb_message *msg, uint32_t flag, int value)
