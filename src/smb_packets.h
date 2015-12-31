@@ -68,6 +68,14 @@ typedef struct
 ////////////////////////////////////////////////////////////////////////////////
 // Individual SMB command payload description
 
+// Simple structure used for several requests/responses
+typedef struct
+{
+    uint8_t         wct;              // 0
+    uint16_t        bct;
+} __attribute__((packed))   smb_simple_struct;
+
+
 //-> Negotiate Protocol
 typedef struct
 {
@@ -186,14 +194,9 @@ typedef struct
     uint8_t         payload[];
 } __attribute__((packed))   smb_tree_connect_resp;
 
-//-> Tree Disconnect / <- Tree Disconnect (params are the same)
-typedef struct
-{
-    uint8_t         wct;              // 0
-    uint16_t        bct;
-} __attribute__((packed))   smb_tree_disconnect_req_resp;
-
-
+//-> Tree Disconnect / <- Tree Disconnect
+typedef smb_simple_struct smb_tree_disconnect_req;
+typedef smb_simple_struct smb_tree_disconnect_resp;
 
 //-> Create File
 typedef struct
@@ -351,11 +354,7 @@ typedef struct
 } __attribute__((packed))   smb_file_mv_req;
 
 //<- Move File
-typedef struct
-{
-    uint8_t         wct;                // 0x00
-    uint16_t        bct;                // 0x0000
-} __attribute__((packed))   smb_file_mv_resp;
+typedef smb_simple_struct smb_file_mv_resp;
 
 //-> Trans
 typedef struct

@@ -111,10 +111,10 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
 int           smb_tree_disconnect(smb_session *s, smb_tid tid)
 {
-    smb_tree_disconnect_req_resp   req;
-    smb_tree_disconnect_req_resp *resp;
-    smb_message                  *req_msg;
-    smb_message                   resp_msg;
+    smb_tree_disconnect_req   req;
+    smb_tree_disconnect_resp *resp;
+    smb_message              *req_msg;
+    smb_message               resp_msg;
 
     if ((s == NULL) || (tid == -1))
         return -1;
@@ -143,7 +143,7 @@ int           smb_tree_disconnect(smb_session *s, smb_tid tid)
     if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
         return -1;
 
-    resp  = (smb_tree_disconnect_req_resp *)resp_msg.packet->payload;
+    resp  = (smb_tree_disconnect_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
         return -1;
 
