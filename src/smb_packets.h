@@ -342,6 +342,21 @@ typedef struct
     uint16_t        bct;                // 0x0000
 } __attribute__((packed))   smb_directory_rm_resp;
 
+//-> Move File
+typedef struct
+{
+    uint8_t         wct;                // 0x01
+    uint16_t        search_attributes;  // 0x0000 for "normal" (not hidden/ystem) files
+    uint16_t        bct;                // >= 2
+} __attribute__((packed))   smb_file_mv_req;
+
+//<- Move File
+typedef struct
+{
+    uint8_t         wct;                // 0x00
+    uint16_t        bct;                // 0x0000
+} __attribute__((packed))   smb_file_mv_resp;
+
 //-> Trans
 typedef struct
 {

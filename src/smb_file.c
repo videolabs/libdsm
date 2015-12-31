@@ -351,3 +351,70 @@ uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
 
     return NT_STATUS_SUCCESS;
 }
+
+uint32_t  smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path)
+{
+    smb_message           *req_msg, resp_msg;
+    smb_file_mv_req       req;
+    smb_file_mv_resp      *resp;
+    size_t                utf_old_len,utf_new_len;
+    char                  *utf_old_path,*utf_new_path;
+
+    if (s == NULL)
+        return -1;
+    if (tid == -1)
+        return -1;
+    if ((old_path == NULL) || (new_path == NULL))
+        return -1;
+
+    utf_old_len = smb_to_utf16(old_path, strlen(old_path) + 1, &utf_old_path);
+    if (utf_old_len == 0)
+        return -1;
+
+    utf_new_len = smb_to_utf16(new_path, strlen(new_path) + 1, &utf_new_path);
+    if (utf_new_len == 0)
+    {
+        free(utf_old_path);
+        return -1;
+    }
+
+    req_msg = smb_message_new(SMB_CMD_MOVE);
+    if (!req_msg)
+    {
+        free(utf_old_path);
+        free(utf_new_path);
+        return -1;
+    }
+
+    req_msg->packet->header.tid = (uint16_t)tid;
+    req_msg->packet->header.flags2 = SMB_FLAGS2_LONG_NAMES;
+
+    SMB_MSG_INIT_PKT(req);
+    req.wct               = 0x01; // Must be 1
+    req.search_attributes = SMB_ATTR_HIDDEN | SMB_ATTR_SYS;
+    req.bct               = (uint16_t)(utf_old_len + utf_new_len + 3); // We have 2 bytes for buffer formats and 1 padding byte
+    SMB_MSG_PUT_PKT(req_msg, req);
+    smb_message_put8(req_msg, 0x04); // Buffer format 1, must be 4
+    smb_message_append(req_msg, utf_old_path, utf_old_len);
+    smb_message_put8(req_msg, 0x00); // padding to have next byte 16 bits aligned
+    smb_message_put8(req_msg, 0x04); // Buffer format 2, must be 4
+    smb_message_append(req_msg, utf_new_path, utf_new_len);
+
+    smb_session_send_msg(s, req_msg);
+    smb_message_destroy(req_msg);
+
+    free(utf_old_path);
+    free(utf_new_path);
+
+    if (!smb_session_recv_msg(s, &resp_msg))
+        return -1;
+
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return -1;
+
+    resp = (smb_file_mv_resp *)resp_msg.packet->payload;
+    if ((resp->wct != 0) || (resp->bct != 0))
+        return -1;
+
+    return 0;
+}

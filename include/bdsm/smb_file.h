@@ -125,4 +125,16 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
  */
 uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path);
 
+/**
+ * @brief move/rename a file/directory on a share.
+ * @details Use this function to move and/or rename a file/directory
+ *
+ * @param s The session object
+ * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
+ * @param old_path The current path of the file/directory to move/rename
+ * @param new_path The new path of the file/directory
+ * @return 0 if move OK or -1 in case of error
+ */
+uint32_t  smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path);
+
 #endif
