@@ -3,7 +3,9 @@ Changes between 0.1.0 and 0.1.1:
 
  * Add files and folder deletion with smb_directory_rm and smb_file_rm
  * Add folder creation with smb_directory_create
- * Fix smb_tree_connect return value
+ * Add files creation with smb_fwrite
+ * Add files and folder move/rename with smb_file_mv
+ * Fix smb_tree_connect return value and smb_tree_disconnect implementation
  * Fix session state after spnego authentication
 
 
