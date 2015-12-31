@@ -30,8 +30,9 @@ Here's a list of the currently supported features:
   * Write file
   * Delete file
   * Delete empty folder
+  * Move and rename file/folder
   * Create new folder
-  * No copy, move, rename, lock, RPCs, etc. [Hum... yet]
+  * No copy, lock, RPCs, etc. [Hum... yet]
 
 ## Support
 
