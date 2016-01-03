@@ -135,6 +135,6 @@ uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path);
  * @param new_path The new path of the file/directory
  * @return 0 if move OK or -1 in case of error
  */
-uint32_t  smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path);
+int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path);
 
 #endif

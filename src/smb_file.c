@@ -352,7 +352,7 @@ uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
     return NT_STATUS_SUCCESS;
 }
 
-uint32_t  smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path)
+int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path)
 {
     smb_message           *req_msg, resp_msg;
     smb_file_mv_req       req;
