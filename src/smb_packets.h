@@ -356,6 +356,17 @@ typedef struct
 //<- Move File
 typedef smb_simple_struct smb_file_mv_resp;
 
+//-> Create Directory
+typedef struct
+{
+    uint8_t         wct;                // 0x00
+    uint16_t        bct;                // >= 2
+    uint8_t         buffer_format;      // 0x04
+} __attribute__((packed))   smb_directory_mk_req;
+
+//<- Create Directory
+typedef smb_simple_struct smb_directory_mk_resp;
+
 //-> Trans
 typedef struct
 {
@@ -440,13 +451,6 @@ typedef struct
     uint8_t       path[];
 } __attribute__((packed))   smb_tr2_query;
 
-//// -> Trans2|CreateDirectory
-typedef struct
-{
-    uint32_t      reserved;   // 0x00000000
-    uint8_t       path[];
-} __attribute__((packed))   smb_tr2_create_directory;
-
 //<- Trans2
 
 typedef struct
@@ -528,12 +532,6 @@ typedef struct
     uint32_t      name_len;
     uint8_t       name[];
 } __attribute__((packed))   smb_tr2_path_info;
-
-//// <- Trans2|CreateDirectory
-typedef struct
-{
-    uint16_t      ea_error_offset;
-} __attribute__((packed))   smb_tr2_create_directory_params;
 
 //-> Example
 typedef struct
