@@ -60,7 +60,7 @@ static int     smb_message_expand_payload(smb_message *msg, size_t cursor, size_
 
 smb_message   *smb_message_new(uint8_t cmd)
 {
-    const char    magic[4] = SMB_MAGIC;
+    const uint8_t magic[4] = SMB_MAGIC;
     smb_message *msg;
 
     msg = (smb_message *)calloc(1, sizeof(smb_message));
