@@ -287,7 +287,7 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
     assert(s != NULL);
 
     if (!fd || (file = smb_session_file_get(s, fd)) == NULL)
-        return 0;
+        return -1;
 
     if (whence == SMB_SEEK_SET)
         file->offset = offset;
