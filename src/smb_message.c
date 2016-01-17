@@ -6,7 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
+ * This file is part of liBDSM. Copyright © 2014-2016 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
  *
@@ -28,7 +28,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,7 +85,8 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
 {
     smb_message *copy;
 
-    assert(msg != NULL && msg->packet != NULL);
+    if (msg == NULL || msg->packet == NULL)
+        return NULL;
 
     copy = malloc(sizeof(smb_message));
     if (!copy)
@@ -115,7 +115,8 @@ void            smb_message_destroy(smb_message *msg)
 int             smb_message_append(smb_message *msg, const void *data,
                                    size_t data_size)
 {
-    assert(msg != NULL && data != NULL);
+    if (msg == NULL || data == NULL)
+        return -1;
 
     if (smb_message_expand_payload(msg, msg->cursor, data_size) == 0)
         return 0;
@@ -131,7 +132,8 @@ int             smb_message_append(smb_message *msg, const void *data,
 int             smb_message_insert(smb_message *msg, size_t cursor,
                                    const void *data, size_t data_size)
 {
-    assert(msg != NULL && data != NULL);
+    if (msg == NULL || data == NULL)
+        return -1;
 
     if (smb_message_expand_payload(msg, cursor, data_size) == 0)
         return 0;
@@ -143,7 +145,8 @@ int             smb_message_insert(smb_message *msg, size_t cursor,
 
 int             smb_message_advance(smb_message *msg, size_t size)
 {
-    assert(msg != NULL);
+    if (msg == NULL)
+        return -1;
 
     if (smb_message_expand_payload(msg, msg->cursor, size) == 0)
         return 0;
@@ -196,7 +199,8 @@ size_t          smb_message_put_utf16(smb_message *msg, const char *str,
 int             smb_message_put_uuid(smb_message *msg, uint32_t a, uint16_t b,
                                      uint16_t c, const uint8_t d[8])
 {
-    assert(msg != NULL);
+    if (msg == NULL)
+        return -1;
 
     if (!smb_message_put32(msg, a))
         return 0;
@@ -215,7 +219,8 @@ void            smb_message_flag(smb_message *msg, uint32_t flag, int value)
 {
     uint32_t      *flags;
 
-    assert(msg != NULL && msg->packet != NULL);
+    if (msg == NULL || msg->packet == NULL)
+        return;
 
     // flags + flags2 is actually 24 bit long, we have to be cautious
     flags = (uint32_t *)&(msg->packet->header.flags);
@@ -232,7 +237,8 @@ void            smb_message_set_andx_members(smb_message *msg)
     // This could have been any type with the 'SMB_ANDX_MEMBERS';
     smb_session_req   *req;
 
-    assert(msg != NULL);
+    if (msg == NULL)
+        return;
 
     req = (smb_session_req *)msg->packet->payload;
     req->andx           = 0xff;
