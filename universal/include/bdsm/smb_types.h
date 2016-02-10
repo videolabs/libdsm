@@ -28,62 +28,73 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+/**
+ * @file smb_types.h
+ * @brief liBDSM types and structures
+ */
 
-#include "hmac_md5.h"
+#ifndef __BDSM_SMB_TYPES_H_
+#define __BDSM_SMB_TYPES_H_
 
-unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
-                        size_t msg_len, void *hmac)
+#include <netinet/ip.h>
+#include <stddef.h>
+#include <libtasn1.h>
+
+/**
+  * @struct smb_tid
+  * @brief The id of a connection to a share within a session.
+  */
+typedef int32_t    smb_tid;
+
+/**
+  * @struct smb_fid
+  * @brief The id of a file within a share within a session.
+  */
+typedef uint16_t    smb_fid;
+
+// Concatenation of the two above, representing a file inside of a session
+// First 4 bytes are the TreeID (smb_tid), last 4 are the File ID (FUID)
+// A map between smb_fd and smb_file is maintained inside each session
+/** @struct smb_fd
+  * @brief SMB File descriptor, represents a file within a session.
+  */
+typedef uint32_t    smb_fd;
+
+// An structure to store user credentials;
+// login:password@domain (also DOMAIN\login)
+typedef struct
 {
-    static uint8_t  hmac_static[16];
+    char     *domain;
+    char     *login;
+    char     *password;
+}           smb_creds;
 
-    uint8_t         key_pad[64], o_key_pad[64], i_key_pad[64], kcat[80];
-    void            *cat, *out;
-    MD5_CTX         ctx;
+/**
+ * @brief An opaque data structure to represent a SMB Session.
+ */
+typedef struct smb_session smb_session;
 
-    assert(key != NULL && msg != NULL);
+/**
+ * @struct smb_share_list
+ * @brief An opaque object representing the list of share of a SMB file server.
+ */
+typedef char  **smb_share_list;
 
-    // This is Microsoft variation of HMAC_MD5 for NTLMv2
-    // It seems they truncate over-sized keys instead of rehashing
-    if (key_len > 64)
-        key_len = 64;
+/**
+ * @brief An opaque data structure to represent file
+ */
+typedef struct smb_file smb_file;
 
-    memcpy(key_pad, key, key_len);
-    memset(key_pad + key_len, 0, 64 - key_len);
+/**
+ * @struct smb_stat_list
+ * @brief An opaque structure containing a list of file status
+ */
+typedef smb_file *smb_stat_list;
 
-    // Compute the o/i XORed padded keys
-    for (unsigned i = 0; i < 64; i++)
-    {
-        o_key_pad[i] = 0x5c ^ key_pad[i];
-        i_key_pad[i] = 0x36 ^ key_pad[i];
-    }
+/**
+ * @struct smb_stat
+ * @brief An opaque structure containing info about a file
+ */
+typedef smb_file *smb_stat;
 
-    // Concatenate inner padded key with message
-    cat = malloc(msg_len + 64);
-    if (!cat)
-        return NULL;
-    memcpy(cat, i_key_pad, 64);
-    memcpy(cat + 64, msg, msg_len);
-
-    // MD5 of the result
-    MD5_CTX_Init(&ctx);
-    MD5_CTX_Update(&ctx, cat, msg_len + 64);
-    MD5_CTX_Final(key_pad, &ctx);
-    free(cat);
-
-    memcpy(kcat, o_key_pad, 64);
-    memcpy(kcat + 64, key_pad, 16);
-
-    if (hmac != NULL)
-        out = hmac;
-    else
-        out = hmac_static;
-
-    MD5_CTX_Init(&ctx);
-    MD5_CTX_Update(&ctx, kcat, 80);
-    MD5_CTX_Final(out, &ctx);
-
-    return out;
-}
+#endif
