@@ -46,6 +46,10 @@ static int        open_socket_and_connect(netbios_session *s)
 {
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
+    
+    int sock_opt = 1;
+    setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
+    
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
 

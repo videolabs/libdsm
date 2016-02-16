@@ -124,6 +124,9 @@ static int    ns_open_socket(netbios_ns *ns)
         goto error;
 
     sock_opt = 1;
+    setsockopt(ns->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
+    
+    sock_opt = 1;
     if (setsockopt(ns->socket, SOL_SOCKET, SO_BROADCAST,
                    (void *)&sock_opt, sizeof(sock_opt)) < 0)
         goto error;
