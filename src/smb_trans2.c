@@ -367,7 +367,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
                 {
                     BDSM_dbg("Error during FIND_NEXT request\n");
                     smb_stat_list_destroy(files);
-                    end_of_search = true;
+                    return NULL;
                 }
             }
         }
@@ -382,6 +382,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
         BDSM_dbg("Error during FIND_FIRST request\n");
         smb_stat_list_destroy(files);
         smb_message_destroy(msg);
+        return NULL;
     }
 
     return files;
