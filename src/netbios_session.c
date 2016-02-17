@@ -113,7 +113,7 @@ int               netbios_session_connect(struct in_addr *addr,
         int direct_tcp)
 {
     ssize_t                   recv_size;
-    char                      *encoded_name;
+    char                      *encoded_name = NULL;
 
     assert(s != NULL && s->packet != NULL);
 
@@ -132,10 +132,12 @@ int               netbios_session_connect(struct in_addr *addr,
         netbios_session_packet_init(s);
         s->packet->opcode = NETBIOS_OP_SESSION_REQ;
         encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
-        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
+            goto error;
         free(encoded_name);
         encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
-        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
+            goto error;
         free(encoded_name);
 
         s->state = NETBIOS_SESSION_CONNECTING;
@@ -160,6 +162,7 @@ int               netbios_session_connect(struct in_addr *addr,
     return 1;
 
 error:
+    free(encoded_name);
     s->state = NETBIOS_SESSION_ERROR;
     return 0;
 }
