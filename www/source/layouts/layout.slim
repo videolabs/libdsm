@@ -1,0 +1,25 @@
+doctype html
+
+html
+  head
+    meta charset="utf-8"
+    meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"
+    meta http-equiv="X-UA-Compatible" content="IE=edge"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
+    title = current_page.data.title || "The Middleman"
+    
+    = stylesheet_link_tag "all"
+    = stylesheet_link_tag "solarized_dark"
+    == yield_content :css
+
+  body
+    = yield 
+
+    .container
+      footer class="footer"
+        p © Julien 'Lta' Ballet & VideoLabs SAS
+    
+    = javascript_include_tag  "all"
+    == yield_content :javascript
+

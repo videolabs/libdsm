@@ -1,0 +1,47 @@
+
+@import "font-awesome"
+@import "bootstrap"
+
+/* MIXINS */
+
+/* As hex codes */
+
+$color-primary-0: #FF411E	/* Main Primary color */
+$color-primary-1: #FFAFA0
+$color-primary-2: #FF7E67
+$color-primary-3: #B11C00
+$color-primary-4: #6D1100
+
+$color-secondary-1-0: #FFE91E	/* Main Secondary color (1) */
+$color-secondary-1-1: #FFF6A0
+$color-secondary-1-2: #FFF067
+$color-secondary-1-3: #B1A000
+$color-secondary-1-4: #6D6300
+
+$color-secondary-2-0: #6A27C8	/* Main Secondary color (2) */
+$color-secondary-2-1: #8F76B2
+$color-secondary-2-2: #7951B2
+$color-secondary-2-3: #380A78
+$color-secondary-2-4: #22054A
+
+$color-complement-0: #19D157	/* Main Complement color */
+$color-complement-1: #78BF90
+$color-complement-2: #4DBE73
+$color-complement-3: #00822C
+$color-complement-4: #00501B
+
+body
+  background-image: image-url("images/escheresque_ste.png")
+
+nav.navbar.navbar-static-top
+  border-radius: 5px
+@media (min-width: $screen-sm-min)
+  nav.navbar.navbar-static-top
+    margin-top: 15px
+
+a.gotop
+  color: $text-color
+
+pre.examples
+  padding: 2px
+  //border: 0px

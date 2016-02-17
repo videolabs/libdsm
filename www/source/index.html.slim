@@ -1,0 +1,225 @@
+---
+title: "libdsm - minimalist smb client"
+---
+
+
+.container
+  .col-md-6.col-md-offset-6
+    a#top
+    nav.navbar.navbar-inverse.navbar-static-top role="navigation"
+      .container
+        .navbar-header
+          button.navbar-toggle type="button" data-toggle="collapse" data-target=".navbar-collapse"
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          = link_to "libdsm", "#libdsm", class: "navbar-brand"
+        .collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li= link_to "Features", "#features"
+            li= link_to "Examples", "#examples"
+            li= link_to "Doc", "#doc"
+            li= link_to "Download", "#download"
+            li= link_to "Contact", "#contact"
+
+.container
+  .row
+    .jumbotron
+      .row
+        h1 Looking for a tiny smb library ?
+        h2.pull-right --You're at the right place
+
+  .row
+    .jumbotron
+      .row
+        .col-md-12.text-center
+          a#libdsm
+          h1 
+            | Discover 
+            span.text-muted li
+            | bdsm
+            
+          br
+          br
+      .row
+        .col-md-3.col-xs-6.text-center
+          i.fa.fa-5x.fa-magic
+          h3 Simple
+          p Less than 42 API calls.
+          p Documented
+        .col-md-3.col-xs-6.text-center
+          i.fa.fa-5x.fa-send
+          h3 Lightweight
+          p Less than 150KB stripped
+          p Low memory footprint
+        .col-md-3.col-xs-6.text-center
+          i.fa.fa-5x.fa-laptop
+          h3 Portable 
+          .small.text-muted theorically
+          p Only 2 dependencies
+          p Only POSIX calls
+        .col-md-3.col-xs-6.text-center
+          i.fa.fa-5x.fa-chain-broken
+          h3 Open-Source
+          p Dual LGPL 
+          p and commercial licensing
+        a.gotop.pull-right href="#top"
+          i.fa.fa-angle-up
+          | Top
+          
+
+  .row
+    .well
+      .row
+        a name="features"
+        .col-md-12
+          h1 Features
+        .col-md-4
+          ul
+            li Speaking SMB v1
+            li Read-only client
+            li Discover hosts
+            li List shares
+            li List folders
+            li Read files
+        .col-md-4
+            ul
+              li 
+                | Transport
+                ul
+                  li Netbios over TCP
+                  li Direct-TCP
+              li 
+                | Server compatibility
+                ul
+                  li Samba 3 & 4
+                  li Apple SMBX
+                  li Windows 7 & 8
+                  li older Windows untested
+        .col-md-4
+          ul
+            li 
+              | Netbios 
+              ul
+                li Name lookup
+                li Reverse lookup
+            li 
+              | Supported system
+              ul
+                li Linux
+                li OSX
+            li pkg-config enabled
+            li Unicode path support
+
+      a.gotop.pull-right href="#top"
+        i.fa.fa-angle-up
+        | Top
+
+              
+  .row
+    .well
+      .row
+        a#examples
+        .col-md-12
+          h1.pull-right Examples
+      .row
+        .col-md-6
+          pre.examples
+            code.hljs.c
+              = escape_html File.read('source/c/example1.c')
+        .col-md-6
+          pre.examples
+            code.hljs.c
+              = escape_html File.read('source/c/example2.c')
+        .col-md-12
+          'Click
+          a href="http://github.com/videolabs/libdsm/bin" here
+          '  for complete code of examples.
+      a.gotop.pull-right href="#top"
+        i.fa.fa-angle-up
+        | Top
+
+
+  .row
+    .well
+      .row
+        a#doc
+        .col-md-12.text-center
+          h1 Documentation
+
+      .row
+        .col-md-6
+          h2 Building
+          p 
+            | While the most up-to-date documentation can be found in the README of the project on 
+            a href="https://github.com/videolabs/libdsm/" the github page, 
+            | here's a brief summary
+          h3 Requirements
+          ul
+            li A Unix system with a shell
+            li A C99 compiler (gcc and clang tested)
+            li autotools
+            li libiconv
+            li 
+              a href="http://www.gnu.org/software/libtasn1/" libtasn1
+            li (optionnal) doxygen to generate documentation
+            li (optionnal) getopt_long for example programs
+          h3 Building
+          | Here you just have to roll the traditional
+          pre
+            | $> ./bootstrap
+              $> ./configure --prefix=/usr/local/libdsm
+              $> make && make install
+        .col-md-6
+          h2 API Documentation
+          | You can find a few examples in the bin/ folder of the source code but you'll likely enjoy the
+            extensive API documentation you can fond by clicking the link below:
+          .text-center
+            a.btn.btn-lg.btn-primary href="doc/index.html" Doxygen documentation
+  .row
+    .well
+      .row
+        a#download
+        .col-md-12.text-center
+          h1 Download
+      .row
+        .col-md-4.col-md-offset-1.text-center
+          | You can download one of our stable release as a tarbal by clicking on the following link
+          .text-muted Last stable release : 0.0.4
+          br
+          a.btn.btn-lg.btn-primary href="https://github.com/videolabs/libdsm/releases/"
+            i.fa.fa-download
+            |  View the releases
+
+        .col-md-2.hidden-xs.hidden-sm.text-center
+          i.fa.fa-3x.fa-heart
+        .col-md-4.text-center
+          | If you're more of a warrior or want to contribute, you can find this project's code on GitHub. 
+            As always Pull Requests are always welcome :)
+          .div
+          br
+          a.btn.btn-lg.btn-info href="https://github.com/videolabs/libdsm/"
+            i.fa.fa-github
+            |  Fork me on GitHub
+      a.gotop.pull-right href="#top"
+        i.fa.fa-angle-up
+        | Top
+
+  .row
+    .well
+      .row
+        a#contact
+        .col-md-12.text-center
+          h1 Contact us
+          h3 Having some troubles with libdsm ?
+          | Please browse the existing
+          a href="https://github.com/videolabs/libdsm/issues"  issues on GitHub
+          |  and, if you doesn't find a solution to your problem, you can open a 
+          a href="https://github.com/videolabs/libdsm/issues/new" new one.
+          
+          .small.text-muted
+            | For other concerns, you can  mail 'contact' _AT_ lta _DOT_ io
+      a.gotop.pull-right href="#top"
+        i.fa.fa-angle-up
+        | Top
