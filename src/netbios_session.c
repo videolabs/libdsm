@@ -139,6 +139,7 @@ int               netbios_session_connect(struct in_addr *addr,
         if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
             goto error;
         free(encoded_name);
+        encoded_name = NULL;
 
         s->state = NETBIOS_SESSION_CONNECTING;
         if (!netbios_session_packet_send(s))
