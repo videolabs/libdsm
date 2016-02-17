@@ -36,7 +36,7 @@
 #ifndef __BDSM_SMB_FILE_H_
 #define __BDSM_SMB_FILE_H_
 
-#include "bdsm/smb_session.h"
+#include "./smb_session.h"
 
 
 /**

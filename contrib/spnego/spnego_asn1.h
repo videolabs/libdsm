@@ -4,7 +4,7 @@
 
 #include "config.h"
 
-#include <libtasn1.h>
+#include "libtasn1.h"
 
 extern const asn1_static_node spnego_asn1_conf[];
 

@@ -48,7 +48,7 @@
 #include <sys/select.h>
 #include <sys/queue.h>
 
-#include <bdsm/netbios_ns.h>
+#include "../include/bdsm/netbios_ns.h"
 
 #include "bdsm_debug.h"
 #include "netbios_query.h"
@@ -732,7 +732,7 @@ static void *netbios_ns_discover_thread(void *opaque)
         {
             struct timeval      timeout;
             struct sockaddr_in  recv_addr;
-            int                 res;
+            ssize_t                 res;
             netbios_ns_name_query name_query;
 
             timeout.tv_sec = ns->discover_broadcast_timeout;

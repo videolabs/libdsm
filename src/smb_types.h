@@ -38,10 +38,10 @@
 
 #include <netinet/ip.h>
 #include <stddef.h>
-#include <libtasn1.h>
+#include "libtasn1.h"
 #include <stdbool.h>
 
-#include "bdsm/smb_types.h"
+#include "../include/bdsm/smb_types.h"
 #include "smb_buffer.h"
 #include "smb_packets.h"
 

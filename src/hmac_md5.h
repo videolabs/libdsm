@@ -32,7 +32,7 @@
 #define _HMAC_MD5_H_
 
 #include <stdint.h>
-#include <mdx/md5.h>
+#include "md5.h"
 
 // Pay attention that this is not HMAC_MD5 stricto sensus, this is a variation
 // to respect MS non-standard implementation in NTLMv2 auth.

@@ -31,6 +31,6 @@
 #ifndef _SMB_SHARE_H_
 #define _SMB_SHARE_H_
 
-#include "bdsm/smb_share.h"
+#include "../include/bdsm/smb_share.h"
 
 #endif

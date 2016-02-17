@@ -36,7 +36,7 @@
 #ifndef _SMB_DEFS_H_
 #define _SMB_DEFS_H_
 
-#include "bdsm/smb_defs.h"
+#include "../include/bdsm/smb_defs.h"
 
 //-----------------------------------------------------------------------------/
 // Our own identity

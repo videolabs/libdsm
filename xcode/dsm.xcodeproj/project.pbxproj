@@ -1,0 +1,513 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EF631A111C7475290032F5CC /* hmac_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319E91C7475290032F5CC /* hmac_md5.c */; };
+		EF631A121C7475290032F5CC /* netbios_ns.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319EC1C7475290032F5CC /* netbios_ns.c */; };
+		EF631A131C7475290032F5CC /* netbios_query.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319ED1C7475290032F5CC /* netbios_query.c */; };
+		EF631A141C7475290032F5CC /* netbios_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319EF1C7475290032F5CC /* netbios_session.c */; };
+		EF631A151C7475290032F5CC /* netbios_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F11C7475290032F5CC /* netbios_utils.c */; };
+		EF631A161C7475290032F5CC /* smb_buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F31C7475290032F5CC /* smb_buffer.c */; };
+		EF631A171C7475290032F5CC /* smb_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F61C7475290032F5CC /* smb_dir.c */; };
+		EF631A181C7475290032F5CC /* smb_fd.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F81C7475290032F5CC /* smb_fd.c */; };
+		EF631A191C7475290032F5CC /* smb_file.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FA1C7475290032F5CC /* smb_file.c */; };
+		EF631A1A1C7475290032F5CC /* smb_message.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FC1C7475290032F5CC /* smb_message.c */; };
+		EF631A1B1C7475290032F5CC /* smb_ntlm.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FE1C7475290032F5CC /* smb_ntlm.c */; };
+		EF631A1C1C7475290032F5CC /* smb_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A011C7475290032F5CC /* smb_session.c */; };
+		EF631A1D1C7475290032F5CC /* smb_session_msg.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A031C7475290032F5CC /* smb_session_msg.c */; };
+		EF631A1E1C7475290032F5CC /* smb_share.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A051C7475290032F5CC /* smb_share.c */; };
+		EF631A1F1C7475290032F5CC /* smb_spnego.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A071C7475290032F5CC /* smb_spnego.c */; };
+		EF631A201C7475290032F5CC /* smb_stat.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A091C7475290032F5CC /* smb_stat.c */; };
+		EF631A211C7475290032F5CC /* smb_trans2.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0B1C7475290032F5CC /* smb_trans2.c */; };
+		EF631A221C7475290032F5CC /* smb_transport.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0C1C7475290032F5CC /* smb_transport.c */; };
+		EF631A231C7475290032F5CC /* smb_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0F1C7475290032F5CC /* smb_utils.c */; };
+		EF631A291C74BF280032F5CC /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A251C74BF280032F5CC /* spnego_asn1.c */; };
+		EF631A2A1C74BF280032F5CC /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF631A271C74BF280032F5CC /* libtasn1.a */; };
+		EF631A441C74BF370032F5CC /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A321C74BF370032F5CC /* md4.c */; };
+		EF631A451C74BF370032F5CC /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A341C74BF370032F5CC /* md5.c */; };
+		EF631A461C74BF370032F5CC /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A3B1C74BF370032F5CC /* rc4.c */; };
+		EF631A611C74C4150032F5CC /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5D1C74C4150032F5CC /* clock_gettime.c */; };
+		EF631A621C74C4150032F5CC /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5E1C74C4150032F5CC /* compat.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF6319D91C7474D10032F5CC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF6319E81C7475290032F5CC /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
+		EF6319E91C7475290032F5CC /* hmac_md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac_md5.c; sourceTree = "<group>"; };
+		EF6319EA1C7475290032F5CC /* hmac_md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac_md5.h; sourceTree = "<group>"; };
+		EF6319EB1C7475290032F5CC /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
+		EF6319EC1C7475290032F5CC /* netbios_ns.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_ns.c; sourceTree = "<group>"; };
+		EF6319ED1C7475290032F5CC /* netbios_query.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_query.c; sourceTree = "<group>"; };
+		EF6319EE1C7475290032F5CC /* netbios_query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_query.h; sourceTree = "<group>"; };
+		EF6319EF1C7475290032F5CC /* netbios_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_session.c; sourceTree = "<group>"; };
+		EF6319F01C7475290032F5CC /* netbios_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_session.h; sourceTree = "<group>"; };
+		EF6319F11C7475290032F5CC /* netbios_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_utils.c; sourceTree = "<group>"; };
+		EF6319F21C7475290032F5CC /* netbios_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_utils.h; sourceTree = "<group>"; };
+		EF6319F31C7475290032F5CC /* smb_buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_buffer.c; sourceTree = "<group>"; };
+		EF6319F41C7475290032F5CC /* smb_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_buffer.h; sourceTree = "<group>"; };
+		EF6319F51C7475290032F5CC /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
+		EF6319F61C7475290032F5CC /* smb_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_dir.c; sourceTree = "<group>"; };
+		EF6319F71C7475290032F5CC /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
+		EF6319F81C7475290032F5CC /* smb_fd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_fd.c; sourceTree = "<group>"; };
+		EF6319F91C7475290032F5CC /* smb_fd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_fd.h; sourceTree = "<group>"; };
+		EF6319FA1C7475290032F5CC /* smb_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_file.c; sourceTree = "<group>"; };
+		EF6319FB1C7475290032F5CC /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
+		EF6319FC1C7475290032F5CC /* smb_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_message.c; sourceTree = "<group>"; };
+		EF6319FD1C7475290032F5CC /* smb_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_message.h; sourceTree = "<group>"; };
+		EF6319FE1C7475290032F5CC /* smb_ntlm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_ntlm.c; sourceTree = "<group>"; };
+		EF6319FF1C7475290032F5CC /* smb_ntlm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_ntlm.h; sourceTree = "<group>"; };
+		EF631A001C7475290032F5CC /* smb_packets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_packets.h; sourceTree = "<group>"; };
+		EF631A011C7475290032F5CC /* smb_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session.c; sourceTree = "<group>"; };
+		EF631A021C7475290032F5CC /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
+		EF631A031C7475290032F5CC /* smb_session_msg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session_msg.c; sourceTree = "<group>"; };
+		EF631A041C7475290032F5CC /* smb_session_msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session_msg.h; sourceTree = "<group>"; };
+		EF631A051C7475290032F5CC /* smb_share.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_share.c; sourceTree = "<group>"; };
+		EF631A061C7475290032F5CC /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
+		EF631A071C7475290032F5CC /* smb_spnego.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_spnego.c; sourceTree = "<group>"; };
+		EF631A081C7475290032F5CC /* smb_spnego.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_spnego.h; sourceTree = "<group>"; };
+		EF631A091C7475290032F5CC /* smb_stat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_stat.c; sourceTree = "<group>"; };
+		EF631A0A1C7475290032F5CC /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
+		EF631A0B1C7475290032F5CC /* smb_trans2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_trans2.c; sourceTree = "<group>"; };
+		EF631A0C1C7475290032F5CC /* smb_transport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_transport.c; sourceTree = "<group>"; };
+		EF631A0D1C7475290032F5CC /* smb_transport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_transport.h; sourceTree = "<group>"; };
+		EF631A0E1C7475290032F5CC /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
+		EF631A0F1C7475290032F5CC /* smb_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_utils.c; sourceTree = "<group>"; };
+		EF631A101C7475290032F5CC /* smb_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_utils.h; sourceTree = "<group>"; };
+		EF631A251C74BF280032F5CC /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
+		EF631A271C74BF280032F5CC /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
+		EF631A281C74BF280032F5CC /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
+		EF631A321C74BF370032F5CC /* md4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md4.c; sourceTree = "<group>"; };
+		EF631A331C74BF370032F5CC /* md4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md4.h; sourceTree = "<group>"; };
+		EF631A341C74BF370032F5CC /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
+		EF631A351C74BF370032F5CC /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		EF631A3B1C74BF370032F5CC /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
+		EF631A3C1C74BF370032F5CC /* rc4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
+		EF631A431C74BF370032F5CC /* spnego_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1.h; sourceTree = "<group>"; };
+		EF631A471C74C2700032F5CC /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; };
+		EF631A4C1C74C3480032F5CC /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
+		EF631A4D1C74C3480032F5CC /* netbios_ns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_ns.h; sourceTree = "<group>"; };
+		EF631A4E1C74C3480032F5CC /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
+		EF631A4F1C74C3480032F5CC /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
+		EF631A501C74C3480032F5CC /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
+		EF631A511C74C3480032F5CC /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
+		EF631A521C74C3480032F5CC /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
+		EF631A531C74C3480032F5CC /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
+		EF631A541C74C3480032F5CC /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
+		EF631A551C74C3480032F5CC /* bdsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm.h; sourceTree = "<group>"; };
+		EF631A5D1C74C4150032F5CC /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
+		EF631A5E1C74C4150032F5CC /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
+		EF631A5F1C74C4150032F5CC /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF6319D81C7474D10032F5CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF631A2A1C74BF280032F5CC /* libtasn1.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EF6319D21C7474D10032F5CC = {
+			isa = PBXGroup;
+			children = (
+				EF631A471C74C2700032F5CC /* config.h */,
+				EF631A561C74C4150032F5CC /* compat */,
+				EF631A4A1C74C3480032F5CC /* include */,
+				EF631A2B1C74BF370032F5CC /* contrib */,
+				EF631A241C74BF280032F5CC /* extra */,
+				EF631A261C74BF280032F5CC /* libtasn1 */,
+				EF6319E71C7475290032F5CC /* src */,
+				EF6319DC1C7474D10032F5CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF6319DC1C7474D10032F5CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF6319DB1C7474D10032F5CC /* libdsm.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF6319E71C7475290032F5CC /* src */ = {
+			isa = PBXGroup;
+			children = (
+				EF6319E81C7475290032F5CC /* bdsm_debug.h */,
+				EF6319E91C7475290032F5CC /* hmac_md5.c */,
+				EF6319EA1C7475290032F5CC /* hmac_md5.h */,
+				EF6319EB1C7475290032F5CC /* netbios_defs.h */,
+				EF6319EC1C7475290032F5CC /* netbios_ns.c */,
+				EF6319ED1C7475290032F5CC /* netbios_query.c */,
+				EF6319EE1C7475290032F5CC /* netbios_query.h */,
+				EF6319EF1C7475290032F5CC /* netbios_session.c */,
+				EF6319F01C7475290032F5CC /* netbios_session.h */,
+				EF6319F11C7475290032F5CC /* netbios_utils.c */,
+				EF6319F21C7475290032F5CC /* netbios_utils.h */,
+				EF6319F31C7475290032F5CC /* smb_buffer.c */,
+				EF6319F41C7475290032F5CC /* smb_buffer.h */,
+				EF6319F51C7475290032F5CC /* smb_defs.h */,
+				EF6319F61C7475290032F5CC /* smb_dir.c */,
+				EF6319F71C7475290032F5CC /* smb_dir.h */,
+				EF6319F81C7475290032F5CC /* smb_fd.c */,
+				EF6319F91C7475290032F5CC /* smb_fd.h */,
+				EF6319FA1C7475290032F5CC /* smb_file.c */,
+				EF6319FB1C7475290032F5CC /* smb_file.h */,
+				EF6319FC1C7475290032F5CC /* smb_message.c */,
+				EF6319FD1C7475290032F5CC /* smb_message.h */,
+				EF6319FE1C7475290032F5CC /* smb_ntlm.c */,
+				EF6319FF1C7475290032F5CC /* smb_ntlm.h */,
+				EF631A001C7475290032F5CC /* smb_packets.h */,
+				EF631A011C7475290032F5CC /* smb_session.c */,
+				EF631A021C7475290032F5CC /* smb_session.h */,
+				EF631A031C7475290032F5CC /* smb_session_msg.c */,
+				EF631A041C7475290032F5CC /* smb_session_msg.h */,
+				EF631A051C7475290032F5CC /* smb_share.c */,
+				EF631A061C7475290032F5CC /* smb_share.h */,
+				EF631A071C7475290032F5CC /* smb_spnego.c */,
+				EF631A081C7475290032F5CC /* smb_spnego.h */,
+				EF631A091C7475290032F5CC /* smb_stat.c */,
+				EF631A0A1C7475290032F5CC /* smb_stat.h */,
+				EF631A0B1C7475290032F5CC /* smb_trans2.c */,
+				EF631A0C1C7475290032F5CC /* smb_transport.c */,
+				EF631A0D1C7475290032F5CC /* smb_transport.h */,
+				EF631A0E1C7475290032F5CC /* smb_types.h */,
+				EF631A0F1C7475290032F5CC /* smb_utils.c */,
+				EF631A101C7475290032F5CC /* smb_utils.h */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		EF631A241C74BF280032F5CC /* extra */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A251C74BF280032F5CC /* spnego_asn1.c */,
+			);
+			path = extra;
+			sourceTree = "<group>";
+		};
+		EF631A261C74BF280032F5CC /* libtasn1 */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A271C74BF280032F5CC /* libtasn1.a */,
+				EF631A281C74BF280032F5CC /* libtasn1.h */,
+			);
+			path = libtasn1;
+			sourceTree = "<group>";
+		};
+		EF631A2B1C74BF370032F5CC /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A2C1C74BF370032F5CC /* mdx */,
+				EF631A361C74BF370032F5CC /* rc4 */,
+				EF631A3D1C74BF370032F5CC /* spnego */,
+			);
+			name = contrib;
+			path = ../contrib;
+			sourceTree = "<group>";
+		};
+		EF631A2C1C74BF370032F5CC /* mdx */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A321C74BF370032F5CC /* md4.c */,
+				EF631A331C74BF370032F5CC /* md4.h */,
+				EF631A341C74BF370032F5CC /* md5.c */,
+				EF631A351C74BF370032F5CC /* md5.h */,
+			);
+			path = mdx;
+			sourceTree = "<group>";
+		};
+		EF631A361C74BF370032F5CC /* rc4 */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A3B1C74BF370032F5CC /* rc4.c */,
+				EF631A3C1C74BF370032F5CC /* rc4.h */,
+			);
+			path = rc4;
+			sourceTree = "<group>";
+		};
+		EF631A3D1C74BF370032F5CC /* spnego */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A431C74BF370032F5CC /* spnego_asn1.h */,
+			);
+			path = spnego;
+			sourceTree = "<group>";
+		};
+		EF631A4A1C74C3480032F5CC /* include */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A4B1C74C3480032F5CC /* bdsm */,
+				EF631A551C74C3480032F5CC /* bdsm.h */,
+			);
+			name = include;
+			path = ../include;
+			sourceTree = "<group>";
+		};
+		EF631A4B1C74C3480032F5CC /* bdsm */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A4C1C74C3480032F5CC /* netbios_defs.h */,
+				EF631A4D1C74C3480032F5CC /* netbios_ns.h */,
+				EF631A4E1C74C3480032F5CC /* smb_defs.h */,
+				EF631A4F1C74C3480032F5CC /* smb_dir.h */,
+				EF631A501C74C3480032F5CC /* smb_file.h */,
+				EF631A511C74C3480032F5CC /* smb_session.h */,
+				EF631A521C74C3480032F5CC /* smb_share.h */,
+				EF631A531C74C3480032F5CC /* smb_stat.h */,
+				EF631A541C74C3480032F5CC /* smb_types.h */,
+			);
+			path = bdsm;
+			sourceTree = "<group>";
+		};
+		EF631A561C74C4150032F5CC /* compat */ = {
+			isa = PBXGroup;
+			children = (
+				EF631A5D1C74C4150032F5CC /* clock_gettime.c */,
+				EF631A5E1C74C4150032F5CC /* compat.c */,
+				EF631A5F1C74C4150032F5CC /* compat.h */,
+			);
+			name = compat;
+			path = ../compat;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF6319DA1C7474D10032F5CC /* dsm */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF6319E41C7474D10032F5CC /* Build configuration list for PBXNativeTarget "dsm" */;
+			buildPhases = (
+				EF6319D71C7474D10032F5CC /* Sources */,
+				EF6319D81C7474D10032F5CC /* Frameworks */,
+				EF6319D91C7474D10032F5CC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = dsm;
+			productName = libdsm;
+			productReference = EF6319DB1C7474D10032F5CC /* libdsm.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF6319D31C7474D10032F5CC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = myorg;
+				TargetAttributes = {
+					EF6319DA1C7474D10032F5CC = {
+						CreatedOnToolsVersion = 7.2;
+					};
+				};
+			};
+			buildConfigurationList = EF6319D61C7474D10032F5CC /* Build configuration list for PBXProject "dsm" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF6319D21C7474D10032F5CC;
+			productRefGroup = EF6319DC1C7474D10032F5CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF6319DA1C7474D10032F5CC /* dsm */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EF6319D71C7474D10032F5CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF631A461C74BF370032F5CC /* rc4.c in Sources */,
+				EF631A451C74BF370032F5CC /* md5.c in Sources */,
+				EF631A611C74C4150032F5CC /* clock_gettime.c in Sources */,
+				EF631A111C7475290032F5CC /* hmac_md5.c in Sources */,
+				EF631A141C7475290032F5CC /* netbios_session.c in Sources */,
+				EF631A221C7475290032F5CC /* smb_transport.c in Sources */,
+				EF631A121C7475290032F5CC /* netbios_ns.c in Sources */,
+				EF631A1C1C7475290032F5CC /* smb_session.c in Sources */,
+				EF631A151C7475290032F5CC /* netbios_utils.c in Sources */,
+				EF631A1B1C7475290032F5CC /* smb_ntlm.c in Sources */,
+				EF631A621C74C4150032F5CC /* compat.c in Sources */,
+				EF631A181C7475290032F5CC /* smb_fd.c in Sources */,
+				EF631A291C74BF280032F5CC /* spnego_asn1.c in Sources */,
+				EF631A1F1C7475290032F5CC /* smb_spnego.c in Sources */,
+				EF631A201C7475290032F5CC /* smb_stat.c in Sources */,
+				EF631A191C7475290032F5CC /* smb_file.c in Sources */,
+				EF631A1E1C7475290032F5CC /* smb_share.c in Sources */,
+				EF631A1A1C7475290032F5CC /* smb_message.c in Sources */,
+				EF631A171C7475290032F5CC /* smb_dir.c in Sources */,
+				EF631A441C74BF370032F5CC /* md4.c in Sources */,
+				EF631A1D1C7475290032F5CC /* smb_session_msg.c in Sources */,
+				EF631A211C7475290032F5CC /* smb_trans2.c in Sources */,
+				EF631A161C7475290032F5CC /* smb_buffer.c in Sources */,
+				EF631A131C7475290032F5CC /* netbios_query.c in Sources */,
+				EF631A231C7475290032F5CC /* smb_utils.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EF6319E21C7474D10032F5CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		EF6319E31C7474D10032F5CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EF6319E51C7474D10032F5CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libtasn1",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = dsm;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		EF6319E61C7474D10032F5CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libtasn1",
+				);
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = dsm;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF6319D61C7474D10032F5CC /* Build configuration list for PBXProject "dsm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF6319E21C7474D10032F5CC /* Debug */,
+				EF6319E31C7474D10032F5CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF6319E41C7474D10032F5CC /* Build configuration list for PBXNativeTarget "dsm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF6319E51C7474D10032F5CC /* Debug */,
+				EF6319E61C7474D10032F5CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF6319D31C7474D10032F5CC /* Project object */;
+}
