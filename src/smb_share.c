@@ -169,7 +169,7 @@ static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
     eod         = msg->packet->payload + msg->payload_size;
 
     *list       = calloc(share_count + 1, sizeof(char *));
-    if (!list)
+    if (!(*list))
         return 0;
     assert(*list != NULL);
 
