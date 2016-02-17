@@ -9,7 +9,6 @@ dsm_inverse
 configure
 .*/
 build/
-*.a
 *.deps
 *.la
 *.libs
@@ -24,7 +23,13 @@ build/
 aclocal.m4
 autom4te.cache
 config
-config.*
+config.rb
+config.h.*
+config.s*
+config.log
+config.guess
+universal/*.a
+libtasn1/*.a
 config.h.in
 configure
 libtool
