@@ -3,7 +3,6 @@ ref/*
 *.o
 dsm
 *.so
-*.a
 dsm_discover
 dsm_lookup
 dsm_inverse

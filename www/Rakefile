@@ -1,3 +1,0 @@
-PROJECT_ROOT = `git rev-parse --show-toplevel`.strip + '/www'
-
-require 'middleman-gh-pages'
