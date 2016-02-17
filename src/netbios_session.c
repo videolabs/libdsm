@@ -277,7 +277,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     do
     {
         size = netbios_session_get_next_packet(s);
-    } while (s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
+    } while (size >= 0 && s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
 
     if ((size >= 0) && (data != NULL))
         *data = (void *) s->packet->payload;
