@@ -258,6 +258,11 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     }
 
     msg_find_next2 = smb_message_new(SMB_CMD_TRANS2);
+    if (!msg_find_next2)
+    {
+        free(utf_pattern);
+        return NULL;
+    }
     msg_find_next2->packet->header.tid = (uint16_t)tid;
 
     SMB_MSG_INIT_PKT(tr2_find_next2);
@@ -367,7 +372,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
                 {
                     BDSM_dbg("Error during FIND_NEXT request\n");
                     smb_stat_list_destroy(files);
-                    end_of_search = true;
+                    return NULL;
                 }
             }
         }
@@ -382,6 +387,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
         BDSM_dbg("Error during FIND_FIRST request\n");
         smb_stat_list_destroy(files);
         smb_message_destroy(msg);
+        return NULL;
     }
 
     return files;

@@ -49,6 +49,7 @@ static int        open_socket_and_connect(netbios_session *s)
     
     int sock_opt = 1;
     setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
+
     
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
@@ -75,8 +76,9 @@ static int        session_buffer_realloc(netbios_session *s, size_t new_size)
         s->packet_payload_size = new_size;
         s->packet = new_ptr;
         return 1;
-    } else
-        free(s->packet);
+    }
+    free(s->packet);
+    s->packet = NULL;
     return 0;
 }
 
@@ -116,7 +118,7 @@ int               netbios_session_connect(struct in_addr *addr,
         int direct_tcp)
 {
     ssize_t                   recv_size;
-    char                      *encoded_name;
+    char                      *encoded_name = NULL;
 
     assert(s != NULL && s->packet != NULL);
 
@@ -135,11 +137,14 @@ int               netbios_session_connect(struct in_addr *addr,
         netbios_session_packet_init(s);
         s->packet->opcode = NETBIOS_OP_SESSION_REQ;
         encoded_name = netbios_name_encode(name, 0, NETBIOS_FILESERVER);
-        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
+            goto error;
         free(encoded_name);
         encoded_name = netbios_name_encode("NETBIOS_WORKSTATION", 0, NETBIOS_WORKSTATION);
-        netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1);
+        if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
+            goto error;
         free(encoded_name);
+        encoded_name = NULL;
 
         s->state = NETBIOS_SESSION_CONNECTING;
         if (!netbios_session_packet_send(s))
@@ -163,6 +168,7 @@ int               netbios_session_connect(struct in_addr *addr,
     return 1;
 
 error:
+    free(encoded_name);
     s->state = NETBIOS_SESSION_ERROR;
     return 0;
 }
@@ -277,7 +283,7 @@ ssize_t           netbios_session_packet_recv(netbios_session *s, void **data)
     do
     {
         size = netbios_session_get_next_packet(s);
-    } while (s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
+    } while (size >= 0 && s->packet->opcode == NETBIOS_OP_SESSION_KEEPALIVE);
 
     if ((size >= 0) && (data != NULL))
         *data = (void *) s->packet->payload;

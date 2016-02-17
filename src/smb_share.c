@@ -54,15 +54,15 @@ smb_tid         smb_tree_connect(smb_session *s, const char *name)
 
     assert(s != NULL && name != NULL);
 
+    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
+    if (!req_msg)
+        return -1;
+
     // Build \\SERVER\Share path from name
     path_len  = strlen(name) + strlen(s->srv.name) + 4;
     path      = alloca(path_len);
     snprintf(path, path_len, "\\\\%s\\%s", s->srv.name, name);
     utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
-
-    req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
-    if (!req_msg)
-        return -1;
 
     // Packet headers
     req_msg->packet->header.tid   = 0xffff; // Behavior of libsmbclient
@@ -169,7 +169,7 @@ static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
     eod         = msg->packet->payload + msg->payload_size;
 
     *list       = calloc(share_count + 1, sizeof(char *));
-    if (!list)
+    if (!(*list))
         return 0;
     assert(*list != NULL);
 
