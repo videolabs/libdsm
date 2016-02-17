@@ -479,6 +479,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/libtasn1",
 				);
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = dsm;
 				SKIP_INSTALL = YES;
