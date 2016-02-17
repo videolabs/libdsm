@@ -71,8 +71,8 @@ static int        session_buffer_realloc(netbios_session *s, size_t new_size)
         s->packet_payload_size = new_size;
         s->packet = new_ptr;
         return 1;
-    } else
-        free(s->packet);
+    }
+    free(s->packet);
     return 0;
 }
 
