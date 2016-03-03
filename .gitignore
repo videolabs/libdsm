@@ -9,7 +9,7 @@ dsm_lookup
 dsm_inverse
 configure
 .*/
-build/
+build*/
 *.a
 *.deps
 *.la
