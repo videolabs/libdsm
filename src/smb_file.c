@@ -39,8 +39,8 @@
 #include "smb_utils.h"
 #include "smb_file.h"
 
-smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
-                      uint32_t o_flags)
+int         smb_fopen(smb_session *s, smb_tid tid, const char *path,
+                      uint32_t o_flags, smb_fd *fd)
 {
     smb_share       *share;
     smb_file        *file;
@@ -51,22 +51,23 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     int              res;
     char            *utf_path;
 
-    assert(s != NULL && path != NULL);
+    assert(s != NULL && path != NULL && fd != NULL);
+
     if ((share = smb_session_share_get(s, tid)) == NULL)
-        return 0;
+        return DSM_ERROR_GENERIC;
 
     path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
     if (path_len == 0)
-        return 0;
+        return DSM_ERROR_CHARSET;
 
     req_msg = smb_message_new(SMB_CMD_CREATE);
     if (!req_msg) {
         free(utf_path);
-        return 0;
+        return DSM_ERROR_GENERIC;
     }
 
     // Set SMB Headers
-    req_msg->packet->header.tid = (uint16_t)tid;
+    req_msg->packet->header.tid = tid;
 
     // Create AndX Params
     SMB_MSG_INIT_PKT_ANDX(req);
@@ -103,17 +104,18 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
     res = smb_session_send_msg(s, req_msg);
     smb_message_destroy(req_msg);
     if (!res)
-        return 0;
+        return DSM_ERROR_NETWORK;
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return 0;
-    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
-        return 0;
+        return DSM_ERROR_NETWORK;
+    if (!smb_session_check_nt_status(s, &resp_msg))
+        return DSM_ERROR_NT;
 
     resp = (smb_create_resp *)resp_msg.packet->payload;
     file = calloc(1, sizeof(smb_file));
     if (!file)
-        return 0;
+        return DSM_ERROR_GENERIC;
+
 
     file->fid           = resp->fid;
     file->tid           = tid;
@@ -128,7 +130,8 @@ smb_fd      smb_fopen(smb_session *s, smb_tid tid, const char *path,
 
     smb_session_file_add(s, tid, file); // XXX Check return
 
-    return SMB_FD(tid, file->fid);
+    *fd = SMB_FD(tid, file->fid);
+    return DSM_SUCCESS;
 }
 
 void        smb_fclose(smb_session *s, smb_fd fd)
@@ -152,7 +155,7 @@ void        smb_fclose(smb_session *s, smb_fd fd)
         return;
     }
 
-    msg->packet->header.tid = (uint16_t)SMB_FD_TID(fd);
+    msg->packet->header.tid = SMB_FD_TID(fd);
 
     SMB_MSG_INIT_PKT(req);
     req.wct        = 3;
@@ -181,15 +184,14 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     int             res;
 
     assert(s != NULL && buf != NULL);
-    if (!fd)
-      return -1;
+
     if ((file = smb_session_file_get(s, fd)) == NULL)
         return -1;
 
     req_msg = smb_message_new(SMB_CMD_READ);
     if (!req_msg)
         return -1;
-    req_msg->packet->header.tid = (uint16_t)file->tid;
+    req_msg->packet->header.tid = file->tid;
 
     max_read = 0xffff;
     max_read = max_read < buf_size ? max_read : buf_size;
@@ -213,7 +215,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 
     if (!smb_session_recv_msg(s, &resp_msg))
         return -1;
-    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+    if (!smb_session_check_nt_status(s, &resp_msg))
         return -1;
 
     resp = (smb_read_resp *)resp_msg.packet->payload;
@@ -232,8 +234,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     uint16_t        max_write;
     int             res;
 
-    if ((s == NULL) || (buf == NULL) || !fd)
-        return -1;
+    assert(s != NULL && buf != NULL);
 
     file = smb_session_file_get(s, fd);
     if (file == NULL)
@@ -270,7 +271,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
 
     if (!smb_session_recv_msg(s, &resp_msg))
         return -1;
-    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+    if (!smb_session_check_nt_status(s, &resp_msg))
         return -1;
 
     resp = (smb_write_resp *)resp_msg.packet->payload;
@@ -286,7 +287,7 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
 
     assert(s != NULL);
 
-    if (!fd || (file = smb_session_file_get(s, fd)) == NULL)
+    if ((file = smb_session_file_get(s, fd)) == NULL)
         return -1;
 
     if (whence == SMB_SEEK_SET)
@@ -297,7 +298,7 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
     return file->offset;
 }
 
-uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
+int  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message           *req_msg, resp_msg;
     smb_file_rm_req       req;
@@ -305,22 +306,17 @@ uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    if (s == NULL)
-        return DSM_ERROR_INVALID_SESSION;
-    if (tid == -1)
-        return DSM_ERROR_INVALID_TID;
-    if (path == NULL)
-        return DSM_ERROR_INVALID_PATH;
+    assert(s != NULL && path != NULL);
 
     utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
-        return DSM_ERROR_UTF16_CONV_FAILED;
+        return DSM_ERROR_CHARSET;
 
     req_msg = smb_message_new(SMB_CMD_RMFILE);
     if (!req_msg)
     {
         free(utf_pattern);
-        return DSM_ERROR_INTERNAL;
+        return DSM_ERROR_GENERIC;
     }
 
     req_msg->packet->header.tid = (uint16_t)tid;
@@ -340,16 +336,15 @@ uint32_t  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
     free(utf_pattern);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_INVALID_RCV_MESS;
-
-    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
-        return resp_msg.packet->header.status;
+        return DSM_ERROR_NETWORK;
+    if (!smb_session_check_nt_status(s, &resp_msg))
+        return DSM_ERROR_NT;
 
     resp = (smb_file_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_INVALID_RCV_MESS;
+        return DSM_ERROR_NETWORK;
 
-    return NT_STATUS_SUCCESS;
+    return 0;
 }
 
 int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path)
@@ -360,22 +355,17 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
     size_t                utf_old_len,utf_new_len;
     char                  *utf_old_path,*utf_new_path;
 
-    if (s == NULL)
-        return -1;
-    if (tid == -1)
-        return -1;
-    if ((old_path == NULL) || (new_path == NULL))
-        return -1;
+    assert(s != NULL && old_path != NULL && new_path != NULL);
 
     utf_old_len = smb_to_utf16(old_path, strlen(old_path) + 1, &utf_old_path);
     if (utf_old_len == 0)
-        return -1;
+        return DSM_ERROR_CHARSET;
 
     utf_new_len = smb_to_utf16(new_path, strlen(new_path) + 1, &utf_new_path);
     if (utf_new_len == 0)
     {
         free(utf_old_path);
-        return -1;
+        return DSM_ERROR_CHARSET;
     }
 
     req_msg = smb_message_new(SMB_CMD_MOVE);
@@ -383,7 +373,7 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
     {
         free(utf_old_path);
         free(utf_new_path);
-        return -1;
+        return DSM_ERROR_GENERIC;
     }
 
     req_msg->packet->header.tid = (uint16_t)tid;
@@ -407,14 +397,14 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
     free(utf_new_path);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return -1;
+        return DSM_ERROR_NETWORK;
 
-    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
-        return -1;
+    if (!smb_session_check_nt_status(s, &resp_msg))
+        return DSM_ERROR_NT;
 
     resp = (smb_file_mv_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
-        return -1;
+        return DSM_ERROR_NETWORK;
 
-    return 0;
+    return DSM_SUCCESS;
 }

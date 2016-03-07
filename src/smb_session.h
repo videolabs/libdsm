@@ -31,6 +31,7 @@
 #ifndef _SMB_SESSION_H_
 #define _SMB_SESSION_H_
 
+#include "smb_types.h"
 #include "bdsm/smb_session.h"
 
 /**
@@ -65,5 +66,7 @@
 
 /* Our reception buffer grows as necessary, so we can put the max here */
 #define SMB_SESSION_MAX_BUFFER (0xffff)
- 
+
+bool smb_session_check_nt_status(smb_session *s, smb_message *msg);
+
 #endif
