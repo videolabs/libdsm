@@ -113,7 +113,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
  * #SMB_SEEK_SET and #SMB_SEEK_CUR
  * @return The current read pointer position or -1 on error
  */
-ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
+ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence);
 
 /**
  * @brief remove a file on a share.

@@ -281,7 +281,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     return resp->data_len;
 }
 
-ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence)
+ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence)
 {
     smb_file  *file;
 
