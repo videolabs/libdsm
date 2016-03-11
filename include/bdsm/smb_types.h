@@ -40,6 +40,10 @@
 #include <stddef.h>
 #include <libtasn1.h>
 
+#ifdef __ANDROID__
+# undef  off_t
+# define off_t off64_t
+#endif
 /**
   * @struct smb_tid
   * @brief The id of a connection to a share within a session.
