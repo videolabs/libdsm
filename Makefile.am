@@ -6,8 +6,7 @@ EXTRA_DIST = \
 	abi_version.sh \
 	package_version.sh \
 	contrib/spnego/spnego.asn1 \
-	contrib/spnego/spnego_asn1.c \
-	src/libdsm.sym
+	contrib/spnego/spnego_asn1.c
 
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include -I$(top_srcdir)/compat @TASN1_CFLAGS@ @CFLAGS@ @PTHREAD_CFLAGS@
 
@@ -94,8 +93,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
 libdsm_la_LIBADD = libcompat.la
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIBS@ \
-	-no-undefined -export-symbols $(srcdir)/src/libdsm.sym
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIBS@
 
 bin_PROGRAMS =
 

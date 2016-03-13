@@ -77,9 +77,9 @@ int main()
   callbacks.pf_on_entry_removed = on_entry_removed;
 
   printf("Discovering...\nPress Enter to quit\n");
-  if (netbios_ns_discover_start(ns,
-                                4, // broadcast every 4 seconds
-                                &callbacks))
+  if (!netbios_ns_discover_start(ns,
+                                 4, // broadcast every 4 seconds
+                                 &callbacks))
   {
     fprintf(stderr, "Error while discovering local network\n");
     exit(42);

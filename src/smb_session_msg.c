@@ -36,7 +36,7 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
 {
     size_t        pkt_sz;
 
-    assert(s != NULL);
+    assert(s != NULL && s->state >= SMB_STATE_NETBIOS_OK);
     assert(s->transport.session != NULL);
     assert(msg != NULL && msg->packet != NULL);
 
@@ -56,7 +56,7 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
     return 1;
 }
 
-size_t          smb_session_recv_msg(smb_session *s, smb_message *msg)
+ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
 {
     void                      *data;
     ssize_t                   payload_size;

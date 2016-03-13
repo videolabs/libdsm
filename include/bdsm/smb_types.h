@@ -44,7 +44,7 @@
   * @struct smb_tid
   * @brief The id of a connection to a share within a session.
   */
-typedef uint16_t    smb_tid;
+typedef int32_t    smb_tid;
 
 /**
   * @struct smb_fid

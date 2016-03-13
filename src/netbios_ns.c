@@ -563,19 +563,18 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
     {
         *addr = cached->address.s_addr;
-        return 0;
+        return 1;
     }
 
     if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-        return -1;
+        return 0;
 
     if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
                                    NETBIOS_FLAG_RECURSIVE |
                                    NETBIOS_FLAG_BROADCAST) == -1)
     {
         free(encoded_name);
-        return -1;
-
+        return 0;
     }
     free(encoded_name);
 
@@ -592,15 +591,15 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
         {
             *addr = name_query.u.nb.ip;
             BDSM_dbg("netbios_ns_resolve, received a reply for '%s', ip: 0x%X!\n", name, *addr);
-            return 0;
+            return 1;
         } else
             BDSM_dbg("netbios_ns_resolve, wrong query type received\n");
     }
 
-    return -1;
+    return 0;
 }
 
-static bool   netbios_ns_is_aborted(netbios_ns *ns)
+static int    netbios_ns_is_aborted(netbios_ns *ns)
 {
     fd_set        read_fds;
     int           res;
@@ -611,7 +610,7 @@ static bool   netbios_ns_is_aborted(netbios_ns *ns)
 
     res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
 
-    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds));
+    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds)) ? 1 : 0;
 }
 
 static void netbios_ns_abort(netbios_ns *ns)
@@ -811,16 +810,16 @@ int netbios_ns_discover_start(netbios_ns *ns,
                               netbios_ns_discover_callbacks *callbacks)
 {
     if (ns->discover_started || !callbacks)
-        return -1;
+        return 0;
 
     ns->discover_callbacks = *callbacks;
     ns->discover_broadcast_timeout = broadcast_timeout;
     if (pthread_create(&ns->discover_thread, NULL,
                        netbios_ns_discover_thread, ns) != 0)
-        return -1;
+        return 0;
     ns->discover_started = true;
 
-    return 0;
+    return 1;
 }
 
 int netbios_ns_discover_stop(netbios_ns *ns)
@@ -831,8 +830,8 @@ int netbios_ns_discover_stop(netbios_ns *ns)
         pthread_join(ns->discover_thread, NULL);
         ns->discover_started = false;
 
-        return 0;
+        return 1;
     }
     else
-        return -1;
+        return 0;
 }

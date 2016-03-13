@@ -47,11 +47,11 @@
  *
  * @param[in] s The session object
  * @param[out] list A pointer to an opaque share_list object.
- * @param[out] pointer to the number of elements in the list
  *
- * @return 0 on success or a DSM error code in case of error
+ * @return The number of share listed or 0 if there was an error (There
+ * theorically cannot be 0 share on a machine, there's at least $IPC)
  */
-int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t *p_count);
+size_t          smb_share_get_list(smb_session *s, smb_share_list *list);
 
 /**
  * @brief Get the number of share in the list
@@ -87,16 +87,17 @@ void            smb_share_list_destroy(smb_share_list list);
  *
  * @param s The session object
  * @param name The share name @see smb_share_list
- * @param tid The pointer to an opaque open share
- * @return 0 on success or a DSM error code in case of error
+ *
+ * @return An opaque value representing an open share (like a file descriptor)
+ * or -1 if there was an error
  */
-int             smb_tree_connect(smb_session *s, const char *name, smb_tid *tid);
+smb_tid         smb_tree_connect(smb_session *s, const char *name);
 
 /**
  * @brief Disconnect from a share
  * @details UNIMPLEMENTED
  *
- * @return 0 on success or a DSM error code in case of error
+ * @return 0 if OK or -1 if there was an error
  */
 int             smb_tree_disconnect(smb_session *s, smb_tid tid);
 

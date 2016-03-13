@@ -56,6 +56,9 @@ smb_share *smb_session_share_get(smb_session *s, smb_tid tid)
 
     assert(s != NULL);
 
+    if (tid == -1)
+        return NULL;
+
     iter = s->shares;
     while (iter != NULL && iter->tid != tid)
         iter = iter->next;
@@ -68,6 +71,9 @@ smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
     smb_share *iter, *keep;
 
     assert(s != NULL);
+
+    if (tid == -1)
+        return NULL;
 
     iter = s->shares;
 
@@ -123,6 +129,9 @@ int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
     smb_file  *iter;
 
     assert(s != NULL && f != NULL);
+
+    if (tid == -1)
+        return -1;
 
     if ((share = smb_session_share_get(s, tid)) == NULL)
         return 0;

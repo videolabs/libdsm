@@ -110,7 +110,7 @@ struct smb_srv_info
  */
 struct smb_session
 {
-    bool                logged;
+    int                 state;
     bool                guest;            // Are we logged as guest ?
 
     // Informations about the smb server we are connected to.
@@ -124,7 +124,6 @@ struct smb_session
     smb_transport       transport;
 
     smb_share           *shares;          // shares->files | Map fd <-> smb_file
-    uint32_t            nt_status;
 };
 
 typedef struct smb_message smb_message;

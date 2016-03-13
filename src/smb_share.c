@@ -41,7 +41,8 @@
 #include "smb_share.h"
 #include "smb_file.h"
 
-int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
+
+smb_tid         smb_tree_connect(smb_session *s, const char *name)
 {
     smb_tree_connect_req  req;
     smb_tree_connect_resp *resp;
@@ -51,11 +52,11 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
     size_t                 path_len, utf_path_len;
     char                  *path, *utf_path;
 
-    assert(s != NULL && name != NULL && tid != NULL);
+    assert(s != NULL && name != NULL);
 
     req_msg = smb_message_new(SMB_CMD_TREE_CONNECT);
     if (!req_msg)
-        return DSM_ERROR_GENERIC;
+        return -1;
 
     // Build \\SERVER\Share path from name
     path_len  = strlen(name) + strlen(s->srv.name) + 4;
@@ -84,20 +85,19 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
     if (!smb_session_send_msg(s, req_msg))
     {
         smb_message_destroy(req_msg);
-        return DSM_ERROR_NETWORK;
+        return -1;
     }
     smb_message_destroy(req_msg);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
-
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
+        return -1;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return -1;
 
     resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
     share = calloc(1, sizeof(smb_share));
     if (!share)
-        return DSM_ERROR_GENERIC;
+        return -1;
 
     share->tid          = resp_msg.packet->header.tid;
     share->opts         = resp->opt_support;
@@ -106,8 +106,7 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
 
     smb_session_share_add(s, share);
 
-    *tid = share->tid;
-    return 0;
+    return share->tid;
 }
 
 int           smb_tree_disconnect(smb_session *s, smb_tid tid)
@@ -117,11 +116,12 @@ int           smb_tree_disconnect(smb_session *s, smb_tid tid)
     smb_message              *req_msg;
     smb_message               resp_msg;
 
-    assert(s != NULL);
+    if ((s == NULL) || (tid == -1))
+        return -1;
 
     req_msg = smb_message_new(SMB_CMD_TREE_DISCONNECT);
     if (!req_msg)
-        return DSM_ERROR_GENERIC;
+        return -1;
 
     // Packet headers
     req_msg->packet->header.tid = (uint16_t)tid;
@@ -134,29 +134,30 @@ int           smb_tree_disconnect(smb_session *s, smb_tid tid)
     if (!smb_session_send_msg(s, req_msg))
     {
         smb_message_destroy(req_msg);
-        return DSM_ERROR_NETWORK;
+        return -1;
     }
     smb_message_destroy(req_msg);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
+        return -1;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return -1;
 
     resp  = (smb_tree_disconnect_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_NETWORK;
+        return -1;
 
-    return DSM_SUCCESS;
+    return 0;
 }
 
 // Here we parse the NetShareEnumAll response packet payload to extract
 // The share list.
-static ssize_t  smb_share_parse_enum(smb_message *msg, char ***list)
+static size_t   smb_share_parse_enum(smb_message *msg, char ***list)
 {
     uint32_t          share_count, i;
     uint8_t           *data, *eod;
     uint32_t          *p_share_count;
+
 
     assert(msg != NULL && list != NULL);
     // Let's skip smb parameters and DCE/RPC stuff until we are at the begginning of
@@ -169,7 +170,8 @@ static ssize_t  smb_share_parse_enum(smb_message *msg, char ***list)
 
     *list       = calloc(share_count + 1, sizeof(char *));
     if (!(*list))
-        return -1;
+        return 0;
+    assert(*list != NULL);
 
     for (i = 0; i < share_count && data < eod; i++)
     {
@@ -224,37 +226,34 @@ void            smb_share_list_destroy(smb_share_list list)
 // We should normally implement SCERPC and SRVSVC to perform a share list. But
 // since these two protocols have no other use for us, we'll do it the trash way
 // PS: Worst function _EVER_. I don't understand a bit myself
-int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t *pcount)
+size_t          smb_share_get_list(smb_session *s, char ***list)
 {
     smb_message           *req, resp;
     smb_trans_req         trans;
     smb_tid               ipc_tid;
     smb_fd                srvscv_fd;
     uint16_t              rpc_len;
-    size_t                res, frag_len_cursor;
-    ssize_t               count;
-    int                   ret;
+    ssize_t               res, frag_len_cursor;
+
 
     assert(s != NULL && list != NULL);
     *list = NULL;
 
-    if ((ret = smb_tree_connect(s, "IPC$", &ipc_tid)) != DSM_SUCCESS)
-        return ret;
+    ipc_tid = smb_tree_connect(s, "IPC$");
+    if (ipc_tid == -1)
+        return 0;
 
-    if ((ret = smb_fopen(s, ipc_tid, "\\srvsvc", SMB_MOD_READ | SMB_MOD_WRITE,
-                         &srvscv_fd)) != DSM_SUCCESS)
-        return ret;
+    srvscv_fd = smb_fopen(s, ipc_tid, "\\srvsvc", SMB_MOD_READ | SMB_MOD_WRITE);
+    if (!srvscv_fd)
+        return 0;
 
     //// Phase 1:
     // We bind a context or whatever for DCE/RPC
 
     req = smb_message_new(SMD_CMD_TRANS);
     if (!req)
-    {
-        ret = DSM_ERROR_GENERIC;
-        goto error;
-    }
-    req->packet->header.tid = ipc_tid;
+        return 0;
+    req->packet->header.tid = (uint16_t)ipc_tid;
 
     rpc_len = 0xffff;
     SMB_MSG_INIT_PKT(trans);
@@ -306,10 +305,7 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     res = smb_session_send_msg(s, req);
     smb_message_destroy(req);
     if (!res)
-    {
-        ret = DSM_ERROR_NETWORK;
-        goto error;
-    }
+        return 0;
 
     // Is the server throwing pile of shit back at me ?
     res = smb_session_recv_msg(s, &resp);
@@ -317,8 +313,7 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     {
         BDSM_dbg("Bind call failed: 0x%hhx (reason = 0x%hhx)\n",
                  resp.packet->payload[68], resp.packet->payload[70]);
-        ret = DSM_ERROR_NETWORK;
-        goto error;
+        return 0;
     }
 
 
@@ -328,11 +323,8 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
 
     req = smb_message_new(SMD_CMD_TRANS);
     if (!req)
-    {
-        ret = DSM_ERROR_GENERIC;
-        goto error;
-    }
-    req->packet->header.tid = ipc_tid;
+        return 0;
+    req->packet->header.tid = (uint16_t)ipc_tid;
 
     // this struct will be set at the end when we know the data size
     SMB_MSG_ADVANCE_PKT(req, smb_trans_req);
@@ -367,6 +359,7 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     if ((strlen(s->srv.name) % 2) == 0) // It won't be aligned with the terminating byte
         smb_message_put16(req, 0);
 
+
     smb_message_put32(req, 1);            // Level 1 ?
     smb_message_put32(req, 1);            // Ctr ?
     smb_message_put32(req, 0x00020004);   // Referent ID ?
@@ -397,35 +390,23 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     res = smb_session_send_msg(s, req);
     smb_message_destroy(req);
     if (!res)
-    {
-        ret = DSM_ERROR_NETWORK;
-        goto error;
-    }
+        return 0;
 
     // Is the server throwing pile of shit back at me ?
     res = smb_session_recv_msg(s, &resp);
     if (!res && (uint32_t)resp.packet->payload[resp.payload_size - 4])
     {
         BDSM_dbg("NetShareEnumAll call failed.\n");
-        ret = DSM_ERROR_NETWORK;
-        goto error;
+        return 0;
     }
 
 
     //// Phase 3
     // We parse the list of Share (finally !) and build function response
-    count = smb_share_parse_enum(&resp, list);
-    if (count == -1)
-    {
-        ret = DSM_ERROR_GENERIC;
-        goto error;
-    }
-    if (pcount != NULL)
-        *pcount = count;
-    ret = DSM_SUCCESS;
+    res = smb_share_parse_enum(&resp, list);
 
-error:
     // Close the pipe
     smb_fclose(s, srvscv_fd);
-    return ret;
+
+    return res;
 }

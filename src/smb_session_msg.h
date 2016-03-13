@@ -38,7 +38,7 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg);
 
 // msg->packet will be updated to point on received data. You don't own this
 // memory. It'll be reused on next recv_msg
-size_t          smb_session_recv_msg(smb_session *s, smb_message *msg);
+ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg);
 
 
 #endif

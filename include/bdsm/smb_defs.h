@@ -177,10 +177,11 @@ enum smb_session_supports_what
 #define NT_STATUS_FILE_DELETED              0xc0000123
 #define NT_STATUS_INSUFF_SERVER_RESOURCES   0xc0000205
 
-#define DSM_SUCCESS         (0)
-#define DSM_ERROR_GENERIC   (-1)
-#define DSM_ERROR_NT        (-2) /* see smb_session_get_nt_status */
-#define DSM_ERROR_NETWORK   (-3)
-#define DSM_ERROR_CHARSET   (-4)
+#define DSM_ERROR_INTERNAL                  0xff000001
+#define DSM_ERROR_INVALID_RCV_MESS          0xff000002
+#define DSM_ERROR_UTF16_CONV_FAILED         0xff000003
+#define DSM_ERROR_INVALID_PATH              0xff000004
+#define DSM_ERROR_INVALID_SESSION           0xff000005
+#define DSM_ERROR_INVALID_TID               0xff000006
 
 #endif

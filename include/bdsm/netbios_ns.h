@@ -98,7 +98,7 @@ void          netbios_ns_destroy(netbios_ns *ns);
  * longer than 15 chars, it'll be truncated.
  * @param type The type of the name to look for. @see netbios_defs.h
  * @param[out] addr The IP address in network byte order of the machine if found.
- * @return 0 on success or -1 on failure
+ * @return a value > 0 if successfull, or 0 otherwise
  */
 int           netbios_ns_resolve(netbios_ns *ns, const char *name,
                                  char type, uint32_t *addr);
@@ -139,7 +139,7 @@ typedef struct
  * every timeout seconds @param callbacks The callbacks previously setup by the
  * caller
  *
- * @return 0 on success or -1 on failure
+ * @return a value > 0 if successfull, or 0 otherwise
  */
 int netbios_ns_discover_start(netbios_ns *ns, unsigned int broadcast_timeout,
                               netbios_ns_discover_callbacks *callbacks);
@@ -147,7 +147,6 @@ int netbios_ns_discover_start(netbios_ns *ns, unsigned int broadcast_timeout,
 /**
  * @brief Stop the NETBIOS discovery.
  * @param ns The name service object.
- * @return 0 on success or -1 on failure
  */
 int netbios_ns_discover_stop(netbios_ns *ns);
 

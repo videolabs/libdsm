@@ -39,7 +39,7 @@
 #include "smb_utils.h"
 #include "smb_dir.h"
 
-int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
+uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message           *req_msg, resp_msg;
     smb_directory_rm_req  req;
@@ -47,17 +47,22 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    assert(s != NULL && path != NULL);
+    if (s == NULL)
+        return DSM_ERROR_INVALID_SESSION;
+    if (tid == -1)
+        return DSM_ERROR_INVALID_TID;
+    if (path == NULL)
+        return DSM_ERROR_INVALID_PATH;
 
     utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
-        return DSM_ERROR_CHARSET;
+        return DSM_ERROR_UTF16_CONV_FAILED;
 
     req_msg = smb_message_new(SMB_CMD_RMDIR);
     if (!req_msg)
     {
         free(utf_pattern);
-        return DSM_ERROR_GENERIC;
+        return DSM_ERROR_INTERNAL;
     }
 
     req_msg->packet->header.tid = (uint16_t)tid;
@@ -75,19 +80,19 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
     free(utf_pattern);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
+        return DSM_ERROR_INVALID_RCV_MESS;
 
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return resp_msg.packet->header.status;
 
     resp = (smb_directory_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_NETWORK;
+        return DSM_ERROR_INVALID_RCV_MESS;
 
-    return 0;
+    return NT_STATUS_SUCCESS;
 }
 
-int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
+uint32_t  smb_directory_create(smb_session *s, smb_tid tid, const char *path)
 {
     smb_message           *req_msg, resp_msg;
     smb_directory_mk_req  req;
@@ -95,17 +100,22 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    assert(s != NULL && path != NULL);
+    if (s == NULL)
+        return DSM_ERROR_INVALID_SESSION;
+    if (tid == -1)
+        return DSM_ERROR_INVALID_TID;
+    if (path == NULL)
+        return DSM_ERROR_INVALID_PATH;
 
     utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
-        return DSM_ERROR_CHARSET;
+        return DSM_ERROR_UTF16_CONV_FAILED;
 
     req_msg = smb_message_new(SMB_CMD_MKDIR);
     if (!req_msg)
     {
         free(utf_pattern);
-        return DSM_ERROR_GENERIC;
+        return DSM_ERROR_INTERNAL;
     }
 
     req_msg->packet->header.tid = (uint16_t)tid;
@@ -123,14 +133,14 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
     free(utf_pattern);
 
     if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
+        return DSM_ERROR_INVALID_RCV_MESS;
 
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
+    if (resp_msg.packet->header.status != NT_STATUS_SUCCESS)
+        return resp_msg.packet->header.status;
 
     resp = (smb_directory_mk_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_NETWORK;
-
-    return 0;
+        return DSM_ERROR_INVALID_RCV_MESS;
+    
+    return NT_STATUS_SUCCESS;
 }
