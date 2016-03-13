@@ -57,15 +57,6 @@ smb_session     *smb_session_new();
  */
 void            smb_session_destroy(smb_session *s);
 
-
-/**
- * @brief Returns the current state of the session
- * @see SMB_STATE_ERROR
- * @see SMB_STATE_NEW
- * @see SMB_STATE_SESSION_OK
- */
-int             smb_session_state(smb_session *s);
-
 /**
  * @brief Set the credentials for this session.
  * @details Any of the params except s can be NULL.
@@ -94,7 +85,7 @@ void            smb_session_set_creds(smb_session *s, const char *domain,
  * @param ip The ip of the machine to connect to (in network byte order)
  * @param transport The type of transport used, it could be SMB_TRANSPORT_TCP
  * or SMB_TRANSPORT_NBT (Netbios over TCP, ie legacy)
- * @return 0 in case of error, a value > 0 otherwise.
+ * @return 0 on success or a DSM error code in case of error
  */
 int             smb_session_connect(smb_session *s, const char *hostname,
                                     uint32_t ip, int transport);
@@ -107,9 +98,9 @@ int             smb_session_connect(smb_session *s, const char *hostname,
  *
  * @param s The session object.
  *
- * @return 0 in case of failure, > 0 in case of success. Success doesn't mean
- * you are logged in with the user you requested. If guest are activated on
- * the remote host, when login fails, you are logged in as 'Guest'. Failure
+ * @return 0 on success or a DSM error code in case of error. Success doesn't
+ * mean you are logged in with the user you requested. If guest are activated
+ * on the remote host, when login fails, you are logged in as 'Guest'. Failure
  * might also indicate you didn't supplied all the credentials
  */
 int             smb_session_login(smb_session *s);
@@ -141,6 +132,15 @@ const char      *smb_session_server_name(smb_session *s);
  * @return 0 if the feature is not supported, something else otherwise
  */
 int             smb_session_supports(smb_session *s, int what);
+
+/**
+
+ * @brief Get the last NT_STATUS
+ * @details Valid only if a smb_ function returned the DSM_ERROR_NT error.
+ *
+ * @param s The session object
+ */
+uint32_t        smb_session_get_nt_status(smb_session *s);
 
 
 #endif

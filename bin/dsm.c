@@ -124,7 +124,7 @@ int main(int ac, char **av)
   fname     = av[argoffset++];
 
   ns = netbios_ns_new();
-  if (!netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
+  if (netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
     exit(-1);
 
   printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
@@ -179,7 +179,7 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  if (!smb_share_get_list(session, &share_list))
+  if (smb_share_get_list(session, &share_list, NULL) != DSM_SUCCESS)
   {
     fprintf(stderr, "Unable to list share for %s\n", host);
     exit(42);
@@ -191,12 +191,13 @@ int main(int ac, char **av)
   smb_share_list_destroy(share_list);
 
 
-  smb_tid test = smb_tree_connect(session, share);
-  if (test != -1)
+  smb_tid test;
+  int ret= smb_tree_connect(session, share, &test);
+  if (ret != DSM_SUCCESS)
     fprintf(stderr, "Connected to %s share\n", share);
   else
   {
-    fprintf(stderr, "Unable to connect to %s share\n", share);
+    fprintf(stderr, "Unable to connect to %s share: %d\n", share, ret);
     exit(42);
   }
 
