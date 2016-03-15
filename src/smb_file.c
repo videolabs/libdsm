@@ -183,7 +183,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     size_t          max_read;
     int             res;
 
-    assert(s != NULL && buf != NULL);
+    assert(s != NULL);
 
     if ((file = smb_session_file_get(s, fd)) == NULL)
         return -1;
@@ -219,7 +219,8 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
         return -1;
 
     resp = (smb_read_resp *)resp_msg.packet->payload;
-    memcpy(buf, (char *)resp_msg.packet + resp->data_offset, resp->data_len);
+    if (buf)
+        memcpy(buf, (char *)resp_msg.packet + resp->data_offset, resp->data_len);
     smb_fseek(s, fd, resp->data_len, SEEK_CUR);
 
     return resp->data_len;

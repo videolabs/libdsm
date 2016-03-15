@@ -75,7 +75,7 @@ void      smb_fclose(smb_session *s, smb_fd fd);
  *
  * @param[in] s The session object
  * @param[in] fd [description]
- * @param[out] buf [description]
+ * @param[out] buf can be NULL in order to skip buf_size bytes
  * @param[in] buf_size [description]
  * @return The number of bytes read or -1 in case of error.
  */
