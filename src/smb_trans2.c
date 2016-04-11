@@ -170,7 +170,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
@@ -241,7 +241,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
@@ -323,7 +323,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     uint16_t                  resume_key;
     uint16_t                  error_offset;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     // Send FIND_FIRST request
     msg = smb_trans2_find_first(s,tid,pattern);
@@ -409,7 +409,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     char                  *utf_path;
     int                   res, padding = 0;
 
-    assert(s != NULL && path != NULL && tid);
+    assert(s != NULL && path != NULL);
 
     utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
     if (utf_path_len == 0)
