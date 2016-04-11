@@ -41,10 +41,6 @@ AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug], [Additional debugging features [default=yes]])
 )
 
-AS_IF([test x"$enable_debug" != x"no"], [
-  AC_DEFINE([BDSM_DEBUG], [1], [Enable debug message and compile flags])
-])
-
 AM_CONDITIONAL([DEBUG], [test x"$enable_debug" != x"no"])
 AM_CONDITIONAL([PROGRAMS], [test x"$enable_programs" != x"no"])
 

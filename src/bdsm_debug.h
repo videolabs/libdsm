@@ -59,7 +59,7 @@
 #   define BDSM_perror(...) perror(__VA_ARGS__)
 # endif
 
-# ifdef BDSM_DEBUG
+# ifndef NDEBUG
 #  ifdef __ANDROID__
 #   define BDSM_dbg(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #  else

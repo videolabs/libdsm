@@ -14,7 +14,7 @@ CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include -I$(top_srcdir)/compat 
 if DEBUG
 AM_CFLAGS = -O0 -g3
 else
-AM_CFLAGS = -O2
+AM_CFLAGS = -O2 -DNDEBUG
 endif
 
 bdsmdir = $(includedir)/bdsm
