@@ -38,10 +38,10 @@ AC_ARG_ENABLE([programs],
 )
 
 AC_ARG_ENABLE([debug],
-  AS_HELP_STRING([--enable-debug], [Additional debugging features [default=yes]])
+  AS_HELP_STRING([--enable-debug], [Additional debugging features [default=no]])
 )
 
-AM_CONDITIONAL([DEBUG], [test x"$enable_debug" != x"no"])
+AM_CONDITIONAL([DEBUG], [test x"$enable_debug" == x"yes"])
 AM_CONDITIONAL([PROGRAMS], [test x"$enable_programs" != x"no"])
 
 LT_INIT
