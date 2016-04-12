@@ -313,7 +313,7 @@ int             smb_session_is_guest(smb_session *s)
     assert(s != NULL);
 
     // We're not logged in yet.
-    if (s->logged)
+    if (s->logged != true)
         return -1;
 
     // We're logged in as guest
