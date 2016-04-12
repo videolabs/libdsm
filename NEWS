@@ -1,6 +1,16 @@
 Changes between 0.2.0 and 0.2.1:
+--------------------------------
+
+ * Disable DEBUG mode by default
+ * Stability improvements
+
+
+Changes between 0.2.0 and 0.2.1:
+--------------------------------
+
  * Fix seek with file > 2GB on Android
  * smb_fread can skip bytes
+
 
 Changes between 0.1.0 and 0.2.0:
 --------------------------------
