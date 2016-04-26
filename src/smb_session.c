@@ -286,6 +286,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
         s->guest = true;
 
     s->srv.uid  = answer.packet->header.uid;
+    s->logged = true;
 
     return DSM_SUCCESS;
 }
