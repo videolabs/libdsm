@@ -8,4 +8,4 @@ Description: Minimalist and read-only smb client library
 Version: @BDSM_PACKAGE_VERSION@
 Cflags: -I${includedir}
 Libs: -L${libdir} -ldsm
-Libs.private: @BDSM_LIB_LOG@
+Libs.private: @BDSM_LIB_LOG@ @SOCKET_LIBS@

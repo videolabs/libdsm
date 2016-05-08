@@ -117,9 +117,12 @@ case "${host_os}" in
     AC_DEFINE([_ISOC99_SOURCE], [1], [Extensions to ISO C89 from ISO C99.])
     AC_DEFINE([_POSIX_SOURCE], [1], [IEEE Std 1003.1.])
     AC_DEFINE([_POSIX_C_SOURCE], [200809L], [IEEE Std 1003.1.])
+    SOCKET_LIBS="-lws2_32"
+    LDFLAGS="${LDFLAGS} ${SOCKET_LIBS}"
     ;;
 esac
 AC_SUBST(BDSM_LIB_LOG)
+AC_SUBST(SOCKET_LIBS)
 
 AC_OUTPUT([
 Makefile
