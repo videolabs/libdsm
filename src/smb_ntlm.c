@@ -57,16 +57,18 @@ uint64_t    smb_ntlm_generate_challenge()
     int             fd;
 
     fd = open(URANDOM, O_RDONLY);
-    if (fd < 0)
-        /* FIXME: Wrong on a arch with long is 32 bits */
-        return random();
-    else
+    if (fd >= 0)
     {
         while(read(fd, (void *)&result, sizeof(result)) != sizeof(result))
             ;
 
         close(fd);
         return result;
+    }
+    else
+    {
+        /* FIXME: Wrong on a arch with long is 32 bits */
+        return random();
     }
 }
 
