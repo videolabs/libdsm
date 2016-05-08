@@ -166,11 +166,13 @@ static int    ns_open_abort_pipe(netbios_ns *ns)
     if (pipe(ns->abort_pipe) == -1)
         return -1;
 
+#ifndef _WIN32
     if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
         return -1;
 
     if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
         return -1;
+#endif
 
     return 0;
 }
