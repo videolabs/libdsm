@@ -1,4 +1,11 @@
-Changes between 0.2.0 and 0.2.1:
+Changes between 0.2.2 and 0.2.3:
+--------------------------------
+
+ * Partial port to Windows
+ * Fix logged state after smb_session_login_ntlm
+
+
+Changes between 0.2.1 and 0.2.2:
 --------------------------------
 
  * Disable DEBUG mode by default
