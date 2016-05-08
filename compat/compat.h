@@ -44,6 +44,10 @@ typedef enum {
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 
+#ifndef O_NONBLOCK
+# define O_NONBLOCK 0
+#endif
+
 #if !defined HAVE_SYS_QUEUE_H
 # include "queue.h"
 #endif
