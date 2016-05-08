@@ -46,7 +46,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
-#include <sys/queue.h>
 
 #include <bdsm/netbios_ns.h>
 
