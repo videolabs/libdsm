@@ -34,8 +34,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
+#if !defined _WIN32
+# include <netinet/in.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include "netbios_defs.h"
 
