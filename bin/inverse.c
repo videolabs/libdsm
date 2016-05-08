@@ -56,7 +56,7 @@ int main(int ac, char **av)
     exit(1);
   }
 
-  inet_aton(av[1], &addr);
+  inet_pton(AF_INET, av[1], &addr);
   if ((name = netbios_ns_inverse(ns, addr.s_addr)) == NULL)
   {
     fprintf(stderr, "Unable to perform inverse name resolution for %s\n", av[1]);
