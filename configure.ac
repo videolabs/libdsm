@@ -84,7 +84,7 @@ AS_IF([test x"$HAVE_TASN1_3PLUS" = x"yes"], [
 AC_SEARCH_LIBS([strlcpy], [bsd], [
   AC_DEFINE([HAVE_LIBBSD], [1], [Does this system have libbsd strl*** functions implementation])
 ])
-AC_SEARCH_LIBS([clock_gettime], [rt])
+AC_SEARCH_LIBS([clock_gettime], [rt pthread])
 AC_REPLACE_FUNCS([strlcpy])
 AC_REPLACE_FUNCS([clock_gettime])
 
