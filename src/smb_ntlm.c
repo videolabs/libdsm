@@ -28,6 +28,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#ifdef _WIN32
+# define _CRT_RAND_S
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <wctype.h>
@@ -53,6 +57,7 @@
 
 uint64_t    smb_ntlm_generate_challenge()
 {
+#if !defined(_WIN32)
     uint64_t        result;
     int             fd;
 
@@ -70,6 +75,11 @@ uint64_t    smb_ntlm_generate_challenge()
         /* FIXME: Wrong on a arch with long is 32 bits */
         return random();
     }
+#else
+    unsigned int number;
+    rand_s( &number );
+    return number;
+#endif
 }
 
 void        smb_ntlm_generate_xkey(smb_ntlmh cli_session_key)
