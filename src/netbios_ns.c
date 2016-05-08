@@ -46,7 +46,9 @@
 #ifdef HAVE_SYS_QUEUE_H
 # include <sys/queue.h>
 #endif
-#include <arpa/inet.h>
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
 
 #include <bdsm/netbios_ns.h>
 
