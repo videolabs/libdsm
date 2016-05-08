@@ -1,6 +1,7 @@
 pysmb-1.1.8/*
 ref/*
 *.o
+*.exe
 dsm
 *.so
 *.a
