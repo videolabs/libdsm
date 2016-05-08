@@ -230,7 +230,7 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     q->packet->queries = htons(1);
 
     if (ip == 0)
-        inet_aton("255.255.255.255", (struct in_addr *)&ip);
+        ip = 0xFFFFFFFF; /* inet_aton("255.255.255.255", (struct in_addr *)&ip); */
 
     trn_id = ns->last_trn_id + 1; // Increment transaction ID, not to reuse them
     q->packet->trn_id = htons(trn_id);
