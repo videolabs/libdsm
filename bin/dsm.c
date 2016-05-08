@@ -40,10 +40,12 @@
 #include <errno.h>
 #include <inttypes.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <arpa/inet.h>
+#if !defined _WIN32
+# include <arpa/inet.h>
+# include <netinet/in.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include <getopt.h>
 
