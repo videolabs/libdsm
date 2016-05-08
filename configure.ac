@@ -27,6 +27,9 @@ AC_MSG_NOTICE([dsm ABI version: $BDSM_ABI_VERSION])
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
+AC_DEFINE([_FORTIFY_SOURCE], 2, [Define to 2 to get glibc warnings.])
+AC_DEFINE([_FILE_OFFSET_BITS], 64, [Define to 64 for large files support.])
+
 dnl check for -Wall -Wextra support
 CC_CHECK_CFLAG_APPEND([-Wall -Wsign-compare -Wextra -Wstrict-aliasing -Wstrict-overflow])
 
