@@ -36,10 +36,16 @@
 #ifndef _SMB_TYPES_H_
 #define _SMB_TYPES_H_
 
-#include <netinet/ip.h>
 #include <stddef.h>
-#include <libtasn1.h>
 #include <stdbool.h>
+
+#include <libtasn1.h>
+
+#if !defined _WIN32
+# include <netinet/ip.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include "bdsm/smb_types.h"
 #include "smb_buffer.h"
