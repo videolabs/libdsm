@@ -89,6 +89,7 @@ AC_SEARCH_LIBS([strlcpy], [bsd], [
 ])
 AC_SEARCH_LIBS([clock_gettime], [rt pthread])
 AC_REPLACE_FUNCS([strlcpy])
+AC_REPLACE_FUNCS([strndup])
 AC_REPLACE_FUNCS([clock_gettime])
 
 AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h sys/queue.h arpa/inet.h])

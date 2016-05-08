@@ -30,6 +30,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
@@ -42,6 +43,10 @@ typedef enum {
     CLOCK_THREAD_CPUTIME_ID
 } clockid_t;
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
+#endif
+
+#if !defined HAVE_STRNDUP
+char *strndup(const char *str, size_t n);
 #endif
 
 #ifndef O_NONBLOCK
