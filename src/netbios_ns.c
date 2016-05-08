@@ -46,10 +46,7 @@
 #ifdef HAVE_SYS_QUEUE_H
 # include <sys/queue.h>
 #endif
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/select.h>
 
 #include <bdsm/netbios_ns.h>
 
