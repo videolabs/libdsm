@@ -152,6 +152,13 @@ error:
     return 0;
 }
 
+#ifdef _WIN32
+static inline int pipe(int fds[2])
+{
+    return _pipe(fds, 32768, O_NOINHERIT | O_BINARY);
+}
+#endif
+
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {
     int flags;
