@@ -111,6 +111,13 @@ case "${host_os}" in
     BDSM_LIB_LOG="-llog"
     LDFLAGS="${LDFLAGS} ${BDSM_LIB_LOG}"
     ;;
+  *mingw32* | *cygwin* | *wince* | *mingwce*)
+    AC_DEFINE([_UNICODE], [1], [Define to 1 for Unicode (Wide Chars) APIs.])
+    AC_DEFINE([UNICODE], [1], [Define to 1 for Unicode (Wide Chars) APIs.])
+    AC_DEFINE([_ISOC99_SOURCE], [1], [Extensions to ISO C89 from ISO C99.])
+    AC_DEFINE([_POSIX_SOURCE], [1], [IEEE Std 1003.1.])
+    AC_DEFINE([_POSIX_C_SOURCE], [200809L], [IEEE Std 1003.1.])
+    ;;
 esac
 AC_SUBST(BDSM_LIB_LOG)
 
