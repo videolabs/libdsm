@@ -37,13 +37,15 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <sys/time.h>
-#include <sys/queue.h>
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
 
+#ifdef HAVE_SYS_QUEUE_H
+# include <sys/queue.h>
+#endif
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

@@ -88,7 +88,7 @@ AC_SEARCH_LIBS([clock_gettime], [rt])
 AC_REPLACE_FUNCS([strlcpy])
 AC_REPLACE_FUNCS([clock_gettime])
 
-AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h])
+AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h sys/queue.h])
 
 ## Configure random device path
 AC_ARG_WITH([urandom], 
