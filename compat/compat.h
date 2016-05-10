@@ -36,12 +36,19 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
 
 #if !defined HAVE_CLOCK_GETTIME
-typedef enum {
+#ifndef HAVE_CLOCKID_T
+typedef
+#endif
+enum {
     CLOCK_REALTIME,
     CLOCK_MONOTONIC,
     CLOCK_PROCESS_CPUTIME_ID,
     CLOCK_THREAD_CPUTIME_ID
+#ifndef HAVE_CLOCKID_T
 } clockid_t;
+#else
+};
+#endif
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 
