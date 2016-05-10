@@ -1,7 +1,7 @@
 Changes between 0.2.2 and 0.2.3:
 --------------------------------
 
- * Partial port to Windows
+ * Partial port to Windows (Win32 and WinRT/UWP)
  * Fix logged state after smb_session_login_ntlm
 
 
