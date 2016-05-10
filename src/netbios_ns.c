@@ -183,7 +183,7 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
     {
         close(ns->abort_pipe[0]);
         close(ns->abort_pipe[1]);
-        ns->abort_pipe[0] = ns->abort_pipe[1] -1;
+        ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
     }
 }
 
