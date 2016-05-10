@@ -91,6 +91,9 @@ AC_SEARCH_LIBS([clock_gettime], [rt pthread])
 AC_CHECK_TYPES([clockid_t],,,[
                #include <time.h>
                #include <pthread.h>])
+AC_CHECK_DECLS([CLOCK_MONOTONIC],,,[
+               #include <time.h>
+               #include <pthread_time.h>])
 AC_REPLACE_FUNCS([strlcpy])
 AC_REPLACE_FUNCS([strndup])
 AC_REPLACE_FUNCS([clock_gettime])
