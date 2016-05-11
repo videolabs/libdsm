@@ -39,6 +39,9 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#ifndef _WIN32
+#include <sys/socket.h>
+#else
 
 #include "bdsm_debug.h"
 #include "netbios_session.h"
