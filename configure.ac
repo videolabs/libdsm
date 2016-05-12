@@ -93,7 +93,9 @@ AC_CHECK_TYPES([clockid_t],,,[
                #include <pthread.h>])
 AC_CHECK_DECLS([CLOCK_MONOTONIC],,,[
                #include <time.h>
-               #include <pthread_time.h>])
+               #ifdef _WIN32
+               #include <pthread_time.h>
+               #endif])
 AC_REPLACE_FUNCS([strlcpy])
 AC_REPLACE_FUNCS([strndup])
 AC_REPLACE_FUNCS([clock_gettime])

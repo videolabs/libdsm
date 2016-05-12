@@ -38,7 +38,7 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 #ifndef HAVE_CLOCKID_T
 typedef int clockid_t;
 #endif
-#if !HAVE_DECL_CLOCK_MONOTONIC && defined(_WIN32)
+#if !HAVE_DECL_CLOCK_MONOTONIC
 enum {
     CLOCK_REALTIME,
     CLOCK_MONOTONIC,
