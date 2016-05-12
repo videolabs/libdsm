@@ -1,3 +1,10 @@
+Changes between 0.2.3 and 0.2.4:
+--------------------------------
+
+ * Fix compilation for Android
+ * Continued port to Windows
+
+
 Changes between 0.2.2 and 0.2.3:
 --------------------------------
 
