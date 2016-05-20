@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "spnego_asn1.h"
 #include "bdsm_debug.h"
 #include "smb_session.h"
 #include "smb_session_msg.h"
@@ -83,8 +84,11 @@ void            smb_session_destroy(smb_session *s)
             s->transport.session = NULL;
         }
 
-        if (s->spnego_asn1 != NULL)
+        if (s->spnego_asn1 != NULL){
+            asn1_lock();
             asn1_delete_structure(&s->spnego_asn1);
+            asn1_unlock();
+        }
 
         smb_buffer_free(&s->xsec_target);
 
