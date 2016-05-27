@@ -99,7 +99,12 @@ struct netbios_ns
     uint16_t            last_trn_id;  // Last transaction id used;
     NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
+#ifdef HAVE_PIPE
     int                 abort_pipe[2];
+#else
+    pthread_mutex_t     abort_lock;
+    bool                aborted;
+#endif
     unsigned int        discover_broadcast_timeout;
     pthread_t           discover_thread;
     bool                discover_started;
@@ -155,6 +160,7 @@ error:
     return 0;
 }
 
+#ifdef HAVE_PIPE
 
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {
@@ -203,6 +209,35 @@ static void netbios_ns_abort(netbios_ns *ns)
     uint8_t buf = '\0';
     write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
 }
+
+#else
+
+static int    ns_open_abort_pipe(netbios_ns *ns)
+{
+    return pthread_mutex_init(&ns->abort_lock, NULL);
+}
+
+static void   ns_close_abort_pipe(netbios_ns *ns)
+{
+    pthread_mutex_destroy(&ns->abort_lock);
+}
+
+static bool   netbios_ns_is_aborted(netbios_ns *ns)
+{
+    pthread_mutex_lock(&ns->abort_lock);
+    bool res = ns->aborted;
+    pthread_mutex_unlock(&ns->abort_lock);
+    return res;
+}
+
+static void netbios_ns_abort(netbios_ns *ns)
+{
+    pthread_mutex_lock(&ns->abort_lock);
+    ns->aborted = true;
+    pthread_mutex_unlock(&ns->abort_lock);
+}
+
+#endif
 
 static uint16_t query_type_nb = 0x2000;
 static uint16_t query_type_nbstat = 0x2100;
@@ -390,12 +425,16 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
                                uint32_t wait_ip,
                                netbios_ns_name_query *out_name_query)
 {
-    int sock, abort_fd;
+    int sock;
 
     assert(ns != NULL);
 
     sock = ns->socket;
-    abort_fd =  ns->abort_pipe[0];
+#ifdef HAVE_PIPE
+    int abort_fd =  ns->abort_pipe[0];
+#else
+    int abort_fd = -1;
+#endif
 
     if (out_name_query)
         out_name_query->type = NAME_QUERY_TYPE_INVALID;
@@ -408,7 +447,9 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         FD_ZERO(&read_fds);
         FD_ZERO(&error_fds);
         FD_SET(sock, &read_fds);
+#ifdef HAVE_PIPE
         FD_SET(abort_fd, &read_fds);
+#endif
         FD_SET(sock, &error_fds);
         nfds = (sock > abort_fd ? sock : abort_fd) + 1;
 
@@ -419,8 +460,13 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         if (FD_ISSET(sock, &error_fds))
             goto error;
 
+#ifdef HAVE_PIPE
         if (FD_ISSET(abort_fd, &read_fds))
             return -1;
+#else
+        if (netbios_ns_is_aborted(ns))
+            return -1;
+#endif
 
         else if (FD_ISSET(sock, &read_fds))
         {
@@ -551,7 +597,12 @@ netbios_ns  *netbios_ns_new()
     ns = calloc(1, sizeof(netbios_ns));
     if (!ns)
         return NULL;
+
+#ifdef HAVE_PIPE
+    // Don't initialize this in ns_open_abort_pipe, as it would lead to
+    // fd 0 to be closed (twice) in case of ns_open_socket error
     ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
+#endif
 
     if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
