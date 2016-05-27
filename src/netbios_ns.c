@@ -155,7 +155,7 @@ error:
     return 0;
 }
 
-#ifdef _WIN32
+#ifndef HAVE_PIPE
 static inline int pipe(int fds[2])
 {
     return _pipe(fds, 32768, O_NOINHERIT | O_BINARY);
