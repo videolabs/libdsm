@@ -551,7 +551,7 @@ netbios_ns  *netbios_ns_new()
     ns = calloc(1, sizeof(netbios_ns));
     if (!ns)
         return NULL;
-    ns->abort_pipe[0] = ns->abort_pipe[1] -1;
+    ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
 
     if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
