@@ -94,8 +94,8 @@ libcompat_la_LIBADD = $(LTLIBOBJS)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LIBADD = libcompat.la
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIBS@ \
+libdsm_la_LIBADD = libcompat.la $(TASN1_LIBS) @LTLIBICONV@
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ \
 	-no-undefined -export-symbols $(srcdir)/src/libdsm.sym
 
 bin_PROGRAMS =
