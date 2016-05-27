@@ -155,15 +155,6 @@ error:
     return 0;
 }
 
-#ifndef HAVE_PIPE
-#ifdef HAVE__PIPE
-static inline int pipe(int fds[2])
-{
-    return _pipe(fds, 32768, O_NOINHERIT | O_BINARY);
-}
-#define HAVE_PIPE
-#endif
-#endif
 
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {

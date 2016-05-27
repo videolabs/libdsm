@@ -62,3 +62,7 @@ char *strndup(const char *str, size_t n);
 # include "queue.h"
 #endif
 
+#if !defined(HAVE_PIPE) && defined(HAVE__PIPE)
+#define HAVE_PIPE
+int pipe(int fds[2]);
+#endif
