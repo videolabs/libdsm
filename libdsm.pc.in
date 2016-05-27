@@ -6,6 +6,6 @@ includedir=${prefix}/include
 Name: libdsm
 Description: Minimalist and read-only smb client library
 Version: @BDSM_PACKAGE_VERSION@
-Cflags: -I${includedir}
+Cflags: -I${includedir} @PTHREAD_CFLAGS@
 Libs: -L${libdir} -ldsm
-Libs.private: -liconv -ltasn1 @BDSM_LIB_LOG@ @SOCKET_LIBS@
+Libs.private: -liconv -ltasn1 @PTHREAD_LIBS@ @BDSM_LIB_LOG@ @SOCKET_LIBS@

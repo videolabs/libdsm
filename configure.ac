@@ -54,7 +54,12 @@ DOLT
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Check for pthreads
-AX_PTHREAD
+AX_PTHREAD(,[
+    AC_CHECK_LIB(pthreadGC2,pthread_join,[
+        AC_SUBST(PTHREAD_LIBS,"-lpthreadGC2")
+        AC_SUBST(PTHREAD_CFLAGS,"-DPTW32_STATIC_LIB"])
+    ])
+])
 
 ##############################
 ## Checks for the ASN.1 parser
