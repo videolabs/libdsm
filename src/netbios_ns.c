@@ -193,6 +193,26 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
     }
 }
 
+static bool   netbios_ns_is_aborted(netbios_ns *ns)
+{
+    fd_set        read_fds;
+    int           res;
+    struct timeval timeout = {0, 0};
+
+    FD_ZERO(&read_fds);
+    FD_SET(ns->abort_pipe[0], &read_fds);
+
+    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
+
+    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds));
+}
+
+static void netbios_ns_abort(netbios_ns *ns)
+{
+    uint8_t buf = '\0';
+    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+}
+
 static uint16_t query_type_nb = 0x2000;
 static uint16_t query_type_nbstat = 0x2100;
 static uint16_t query_class_in = 0x0100;
@@ -616,26 +636,6 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     }
 
     return -1;
-}
-
-static bool   netbios_ns_is_aborted(netbios_ns *ns)
-{
-    fd_set        read_fds;
-    int           res;
-    struct timeval timeout = {0, 0};
-
-    FD_ZERO(&read_fds);
-    FD_SET(ns->abort_pipe[0], &read_fds);
-
-    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
-
-    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds));
-}
-
-static void netbios_ns_abort(netbios_ns *ns)
-{
-    uint8_t buf = '\0';
-    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
 }
 
 // Perform inverse name resolution. Grap an IP and return the first <20> field
