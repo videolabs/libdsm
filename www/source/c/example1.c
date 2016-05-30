@@ -1,4 +1,3 @@
-/* Open and Read File */
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <bdsm/bdsm.h>
@@ -57,7 +56,7 @@ int main()
   }
 
   char buffer[12];
-  smb_fread(session, fd, buffer, 512);
+  smb_fread(session, fd, buffer, 12);
   printf("%s\n" ,buffer);
 
   smb_fclose(session, fd);
