@@ -1,14 +1,13 @@
 /* Netbios Discover */
-
+#include <arpa/inet.h>
 #include <stdio.h>
-
-#include <bsdm/bdsm.h>
+#include <stdlib.h>
+#include <bdsm/bdsm.h>
 
 static void print_entry(const char *what, void *p_opaque,
                         netbios_ns_entry *entry)
 {
   struct in_addr addr;
-
   addr.s_addr = netbios_ns_entry_ip(entry);
 
   printf("%s(%p): Ip: %s, name: %s/%s<%x>\n",
