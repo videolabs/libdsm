@@ -153,11 +153,7 @@ int             smb_session_connect(smb_session *s, const char *name,
 
     memcpy(s->srv.name, name, strlen(name) + 1);
 
-    int ret = smb_negotiate(s);
-    if (ret != DSM_SUCCESS)
-        return ret;
-
-    return DSM_SUCCESS;
+    return smb_negotiate(s);
 }
 
 static int        smb_negotiate(smb_session *s)
