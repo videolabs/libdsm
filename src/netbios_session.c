@@ -248,9 +248,9 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     total |= (s->packet->flags & 0x01) << 16;
     sofar  = 0;
 
-    if (total + sizeof(netbios_session_packet) > s->packet_payload_size)
-        if (!session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
-            return -1;
+    if (total + sizeof(netbios_session_packet) > s->packet_payload_size
+     && !session_buffer_realloc(s, total + sizeof(netbios_session_packet)))
+        return -1;
 
     //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
 
