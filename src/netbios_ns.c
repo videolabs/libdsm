@@ -623,7 +623,8 @@ void          netbios_ns_destroy(netbios_ns *ns)
 
     netbios_ns_entry_clear(ns);
 
-    close(ns->socket);
+    if (ns->socket != -1)
+        close(ns->socket);
 
     ns_close_abort_pipe(ns);
 

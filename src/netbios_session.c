@@ -98,6 +98,7 @@ netbios_session *netbios_session_new(size_t buf_size)
         free(session);
         return NULL;
     }
+    session->socket = -1;
 
     return session;
 }
@@ -106,7 +107,8 @@ void              netbios_session_destroy(netbios_session *s)
 {
     if (!s)
         return;
-    close(s->socket);
+    if (s->socket != -1)
+        close(s->socket);
 
     free(s->packet);
     free(s);
