@@ -70,6 +70,9 @@ size_t          smb_session_recv_msg(smb_session *s, smb_message *msg)
     if (payload_size <= 0)
         return 0;
 
+    if ((size_t)payload_size < sizeof(smb_header))
+        return 0;
+
     if (msg != NULL)
     {
         msg->packet = (smb_packet *)data;
