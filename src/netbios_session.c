@@ -207,7 +207,7 @@ int               netbios_session_packet_send(netbios_session *s)
     ssize_t         to_send;
     ssize_t         sent;
 
-    assert(s && s->packet && s->socket && s->state > 0);
+    assert(s && s->packet && s->socket >= 0 && s->state > 0);
 
     s->packet->length = htons(s->packet_cursor);
     to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
@@ -227,7 +227,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     ssize_t         res;
     size_t          total, sofar;
 
-    assert(s != NULL && s->packet != NULL && s->socket && s->state > 0);
+    assert(s != NULL && s->packet != NULL && s->socket >= 0 && s->state > 0);
 
     // Only get packet header and analyze it to get only needed number of bytes
     // needed for the packet. This will prevent losing a part of next packet
