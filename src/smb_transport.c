@@ -37,18 +37,18 @@
 
 // XXX: This can be simplified, since we have only one function that differs
 
-int               transport_connect_nbt(struct in_addr *addr,
+int               transport_connect_nbt(uint32_t ip,
                                         netbios_session *s,
                                         const char *name)
 {
-    return netbios_session_connect(addr, s, name, 0);
+    return netbios_session_connect(ip, s, name, 0);
 }
 
-int               transport_connect_tcp(struct in_addr *addr,
+int               transport_connect_tcp(uint32_t ip,
                                         netbios_session *s,
                                         const char *name)
 {
-    return netbios_session_connect(addr, s, name, 1);
+    return netbios_session_connect(ip, s, name, 1);
 }
 
 void              smb_transport_nbt(smb_transport *tr)

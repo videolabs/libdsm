@@ -148,7 +148,7 @@ int             smb_session_connect(smb_session *s, const char *name,
 
     if ((s->transport.session = s->transport.new(SMB_DEFAULT_BUFSIZE)) == NULL)
         return DSM_ERROR_GENERIC;
-    if (!s->transport.connect((struct in_addr *)&ip, s->transport.session, name))
+    if (!s->transport.connect(ip, s->transport.session, name))
         return DSM_ERROR_NETWORK;
 
     memcpy(s->srv.name, name, strlen(name) + 1);

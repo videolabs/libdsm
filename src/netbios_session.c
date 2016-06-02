@@ -114,7 +114,7 @@ void              netbios_session_destroy(netbios_session *s)
     free(s);
 }
 
-int               netbios_session_connect(struct in_addr *addr,
+int               netbios_session_connect(uint32_t ip,
         netbios_session *s,
         const char *name,
         int direct_tcp)
@@ -129,7 +129,7 @@ int               netbios_session_connect(struct in_addr *addr,
     else
         s->remote_addr.sin_port       = htons(NETBIOS_PORT_SESSION);
     s->remote_addr.sin_family       = AF_INET;
-    s->remote_addr.sin_addr.s_addr  = addr->s_addr;
+    s->remote_addr.sin_addr.s_addr  = ip;
     if (!open_socket_and_connect(s))
         goto error;
 
