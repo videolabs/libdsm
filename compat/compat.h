@@ -66,3 +66,7 @@ char *strndup(const char *str, size_t n);
 #define HAVE_PIPE
 int pipe(int fds[2]);
 #endif
+
+#ifndef _WIN32
+#define closesocket(fd) close(fd)
+#endif

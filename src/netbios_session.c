@@ -44,6 +44,7 @@
 #endif
 
 #include "bdsm_debug.h"
+#include "compat.h"
 #include "netbios_session.h"
 #include "netbios_utils.h"
 
@@ -108,7 +109,7 @@ void              netbios_session_destroy(netbios_session *s)
     if (!s)
         return;
     if (s->socket != -1)
-        close(s->socket);
+        closesocket(s->socket);
 
     free(s->packet);
     free(s);

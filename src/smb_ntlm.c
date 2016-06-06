@@ -68,7 +68,7 @@ uint64_t    smb_ntlm_generate_challenge()
         while(read(fd, (void *)&result, sizeof(result)) != sizeof(result))
             ;
 
-        close(fd);
+        closesocket(fd);
         return result;
     }
     else

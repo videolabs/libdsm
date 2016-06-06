@@ -184,8 +184,8 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
 {
     if (ns->abort_pipe[0] != -1 && ns->abort_pipe[1] != -1)
     {
-        close(ns->abort_pipe[0]);
-        close(ns->abort_pipe[1]);
+        closesocket(ns->abort_pipe[0]);
+        closesocket(ns->abort_pipe[1]);
         ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
     }
 }
@@ -624,7 +624,7 @@ void          netbios_ns_destroy(netbios_ns *ns)
     netbios_ns_entry_clear(ns);
 
     if (ns->socket != -1)
-        close(ns->socket);
+        closesocket(ns->socket);
 
     ns_close_abort_pipe(ns);
 
