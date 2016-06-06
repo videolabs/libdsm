@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include "bdsm/netbios_defs.h"
+#include "bdsm_common.h"
 
 #define NETBIOS_PORT_NAME     137 // UDP
 #define NETBIOS_PORT_SESSION  139 // TCP
@@ -72,7 +73,7 @@ typedef struct
     uint16_t                    ns_count;   // Number of authorities (?)
     uint16_t                    ar_count;   // Additionnal (??)
     char                        payload[];
-} __attribute__((packed))   netbios_query_packet;
+} SMB_PACKED_STRUCT   netbios_query_packet;
 
 typedef struct
 {
@@ -81,6 +82,6 @@ typedef struct
     // beginning of the length field (!!)
     uint16_t                    length;     // payload length;
     uint8_t                     payload[];
-} __attribute__((packed))   netbios_session_packet;
+} SMB_PACKED_STRUCT   netbios_session_packet;
 
 #endif
