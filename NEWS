@@ -3,7 +3,10 @@ Changes between 0.2.4 and 0.2.5:
 
  * Add cancellation support without pipe()
  * Continued port to Windows
+ * Fix teardown crash and wrong asserts
+ * Fix potential crash
  * Minor build system cleanup
+
 
 Changes between 0.2.3 and 0.2.4:
 --------------------------------
