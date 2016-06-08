@@ -33,6 +33,7 @@ bdsm_HEADERS = \
 noinst_HEADERS = \
     compat/compat.h \
     compat/queue.h \
+    src/bdsm_common.h    \
     src/bdsm_debug.h    \
     src/hmac_md5.h   \
     src/netbios_defs.h   \
