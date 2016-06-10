@@ -72,7 +72,7 @@ typedef struct
     uint16_t                    answers;    // Number of answers
     uint16_t                    ns_count;   // Number of authorities (?)
     uint16_t                    ar_count;   // Additionnal (??)
-    char                        payload[];
+    char                        payload[1];
 } SMB_PACKED_STRUCT   netbios_query_packet;
 
 typedef struct
@@ -81,7 +81,7 @@ typedef struct
     uint8_t                     flags;      // 0-6 reserved (== 0), byte 7 is the
     // beginning of the length field (!!)
     uint16_t                    length;     // payload length;
-    uint8_t                     payload[];
+    uint8_t                     payload[1];
 } SMB_PACKED_STRUCT   netbios_session_packet;
 
 #endif
