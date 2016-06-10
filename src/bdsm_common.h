@@ -31,10 +31,16 @@
 #ifndef BDSM_COMMON_H
 #define BDSM_COMMON_H
 
-#ifdef _WIN32
-#define SMB_PACKED_STRUCT __attribute__((packed, gcc_struct))
-#else
-#define SMB_PACKED_STRUCT __attribute__((packed))
+#ifdef _MSC_VER
+#  define SMB_PACKED_START  __pragma(pack(push, 1))
+#  define SMB_PACKED_END    __pragma(pack(pop))
+#elif defined(__GNUC__)
+#  define SMB_PACKED_START
+# ifdef _WIN32
+#  define SMB_PACKED_END    __attribute__((packed, gcc_struct))
+# else
+#  define SMB_PACKED_END    __attribute__((packed))
+# endif
 #endif
 
 #endif // BDSM_COMMON_H
