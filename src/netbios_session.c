@@ -236,7 +236,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     sofar = 0;
     while (sofar < total)
     {
-        res = recv(s->socket, (void *)(s->packet) + sofar, total - sofar, 0);
+        res = recv(s->socket, (uint8_t *)(s->packet) + sofar, total - sofar, 0);
         if (res <= 0)
         {
             BDSM_perror("netbios_session_packet_recv: ");
@@ -257,7 +257,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
 
     while (sofar < total)
     {
-        res = recv(s->socket, (void *)(s->packet) + sizeof(netbios_session_packet)
+        res = recv(s->socket, (uint8_t *)(s->packet) + sizeof(netbios_session_packet)
                    + sofar, total - sofar, 0);
         //BDSM_dbg("Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
 
