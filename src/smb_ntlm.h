@@ -40,7 +40,7 @@
 
 typedef uint8_t smb_ntlmh[SMB_NTLM_HASH_SIZE];
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint32_t    header;
     uint32_t    reserved;
@@ -48,7 +48,7 @@ typedef struct
     uint64_t    challenge;
     uint32_t    unknown;
     uint8_t     target[];
-} SMB_PACKED_STRUCT smb_ntlm_blob;
+} SMB_PACKED_END smb_ntlm_blob;
 
 
 
@@ -64,16 +64,16 @@ typedef struct
   uint16_t  FIELD ## _maxlen;    \
   uint32_t  FIELD ## _offset;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     _NTLMSSP_COMMON
     uint32_t    flags;
     _NTLMSSP_FIELD(domain)
     _NTLMSSP_FIELD(host)
     uint8_t     names[];
-} SMB_PACKED_STRUCT smb_ntlmssp_nego;
+} SMB_PACKED_END smb_ntlmssp_nego;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     _NTLMSSP_COMMON
     _NTLMSSP_FIELD(name)
@@ -82,9 +82,9 @@ typedef struct
     uint64_t    reserved;
     _NTLMSSP_FIELD(tgt) // Target Info
     uint8_t     data[];
-} SMB_PACKED_STRUCT smb_ntlmssp_challenge;
+} SMB_PACKED_END smb_ntlmssp_challenge;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     _NTLMSSP_COMMON
     _NTLMSSP_FIELD(lm)
@@ -96,7 +96,7 @@ typedef struct
 
     uint32_t    flags;
     uint8_t     data[];
-} SMB_PACKED_STRUCT smb_ntlmssp_auth;
+} SMB_PACKED_END smb_ntlmssp_auth;
 
 uint64_t    smb_ntlm_generate_challenge();
 void        smb_ntlm_generate_xkey(smb_ntlmh cli_session_key);
