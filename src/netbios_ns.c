@@ -149,7 +149,7 @@ static int    ns_open_socket(netbios_ns *ns)
 
     ns->addr.sin_family       = AF_INET;
     ns->addr.sin_port         = htons(0);
-    ns->addr.sin_addr.s_addr  = 0;
+    ns->addr.sin_addr.s_addr  = INADDR_ANY;
     if (bind(ns->socket, (struct sockaddr *)&ns->addr, sizeof(ns->addr)) < 0)
         goto error;
 
