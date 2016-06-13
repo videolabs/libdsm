@@ -127,9 +127,6 @@ struct netbios_ns_name_query
     }u;
 };
 
-static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns,
-                                                     uint32_t ip);
-
 static int    ns_open_socket(netbios_ns *ns)
 {
     int sock_opt;
