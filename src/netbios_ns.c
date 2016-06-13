@@ -240,15 +240,26 @@ static uint16_t query_type_nb = 0x2000;
 static uint16_t query_type_nbstat = 0x2100;
 static uint16_t query_class_in = 0x0100;
 
+static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t ip)
+{
+    struct sockaddr_in  addr;
+
+    addr.sin_addr.s_addr  = ip;
+    addr.sin_family       = AF_INET;
+    addr.sin_port         = htons(NETBIOS_PORT_NAME);
+
+    return sendto(ns->socket, (void *)q->packet,
+                  sizeof(netbios_query_packet) + q->cursor, 0,
+                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+}
+
 static int netbios_ns_send_name_query(netbios_ns *ns,
                                       uint32_t ip,
                                       enum name_query_type type,
                                       const char *name,
                                       uint16_t query_flag)
 {
-    struct sockaddr_in  addr;
     ssize_t             sent;
-    uint16_t            trn_id;
     uint16_t            query_type;
     netbios_query       *q;
 
@@ -283,18 +294,11 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     if (ip == 0)
         ip = 0xFFFFFFFF; /* inet_aton("255.255.255.255", (struct in_addr *)&ip); */
 
-    trn_id = ns->last_trn_id + 1; // Increment transaction ID, not to reuse them
-    q->packet->trn_id = htons(trn_id);
-
-    addr.sin_addr.s_addr  = ip;
-    addr.sin_family       = AF_INET;
-    addr.sin_port         = htons(NETBIOS_PORT_NAME);
-
-    sent = sendto(ns->socket, (void *)q->packet,
-                  sizeof(netbios_query_packet) + q->cursor, 0,
-                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    sent = netbios_ns_send_packet(ns, q, ip);
 
     netbios_query_destroy(q);
+    // Increment transaction ID, not to reuse them
+    q->packet->trn_id = htons(ns->last_trn_id + 1);
 
     if (sent < 0)
     {
@@ -304,7 +308,7 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     else
         BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
 
-    ns->last_trn_id = trn_id; // Remember the last transaction id.
+    ns->last_trn_id++; // Remember the last transaction id.
     return 0;
 }
 
