@@ -57,6 +57,12 @@
 # include <sys/socket.h>
 #endif
 
+#ifndef _WIN32
+# include <sys/types.h>
+# include <ifaddrs.h>
+# include <net/if.h>
+#endif
+
 #include <bdsm/netbios_ns.h>
 
 #include "bdsm_debug.h"
@@ -248,10 +254,57 @@ static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t
     addr.sin_family       = AF_INET;
     addr.sin_port         = htons(NETBIOS_PORT_NAME);
 
+    BDSM_dbg("Sending netbios packet to %s\n", inet_ntoa(addr.sin_addr));
     return sendto(ns->socket, (void *)q->packet,
                   sizeof(netbios_query_packet) + q->cursor, 0,
                   (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 }
+
+#ifndef _WIN32
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    struct ifaddrs *addrs;
+    if (getifaddrs(&addrs) != 0)
+        return;
+    for (struct ifaddrs *a = addrs; a != NULL; a = a->ifa_next)
+    {
+        if ((a->ifa_flags & IFF_BROADCAST) == 0 || (a->ifa_flags & IFF_UP) == 0)
+            continue;
+        if (a->ifa_addr->sa_family != PF_INET)
+            continue;
+        struct sockaddr_in* sin = (struct sockaddr_in*)a->ifa_broadaddr;
+
+        uint32_t ip = sin->sin_addr.s_addr;
+        if (netbios_ns_send_packet(ns, q, ip) != 0)
+            BDSM_perror("Failed to broadcast");
+    }
+    freeifaddrs(addrs);
+}
+
+#else
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    INTERFACE_INFO infolist[16];
+    DWORD dwBytesReturned = 0;
+    if (WSAIoctl(ns->socket, SIO_GET_INTERFACE_LIST, NULL, 0, (void*)infolist, sizeof(infolist), &dwBytesReturned, NULL, NULL) != 0)
+        return;
+    unsigned int dwNumInterfaces = dwBytesReturned / sizeof(INTERFACE_INFO);
+
+    for (unsigned int index = 0; index < dwNumInterfaces; index++)
+    {
+        if (infolist[index].iiAddress.Address.sa_family == AF_INET)
+        {
+            uint32_t broadcast = infolist[index].iiAddress.AddressIn.sin_addr.s_addr & infolist[index].iiNetmask.AddressIn.sin_addr.s_addr;
+            broadcast |= ~ infolist[index].iiNetmask.AddressIn.sin_addr.S_un.S_addr;
+            if (netbios_ns_send_packet(ns, q, broadcast) != 0)
+                BDSM_perror("Failed to broadcast");
+        }
+    }
+}
+
+#endif
 
 static int netbios_ns_send_name_query(netbios_ns *ns,
                                       uint32_t ip,
@@ -259,7 +312,6 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
                                       const char *name,
                                       uint16_t query_flag)
 {
-    ssize_t             sent;
     uint16_t            query_type;
     netbios_query       *q;
 
@@ -291,22 +343,27 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     netbios_query_append(q, (const char *)&query_class_in, 2);
     q->packet->queries = htons(1);
 
-    if (ip == 0)
-        ip = 0xFFFFFFFF; /* inet_aton("255.255.255.255", (struct in_addr *)&ip); */
-
-    sent = netbios_ns_send_packet(ns, q, ip);
-
-    netbios_query_destroy(q);
     // Increment transaction ID, not to reuse them
     q->packet->trn_id = htons(ns->last_trn_id + 1);
 
-    if (sent < 0)
+    if (ip != 0)
     {
-        BDSM_perror("netbios_ns_send_name_query: ");
-        return -1;
+        ssize_t sent = netbios_ns_send_packet(ns, q, ip);
+        if (sent < 0)
+        {
+            BDSM_perror("netbios_ns_send_name_query: ");
+            netbios_query_destroy(q);
+            return -1;
+        }
+        else
+            BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
     }
     else
-        BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
+    {
+        netbios_ns_broadcast_packet(ns, q);
+    }
+
+    netbios_query_destroy(q);
 
     ns->last_trn_id++; // Remember the last transaction id.
     return 0;
