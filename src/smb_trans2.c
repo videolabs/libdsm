@@ -101,6 +101,11 @@ static void smb_tr2_find2_parse_entries(smb_file **files_p, smb_tr2_find2_entry 
 
         tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
                                        &tmp->name);
+        if (tmp->name_len == 0)
+        {
+            free(tmp);
+            return;
+        }
         tmp->name[tmp->name_len] = 0;
 
         tmp->created    = iter->created;
