@@ -70,3 +70,10 @@ int pipe(int fds[2]);
 #ifndef _WIN32
 #define closesocket(fd) close(fd)
 #endif
+
+#ifndef HAVE_STRUCT_TIMESPEC
+struct timespec {
+    time_t  tv_sec;   /* Seconds */
+    long    tv_nsec;  /* Nanoseconds */
+};
+#endif /* HAVE_STRUCT_TIMESPEC */
