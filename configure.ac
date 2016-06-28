@@ -96,6 +96,7 @@ AC_SEARCH_LIBS([clock_gettime], [rt pthread])
 AC_CHECK_TYPES([clockid_t],,,[
                #include <time.h>
                #include <pthread.h>])
+AC_CHECK_TYPES([struct timespec],,,[#include <time.h>])
 AC_CHECK_DECLS([CLOCK_MONOTONIC],,,[
                #include <time.h>
                #ifdef _WIN32
