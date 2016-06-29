@@ -276,7 +276,7 @@ static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
         struct sockaddr_in* sin = (struct sockaddr_in*)a->ifa_broadaddr;
 
         uint32_t ip = sin->sin_addr.s_addr;
-        if (netbios_ns_send_packet(ns, q, ip) != 0)
+        if (netbios_ns_send_packet(ns, q, ip) == -1)
             BDSM_perror("Failed to broadcast");
     }
     freeifaddrs(addrs);
@@ -298,7 +298,7 @@ static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
         {
             uint32_t broadcast = infolist[index].iiAddress.AddressIn.sin_addr.s_addr & infolist[index].iiNetmask.AddressIn.sin_addr.s_addr;
             broadcast |= ~ infolist[index].iiNetmask.AddressIn.sin_addr.S_un.S_addr;
-            if (netbios_ns_send_packet(ns, q, broadcast) != 0)
+            if (netbios_ns_send_packet(ns, q, broadcast) == -1)
                 BDSM_perror("Failed to broadcast");
         }
     }
