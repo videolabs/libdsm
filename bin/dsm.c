@@ -150,7 +150,8 @@ int main(int ac, char **av)
 
   //inet_aton("192.168.110.138", &addr.sin_addr);
 
-  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
+  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP)
+      == DSM_SUCCESS)
   {
     printf("Successfully connected to %s\n", host);
   }
@@ -161,7 +162,7 @@ int main(int ac, char **av)
   }
 
   smb_session_set_creds(session, host, login, password);
-  if (smb_session_login(session))
+  if (smb_session_login(session) == DSM_SUCCESS)
   {
     if (smb_session_is_guest(session))
       printf("Login FAILED but we were logged in as GUEST \n");
@@ -195,7 +196,7 @@ int main(int ac, char **av)
 
   smb_tid test;
   int ret= smb_tree_connect(session, share, &test);
-  if (ret != DSM_SUCCESS)
+  if (ret == DSM_SUCCESS)
     fprintf(stderr, "Connected to %s share\n", share);
   else
   {
