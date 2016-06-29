@@ -248,6 +248,13 @@ int main(int ac, char **av)
     printf("File '%s' is %"PRIu64" bytes long. is_dir: %"PRIu64"\n", fname,
            smb_stat_get(st, SMB_STAT_SIZE), smb_stat_get(st, SMB_STAT_ISDIR));
   }
+  else
+  {
+    uint32_t i_status = smb_session_get_nt_status(session);
+    printf("smb_fstat failed: reason: 0x%X%s\n", i_status,
+           i_status == NT_STATUS_OBJECT_NAME_NOT_FOUND ? " (file not found)" : "");
+
+  }
 
 
   smb_session_destroy(session);
