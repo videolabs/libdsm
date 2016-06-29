@@ -38,6 +38,7 @@
 
 #include "bdsm_debug.h"
 #include "smb_message.h"
+#include "smb_session.h"
 #include "smb_session_msg.h"
 #include "smb_utils.h"
 #include "smb_stat.h"
@@ -468,7 +469,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     }
 
     if (!smb_session_recv_msg(s, &reply)
-        || reply.packet->header.status != NT_STATUS_SUCCESS)
+        || !smb_session_check_nt_status(s, &reply))
     {
         BDSM_dbg("Unable to recv msg or failure for %s\n", path);
         return NULL;
