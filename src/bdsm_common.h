@@ -32,8 +32,13 @@
 #define BDSM_COMMON_H
 
 #ifdef _MSC_VER
-#  define SMB_PACKED_START  __pragma(pack(push, 1))
-#  define SMB_PACKED_END    __pragma(pack(pop))
+# if defined(__clang__)
+#   define SMB_PACKED_START
+#   define SMB_PACKED_END    __attribute__((packed))
+# else
+#   define SMB_PACKED_START  __pragma(pack(push, 1))
+#   define SMB_PACKED_END    __pragma(pack(pop))
+# endif
 #elif defined(__GNUC__)
 #  define SMB_PACKED_START
 # ifdef _WIN32
