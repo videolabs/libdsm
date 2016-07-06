@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
@@ -42,24 +43,26 @@
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
+#include <errno.h>
 
+#include "smb_defs.h"
 #include "bdsm_debug.h"
 #include "compat.h"
 #include "netbios_session.h"
 #include "netbios_utils.h"
 
-static int        open_socket_and_connect(netbios_session *s)
+static int open_socket_and_connect(netbios_session *s)
 {
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
 
-    return 1;
+    return DSM_SUCCESS;
 
 error:
     BDSM_perror("netbios_session_new, open_socket: ");
-    return 0;
+    return DSM_ERROR_NETWORK;
 }
 
 static int        session_buffer_realloc(netbios_session *s, size_t new_size)
@@ -115,23 +118,36 @@ void              netbios_session_destroy(netbios_session *s)
     free(s);
 }
 
-int               netbios_session_connect(uint32_t ip,
-        netbios_session *s,
-        const char *name,
-        int direct_tcp)
+int netbios_session_connect(uint32_t ip, netbios_session *s,
+                            const char *name, int direct_tcp)
 {
     ssize_t                   recv_size;
     char                      *encoded_name = NULL;
+    uint16_t                  ports[2];
+    unsigned int              nb_ports;
+    bool                      opened = false;
 
     assert(s != NULL && s->packet != NULL);
 
     if (direct_tcp)
-        s->remote_addr.sin_port       = htons(NETBIOS_PORT_DIRECT);
+    {
+        ports[0] = htons(NETBIOS_PORT_DIRECT);
+        ports[1] = htons(NETBIOS_PORT_DIRECT_SECONDARY);
+        nb_ports = 2;
+    }
     else
-        s->remote_addr.sin_port       = htons(NETBIOS_PORT_SESSION);
-    s->remote_addr.sin_family       = AF_INET;
-    s->remote_addr.sin_addr.s_addr  = ip;
-    if (!open_socket_and_connect(s))
+    {
+        ports[0] = htons(NETBIOS_PORT_SESSION);
+        nb_ports = 1;
+    }
+    for (unsigned int i = 0; i < nb_ports && !opened; ++i)
+    {
+        s->remote_addr.sin_port         = ports[i];
+        s->remote_addr.sin_family       = AF_INET;
+        s->remote_addr.sin_addr.s_addr  = ip;
+        opened = open_socket_and_connect(s) == DSM_SUCCESS;
+    }
+    if (!opened)
         goto error;
 
     if (!direct_tcp)

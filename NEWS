@@ -1,3 +1,6 @@
+Changes between 0.2.5 and 0.2.6:
+  * Fix connection with a smb server listening on the port 139
+
 Changes between 0.2.4 and 0.2.5:
 --------------------------------
 
