@@ -1,5 +1,12 @@
 Changes between 0.2.5 and 0.2.6:
+--------------------------------
+
   * Fix connection with a smb server listening on the port 139
+  * Fix compilation and struct packing for MSVC
+  * Fix sample code
+  * Fix Windows broadcast addresses on multiple interfaces
+  * Fix return status on smb_fstat() call
+
 
 Changes between 0.2.4 and 0.2.5:
 --------------------------------
