@@ -59,7 +59,9 @@
 
 #ifndef _WIN32
 # include <sys/types.h>
-# include <ifaddrs.h>
+# ifdef HAVE_IFADDRS_H
+#  include <ifaddrs.h>
+# endif
 # include <net/if.h>
 #endif
 
@@ -262,6 +264,8 @@ static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t
 
 #ifndef _WIN32
 
+#ifdef HAVE_GETIFADDRS
+
 static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
 {
     struct ifaddrs *addrs;
@@ -281,6 +285,15 @@ static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
     }
     freeifaddrs(addrs);
 }
+
+#else
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    netbios_ns_send_packet(ns, q, INADDR_BROADCAST);
+}
+
+#endif
 
 #else
 

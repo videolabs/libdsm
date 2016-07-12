@@ -105,9 +105,9 @@ AC_CHECK_DECLS([CLOCK_MONOTONIC],,,[
 AC_REPLACE_FUNCS([strlcpy])
 AC_REPLACE_FUNCS([strndup])
 AC_REPLACE_FUNCS([clock_gettime])
-AC_CHECK_FUNCS([pipe _pipe])
+AC_CHECK_FUNCS([pipe _pipe getifaddrs])
 
-AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h sys/queue.h arpa/inet.h sys/socket.h])
+AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h sys/queue.h arpa/inet.h sys/socket.h ifaddrs.h])
 
 ## Configure random device path
 AC_ARG_WITH([urandom], 
