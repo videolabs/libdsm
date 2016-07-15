@@ -351,7 +351,6 @@ int             smb_session_login_spnego(smb_session *s, const char *domain,
 
     clean_asn1(s);
 
-    s->logged = true;
     return res;
 
 error:
