@@ -31,12 +31,13 @@
 #ifndef __BDSM_H_
 #define __BDSM_H_
 
-#define BDSM_VERSION_CURRENT  2
+#define BDSM_VERSION_CURRENT  3
 #define BDSM_VERSION_REVISION 1
 #define BDSM_VERSION_AGE      0
 
 #include "../include/bdsm/netbios_ns.h"
 #include "../include/bdsm/netbios_defs.h"
+#include "../include/bdsm/smb_types.h"
 #include "../include/bdsm/smb_session.h"
 #include "../include/bdsm/smb_share.h"
 #include "../include/bdsm/smb_file.h"

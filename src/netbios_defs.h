@@ -34,10 +34,12 @@
 #include <stdint.h>
 
 #include "../include/bdsm/netbios_defs.h"
+#include "bdsm_common.h"
 
 #define NETBIOS_PORT_NAME     137 // UDP
 #define NETBIOS_PORT_SESSION  139 // TCP
 #define NETBIOS_PORT_DIRECT   445 // TCP
+#define NETBIOS_PORT_DIRECT_SECONDARY 139 // TCP
 
 #define NETBIOS_NAME_LENGTH   15
 
@@ -63,7 +65,7 @@
 #define NETBIOS_OP_SESSION_RETARGET   0x84
 #define NETBIOS_OP_SESSION_KEEPALIVE  0x85
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t                    trn_id;     // Transaction ID
     uint16_t                    flags;      // Various flags
@@ -72,15 +74,15 @@ typedef struct
     uint16_t                    ns_count;   // Number of authorities (?)
     uint16_t                    ar_count;   // Additionnal (??)
     char                        payload[];
-} __attribute__((packed))   netbios_query_packet;
+} SMB_PACKED_END   netbios_query_packet;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t                     opcode;     // 'TYPE'
     uint8_t                     flags;      // 0-6 reserved (== 0), byte 7 is the
     // beginning of the length field (!!)
     uint16_t                    length;     // payload length;
     uint8_t                     payload[];
-} __attribute__((packed))   netbios_session_packet;
+} SMB_PACKED_END   netbios_session_packet;
 
 #endif

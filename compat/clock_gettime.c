@@ -27,6 +27,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _WIN32
+
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <mach/mach.h>
@@ -57,3 +59,22 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 
     return 0;
 }
+
+#else
+
+#include <windows.h>
+#include <stdint.h>
+#include <time.h>
+#include "compat.h"
+
+int clock_gettime(int clk_id, struct timespec *spec) {
+    (void)clk_id;
+    FILETIME wintime;
+    GetSystemTimeAsFileTime(&wintime);
+    uint64_t t = (uint64_t)wintime.dwHighDateTime << 32 | wintime.dwLowDateTime;
+    t -= 116444736000000000;
+    spec->tv_sec  = t / 10000000;
+    spec->tv_nsec = t % 10000000 * 100;
+    return 0;
+}
+#endif

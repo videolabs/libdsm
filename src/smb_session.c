@@ -28,6 +28,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
+#include "compat.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -152,25 +156,17 @@ int             smb_session_connect(smb_session *s, const char *name,
             smb_transport_nbt(&s->transport);
             break;
         default:
-            goto error;
+            return DSM_ERROR_GENERIC;
     }
 
     if ((s->transport.session = s->transport.new(SMB_DEFAULT_BUFSIZE)) == NULL)
-        goto error;
-    if (!s->transport.connect((struct in_addr *)&ip, s->transport.session, name))
-        goto error;
+        return DSM_ERROR_GENERIC;
+    if (!s->transport.connect(ip, s->transport.session, name))
+        return DSM_ERROR_NETWORK;
 
     memcpy(s->srv.name, name, strlen(name) + 1);
-    s->state = SMB_STATE_NETBIOS_OK;
 
-    if (!smb_negotiate(s))
-        return 0;
-
-    return 1;
-
-error:
-    s->state = SMB_STATE_ERROR;
-    return 0;
+    return smb_negotiate(s);
 }
 
 static int        smb_negotiate(smb_session *s)
@@ -181,10 +177,11 @@ static int        smb_negotiate(smb_session *s)
     smb_nego_resp       *nego;
     uint16_t *p_payload_size;
 
+    assert(s != NULL);
 
     msg = smb_message_new(SMB_CMD_NEGOTIATE);
     if (!msg)
-        goto error;
+        return DSM_ERROR_GENERIC;
 
     smb_message_put8(msg, 0);   // wct
     smb_message_put16(msg, 0);  // bct, will be updated later
@@ -197,16 +194,18 @@ static int        smb_negotiate(smb_session *s)
     if (!smb_session_send_msg(s, msg))
     {
         smb_message_destroy(msg);
-        goto error;
+        return DSM_ERROR_NETWORK;
     }
     smb_message_destroy(msg);
 
     if (!smb_session_recv_msg(s, &answer))
-        goto error;
+        return DSM_ERROR_NETWORK;
 
     nego = (smb_nego_resp *)answer.packet->payload;
-    if (answer.packet->header.status != NT_STATUS_SUCCESS && nego->wct != 0x11)
-        goto error;
+    if (!smb_session_check_nt_status(s, &answer))
+        return DSM_ERROR_NT;
+    if (nego->wct != 0x11)
+        return DSM_ERROR_NETWORK;
 
     s->srv.dialect        = nego->dialect_index;
     s->srv.security_mode  = nego->security_mode;
@@ -220,14 +219,7 @@ static int        smb_negotiate(smb_session *s)
     else
         s->srv.challenge      = nego->challenge;
 
-    // Yeah !
-    s->state              = SMB_STATE_DIALECT_OK;
-
-    return 1;
-
-error:
-    s->state = SMB_STATE_ERROR;
-    return 0;
+    return DSM_SUCCESS;
 }
 
 
@@ -241,9 +233,11 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     smb_ntlmh             hash_v2;
     uint64_t              user_challenge;
 
+    assert(s != NULL);
+
     msg = smb_message_new(SMB_CMD_SETUP);
     if (!msg)
-        return 0;
+        return DSM_ERROR_GENERIC;
 
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_req);
@@ -284,30 +278,30 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     {
         smb_message_destroy(msg);
         BDSM_dbg("Unable to send Session Setup AndX message\n");
-        return 0;
+        return DSM_ERROR_NETWORK;
     }
     smb_message_destroy(msg);
 
     if (smb_session_recv_msg(s, &answer) == 0)
     {
         BDSM_dbg("Unable to get Session Setup AndX reply\n");
-        return 0;
+        return DSM_ERROR_NETWORK;
     }
 
     smb_session_resp *r = (smb_session_resp *)answer.packet->payload;
-    if (answer.packet->header.status != NT_STATUS_SUCCESS)
+    if (!smb_session_check_nt_status(s, &answer))
     {
         BDSM_dbg("Session Setup AndX : failure.\n");
-        return 0;
+        return DSM_ERROR_NT;
     }
 
     if (r->action & 0x0001)
         s->guest = true;
 
     s->srv.uid  = answer.packet->header.uid;
-    s->state    = SMB_STATE_SESSION_OK;
+    s->logged = true;
 
-    return 1;
+    return DSM_SUCCESS;
 }
 
 int             smb_session_login(smb_session *s)
@@ -317,7 +311,7 @@ int             smb_session_login(smb_session *s)
     if (s->creds.domain == NULL
         || s->creds.login == NULL
         || s->creds.password == NULL)
-      return 0;
+      return DSM_ERROR_GENERIC;
 
     if (smb_session_supports(s, SMB_SESSION_XSEC))
         return (smb_session_login_spnego(s, s->creds.domain, s->creds.login,
@@ -330,12 +324,10 @@ int             smb_session_login(smb_session *s)
 
 int             smb_session_is_guest(smb_session *s)
 {
-    // Invalid session object
-    if (s == NULL)
-        return -1;
+    assert(s != NULL);
 
     // We're not logged in yet.
-    if (smb_session_state(s) != SMB_STATE_SESSION_OK)
+    if (s->logged != true)
         return -1;
 
     // We're logged in as guest
@@ -366,4 +358,23 @@ int             smb_session_supports(smb_session *s, int what)
         default:
             return 0;
     }
+}
+
+uint32_t        smb_session_get_nt_status(smb_session *s)
+{
+    assert(s != NULL);
+
+    return s->nt_status;
+}
+
+bool smb_session_check_nt_status(smb_session *s, smb_message *msg)
+{
+    assert(s != NULL && msg != NULL);
+
+    if (msg->packet->header.status != NT_STATUS_SUCCESS)
+    {
+        s->nt_status = msg->packet->header.status;
+        return false;
+    }
+    return true;
 }

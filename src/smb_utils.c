@@ -28,6 +28,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <iconv.h>
 #include <locale.h>
@@ -35,8 +37,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
-#include "config.h"
 
 #if HAVE_LANGINFO_H && !defined( __APPLE__ )
 # include <langinfo.h>

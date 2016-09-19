@@ -27,6 +27,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
+
+#include "config.h"
+
 #include <assert.h>
 
 #include "smb_session.h"
@@ -65,6 +68,9 @@ ssize_t         smb_session_recv_msg(smb_session *s, smb_message *msg)
 
     payload_size = s->transport.recv(s->transport.session, &data);
     if (payload_size <= 0)
+        return 0;
+
+    if ((size_t)payload_size < sizeof(smb_header))
         return 0;
 
     if (msg != NULL)

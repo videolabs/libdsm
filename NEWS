@@ -1,3 +1,57 @@
+Changes between 0.2.6 and 0.2.7:
+--------------------------------
+
+  * Fix build when lacking getifaddrs
+
+
+Changes between 0.2.5 and 0.2.6:
+--------------------------------
+
+  * Fix connection with a smb server listening on the port 139
+  * Fix compilation and struct packing for MSVC
+  * Fix sample code
+  * Fix Windows broadcast addresses on multiple interfaces
+  * Fix return status on smb_fstat() call
+
+
+Changes between 0.2.4 and 0.2.5:
+--------------------------------
+
+ * Add cancellation support without pipe()
+ * Continued port to Windows
+ * Fix teardown crash and wrong asserts
+ * Fix potential crash
+ * Minor build system cleanup
+
+
+Changes between 0.2.3 and 0.2.4:
+--------------------------------
+
+ * Fix compilation for Android
+ * Continued port to Windows
+
+
+Changes between 0.2.2 and 0.2.3:
+--------------------------------
+
+ * Partial port to Windows (Win32 and WinRT/UWP)
+ * Fix logged state after smb_session_login_ntlm
+
+
+Changes between 0.2.1 and 0.2.2:
+--------------------------------
+
+ * Disable DEBUG mode by default
+ * Stability improvements
+
+
+Changes between 0.2.0 and 0.2.1:
+--------------------------------
+
+ * Fix seek with file > 2GB on Android
+ * smb_fread can skip bytes
+
+
 Changes between 0.1.0 and 0.2.0:
 --------------------------------
 

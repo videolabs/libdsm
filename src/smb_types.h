@@ -36,12 +36,19 @@
 #ifndef _SMB_TYPES_H_
 #define _SMB_TYPES_H_
 
-#include <netinet/ip.h>
 #include <stddef.h>
 #include "libtasn1.h"
 #include <stdbool.h>
 
 #include "../include/bdsm/smb_types.h"
+
+#if !defined _WIN32
+# include <netinet/ip.h>
+#else
+# include <winsock2.h>
+#endif
+
+#include "bdsm/smb_types.h"
 #include "smb_buffer.h"
 #include "smb_packets.h"
 
@@ -64,7 +71,7 @@ struct smb_file
     uint64_t            alloc_size;
     uint64_t            size;
     uint32_t            attr;
-    uint64_t            offset;          // Current position pointer
+    off_t               offset;          // Current position pointer
     int                 is_dir;         // 0 -> file, 1 -> directory
 };
 
@@ -84,7 +91,7 @@ struct smb_transport
 {
     void              *session;
     void              *(*new)(size_t buf_size);
-    int               (*connect)(struct in_addr *addr, void *s, const char *name);
+    int               (*connect)(uint32_t ip, void *s, const char *name);
     void              (*destroy)(void *s);
     void              (*pkt_init)(void *s);
     int               (*pkt_append)(void *s, void *data, size_t size);
@@ -110,7 +117,7 @@ struct smb_srv_info
  */
 struct smb_session
 {
-    int                 state;
+    bool                logged;
     bool                guest;            // Are we logged as guest ?
 
     // Informations about the smb server we are connected to.
@@ -124,6 +131,7 @@ struct smb_session
     smb_transport       transport;
 
     smb_share           *shares;          // shares->files | Map fd <-> smb_file
+    uint32_t            nt_status;
 };
 
 typedef struct smb_message smb_message;

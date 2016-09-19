@@ -6,14 +6,15 @@ EXTRA_DIST = \
 	abi_version.sh \
 	package_version.sh \
 	contrib/spnego/spnego.asn1 \
-	contrib/spnego/spnego_asn1.c
+	contrib/spnego/spnego_asn1.c \
+	src/libdsm.sym
 
 CFLAGS = -I$(top_srcdir)/contrib -I$(top_srcdir)/include -I$(top_srcdir)/compat @TASN1_CFLAGS@ @CFLAGS@ @PTHREAD_CFLAGS@
 
 if DEBUG
 AM_CFLAGS = -O0 -g3
 else
-AM_CFLAGS = -O2
+AM_CFLAGS = -O2 -DNDEBUG
 endif
 
 bdsmdir = $(includedir)/bdsm
@@ -31,6 +32,8 @@ bdsm_HEADERS = \
     include/bdsm/smb_types.h
 noinst_HEADERS = \
     compat/compat.h \
+    compat/queue.h \
+    src/bdsm_common.h    \
     src/bdsm_debug.h    \
     src/hmac_md5.h   \
     src/netbios_defs.h   \
@@ -92,8 +95,9 @@ libcompat_la_LIBADD = $(LTLIBOBJS)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
 
-libdsm_la_LIBADD = libcompat.la
-libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ @LTLIBICONV@ @TASN1_LIBS@
+libdsm_la_LIBADD = libcompat.la $(TASN1_LIBS) @LTLIBICONV@
+libdsm_la_LDFLAGS = -version-info @BDSM_LIBTOOL_VERSION@ \
+	-no-undefined -export-symbols $(srcdir)/src/libdsm.sym
 
 bin_PROGRAMS =
 

@@ -34,8 +34,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
+#if !defined _WIN32
+# include <netinet/in.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include "netbios_defs.h"
 
@@ -65,7 +68,7 @@ typedef struct              netbios_session_s
 // Return NULL if unable to open socket/connect
 netbios_session   *netbios_session_new(size_t buf_size);
 void              netbios_session_destroy(netbios_session *);
-int               netbios_session_connect(struct in_addr *addr,
+int               netbios_session_connect(uint32_t ip,
         netbios_session *s,
         const char *name,
         int direct_tcp);

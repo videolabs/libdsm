@@ -40,10 +40,12 @@
 #include <errno.h>
 #include <inttypes.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <arpa/inet.h>
+#if !defined _WIN32
+# include <arpa/inet.h>
+# include <netinet/in.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include <getopt.h>
 
@@ -124,7 +126,7 @@ int main(int ac, char **av)
   fname     = av[argoffset++];
 
   ns = netbios_ns_new();
-  if (!netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
+  if (netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
     exit(-1);
 
   printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
@@ -148,7 +150,8 @@ int main(int ac, char **av)
 
   //inet_aton("192.168.110.138", &addr.sin_addr);
 
-  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
+  if (smb_session_connect(session, host, addr.sin_addr.s_addr, SMB_TRANSPORT_TCP)
+      == DSM_SUCCESS)
   {
     printf("Successfully connected to %s\n", host);
   }
@@ -159,7 +162,7 @@ int main(int ac, char **av)
   }
 
   smb_session_set_creds(session, host, login, password);
-  if (smb_session_login(session))
+  if (smb_session_login(session) == DSM_SUCCESS)
   {
     if (smb_session_is_guest(session))
       printf("Login FAILED but we were logged in as GUEST \n");
@@ -179,7 +182,7 @@ int main(int ac, char **av)
     exit(42);
   }
 
-  if (!smb_share_get_list(session, &share_list))
+  if (smb_share_get_list(session, &share_list, NULL) != DSM_SUCCESS)
   {
     fprintf(stderr, "Unable to list share for %s\n", host);
     exit(42);
@@ -191,12 +194,13 @@ int main(int ac, char **av)
   smb_share_list_destroy(share_list);
 
 
-  smb_tid test = smb_tree_connect(session, share);
-  if (test != -1)
+  smb_tid test;
+  int ret= smb_tree_connect(session, share, &test);
+  if (ret == DSM_SUCCESS)
     fprintf(stderr, "Connected to %s share\n", share);
   else
   {
-    fprintf(stderr, "Unable to connect to %s share\n", share);
+    fprintf(stderr, "Unable to connect to %s share: %d\n", share, ret);
     exit(42);
   }
 
@@ -241,7 +245,15 @@ int main(int ac, char **av)
 
   if (st != NULL)
   {
-    printf("File '%s' is %"PRIu64" bytes long\n", fname, smb_stat_get(st, SMB_STAT_SIZE));
+    printf("File '%s' is %"PRIu64" bytes long. is_dir: %"PRIu64"\n", fname,
+           smb_stat_get(st, SMB_STAT_SIZE), smb_stat_get(st, SMB_STAT_ISDIR));
+  }
+  else
+  {
+    uint32_t i_status = smb_session_get_nt_status(session);
+    printf("smb_fstat failed: reason: 0x%X%s\n", i_status,
+           i_status == NT_STATUS_OBJECT_NAME_NOT_FOUND ? " (file not found)" : "");
+
   }
 
 

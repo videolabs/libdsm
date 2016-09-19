@@ -33,6 +33,8 @@
 
 #include <stdint.h>
 
+#include "bdsm_common.h"
+
 #define SMB_ANDX_MEMBERS  \
   uint8_t         andx;           /* 0xff when no other command (do this :)*/  \
   uint8_t         andx_reserved;  /* 0x00 */                                   \
@@ -42,7 +44,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Main structures for holding packet data and building packets
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         magic[4];     // { 0xff, 0x53, 0x4d, 0x42 } "\xffSMB"
     uint8_t         command;      // The actual SMB command
@@ -56,34 +58,34 @@ typedef struct
     uint16_t        pid;          // Process ID.
     uint16_t        uid;          // User ID.
     uint16_t        mux_id;       // Multiplex ID. Increment it sometimes.
-} __attribute__((packed))       smb_header;
+} SMB_PACKED_END        smb_header;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     smb_header    header;       // A packet header full of gorgeous goodness.
     uint8_t         payload[];    // Ze yummy data inside. Eat 5 fruits/day !
-} __attribute__((packed))       smb_packet;
+} SMB_PACKED_END       smb_packet;
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Individual SMB command payload description
 
 // Simple structure used for several requests/responses
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;              // 0
     uint16_t        bct;
-} __attribute__((packed))   smb_simple_struct;
+} SMB_PACKED_END   smb_simple_struct;
 
 
 //-> Negotiate Protocol
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct; // zero
     uint16_t        bct;
     char            dialects[];
 
-} __attribute__((packed))   smb_nego_req;
+} SMB_PACKED_END   smb_nego_req;
 
 
 #define SMB_NEGO_RESP_COMMON \
@@ -101,20 +103,20 @@ typedef struct
   uint16_t        bct;
 
 //<- Negotiate Protocol
-typedef struct
+SMB_PACKED_START typedef struct
 {
     SMB_NEGO_RESP_COMMON
     uint64_t        challenge;      // Normally 8 bytes, if not then wtf monkey
     uint8_t         payload[];      // The rest isn't really meaningfull for us
-} __attribute__((packed))   smb_nego_resp;
+} SMB_PACKED_END   smb_nego_resp;
 
 //<- Negotiate Protocol
-typedef struct
+SMB_PACKED_START typedef struct
 {
     SMB_NEGO_RESP_COMMON
     uint8_t         srv_guid[16];
     uint8_t         gssapi[];
-} __attribute__((packed))   smb_nego_xsec_resp;
+} SMB_PACKED_END   smb_nego_xsec_resp;
 
 #define SMB_SESSION_REQ_COMMON \
   uint8_t         wct;          /* +-13 :) */                                  \
@@ -125,7 +127,7 @@ typedef struct
   uint32_t        session_key;  /* 0x00000000 */
 
 //-> Session Setup
-typedef struct
+SMB_PACKED_START typedef struct
 {
     SMB_SESSION_REQ_COMMON
     uint16_t        oem_pass_len; // Length of LM2 response
@@ -134,10 +136,10 @@ typedef struct
     uint32_t        caps;         // Capabilities
     uint16_t        payload_size;
     uint8_t         payload[];
-} __attribute__((packed))   smb_session_req;
+} SMB_PACKED_END   smb_session_req;
 
 //-> Session Setup
-typedef struct
+SMB_PACKED_START typedef struct
 {
     SMB_SESSION_REQ_COMMON
     uint16_t        xsec_blob_size; // Length of GSSAPI/SPNEGO blob
@@ -145,20 +147,20 @@ typedef struct
     uint32_t        caps;           // Capabilities
     uint16_t        payload_size;
     uint8_t         payload[];
-} __attribute__((packed))   smb_session_xsec_req;
+} SMB_PACKED_END   smb_session_xsec_req;
 
 
 //<- Session Setup
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;
     SMB_ANDX_MEMBERS
     uint16_t        action;
     uint16_t        bct;
     uint8_t         bullshit[];
-} __attribute__((packed))   smb_session_resp;
+} SMB_PACKED_END   smb_session_resp;
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;
     SMB_ANDX_MEMBERS
@@ -166,12 +168,12 @@ typedef struct
     uint16_t        xsec_blob_size;
     uint16_t        payload_size;
     uint8_t         payload[];
-} __attribute__((packed))   smb_session_xsec_resp;
+} SMB_PACKED_END   smb_session_xsec_resp;
 
 
 
 //-> Tree Connect
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;              // 4
     SMB_ANDX_MEMBERS
@@ -180,10 +182,10 @@ typedef struct
     uint16_t        bct;
     uint8_t         payload[];        // Password | Path | Service
 
-} __attribute__((packed))   smb_tree_connect_req;
+} SMB_PACKED_END   smb_tree_connect_req;
 
 //<- Tree Connect
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;              // 7
     SMB_ANDX_MEMBERS
@@ -192,14 +194,14 @@ typedef struct
     uint32_t        guest_rights;
     uint16_t        bct;
     uint8_t         payload[];
-} __attribute__((packed))   smb_tree_connect_resp;
+} SMB_PACKED_END   smb_tree_connect_resp;
 
 //-> Tree Disconnect / <- Tree Disconnect
 typedef smb_simple_struct smb_tree_disconnect_req;
 typedef smb_simple_struct smb_tree_disconnect_resp;
 
 //-> Create File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 24
     SMB_ANDX_MEMBERS
@@ -217,10 +219,10 @@ typedef struct
     uint8_t         security_flags;
     uint16_t        bct;
     uint8_t         path[];             // UTF16 Path, starting with '\'
-} __attribute__((packed))   smb_create_req;
+} SMB_PACKED_END   smb_create_req;
 
 //<- Create File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 34
     SMB_ANDX_MEMBERS
@@ -238,23 +240,23 @@ typedef struct
     uint16_t        ipc_state;
     uint8_t         is_dir;
     uint16_t        bct;                // 0
-} __attribute__((packed))   smb_create_resp;
+} SMB_PACKED_END   smb_create_resp;
 
 
 
 //-> Close File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 3
     uint16_t        fid;
     uint32_t        last_write;         // Not defined == 0xffffffff
     uint16_t        bct;                // 0
-} __attribute__((packed))   smb_close_req;
+} SMB_PACKED_END   smb_close_req;
 
 
 
 //-> Read File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 12
     SMB_ANDX_MEMBERS
@@ -266,10 +268,10 @@ typedef struct
     uint16_t        remaining;
     uint32_t        offset_high;        // Continuation of offset field'
     uint16_t        bct;                // 0
-} __attribute__((packed))   smb_read_req;
+} SMB_PACKED_END   smb_read_req;
 
 //<- Read File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 12
     SMB_ANDX_MEMBERS
@@ -282,10 +284,10 @@ typedef struct
     uint32_t        reserved2;
     uint16_t        reserved3;
     uint16_t        bct;
-} __attribute__((packed))   smb_read_resp;
+} SMB_PACKED_END   smb_read_resp;
 
 //-> Write File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 14
     SMB_ANDX_MEMBERS
@@ -300,10 +302,10 @@ typedef struct
     uint32_t        offset_high;        // Continuation of offset field'
     uint16_t        bct;
     uint8_t         padding;
-} __attribute__((packed))   smb_write_req;
+} SMB_PACKED_END   smb_write_req;
 
 //<- Write File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 6
     SMB_ANDX_MEMBERS
@@ -312,63 +314,63 @@ typedef struct
     uint16_t        available;
     uint32_t        reserved;
     uint16_t        bct;
-} __attribute__((packed))   smb_write_resp;
+} SMB_PACKED_END   smb_write_resp;
 
 //-> Remove File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x01
     uint16_t        search_attributes;  // 0x0000 for "normal" (not hidden/ystem) files
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
-} __attribute__((packed))   smb_file_rm_req;
+} SMB_PACKED_END   smb_file_rm_req;
 
 //<- Remove File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // 0x0000
-} __attribute__((packed))   smb_file_rm_resp;
+} SMB_PACKED_END   smb_file_rm_resp;
 
 //-> Remove Directory
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
-} __attribute__((packed))   smb_directory_rm_req;
+} SMB_PACKED_END   smb_directory_rm_req;
 
 //<- Remove Directory
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // 0x0000
-} __attribute__((packed))   smb_directory_rm_resp;
+} SMB_PACKED_END   smb_directory_rm_resp;
 
 //-> Move File
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x01
     uint16_t        search_attributes;  // 0x0000 for "normal" (not hidden/ystem) files
     uint16_t        bct;                // >= 2
-} __attribute__((packed))   smb_file_mv_req;
+} SMB_PACKED_END   smb_file_mv_req;
 
 //<- Move File
 typedef smb_simple_struct smb_file_mv_resp;
 
 //-> Create Directory
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // 0x00
     uint16_t        bct;                // >= 2
     uint8_t         buffer_format;      // 0x04
-} __attribute__((packed))   smb_directory_mk_req;
+} SMB_PACKED_END   smb_directory_mk_req;
 
 //<- Create Directory
 typedef smb_simple_struct smb_directory_mk_resp;
 
 //-> Trans
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t       wct;                    // 16
     uint16_t      total_param_count;
@@ -390,14 +392,14 @@ typedef struct
     uint16_t      fid;
     uint16_t      bct;
     uint8_t       payload[];
-} __attribute__((packed))   smb_trans_req;
+} SMB_PACKED_END   smb_trans_req;
 
 
 
 
 
 //-> Trans2
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t       wct;                // 15
     uint16_t      total_param_count;
@@ -419,10 +421,10 @@ typedef struct
     uint16_t      bct;
     uint8_t       padding[3];
     uint8_t       payload[];
-} __attribute__((packed))   smb_trans2_req;
+} SMB_PACKED_END   smb_trans2_req;
 
 //// -> Trans2|FindFirst2
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t      attrs;              // Search attributes
     uint16_t      count;              // Search count
@@ -430,10 +432,10 @@ typedef struct
     uint16_t      interest;           // What kind of info do we want ?
     uint32_t      storage;            // ? => 0
     uint8_t       pattern[];          // The queried pattern "\\folder\\*"
-} __attribute__((packed))   smb_tr2_findfirst2;
+} SMB_PACKED_END   smb_tr2_findfirst2;
 
 //// -> Trans2|FindNext2
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t      sid;                // Search handle
     uint16_t      count;              // Search count
@@ -441,19 +443,19 @@ typedef struct
     uint32_t      resume_key;         // Value returned by previous find2 call
     uint16_t      flags;
     uint8_t       pattern[];          // The queried pattern "\\folder\\*"
-} __attribute__((packed))   smb_tr2_findnext2;
+} SMB_PACKED_END   smb_tr2_findnext2;
 
 //// -> Trans2|QueryPathInfo
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t      interest;
     uint32_t      reserved;
     uint8_t       path[];
-} __attribute__((packed))   smb_tr2_query;
+} SMB_PACKED_END   smb_tr2_query;
 
 //<- Trans2
 
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t       wct;                // 10
     uint16_t      total_param_count;
@@ -470,10 +472,10 @@ typedef struct
     uint16_t      bct;
     uint8_t       padding;
     uint8_t       payload[];
-} __attribute__((packed))   smb_trans2_resp;
+} SMB_PACKED_END   smb_trans2_resp;
 
 //// <- Trans2|FindFirst2Params
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t      id;
     uint16_t      count;
@@ -481,19 +483,19 @@ typedef struct
     uint16_t      ea_error_offset;
     uint16_t      last_name_offset;
     uint16_t      padding;
-} __attribute__((packed))   smb_tr2_findfirst2_params;
+} SMB_PACKED_END   smb_tr2_findfirst2_params;
 
 //// <- Trans2|FindNext2Params
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint16_t      count;
     uint16_t      eos;
     uint16_t      ea_error_offset;
     uint16_t      last_name_offset;
-} __attribute__((packed))   smb_tr2_findnext2_params;
+} SMB_PACKED_END   smb_tr2_findnext2_params;
 
 //// <- Trans2|FindFirst2FileInfo
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint32_t      next_entry;
     uint32_t      index;
@@ -510,11 +512,11 @@ typedef struct
     uint8_t       reserved;
     uint8_t       short_name[24];
     uint8_t       name[];
-} __attribute__((packed))   smb_tr2_find2_entry;
+} SMB_PACKED_END   smb_tr2_find2_entry;
 
 
 //// <- Trans2|QueryPathInfo
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint64_t      created;
     uint64_t      accessed;
@@ -531,10 +533,10 @@ typedef struct
     uint32_t      ea_list_len;
     uint32_t      name_len;
     uint8_t       name[];
-} __attribute__((packed))   smb_tr2_path_info;
+} SMB_PACKED_END   smb_tr2_path_info;
 
 //-> Example
-typedef struct
+SMB_PACKED_START typedef struct
 {
     uint8_t         wct;                // ??
     SMB_ANDX_MEMBERS
@@ -542,7 +544,7 @@ typedef struct
     uint16_t        bct;
     //uint8_t         padding;
     uint8_t         file[];
-} __attribute__((packed))   smb_example_t;
+} SMB_PACKED_END   smb_example_t;
 
 
 #endif

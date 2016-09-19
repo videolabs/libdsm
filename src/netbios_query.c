@@ -28,11 +28,17 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <arpa/inet.h>
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef _WIN32
+# include <winsock2.h>
+#endif
 
 #include "netbios_query.h"
 

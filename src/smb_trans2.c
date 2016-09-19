@@ -28,6 +28,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -36,6 +38,7 @@
 
 #include "bdsm_debug.h"
 #include "smb_message.h"
+#include "smb_session.h"
 #include "smb_session_msg.h"
 #include "smb_utils.h"
 #include "smb_stat.h"
@@ -99,6 +102,11 @@ static void smb_tr2_find2_parse_entries(smb_file **files_p, smb_tr2_find2_entry 
 
         tmp->name_len = smb_from_utf16((const char *)iter->name, iter->name_len,
                                        &tmp->name);
+        if (tmp->name_len == 0)
+        {
+            free(tmp);
+            return;
+        }
         tmp->name[tmp->name_len] = 0;
 
         tmp->created    = iter->created;
@@ -170,7 +178,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
@@ -241,7 +249,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     utf_pattern_len = smb_to_utf16(pattern, strlen(pattern) + 1, &utf_pattern);
     if (utf_pattern_len == 0)
@@ -323,7 +331,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     uint16_t                  resume_key;
     uint16_t                  error_offset;
 
-    assert(s != NULL && pattern != NULL && tid);
+    assert(s != NULL && pattern != NULL);
 
     // Send FIND_FIRST request
     msg = smb_trans2_find_first(s,tid,pattern);
@@ -409,7 +417,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     char                  *utf_path;
     int                   res, padding = 0;
 
-    assert(s != NULL && path != NULL && tid);
+    assert(s != NULL && path != NULL);
 
     utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
     if (utf_path_len == 0)
@@ -461,7 +469,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     }
 
     if (!smb_session_recv_msg(s, &reply)
-        || reply.packet->header.status != NT_STATUS_SUCCESS)
+        || !smb_session_check_nt_status(s, &reply))
     {
         BDSM_dbg("Unable to recv msg or failure for %s\n", path);
         return NULL;

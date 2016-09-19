@@ -74,7 +74,7 @@ void      smb_fclose(smb_session *s, smb_fd fd);
  *
  * @param[in] s The session object
  * @param[in] fd [description]
- * @param[out] buf [description]
+ * @param[out] buf can be NULL in order to skip buf_size bytes
  * @param[in] buf_size [description]
  * @return The number of bytes read or -1 in case of error.
  */
@@ -112,7 +112,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
  * #SMB_SEEK_SET and #SMB_SEEK_CUR
  * @return The current read pointer position or -1 on error
  */
-ssize_t   smb_fseek(smb_session *s, smb_fd fd, ssize_t offset, int whence);
+ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence);
 
 /**
  * @brief remove a file on a share.

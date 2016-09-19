@@ -33,11 +33,29 @@
 #include <string.h>
 #include <assert.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#if !defined( _WIN32 )
+# include <arpa/inet.h>
+#else
+# include <winsock2.h>
+#endif
 
 #include "bdsm.h"
+
+#ifdef _WIN32
+#define EAFNOSUPPORT WSAEAFNOSUPPORT
+int inet_pton (int af, const char *src, void *dst)
+{
+    unsigned char *b = dst;
+    switch (af)
+    {
+        case AF_INET:
+            return sscanf (src, "%hhu.%hhu.%hhu.%hhu",
+                    b + 0, b + 1, b + 2, b + 3) == 4;
+    }
+    errno = EAFNOSUPPORT;
+    return -1;
+}
+#endif
 
 int main(int ac, char **av)
 {
@@ -54,7 +72,7 @@ int main(int ac, char **av)
     exit(1);
   }
 
-  inet_aton(av[1], &addr);
+  inet_pton(AF_INET, av[1], &addr);
   if ((name = netbios_ns_inverse(ns, addr.s_addr)) == NULL)
   {
     fprintf(stderr, "Unable to perform inverse name resolution for %s\n", av[1]);

@@ -1,8 +1,11 @@
-/* This file is just a placeholder so the library isn't empty */
+#include "config.h"
 
-/* This function does strictly nothing. It's just here to avoid
-   libcompat.a to be empty, which is illegal */
-int not_empty()
+#if !defined(HAVE_PIPE) && defined(HAVE__PIPE)
+
+#include <fcntl.h>
+
+int pipe(int fds[2])
 {
-    return 42;
+    return _pipe(fds, 32768, O_NOINHERIT | O_BINARY);
 }
+#endif

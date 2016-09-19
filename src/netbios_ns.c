@@ -29,26 +29,43 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include <sys/time.h>
-#include <sys/queue.h>
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <sys/queue.h>
+#ifdef HAVE_SYS_QUEUE_H
+# include <sys/queue.h>
+#endif
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef _WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
 
-#include "../include/bdsm/netbios_ns.h"
+#ifndef _WIN32
+# include <sys/types.h>
+# ifdef HAVE_IFADDRS_H
+#  include <ifaddrs.h>
+# endif
+# include <net/if.h>
+#endif
+
+#include <bdsm/netbios_ns.h>
 
 #include "bdsm_debug.h"
 #include "netbios_query.h"
@@ -90,7 +107,12 @@ struct netbios_ns
     uint16_t            last_trn_id;  // Last transaction id used;
     NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
+#ifdef HAVE_PIPE
     int                 abort_pipe[2];
+#else
+    pthread_mutex_t     abort_lock;
+    bool                aborted;
+#endif
     unsigned int        discover_broadcast_timeout;
     pthread_t           discover_thread;
     bool                discover_started;
@@ -113,9 +135,6 @@ struct netbios_ns_name_query
     }u;
 };
 
-static netbios_ns_entry *netbios_ns_inverse_internal(netbios_ns *ns,
-                                                     uint32_t ip);
-
 static int    ns_open_socket(netbios_ns *ns)
 {
     int sock_opt;
@@ -123,9 +142,6 @@ static int    ns_open_socket(netbios_ns *ns)
     if ((ns->socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         goto error;
 
-    sock_opt = 1;
-    setsockopt(ns->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
-    
     sock_opt = 1;
     if (setsockopt(ns->socket, SOL_SOCKET, SO_BROADCAST,
                    (void *)&sock_opt, sizeof(sock_opt)) < 0)
@@ -138,7 +154,7 @@ static int    ns_open_socket(netbios_ns *ns)
 
     ns->addr.sin_family       = AF_INET;
     ns->addr.sin_port         = htons(0);
-    ns->addr.sin_addr.s_addr  = 0;
+    ns->addr.sin_addr.s_addr  = INADDR_ANY;
     if (bind(ns->socket, (struct sockaddr *)&ns->addr, sizeof(ns->addr)) < 0)
         goto error;
 
@@ -149,6 +165,8 @@ error:
     return 0;
 }
 
+#ifdef HAVE_PIPE
+
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {
     int flags;
@@ -156,11 +174,13 @@ static int    ns_open_abort_pipe(netbios_ns *ns)
     if (pipe(ns->abort_pipe) == -1)
         return -1;
 
+#ifndef _WIN32
     if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
         return -1;
 
     if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
         return -1;
+#endif
 
     return 0;
 }
@@ -169,15 +189,135 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
 {
     if (ns->abort_pipe[0] != -1 && ns->abort_pipe[1] != -1)
     {
-        close(ns->abort_pipe[0]);
-        close(ns->abort_pipe[1]);
-        ns->abort_pipe[0] = ns->abort_pipe[1] -1;
+        closesocket(ns->abort_pipe[0]);
+        closesocket(ns->abort_pipe[1]);
+        ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
     }
 }
+
+static bool   netbios_ns_is_aborted(netbios_ns *ns)
+{
+    fd_set        read_fds;
+    int           res;
+    struct timeval timeout = {0, 0};
+
+    FD_ZERO(&read_fds);
+    FD_SET(ns->abort_pipe[0], &read_fds);
+
+    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
+
+    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds));
+}
+
+static void netbios_ns_abort(netbios_ns *ns)
+{
+    uint8_t buf = '\0';
+    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+}
+
+#else
+
+static int    ns_open_abort_pipe(netbios_ns *ns)
+{
+    return pthread_mutex_init(&ns->abort_lock, NULL);
+}
+
+static void   ns_close_abort_pipe(netbios_ns *ns)
+{
+    pthread_mutex_destroy(&ns->abort_lock);
+}
+
+static bool   netbios_ns_is_aborted(netbios_ns *ns)
+{
+    pthread_mutex_lock(&ns->abort_lock);
+    bool res = ns->aborted;
+    pthread_mutex_unlock(&ns->abort_lock);
+    return res;
+}
+
+static void netbios_ns_abort(netbios_ns *ns)
+{
+    pthread_mutex_lock(&ns->abort_lock);
+    ns->aborted = true;
+    pthread_mutex_unlock(&ns->abort_lock);
+}
+
+#endif
 
 static uint16_t query_type_nb = 0x2000;
 static uint16_t query_type_nbstat = 0x2100;
 static uint16_t query_class_in = 0x0100;
+
+static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t ip)
+{
+    struct sockaddr_in  addr;
+
+    addr.sin_addr.s_addr  = ip;
+    addr.sin_family       = AF_INET;
+    addr.sin_port         = htons(NETBIOS_PORT_NAME);
+
+    BDSM_dbg("Sending netbios packet to %s\n", inet_ntoa(addr.sin_addr));
+    return sendto(ns->socket, (void *)q->packet,
+                  sizeof(netbios_query_packet) + q->cursor, 0,
+                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+}
+
+#ifndef _WIN32
+
+#ifdef HAVE_GETIFADDRS
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    struct ifaddrs *addrs;
+    if (getifaddrs(&addrs) != 0)
+        return;
+    for (struct ifaddrs *a = addrs; a != NULL; a = a->ifa_next)
+    {
+        if ((a->ifa_flags & IFF_BROADCAST) == 0 || (a->ifa_flags & IFF_UP) == 0)
+            continue;
+        if (a->ifa_addr->sa_family != PF_INET)
+            continue;
+        struct sockaddr_in* sin = (struct sockaddr_in*)a->ifa_broadaddr;
+
+        uint32_t ip = sin->sin_addr.s_addr;
+        if (netbios_ns_send_packet(ns, q, ip) == -1)
+            BDSM_perror("Failed to broadcast");
+    }
+    freeifaddrs(addrs);
+}
+
+#else
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    netbios_ns_send_packet(ns, q, INADDR_BROADCAST);
+}
+
+#endif
+
+#else
+
+static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
+{
+    INTERFACE_INFO infolist[16];
+    DWORD dwBytesReturned = 0;
+    if (WSAIoctl(ns->socket, SIO_GET_INTERFACE_LIST, NULL, 0, (void*)infolist, sizeof(infolist), &dwBytesReturned, NULL, NULL) != 0)
+        return;
+    unsigned int dwNumInterfaces = dwBytesReturned / sizeof(INTERFACE_INFO);
+
+    for (unsigned int index = 0; index < dwNumInterfaces; index++)
+    {
+        if (infolist[index].iiAddress.Address.sa_family == AF_INET)
+        {
+            uint32_t broadcast = infolist[index].iiAddress.AddressIn.sin_addr.s_addr & infolist[index].iiNetmask.AddressIn.sin_addr.s_addr;
+            broadcast |= ~ infolist[index].iiNetmask.AddressIn.sin_addr.S_un.S_addr;
+            if (netbios_ns_send_packet(ns, q, broadcast) == -1)
+                BDSM_perror("Failed to broadcast");
+        }
+    }
+}
+
+#endif
 
 static int netbios_ns_send_name_query(netbios_ns *ns,
                                       uint32_t ip,
@@ -185,9 +325,6 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
                                       const char *name,
                                       uint16_t query_flag)
 {
-    struct sockaddr_in  addr;
-    ssize_t             sent;
-    uint16_t            trn_id;
     uint16_t            query_type;
     netbios_query       *q;
 
@@ -219,31 +356,29 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     netbios_query_append(q, (const char *)&query_class_in, 2);
     q->packet->queries = htons(1);
 
-    if (ip == 0)
-        inet_aton("255.255.255.255", (struct in_addr *)&ip);
+    // Increment transaction ID, not to reuse them
+    q->packet->trn_id = htons(ns->last_trn_id + 1);
 
-    trn_id = ns->last_trn_id + 1; // Increment transaction ID, not to reuse them
-    q->packet->trn_id = htons(trn_id);
-
-    addr.sin_addr.s_addr  = ip;
-    addr.sin_family       = AF_INET;
-    addr.sin_port         = htons(NETBIOS_PORT_NAME);
-
-    sent = sendto(ns->socket, (void *)q->packet,
-                  sizeof(netbios_query_packet) + q->cursor, 0,
-                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    if (ip != 0)
+    {
+        ssize_t sent = netbios_ns_send_packet(ns, q, ip);
+        if (sent < 0)
+        {
+            BDSM_perror("netbios_ns_send_name_query: ");
+            netbios_query_destroy(q);
+            return -1;
+        }
+        else
+            BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
+    }
+    else
+    {
+        netbios_ns_broadcast_packet(ns, q);
+    }
 
     netbios_query_destroy(q);
 
-    if (sent < 0)
-    {
-        BDSM_perror("netbios_ns_send_name_query: ");
-        return -1;
-    }
-    else
-        BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
-
-    ns->last_trn_id = trn_id; // Remember the last transaction id.
+    ns->last_trn_id++; // Remember the last transaction id.
     return 0;
 }
 
@@ -361,12 +496,16 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
                                uint32_t wait_ip,
                                netbios_ns_name_query *out_name_query)
 {
-    int sock, abort_fd;
+    int sock;
 
     assert(ns != NULL);
 
     sock = ns->socket;
-    abort_fd =  ns->abort_pipe[0];
+#ifdef HAVE_PIPE
+    int abort_fd =  ns->abort_pipe[0];
+#else
+    int abort_fd = -1;
+#endif
 
     if (out_name_query)
         out_name_query->type = NAME_QUERY_TYPE_INVALID;
@@ -379,7 +518,9 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         FD_ZERO(&read_fds);
         FD_ZERO(&error_fds);
         FD_SET(sock, &read_fds);
+#ifdef HAVE_PIPE
         FD_SET(abort_fd, &read_fds);
+#endif
         FD_SET(sock, &error_fds);
         nfds = (sock > abort_fd ? sock : abort_fd) + 1;
 
@@ -390,8 +531,13 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         if (FD_ISSET(sock, &error_fds))
             goto error;
 
+#ifdef HAVE_PIPE
         if (FD_ISSET(abort_fd, &read_fds))
             return -1;
+#else
+        if (netbios_ns_is_aborted(ns))
+            return -1;
+#endif
 
         else if (FD_ISSET(sock, &read_fds))
         {
@@ -522,7 +668,12 @@ netbios_ns  *netbios_ns_new()
     ns = calloc(1, sizeof(netbios_ns));
     if (!ns)
         return NULL;
-    ns->abort_pipe[0] = ns->abort_pipe[1] -1;
+
+#ifdef HAVE_PIPE
+    // Don't initialize this in ns_open_abort_pipe, as it would lead to
+    // fd 0 to be closed (twice) in case of ns_open_socket error
+    ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
+#endif
 
     if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
     {
@@ -543,7 +694,8 @@ void          netbios_ns_destroy(netbios_ns *ns)
 
     netbios_ns_entry_clear(ns);
 
-    close(ns->socket);
+    if (ns->socket != -1)
+        closesocket(ns->socket);
 
     ns_close_abort_pipe(ns);
 
@@ -563,18 +715,19 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
     {
         *addr = cached->address.s_addr;
-        return 1;
+        return 0;
     }
 
     if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-        return 0;
+        return -1;
 
     if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
                                    NETBIOS_FLAG_RECURSIVE |
                                    NETBIOS_FLAG_BROADCAST) == -1)
     {
         free(encoded_name);
-        return 0;
+        return -1;
+
     }
     free(encoded_name);
 
@@ -591,32 +744,12 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
         {
             *addr = name_query.u.nb.ip;
             BDSM_dbg("netbios_ns_resolve, received a reply for '%s', ip: 0x%X!\n", name, *addr);
-            return 1;
+            return 0;
         } else
             BDSM_dbg("netbios_ns_resolve, wrong query type received\n");
     }
 
-    return 0;
-}
-
-static int    netbios_ns_is_aborted(netbios_ns *ns)
-{
-    fd_set        read_fds;
-    int           res;
-    struct timeval timeout = {0, 0};
-
-    FD_ZERO(&read_fds);
-    FD_SET(ns->abort_pipe[0], &read_fds);
-
-    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
-
-    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds)) ? 1 : 0;
-}
-
-static void netbios_ns_abort(netbios_ns *ns)
-{
-    uint8_t buf = '\0';
-    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+    return -1;
 }
 
 // Perform inverse name resolution. Grap an IP and return the first <20> field
@@ -732,7 +865,7 @@ static void *netbios_ns_discover_thread(void *opaque)
         {
             struct timeval      timeout;
             struct sockaddr_in  recv_addr;
-            ssize_t                 res;
+            int                 res;
             netbios_ns_name_query name_query;
 
             timeout.tv_sec = ns->discover_broadcast_timeout;
@@ -810,16 +943,16 @@ int netbios_ns_discover_start(netbios_ns *ns,
                               netbios_ns_discover_callbacks *callbacks)
 {
     if (ns->discover_started || !callbacks)
-        return 0;
+        return -1;
 
     ns->discover_callbacks = *callbacks;
     ns->discover_broadcast_timeout = broadcast_timeout;
     if (pthread_create(&ns->discover_thread, NULL,
                        netbios_ns_discover_thread, ns) != 0)
-        return 0;
+        return -1;
     ns->discover_started = true;
 
-    return 1;
+    return 0;
 }
 
 int netbios_ns_discover_stop(netbios_ns *ns)
@@ -830,8 +963,8 @@ int netbios_ns_discover_stop(netbios_ns *ns)
         pthread_join(ns->discover_thread, NULL);
         ns->discover_started = false;
 
-        return 1;
+        return 0;
     }
     else
-        return 0;
+        return -1;
 }

@@ -28,6 +28,12 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
+#ifdef _WIN32
+# define _CRT_RAND_S
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <wctype.h>
@@ -37,7 +43,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "config.h"
 #ifdef HAVE_BSD_STRING_H
 #include <bsd/string.h>
 #else
@@ -53,21 +58,29 @@
 
 uint64_t    smb_ntlm_generate_challenge()
 {
+#if !defined(_WIN32)
     uint64_t        result;
     int             fd;
 
     fd = open(URANDOM, O_RDONLY);
-    if (fd < 0)
-        /* FIXME: Wrong on a arch with long is 32 bits */
-        return random();
-    else
+    if (fd >= 0)
     {
         while(read(fd, (void *)&result, sizeof(result)) != sizeof(result))
             ;
 
-        close(fd);
+        closesocket(fd);
         return result;
     }
+    else
+    {
+        /* FIXME: Wrong on a arch with long is 32 bits */
+        return random();
+    }
+#else
+    unsigned int number;
+    rand_s( &number );
+    return number;
+#endif
 }
 
 void        smb_ntlm_generate_xkey(smb_ntlmh cli_session_key)
@@ -144,7 +157,7 @@ uint8_t     *smb_ntlm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
     if (smb_buffer_alloc(&data, sizeof(uint64_t) + blob->size) == 0)
         return NULL;
     memcpy(data.data, (void *)&srv_challenge, sizeof(uint64_t));
-    memcpy(data.data + sizeof(uint64_t), blob->data, blob->size);
+    memcpy((uint8_t*)data.data + sizeof(uint64_t), blob->data, blob->size);
 
     HMAC_MD5(hash_v2, SMB_NTLM_HASH_SIZE, data.data, data.size, &hmac);
     smb_buffer_free(&data);

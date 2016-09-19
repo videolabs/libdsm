@@ -28,6 +28,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -107,8 +109,9 @@ smb_message   *smb_message_grow(smb_message *msg, size_t size)
 
 void            smb_message_destroy(smb_message *msg)
 {
-    if (msg != NULL)
-        free(msg->packet);
+    if (msg == NULL)
+        return;
+    free(msg->packet);
     free(msg);
 }
 

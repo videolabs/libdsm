@@ -1,35 +1,36 @@
-/* SMB Connect, login and read file example */
-
 #include <arpa/inet.h>
 #include <stdio.h>
-
-#include <bsdm/bdsm.h>
+#include <stdlib.h>
+#include <bdsm/bdsm.h>
 
 int main()
 {
-  struct in_addr  addr;
-  smb_session   *session;
-  smb_tid     tid;
-  smb_fd      fd;
+  struct in_addr addr;
+  smb_session    *session;
+  smb_tid        tid;
+  smb_fd         fd;
+  int            result;
 
   session = smb_session_new();
   if (session == NULL)
     exit(1);
 
-  inet_aton("127.0.0.1", &addr.sin_addr);
+  inet_aton("127.0.0.1", &addr);
 
-  if (smb_session_connect(session, "MYNAME", 
-      addr.sin_addr.s_addr, SMB_TRANSPORT_TCP))
+  if (smb_session_connect(session, "EXAMPLE-PC", 
+      addr.s_addr, SMB_TRANSPORT_TCP))
   {
     printf("Unable to connect to host\n");
     exit(2);
   }
 
-  smb_session_set_creds(session, "MYNAME", "login", 
-              "password");
-  if (smb_session_login(session))
+  smb_session_set_creds(session, "EXAMPLE-PC", "EXAMPLE-USER", 
+			"EXAMPLE-PASSWORD");
+  
+  result = smb_session_login(session);
+  if (result == 0)
   {
-    if (session->guest)
+    if (smb_session_is_guest(session))
       printf("Logged in as GUEST \n");
     else
       printf("Successfully logged in\n");
@@ -40,24 +41,24 @@ int main()
     exit(3);
   }
 
-  tid = smb_tree_connect(session, "MyShare");
-  if (!tid)
+  result = smb_tree_connect(session, "sharedfolder", &tid);
+  if (!tid || result != 0)
   {
     printf("Unable to connect to share\n");
     exit(4);
   }
-
-  fd = smb_fopen(session, tid, "\\My\\File");
-  if (!fd)
+  
+  result = smb_fopen(session, tid, "\\helloworld.txt",
+                     SMB_MOD_READ, &fd);
+  if (!fd || result != 0)
   {
     printf("Unable to open file\n");
     exit(5);
   }
 
-  char buffer[512];
-  smb_fread(session, fd, buffer, 512);
-
-  /* Use data */
+  char buffer[12];
+  smb_fread(session, fd, buffer, 12);
+  printf("%s\n" ,buffer);
 
   smb_fclose(session, fd);
   smb_tree_disconnect(session, tid);

@@ -8,7 +8,7 @@
  *
  * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
  *
- * Author: Julien 'Lta' BALLET <contact@lta.io>
+ * Author: Hugo Beauzée-Luyssen <hugo@beauzee.fr>
  *
  * liBDSM is released under LGPLv2.1 (or later) and is also available
  * under a commercial license.
@@ -28,52 +28,24 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "config.h"
+#ifndef BDSM_COMMON_H
+#define BDSM_COMMON_H
 
-#include <stdlib.h>
-#if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
-size_t strlcpy(char *dst, const char *src, size_t siz);
-#endif
-
-#ifndef HAVE_CLOCKID_T
-typedef int clockid_t;
-#endif
-#if !HAVE_DECL_CLOCK_MONOTONIC
-enum {
-    CLOCK_REALTIME,
-    CLOCK_MONOTONIC,
-    CLOCK_PROCESS_CPUTIME_ID,
-    CLOCK_THREAD_CPUTIME_ID
-};
-#endif
-#if !defined HAVE_CLOCK_GETTIME
-int clock_gettime(clockid_t clk_id, struct timespec *tp);
+#ifdef _MSC_VER
+# if defined(__clang__)
+#   define SMB_PACKED_START
+#   define SMB_PACKED_END    __attribute__((packed))
+# else
+#   define SMB_PACKED_START  __pragma(pack(push, 1))
+#   define SMB_PACKED_END    __pragma(pack(pop))
+# endif
+#elif defined(__GNUC__)
+#  define SMB_PACKED_START
+# ifdef _WIN32
+#  define SMB_PACKED_END    __attribute__((packed, gcc_struct))
+# else
+#  define SMB_PACKED_END    __attribute__((packed))
+# endif
 #endif
 
-#if !defined HAVE_STRNDUP
-char *strndup(const char *str, size_t n);
-#endif
-
-#ifndef O_NONBLOCK
-# define O_NONBLOCK 0
-#endif
-
-#if !defined HAVE_SYS_QUEUE_H
-# include "queue.h"
-#endif
-
-#if !defined(HAVE_PIPE) && defined(HAVE__PIPE)
-#define HAVE_PIPE
-int pipe(int fds[2]);
-#endif
-
-#ifndef _WIN32
-#define closesocket(fd) close(fd)
-#endif
-
-#ifndef HAVE_STRUCT_TIMESPEC
-struct timespec {
-    time_t  tv_sec;   /* Seconds */
-    long    tv_nsec;  /* Nanoseconds */
-};
-#endif /* HAVE_STRUCT_TIMESPEC */
+#endif // BDSM_COMMON_H

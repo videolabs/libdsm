@@ -28,6 +28,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +42,7 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     static uint8_t  hmac_static[16];
 
     uint8_t         key_pad[64], o_key_pad[64], i_key_pad[64], kcat[80];
-    void            *cat, *out;
+    uint8_t         *cat, *out;
     MD5_CTX         ctx;
 
     assert(key != NULL && msg != NULL);
