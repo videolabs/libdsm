@@ -33,6 +33,7 @@
 		EF631A461C74BF370032F5CC /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A3B1C74BF370032F5CC /* rc4.c */; };
 		EF631A611C74C4150032F5CC /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5D1C74C4150032F5CC /* clock_gettime.c */; };
 		EF631A621C74C4150032F5CC /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5E1C74C4150032F5CC /* compat.c */; };
+		EF8804131D9083C4000A4A36 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EF8804111D9083C4000A4A36 /* strndup.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -114,6 +115,8 @@
 		EF631A5D1C74C4150032F5CC /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
 		EF631A5E1C74C4150032F5CC /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
 		EF631A5F1C74C4150032F5CC /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
+		EF88040E1D90837E000A4A36 /* bdsm_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_common.h; sourceTree = "<group>"; };
+		EF8804111D9083C4000A4A36 /* strndup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strndup.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +156,7 @@
 		EF6319E71C7475290032F5CC /* src */ = {
 			isa = PBXGroup;
 			children = (
+				EF88040E1D90837E000A4A36 /* bdsm_common.h */,
 				EF6319E81C7475290032F5CC /* bdsm_debug.h */,
 				EF6319E91C7475290032F5CC /* hmac_md5.c */,
 				EF6319EA1C7475290032F5CC /* hmac_md5.h */,
@@ -284,6 +288,7 @@
 		EF631A561C74C4150032F5CC /* compat */ = {
 			isa = PBXGroup;
 			children = (
+				EF8804111D9083C4000A4A36 /* strndup.c */,
 				EF631A5D1C74C4150032F5CC /* clock_gettime.c */,
 				EF631A5E1C74C4150032F5CC /* compat.c */,
 				EF631A5F1C74C4150032F5CC /* compat.h */,
@@ -366,6 +371,7 @@
 				EF631A191C7475290032F5CC /* smb_file.c in Sources */,
 				EF631A1E1C7475290032F5CC /* smb_share.c in Sources */,
 				EF631A1A1C7475290032F5CC /* smb_message.c in Sources */,
+				EF8804131D9083C4000A4A36 /* strndup.c in Sources */,
 				EF631A171C7475290032F5CC /* smb_dir.c in Sources */,
 				EF631A441C74BF370032F5CC /* md4.c in Sources */,
 				EF631A1D1C7475290032F5CC /* smb_session_msg.c in Sources */,

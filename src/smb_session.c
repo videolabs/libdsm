@@ -104,14 +104,6 @@ void            smb_session_destroy(smb_session *s)
     }
 }
 
-int             smb_session_state(smb_session *s)
-{
-    if (s != NULL)
-        return s->state;
-    else
-        return SMB_STATE_ERROR;
-}
-
 void            smb_session_set_creds(smb_session *s, const char *domain,
                                       const char *login, const char *password)
 {

@@ -46,9 +46,9 @@
  * @param s The session object
  * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
  * @param path The path of the file to delete
- * @return 0 if delete OK or "NT" error code
+ * @return 0 on success or a DSM error code in case of error
  */
-uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
+int smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
 
 /**
  * @brief create a directory on a share.
@@ -57,8 +57,8 @@ uint32_t  smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
  * @param s The session object
  * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
  * @param path The path of the directory to create
- * @return 0 if directory creation OK or "NT" error code
+ * @return 0 on success or a DSM error code in case of error
  */
-uint32_t  smb_directory_create(smb_session *s, smb_tid tid, const char *path);
+int smb_directory_create(smb_session *s, smb_tid tid, const char *path);
 
 #endif

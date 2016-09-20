@@ -59,8 +59,11 @@ Changes between 0.1.0 and 0.2.0:
  * Add folder creation with smb_directory_create
  * Add files creation with smb_fwrite
  * Add files and folder move/rename with smb_file_mv
- * Fix smb_tree_connect return value and smb_tree_disconnect implementation
  * Fix session state after spnego authentication
+ * Fix return values of all public functions: return a negative number in case
+   of error, and 0 or a positive number in case of success.
+ * Add smb_session_get_nt_status: get the last NT_STATUS
+ * Only export needed symbols
 
 
 Changes between 0.0.7 and 0.1.0:
