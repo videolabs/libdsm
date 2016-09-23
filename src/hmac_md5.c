@@ -71,9 +71,9 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     memcpy(cat + 64, msg, msg_len);
 
     // MD5 of the result
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, cat, msg_len + 64);
-    MD5_Final(key_pad, &ctx);
+    MD5_CTX_Init(&ctx);
+    MD5_CTX_Update(&ctx, cat, msg_len + 64);
+    MD5_CTX_Final(key_pad, &ctx);
     free(cat);
 
     memcpy(kcat, o_key_pad, 64);
@@ -84,9 +84,9 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     else
         out = hmac_static;
 
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, kcat, 80);
-    MD5_Final(out, &ctx);
+    MD5_CTX_Init(&ctx);
+    MD5_CTX_Update(&ctx, kcat, 80);
+    MD5_CTX_Final(out, &ctx);
 
     return out;
 }
