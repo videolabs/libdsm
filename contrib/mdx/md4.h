@@ -23,6 +23,7 @@
  * See md4.c for more information.
  */
 
+
 #ifdef HAVE_OPENSSL
 #include <openssl/md4.h>
 #elif !defined(_MD4_H)
@@ -39,8 +40,8 @@ typedef struct
     MD4_u32plus block[16];
 } MD4_CTX;
 
-extern void MD4_Init(MD4_CTX *ctx);
-extern void MD4_Update(MD4_CTX *ctx, const void *data, unsigned long size);
-extern void MD4_Final(unsigned char *result, MD4_CTX *ctx);
+extern void MD4_CTX_Init(MD4_CTX *ctx);
+extern void MD4_CTX_Update(MD4_CTX *ctx, const void *data, unsigned long size);
+extern void MD4_CTX_Final(unsigned char *result, MD4_CTX *ctx);
 
 #endif

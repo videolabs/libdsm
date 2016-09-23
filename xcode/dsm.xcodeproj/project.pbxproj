@@ -13,7 +13,6 @@
 		EFFC77BF1D943A6D006FD550 /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776B1D943A6D006FD550 /* md4.c */; };
 		EFFC77C01D943A6D006FD550 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776D1D943A6D006FD550 /* md5.c */; };
 		EFFC77C11D943A6D006FD550 /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77701D943A6D006FD550 /* rc4.c */; };
-		EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77741D943A6D006FD550 /* spnego_asn1.c */; };
 		EFFC77C31D943A6D006FD550 /* hmac_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77921D943A6D006FD550 /* hmac_md5.c */; };
 		EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77961D943A6D006FD550 /* netbios_ns.c */; };
 		EFFC77C51D943A6D006FD550 /* netbios_query.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77971D943A6D006FD550 /* netbios_query.c */; };
@@ -63,7 +62,6 @@
 		EFFC776E1D943A6D006FD550 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
 		EFFC77701D943A6D006FD550 /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
 		EFFC77711D943A6D006FD550 /* rc4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
-		EFFC77741D943A6D006FD550 /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
 		EFFC77751D943A6D006FD550 /* spnego_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1.h; sourceTree = "<group>"; };
 		EFFC77781D943A6D006FD550 /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
 		EFFC77791D943A6D006FD550 /* netbios_ns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_ns.h; sourceTree = "<group>"; };
@@ -204,7 +202,6 @@
 		EFFC77721D943A6D006FD550 /* spnego */ = {
 			isa = PBXGroup;
 			children = (
-				EFFC77741D943A6D006FD550 /* spnego_asn1.c */,
 				EFFC77751D943A6D006FD550 /* spnego_asn1.h */,
 			);
 			path = spnego;
@@ -380,7 +377,6 @@
 				EFFC77D11D943A6D006FD550 /* smb_spnego.c in Sources */,
 				EFFC77CF1D943A6D006FD550 /* smb_session_msg.c in Sources */,
 				EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */,
-				EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */,
 				EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */,
 				EFFC77CE1D943A6D006FD550 /* smb_session.c in Sources */,
 				EFFC77CC1D943A6D006FD550 /* smb_message.c in Sources */,
