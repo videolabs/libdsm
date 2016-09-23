@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */; };
 		EFFC77BB1D943A6D006FD550 /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77631D943A6D006FD550 /* clock_gettime.c */; };
 		EFFC77BC1D943A6D006FD550 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77641D943A6D006FD550 /* compat.c */; };
 		EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77681D943A6D006FD550 /* strndup.c */; };
 		EFFC77BF1D943A6D006FD550 /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776B1D943A6D006FD550 /* md4.c */; };
 		EFFC77C01D943A6D006FD550 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776D1D943A6D006FD550 /* md5.c */; };
 		EFFC77C11D943A6D006FD550 /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77701D943A6D006FD550 /* rc4.c */; };
-		EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77741D943A6D006FD550 /* spnego_asn1.c */; };
 		EFFC77C31D943A6D006FD550 /* hmac_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77921D943A6D006FD550 /* hmac_md5.c */; };
 		EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77961D943A6D006FD550 /* netbios_ns.c */; };
 		EFFC77C51D943A6D006FD550 /* netbios_query.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77971D943A6D006FD550 /* netbios_query.c */; };
@@ -34,7 +34,6 @@
 		EFFC77D41D943A6D006FD550 /* smb_transport.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B61D943A6D006FD550 /* smb_transport.c */; };
 		EFFC77D51D943A6D006FD550 /* smb_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B91D943A6D006FD550 /* smb_utils.c */; };
 		EFFC77DB1D943AD9006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77D71D943AD9006FD550 /* spnego_asn1.c */; };
-		EFFC77DC1D943AD9006FD550 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFFC77D91D943AD9006FD550 /* libtasn1.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +50,8 @@
 
 /* Begin PBXFileReference section */
 		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
+		EFE0C6CE1D95C66800EFF570 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
 		EFFC77611D943986006FD550 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		EFFC77631D943A6D006FD550 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
 		EFFC77641D943A6D006FD550 /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
@@ -63,7 +64,6 @@
 		EFFC776E1D943A6D006FD550 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
 		EFFC77701D943A6D006FD550 /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
 		EFFC77711D943A6D006FD550 /* rc4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
-		EFFC77741D943A6D006FD550 /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
 		EFFC77751D943A6D006FD550 /* spnego_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1.h; sourceTree = "<group>"; };
 		EFFC77781D943A6D006FD550 /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
 		EFFC77791D943A6D006FD550 /* netbios_ns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_ns.h; sourceTree = "<group>"; };
@@ -118,8 +118,6 @@
 		EFFC77B91D943A6D006FD550 /* smb_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_utils.c; sourceTree = "<group>"; };
 		EFFC77BA1D943A6D006FD550 /* smb_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_utils.h; sourceTree = "<group>"; };
 		EFFC77D71D943AD9006FD550 /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
-		EFFC77D91D943AD9006FD550 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
-		EFFC77DA1D943AD9006FD550 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
 		EFFC77DE1D943F73006FD550 /* spnego_asn1_mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1_mutex.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,7 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFFC77DC1D943AD9006FD550 /* libtasn1.a in Frameworks */,
+				EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,7 +136,7 @@
 		EF6319D21C7474D10032F5CC = {
 			isa = PBXGroup;
 			children = (
-				EFFC77D81D943AD9006FD550 /* libtasn1 */,
+				EFE0C6C91D95C4F200EFF570 /* libtasn1 */,
 				EFFC77D61D943AD9006FD550 /* extra */,
 				EFFC77621D943A6D006FD550 /* compat */,
 				EFFC77691D943A6D006FD550 /* contrib */,
@@ -155,6 +153,24 @@
 				EF6319DB1C7474D10032F5CC /* libdsm.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EFE0C6C91D95C4F200EFF570 /* libtasn1 */ = {
+			isa = PBXGroup;
+			children = (
+				EFE0C6CD1D95C66800EFF570 /* include */,
+				EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */,
+			);
+			name = libtasn1;
+			path = ../libtasn1;
+			sourceTree = "<group>";
+		};
+		EFE0C6CD1D95C66800EFF570 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				EFE0C6CE1D95C66800EFF570 /* libtasn1.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		EFFC77621D943A6D006FD550 /* compat */ = {
@@ -204,7 +220,6 @@
 		EFFC77721D943A6D006FD550 /* spnego */ = {
 			isa = PBXGroup;
 			children = (
-				EFFC77741D943A6D006FD550 /* spnego_asn1.c */,
 				EFFC77751D943A6D006FD550 /* spnego_asn1.h */,
 			);
 			path = spnego;
@@ -295,15 +310,6 @@
 			path = extra;
 			sourceTree = "<group>";
 		};
-		EFFC77D81D943AD9006FD550 /* libtasn1 */ = {
-			isa = PBXGroup;
-			children = (
-				EFFC77D91D943AD9006FD550 /* libtasn1.a */,
-				EFFC77DA1D943AD9006FD550 /* libtasn1.h */,
-			);
-			path = libtasn1;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -380,7 +386,6 @@
 				EFFC77D11D943A6D006FD550 /* smb_spnego.c in Sources */,
 				EFFC77CF1D943A6D006FD550 /* smb_session_msg.c in Sources */,
 				EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */,
-				EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */,
 				EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */,
 				EFFC77CE1D943A6D006FD550 /* smb_session.c in Sources */,
 				EFFC77CC1D943A6D006FD550 /* smb_message.c in Sources */,
@@ -479,14 +484,14 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1/**",
-					"$(PROJECT_DIR)/include/**",
+					"../libtasn1/include/**",
+					"../include/**",
 					"../**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1/**",
-					"$(PROJECT_DIR)/include/**",
+					"../libtasn1/**",
+					"../include/**",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -502,14 +507,14 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1/**",
-					"$(PROJECT_DIR)/include/**",
+					"../libtasn1/include/**",
+					"../include/**",
 					"../**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1/**",
-					"$(PROJECT_DIR)/include/**",
+					"../libtasn1/**",
+					"../include/**",
 				);
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = (
