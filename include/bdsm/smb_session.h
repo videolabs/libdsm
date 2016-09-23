@@ -32,8 +32,8 @@
 #define __BDSM_SMB_SESSION_H_
 
 
-#include "./smb_defs.h"
-#include "./smb_types.h"
+#include "bdsm/smb_defs.h"
+#include "bdsm/smb_types.h"
 
 /**
  * @file smb_session.h

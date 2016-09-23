@@ -36,13 +36,13 @@
 #ifndef _SMB_DEFS_H_
 #define _SMB_DEFS_H_
 
-#include "../include/bdsm/smb_defs.h"
+#include "bdsm/smb_defs.h"
 
 //-----------------------------------------------------------------------------/
 // Our own identity
 //-----------------------------------------------------------------------------/
-#define SMB_OS                  "smbos"
-#define SMB_LANMAN              "smblanman"
+#define SMB_OS                  "Unix"
+#define SMB_LANMAN              "liBDSM"
 
 
 //-----------------------------------------------------------------------------/

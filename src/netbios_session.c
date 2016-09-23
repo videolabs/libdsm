@@ -55,11 +55,6 @@ static int open_socket_and_connect(netbios_session *s)
 {
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
-    
-    int sock_opt = 1;
-    setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
-
-    
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
 
@@ -164,7 +159,7 @@ int netbios_session_connect(uint32_t ip, netbios_session *s,
         if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
             goto error;
         free(encoded_name);
-        encoded_name = netbios_name_encode("NETBIOS_WORKSTATION", 0, NETBIOS_WORKSTATION);
+        encoded_name = netbios_name_encode("LIBDSM", 0, NETBIOS_WORKSTATION);
         if (!netbios_session_packet_append(s, encoded_name, strlen(encoded_name) + 1))
             goto error;
         free(encoded_name);

@@ -1,3 +1,0 @@
-# apt-get install nodejs bundler doxygen ruby gem
-$ bundle install
-$ bundle exec rake publish

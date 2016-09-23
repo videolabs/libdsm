@@ -35,8 +35,6 @@
  * compile-time configuration.
  */
 
-
-
 #ifndef HAVE_OPENSSL
 
 #include <string.h>
@@ -179,7 +177,7 @@ static const void *body(MD4_CTX *ctx, const void *data, unsigned long size)
     return ptr;
 }
 
-void MD4_CTX_Init(MD4_CTX *ctx)
+void MD4_Init(MD4_CTX *ctx)
 {
     ctx->a = 0x67452301;
     ctx->b = 0xefcdab89;
@@ -190,7 +188,7 @@ void MD4_CTX_Init(MD4_CTX *ctx)
     ctx->hi = 0;
 }
 
-void MD4_CTX_Update(MD4_CTX *ctx, const void *data, unsigned long size)
+void MD4_Update(MD4_CTX *ctx, const void *data, unsigned long size)
 {
     MD4_u32plus saved_lo;
     unsigned long used, available;
@@ -227,7 +225,7 @@ void MD4_CTX_Update(MD4_CTX *ctx, const void *data, unsigned long size)
     memcpy(ctx->buffer, data, size);
 }
 
-void MD4_CTX_Final(unsigned char *result, MD4_CTX *ctx)
+void MD4_Final(unsigned char *result, MD4_CTX *ctx)
 {
     unsigned long used, available;
 

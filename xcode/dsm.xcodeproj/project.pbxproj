@@ -7,33 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF631A111C7475290032F5CC /* hmac_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319E91C7475290032F5CC /* hmac_md5.c */; };
-		EF631A121C7475290032F5CC /* netbios_ns.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319EC1C7475290032F5CC /* netbios_ns.c */; };
-		EF631A131C7475290032F5CC /* netbios_query.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319ED1C7475290032F5CC /* netbios_query.c */; };
-		EF631A141C7475290032F5CC /* netbios_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319EF1C7475290032F5CC /* netbios_session.c */; };
-		EF631A151C7475290032F5CC /* netbios_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F11C7475290032F5CC /* netbios_utils.c */; };
-		EF631A161C7475290032F5CC /* smb_buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F31C7475290032F5CC /* smb_buffer.c */; };
-		EF631A171C7475290032F5CC /* smb_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F61C7475290032F5CC /* smb_dir.c */; };
-		EF631A181C7475290032F5CC /* smb_fd.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319F81C7475290032F5CC /* smb_fd.c */; };
-		EF631A191C7475290032F5CC /* smb_file.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FA1C7475290032F5CC /* smb_file.c */; };
-		EF631A1A1C7475290032F5CC /* smb_message.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FC1C7475290032F5CC /* smb_message.c */; };
-		EF631A1B1C7475290032F5CC /* smb_ntlm.c in Sources */ = {isa = PBXBuildFile; fileRef = EF6319FE1C7475290032F5CC /* smb_ntlm.c */; };
-		EF631A1C1C7475290032F5CC /* smb_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A011C7475290032F5CC /* smb_session.c */; };
-		EF631A1D1C7475290032F5CC /* smb_session_msg.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A031C7475290032F5CC /* smb_session_msg.c */; };
-		EF631A1E1C7475290032F5CC /* smb_share.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A051C7475290032F5CC /* smb_share.c */; };
-		EF631A1F1C7475290032F5CC /* smb_spnego.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A071C7475290032F5CC /* smb_spnego.c */; };
-		EF631A201C7475290032F5CC /* smb_stat.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A091C7475290032F5CC /* smb_stat.c */; };
-		EF631A211C7475290032F5CC /* smb_trans2.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0B1C7475290032F5CC /* smb_trans2.c */; };
-		EF631A221C7475290032F5CC /* smb_transport.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0C1C7475290032F5CC /* smb_transport.c */; };
-		EF631A231C7475290032F5CC /* smb_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A0F1C7475290032F5CC /* smb_utils.c */; };
-		EF631A291C74BF280032F5CC /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A251C74BF280032F5CC /* spnego_asn1.c */; };
-		EF631A2A1C74BF280032F5CC /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF631A271C74BF280032F5CC /* libtasn1.a */; };
-		EF631A441C74BF370032F5CC /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A321C74BF370032F5CC /* md4.c */; };
-		EF631A451C74BF370032F5CC /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A341C74BF370032F5CC /* md5.c */; };
-		EF631A461C74BF370032F5CC /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A3B1C74BF370032F5CC /* rc4.c */; };
-		EF631A611C74C4150032F5CC /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5D1C74C4150032F5CC /* clock_gettime.c */; };
-		EF631A621C74C4150032F5CC /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EF631A5E1C74C4150032F5CC /* compat.c */; };
-		EF8804131D9083C4000A4A36 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EF8804111D9083C4000A4A36 /* strndup.c */; };
+		EFFC77BB1D943A6D006FD550 /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77631D943A6D006FD550 /* clock_gettime.c */; };
+		EFFC77BC1D943A6D006FD550 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77641D943A6D006FD550 /* compat.c */; };
+		EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77681D943A6D006FD550 /* strndup.c */; };
+		EFFC77BF1D943A6D006FD550 /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776B1D943A6D006FD550 /* md4.c */; };
+		EFFC77C01D943A6D006FD550 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776D1D943A6D006FD550 /* md5.c */; };
+		EFFC77C11D943A6D006FD550 /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77701D943A6D006FD550 /* rc4.c */; };
+		EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77741D943A6D006FD550 /* spnego_asn1.c */; };
+		EFFC77C31D943A6D006FD550 /* hmac_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77921D943A6D006FD550 /* hmac_md5.c */; };
+		EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77961D943A6D006FD550 /* netbios_ns.c */; };
+		EFFC77C51D943A6D006FD550 /* netbios_query.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77971D943A6D006FD550 /* netbios_query.c */; };
+		EFFC77C61D943A6D006FD550 /* netbios_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77991D943A6D006FD550 /* netbios_session.c */; };
+		EFFC77C71D943A6D006FD550 /* netbios_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC779B1D943A6D006FD550 /* netbios_utils.c */; };
+		EFFC77C81D943A6D006FD550 /* smb_buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC779D1D943A6D006FD550 /* smb_buffer.c */; };
+		EFFC77C91D943A6D006FD550 /* smb_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77A01D943A6D006FD550 /* smb_dir.c */; };
+		EFFC77CA1D943A6D006FD550 /* smb_fd.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77A21D943A6D006FD550 /* smb_fd.c */; };
+		EFFC77CB1D943A6D006FD550 /* smb_file.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77A41D943A6D006FD550 /* smb_file.c */; };
+		EFFC77CC1D943A6D006FD550 /* smb_message.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77A61D943A6D006FD550 /* smb_message.c */; };
+		EFFC77CD1D943A6D006FD550 /* smb_ntlm.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77A81D943A6D006FD550 /* smb_ntlm.c */; };
+		EFFC77CE1D943A6D006FD550 /* smb_session.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77AB1D943A6D006FD550 /* smb_session.c */; };
+		EFFC77CF1D943A6D006FD550 /* smb_session_msg.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77AD1D943A6D006FD550 /* smb_session_msg.c */; };
+		EFFC77D01D943A6D006FD550 /* smb_share.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77AF1D943A6D006FD550 /* smb_share.c */; };
+		EFFC77D11D943A6D006FD550 /* smb_spnego.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B11D943A6D006FD550 /* smb_spnego.c */; };
+		EFFC77D21D943A6D006FD550 /* smb_stat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B31D943A6D006FD550 /* smb_stat.c */; };
+		EFFC77D31D943A6D006FD550 /* smb_trans2.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B51D943A6D006FD550 /* smb_trans2.c */; };
+		EFFC77D41D943A6D006FD550 /* smb_transport.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B61D943A6D006FD550 /* smb_transport.c */; };
+		EFFC77D51D943A6D006FD550 /* smb_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77B91D943A6D006FD550 /* smb_utils.c */; };
+		EFFC77DB1D943AD9006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77D71D943AD9006FD550 /* spnego_asn1.c */; };
+		EFFC77DC1D943AD9006FD550 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFFC77D91D943AD9006FD550 /* libtasn1.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,73 +51,76 @@
 
 /* Begin PBXFileReference section */
 		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF6319E81C7475290032F5CC /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
-		EF6319E91C7475290032F5CC /* hmac_md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac_md5.c; sourceTree = "<group>"; };
-		EF6319EA1C7475290032F5CC /* hmac_md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac_md5.h; sourceTree = "<group>"; };
-		EF6319EB1C7475290032F5CC /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
-		EF6319EC1C7475290032F5CC /* netbios_ns.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_ns.c; sourceTree = "<group>"; };
-		EF6319ED1C7475290032F5CC /* netbios_query.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_query.c; sourceTree = "<group>"; };
-		EF6319EE1C7475290032F5CC /* netbios_query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_query.h; sourceTree = "<group>"; };
-		EF6319EF1C7475290032F5CC /* netbios_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_session.c; sourceTree = "<group>"; };
-		EF6319F01C7475290032F5CC /* netbios_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_session.h; sourceTree = "<group>"; };
-		EF6319F11C7475290032F5CC /* netbios_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_utils.c; sourceTree = "<group>"; };
-		EF6319F21C7475290032F5CC /* netbios_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_utils.h; sourceTree = "<group>"; };
-		EF6319F31C7475290032F5CC /* smb_buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_buffer.c; sourceTree = "<group>"; };
-		EF6319F41C7475290032F5CC /* smb_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_buffer.h; sourceTree = "<group>"; };
-		EF6319F51C7475290032F5CC /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
-		EF6319F61C7475290032F5CC /* smb_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_dir.c; sourceTree = "<group>"; };
-		EF6319F71C7475290032F5CC /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
-		EF6319F81C7475290032F5CC /* smb_fd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_fd.c; sourceTree = "<group>"; };
-		EF6319F91C7475290032F5CC /* smb_fd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_fd.h; sourceTree = "<group>"; };
-		EF6319FA1C7475290032F5CC /* smb_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_file.c; sourceTree = "<group>"; };
-		EF6319FB1C7475290032F5CC /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
-		EF6319FC1C7475290032F5CC /* smb_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_message.c; sourceTree = "<group>"; };
-		EF6319FD1C7475290032F5CC /* smb_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_message.h; sourceTree = "<group>"; };
-		EF6319FE1C7475290032F5CC /* smb_ntlm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_ntlm.c; sourceTree = "<group>"; };
-		EF6319FF1C7475290032F5CC /* smb_ntlm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_ntlm.h; sourceTree = "<group>"; };
-		EF631A001C7475290032F5CC /* smb_packets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_packets.h; sourceTree = "<group>"; };
-		EF631A011C7475290032F5CC /* smb_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session.c; sourceTree = "<group>"; };
-		EF631A021C7475290032F5CC /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
-		EF631A031C7475290032F5CC /* smb_session_msg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session_msg.c; sourceTree = "<group>"; };
-		EF631A041C7475290032F5CC /* smb_session_msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session_msg.h; sourceTree = "<group>"; };
-		EF631A051C7475290032F5CC /* smb_share.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_share.c; sourceTree = "<group>"; };
-		EF631A061C7475290032F5CC /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
-		EF631A071C7475290032F5CC /* smb_spnego.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_spnego.c; sourceTree = "<group>"; };
-		EF631A081C7475290032F5CC /* smb_spnego.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_spnego.h; sourceTree = "<group>"; };
-		EF631A091C7475290032F5CC /* smb_stat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_stat.c; sourceTree = "<group>"; };
-		EF631A0A1C7475290032F5CC /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
-		EF631A0B1C7475290032F5CC /* smb_trans2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_trans2.c; sourceTree = "<group>"; };
-		EF631A0C1C7475290032F5CC /* smb_transport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_transport.c; sourceTree = "<group>"; };
-		EF631A0D1C7475290032F5CC /* smb_transport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_transport.h; sourceTree = "<group>"; };
-		EF631A0E1C7475290032F5CC /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
-		EF631A0F1C7475290032F5CC /* smb_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_utils.c; sourceTree = "<group>"; };
-		EF631A101C7475290032F5CC /* smb_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_utils.h; sourceTree = "<group>"; };
-		EF631A251C74BF280032F5CC /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
-		EF631A271C74BF280032F5CC /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
-		EF631A281C74BF280032F5CC /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
-		EF631A321C74BF370032F5CC /* md4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md4.c; sourceTree = "<group>"; };
-		EF631A331C74BF370032F5CC /* md4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md4.h; sourceTree = "<group>"; };
-		EF631A341C74BF370032F5CC /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
-		EF631A351C74BF370032F5CC /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
-		EF631A3B1C74BF370032F5CC /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
-		EF631A3C1C74BF370032F5CC /* rc4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
-		EF631A431C74BF370032F5CC /* spnego_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1.h; sourceTree = "<group>"; };
-		EF631A471C74C2700032F5CC /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; };
-		EF631A4C1C74C3480032F5CC /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
-		EF631A4D1C74C3480032F5CC /* netbios_ns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_ns.h; sourceTree = "<group>"; };
-		EF631A4E1C74C3480032F5CC /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
-		EF631A4F1C74C3480032F5CC /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
-		EF631A501C74C3480032F5CC /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
-		EF631A511C74C3480032F5CC /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
-		EF631A521C74C3480032F5CC /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
-		EF631A531C74C3480032F5CC /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
-		EF631A541C74C3480032F5CC /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
-		EF631A551C74C3480032F5CC /* bdsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm.h; sourceTree = "<group>"; };
-		EF631A5D1C74C4150032F5CC /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
-		EF631A5E1C74C4150032F5CC /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
-		EF631A5F1C74C4150032F5CC /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
-		EF88040E1D90837E000A4A36 /* bdsm_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_common.h; sourceTree = "<group>"; };
-		EF8804111D9083C4000A4A36 /* strndup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strndup.c; sourceTree = "<group>"; };
+		EFFC77611D943986006FD550 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		EFFC77631D943A6D006FD550 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
+		EFFC77641D943A6D006FD550 /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
+		EFFC77651D943A6D006FD550 /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
+		EFFC77661D943A6D006FD550 /* queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = queue.h; sourceTree = "<group>"; };
+		EFFC77681D943A6D006FD550 /* strndup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strndup.c; sourceTree = "<group>"; };
+		EFFC776B1D943A6D006FD550 /* md4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md4.c; sourceTree = "<group>"; };
+		EFFC776C1D943A6D006FD550 /* md4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md4.h; sourceTree = "<group>"; };
+		EFFC776D1D943A6D006FD550 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
+		EFFC776E1D943A6D006FD550 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		EFFC77701D943A6D006FD550 /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
+		EFFC77711D943A6D006FD550 /* rc4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
+		EFFC77741D943A6D006FD550 /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
+		EFFC77751D943A6D006FD550 /* spnego_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1.h; sourceTree = "<group>"; };
+		EFFC77781D943A6D006FD550 /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
+		EFFC77791D943A6D006FD550 /* netbios_ns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_ns.h; sourceTree = "<group>"; };
+		EFFC777A1D943A6D006FD550 /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
+		EFFC777B1D943A6D006FD550 /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
+		EFFC777C1D943A6D006FD550 /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
+		EFFC777D1D943A6D006FD550 /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
+		EFFC777E1D943A6D006FD550 /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
+		EFFC777F1D943A6D006FD550 /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
+		EFFC77801D943A6D006FD550 /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
+		EFFC77811D943A6D006FD550 /* bdsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm.h; sourceTree = "<group>"; };
+		EFFC77901D943A6D006FD550 /* bdsm_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_common.h; sourceTree = "<group>"; };
+		EFFC77911D943A6D006FD550 /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
+		EFFC77921D943A6D006FD550 /* hmac_md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac_md5.c; sourceTree = "<group>"; };
+		EFFC77931D943A6D006FD550 /* hmac_md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac_md5.h; sourceTree = "<group>"; };
+		EFFC77951D943A6D006FD550 /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
+		EFFC77961D943A6D006FD550 /* netbios_ns.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_ns.c; sourceTree = "<group>"; };
+		EFFC77971D943A6D006FD550 /* netbios_query.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_query.c; sourceTree = "<group>"; };
+		EFFC77981D943A6D006FD550 /* netbios_query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_query.h; sourceTree = "<group>"; };
+		EFFC77991D943A6D006FD550 /* netbios_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_session.c; sourceTree = "<group>"; };
+		EFFC779A1D943A6D006FD550 /* netbios_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_session.h; sourceTree = "<group>"; };
+		EFFC779B1D943A6D006FD550 /* netbios_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = netbios_utils.c; sourceTree = "<group>"; };
+		EFFC779C1D943A6D006FD550 /* netbios_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_utils.h; sourceTree = "<group>"; };
+		EFFC779D1D943A6D006FD550 /* smb_buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_buffer.c; sourceTree = "<group>"; };
+		EFFC779E1D943A6D006FD550 /* smb_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_buffer.h; sourceTree = "<group>"; };
+		EFFC779F1D943A6D006FD550 /* smb_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_defs.h; sourceTree = "<group>"; };
+		EFFC77A01D943A6D006FD550 /* smb_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_dir.c; sourceTree = "<group>"; };
+		EFFC77A11D943A6D006FD550 /* smb_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_dir.h; sourceTree = "<group>"; };
+		EFFC77A21D943A6D006FD550 /* smb_fd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_fd.c; sourceTree = "<group>"; };
+		EFFC77A31D943A6D006FD550 /* smb_fd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_fd.h; sourceTree = "<group>"; };
+		EFFC77A41D943A6D006FD550 /* smb_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_file.c; sourceTree = "<group>"; };
+		EFFC77A51D943A6D006FD550 /* smb_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_file.h; sourceTree = "<group>"; };
+		EFFC77A61D943A6D006FD550 /* smb_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_message.c; sourceTree = "<group>"; };
+		EFFC77A71D943A6D006FD550 /* smb_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_message.h; sourceTree = "<group>"; };
+		EFFC77A81D943A6D006FD550 /* smb_ntlm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_ntlm.c; sourceTree = "<group>"; };
+		EFFC77A91D943A6D006FD550 /* smb_ntlm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_ntlm.h; sourceTree = "<group>"; };
+		EFFC77AA1D943A6D006FD550 /* smb_packets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_packets.h; sourceTree = "<group>"; };
+		EFFC77AB1D943A6D006FD550 /* smb_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session.c; sourceTree = "<group>"; };
+		EFFC77AC1D943A6D006FD550 /* smb_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session.h; sourceTree = "<group>"; };
+		EFFC77AD1D943A6D006FD550 /* smb_session_msg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_session_msg.c; sourceTree = "<group>"; };
+		EFFC77AE1D943A6D006FD550 /* smb_session_msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_session_msg.h; sourceTree = "<group>"; };
+		EFFC77AF1D943A6D006FD550 /* smb_share.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_share.c; sourceTree = "<group>"; };
+		EFFC77B01D943A6D006FD550 /* smb_share.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_share.h; sourceTree = "<group>"; };
+		EFFC77B11D943A6D006FD550 /* smb_spnego.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_spnego.c; sourceTree = "<group>"; };
+		EFFC77B21D943A6D006FD550 /* smb_spnego.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_spnego.h; sourceTree = "<group>"; };
+		EFFC77B31D943A6D006FD550 /* smb_stat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_stat.c; sourceTree = "<group>"; };
+		EFFC77B41D943A6D006FD550 /* smb_stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_stat.h; sourceTree = "<group>"; };
+		EFFC77B51D943A6D006FD550 /* smb_trans2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_trans2.c; sourceTree = "<group>"; };
+		EFFC77B61D943A6D006FD550 /* smb_transport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_transport.c; sourceTree = "<group>"; };
+		EFFC77B71D943A6D006FD550 /* smb_transport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_transport.h; sourceTree = "<group>"; };
+		EFFC77B81D943A6D006FD550 /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
+		EFFC77B91D943A6D006FD550 /* smb_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb_utils.c; sourceTree = "<group>"; };
+		EFFC77BA1D943A6D006FD550 /* smb_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_utils.h; sourceTree = "<group>"; };
+		EFFC77D71D943AD9006FD550 /* spnego_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1.c; sourceTree = "<group>"; };
+		EFFC77D91D943AD9006FD550 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
+		EFFC77DA1D943AD9006FD550 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
+		EFFC77DE1D943F73006FD550 /* spnego_asn1_mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spnego_asn1_mutex.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF631A2A1C74BF280032F5CC /* libtasn1.a in Frameworks */,
+				EFFC77DC1D943AD9006FD550 /* libtasn1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,13 +138,13 @@
 		EF6319D21C7474D10032F5CC = {
 			isa = PBXGroup;
 			children = (
-				EF631A471C74C2700032F5CC /* config.h */,
-				EF631A561C74C4150032F5CC /* compat */,
-				EF631A4A1C74C3480032F5CC /* include */,
-				EF631A2B1C74BF370032F5CC /* contrib */,
-				EF631A241C74BF280032F5CC /* extra */,
-				EF631A261C74BF280032F5CC /* libtasn1 */,
-				EF6319E71C7475290032F5CC /* src */,
+				EFFC77D81D943AD9006FD550 /* libtasn1 */,
+				EFFC77D61D943AD9006FD550 /* extra */,
+				EFFC77621D943A6D006FD550 /* compat */,
+				EFFC77691D943A6D006FD550 /* contrib */,
+				EFFC77761D943A6D006FD550 /* include */,
+				EFFC778F1D943A6D006FD550 /* src */,
+				EFFC77611D943986006FD550 /* config.h */,
 				EF6319DC1C7474D10032F5CC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -153,148 +157,151 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF6319E71C7475290032F5CC /* src */ = {
+		EFFC77621D943A6D006FD550 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				EF88040E1D90837E000A4A36 /* bdsm_common.h */,
-				EF6319E81C7475290032F5CC /* bdsm_debug.h */,
-				EF6319E91C7475290032F5CC /* hmac_md5.c */,
-				EF6319EA1C7475290032F5CC /* hmac_md5.h */,
-				EF6319EB1C7475290032F5CC /* netbios_defs.h */,
-				EF6319EC1C7475290032F5CC /* netbios_ns.c */,
-				EF6319ED1C7475290032F5CC /* netbios_query.c */,
-				EF6319EE1C7475290032F5CC /* netbios_query.h */,
-				EF6319EF1C7475290032F5CC /* netbios_session.c */,
-				EF6319F01C7475290032F5CC /* netbios_session.h */,
-				EF6319F11C7475290032F5CC /* netbios_utils.c */,
-				EF6319F21C7475290032F5CC /* netbios_utils.h */,
-				EF6319F31C7475290032F5CC /* smb_buffer.c */,
-				EF6319F41C7475290032F5CC /* smb_buffer.h */,
-				EF6319F51C7475290032F5CC /* smb_defs.h */,
-				EF6319F61C7475290032F5CC /* smb_dir.c */,
-				EF6319F71C7475290032F5CC /* smb_dir.h */,
-				EF6319F81C7475290032F5CC /* smb_fd.c */,
-				EF6319F91C7475290032F5CC /* smb_fd.h */,
-				EF6319FA1C7475290032F5CC /* smb_file.c */,
-				EF6319FB1C7475290032F5CC /* smb_file.h */,
-				EF6319FC1C7475290032F5CC /* smb_message.c */,
-				EF6319FD1C7475290032F5CC /* smb_message.h */,
-				EF6319FE1C7475290032F5CC /* smb_ntlm.c */,
-				EF6319FF1C7475290032F5CC /* smb_ntlm.h */,
-				EF631A001C7475290032F5CC /* smb_packets.h */,
-				EF631A011C7475290032F5CC /* smb_session.c */,
-				EF631A021C7475290032F5CC /* smb_session.h */,
-				EF631A031C7475290032F5CC /* smb_session_msg.c */,
-				EF631A041C7475290032F5CC /* smb_session_msg.h */,
-				EF631A051C7475290032F5CC /* smb_share.c */,
-				EF631A061C7475290032F5CC /* smb_share.h */,
-				EF631A071C7475290032F5CC /* smb_spnego.c */,
-				EF631A081C7475290032F5CC /* smb_spnego.h */,
-				EF631A091C7475290032F5CC /* smb_stat.c */,
-				EF631A0A1C7475290032F5CC /* smb_stat.h */,
-				EF631A0B1C7475290032F5CC /* smb_trans2.c */,
-				EF631A0C1C7475290032F5CC /* smb_transport.c */,
-				EF631A0D1C7475290032F5CC /* smb_transport.h */,
-				EF631A0E1C7475290032F5CC /* smb_types.h */,
-				EF631A0F1C7475290032F5CC /* smb_utils.c */,
-				EF631A101C7475290032F5CC /* smb_utils.h */,
+				EFFC77631D943A6D006FD550 /* clock_gettime.c */,
+				EFFC77641D943A6D006FD550 /* compat.c */,
+				EFFC77651D943A6D006FD550 /* compat.h */,
+				EFFC77661D943A6D006FD550 /* queue.h */,
+				EFFC77681D943A6D006FD550 /* strndup.c */,
 			);
-			name = src;
-			path = ../src;
+			name = compat;
+			path = ../compat;
 			sourceTree = "<group>";
 		};
-		EF631A241C74BF280032F5CC /* extra */ = {
+		EFFC77691D943A6D006FD550 /* contrib */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A251C74BF280032F5CC /* spnego_asn1.c */,
-			);
-			path = extra;
-			sourceTree = "<group>";
-		};
-		EF631A261C74BF280032F5CC /* libtasn1 */ = {
-			isa = PBXGroup;
-			children = (
-				EF631A271C74BF280032F5CC /* libtasn1.a */,
-				EF631A281C74BF280032F5CC /* libtasn1.h */,
-			);
-			path = libtasn1;
-			sourceTree = "<group>";
-		};
-		EF631A2B1C74BF370032F5CC /* contrib */ = {
-			isa = PBXGroup;
-			children = (
-				EF631A2C1C74BF370032F5CC /* mdx */,
-				EF631A361C74BF370032F5CC /* rc4 */,
-				EF631A3D1C74BF370032F5CC /* spnego */,
+				EFFC776A1D943A6D006FD550 /* mdx */,
+				EFFC776F1D943A6D006FD550 /* rc4 */,
+				EFFC77721D943A6D006FD550 /* spnego */,
 			);
 			name = contrib;
 			path = ../contrib;
 			sourceTree = "<group>";
 		};
-		EF631A2C1C74BF370032F5CC /* mdx */ = {
+		EFFC776A1D943A6D006FD550 /* mdx */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A321C74BF370032F5CC /* md4.c */,
-				EF631A331C74BF370032F5CC /* md4.h */,
-				EF631A341C74BF370032F5CC /* md5.c */,
-				EF631A351C74BF370032F5CC /* md5.h */,
+				EFFC776B1D943A6D006FD550 /* md4.c */,
+				EFFC776C1D943A6D006FD550 /* md4.h */,
+				EFFC776D1D943A6D006FD550 /* md5.c */,
+				EFFC776E1D943A6D006FD550 /* md5.h */,
 			);
 			path = mdx;
 			sourceTree = "<group>";
 		};
-		EF631A361C74BF370032F5CC /* rc4 */ = {
+		EFFC776F1D943A6D006FD550 /* rc4 */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A3B1C74BF370032F5CC /* rc4.c */,
-				EF631A3C1C74BF370032F5CC /* rc4.h */,
+				EFFC77701D943A6D006FD550 /* rc4.c */,
+				EFFC77711D943A6D006FD550 /* rc4.h */,
 			);
 			path = rc4;
 			sourceTree = "<group>";
 		};
-		EF631A3D1C74BF370032F5CC /* spnego */ = {
+		EFFC77721D943A6D006FD550 /* spnego */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A431C74BF370032F5CC /* spnego_asn1.h */,
+				EFFC77741D943A6D006FD550 /* spnego_asn1.c */,
+				EFFC77751D943A6D006FD550 /* spnego_asn1.h */,
 			);
 			path = spnego;
 			sourceTree = "<group>";
 		};
-		EF631A4A1C74C3480032F5CC /* include */ = {
+		EFFC77761D943A6D006FD550 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A4B1C74C3480032F5CC /* bdsm */,
-				EF631A551C74C3480032F5CC /* bdsm.h */,
+				EFFC77771D943A6D006FD550 /* bdsm */,
+				EFFC77811D943A6D006FD550 /* bdsm.h */,
 			);
 			name = include;
 			path = ../include;
 			sourceTree = "<group>";
 		};
-		EF631A4B1C74C3480032F5CC /* bdsm */ = {
+		EFFC77771D943A6D006FD550 /* bdsm */ = {
 			isa = PBXGroup;
 			children = (
-				EF631A4C1C74C3480032F5CC /* netbios_defs.h */,
-				EF631A4D1C74C3480032F5CC /* netbios_ns.h */,
-				EF631A4E1C74C3480032F5CC /* smb_defs.h */,
-				EF631A4F1C74C3480032F5CC /* smb_dir.h */,
-				EF631A501C74C3480032F5CC /* smb_file.h */,
-				EF631A511C74C3480032F5CC /* smb_session.h */,
-				EF631A521C74C3480032F5CC /* smb_share.h */,
-				EF631A531C74C3480032F5CC /* smb_stat.h */,
-				EF631A541C74C3480032F5CC /* smb_types.h */,
+				EFFC77781D943A6D006FD550 /* netbios_defs.h */,
+				EFFC77791D943A6D006FD550 /* netbios_ns.h */,
+				EFFC777A1D943A6D006FD550 /* smb_defs.h */,
+				EFFC777B1D943A6D006FD550 /* smb_dir.h */,
+				EFFC777C1D943A6D006FD550 /* smb_file.h */,
+				EFFC777D1D943A6D006FD550 /* smb_session.h */,
+				EFFC777E1D943A6D006FD550 /* smb_share.h */,
+				EFFC777F1D943A6D006FD550 /* smb_stat.h */,
+				EFFC77801D943A6D006FD550 /* smb_types.h */,
 			);
 			path = bdsm;
 			sourceTree = "<group>";
 		};
-		EF631A561C74C4150032F5CC /* compat */ = {
+		EFFC778F1D943A6D006FD550 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				EF8804111D9083C4000A4A36 /* strndup.c */,
-				EF631A5D1C74C4150032F5CC /* clock_gettime.c */,
-				EF631A5E1C74C4150032F5CC /* compat.c */,
-				EF631A5F1C74C4150032F5CC /* compat.h */,
+				EFFC77901D943A6D006FD550 /* bdsm_common.h */,
+				EFFC77911D943A6D006FD550 /* bdsm_debug.h */,
+				EFFC77921D943A6D006FD550 /* hmac_md5.c */,
+				EFFC77931D943A6D006FD550 /* hmac_md5.h */,
+				EFFC77951D943A6D006FD550 /* netbios_defs.h */,
+				EFFC77961D943A6D006FD550 /* netbios_ns.c */,
+				EFFC77971D943A6D006FD550 /* netbios_query.c */,
+				EFFC77981D943A6D006FD550 /* netbios_query.h */,
+				EFFC77991D943A6D006FD550 /* netbios_session.c */,
+				EFFC779A1D943A6D006FD550 /* netbios_session.h */,
+				EFFC779B1D943A6D006FD550 /* netbios_utils.c */,
+				EFFC779C1D943A6D006FD550 /* netbios_utils.h */,
+				EFFC779D1D943A6D006FD550 /* smb_buffer.c */,
+				EFFC779E1D943A6D006FD550 /* smb_buffer.h */,
+				EFFC779F1D943A6D006FD550 /* smb_defs.h */,
+				EFFC77A01D943A6D006FD550 /* smb_dir.c */,
+				EFFC77A11D943A6D006FD550 /* smb_dir.h */,
+				EFFC77A21D943A6D006FD550 /* smb_fd.c */,
+				EFFC77A31D943A6D006FD550 /* smb_fd.h */,
+				EFFC77A41D943A6D006FD550 /* smb_file.c */,
+				EFFC77A51D943A6D006FD550 /* smb_file.h */,
+				EFFC77A61D943A6D006FD550 /* smb_message.c */,
+				EFFC77A71D943A6D006FD550 /* smb_message.h */,
+				EFFC77A81D943A6D006FD550 /* smb_ntlm.c */,
+				EFFC77A91D943A6D006FD550 /* smb_ntlm.h */,
+				EFFC77AA1D943A6D006FD550 /* smb_packets.h */,
+				EFFC77AB1D943A6D006FD550 /* smb_session.c */,
+				EFFC77AC1D943A6D006FD550 /* smb_session.h */,
+				EFFC77AD1D943A6D006FD550 /* smb_session_msg.c */,
+				EFFC77AE1D943A6D006FD550 /* smb_session_msg.h */,
+				EFFC77AF1D943A6D006FD550 /* smb_share.c */,
+				EFFC77B01D943A6D006FD550 /* smb_share.h */,
+				EFFC77B11D943A6D006FD550 /* smb_spnego.c */,
+				EFFC77B21D943A6D006FD550 /* smb_spnego.h */,
+				EFFC77B31D943A6D006FD550 /* smb_stat.c */,
+				EFFC77B41D943A6D006FD550 /* smb_stat.h */,
+				EFFC77B51D943A6D006FD550 /* smb_trans2.c */,
+				EFFC77B61D943A6D006FD550 /* smb_transport.c */,
+				EFFC77B71D943A6D006FD550 /* smb_transport.h */,
+				EFFC77B81D943A6D006FD550 /* smb_types.h */,
+				EFFC77B91D943A6D006FD550 /* smb_utils.c */,
+				EFFC77BA1D943A6D006FD550 /* smb_utils.h */,
 			);
-			name = compat;
-			path = ../compat;
+			name = src;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		EFFC77D61D943AD9006FD550 /* extra */ = {
+			isa = PBXGroup;
+			children = (
+				EFFC77DE1D943F73006FD550 /* spnego_asn1_mutex.h */,
+				EFFC77D71D943AD9006FD550 /* spnego_asn1.c */,
+			);
+			path = extra;
+			sourceTree = "<group>";
+		};
+		EFFC77D81D943AD9006FD550 /* libtasn1 */ = {
+			isa = PBXGroup;
+			children = (
+				EFFC77D91D943AD9006FD550 /* libtasn1.a */,
+				EFFC77DA1D943AD9006FD550 /* libtasn1.h */,
+			);
+			path = libtasn1;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -353,32 +360,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF631A461C74BF370032F5CC /* rc4.c in Sources */,
-				EF631A451C74BF370032F5CC /* md5.c in Sources */,
-				EF631A611C74C4150032F5CC /* clock_gettime.c in Sources */,
-				EF631A111C7475290032F5CC /* hmac_md5.c in Sources */,
-				EF631A141C7475290032F5CC /* netbios_session.c in Sources */,
-				EF631A221C7475290032F5CC /* smb_transport.c in Sources */,
-				EF631A121C7475290032F5CC /* netbios_ns.c in Sources */,
-				EF631A1C1C7475290032F5CC /* smb_session.c in Sources */,
-				EF631A151C7475290032F5CC /* netbios_utils.c in Sources */,
-				EF631A1B1C7475290032F5CC /* smb_ntlm.c in Sources */,
-				EF631A621C74C4150032F5CC /* compat.c in Sources */,
-				EF631A181C7475290032F5CC /* smb_fd.c in Sources */,
-				EF631A291C74BF280032F5CC /* spnego_asn1.c in Sources */,
-				EF631A1F1C7475290032F5CC /* smb_spnego.c in Sources */,
-				EF631A201C7475290032F5CC /* smb_stat.c in Sources */,
-				EF631A191C7475290032F5CC /* smb_file.c in Sources */,
-				EF631A1E1C7475290032F5CC /* smb_share.c in Sources */,
-				EF631A1A1C7475290032F5CC /* smb_message.c in Sources */,
-				EF8804131D9083C4000A4A36 /* strndup.c in Sources */,
-				EF631A171C7475290032F5CC /* smb_dir.c in Sources */,
-				EF631A441C74BF370032F5CC /* md4.c in Sources */,
-				EF631A1D1C7475290032F5CC /* smb_session_msg.c in Sources */,
-				EF631A211C7475290032F5CC /* smb_trans2.c in Sources */,
-				EF631A161C7475290032F5CC /* smb_buffer.c in Sources */,
-				EF631A131C7475290032F5CC /* netbios_query.c in Sources */,
-				EF631A231C7475290032F5CC /* smb_utils.c in Sources */,
+				EFFC77C81D943A6D006FD550 /* smb_buffer.c in Sources */,
+				EFFC77C11D943A6D006FD550 /* rc4.c in Sources */,
+				EFFC77C71D943A6D006FD550 /* netbios_utils.c in Sources */,
+				EFFC77CD1D943A6D006FD550 /* smb_ntlm.c in Sources */,
+				EFFC77DB1D943AD9006FD550 /* spnego_asn1.c in Sources */,
+				EFFC77C61D943A6D006FD550 /* netbios_session.c in Sources */,
+				EFFC77CB1D943A6D006FD550 /* smb_file.c in Sources */,
+				EFFC77CA1D943A6D006FD550 /* smb_fd.c in Sources */,
+				EFFC77C01D943A6D006FD550 /* md5.c in Sources */,
+				EFFC77D41D943A6D006FD550 /* smb_transport.c in Sources */,
+				EFFC77D21D943A6D006FD550 /* smb_stat.c in Sources */,
+				EFFC77D51D943A6D006FD550 /* smb_utils.c in Sources */,
+				EFFC77C51D943A6D006FD550 /* netbios_query.c in Sources */,
+				EFFC77C31D943A6D006FD550 /* hmac_md5.c in Sources */,
+				EFFC77D31D943A6D006FD550 /* smb_trans2.c in Sources */,
+				EFFC77D01D943A6D006FD550 /* smb_share.c in Sources */,
+				EFFC77BB1D943A6D006FD550 /* clock_gettime.c in Sources */,
+				EFFC77D11D943A6D006FD550 /* smb_spnego.c in Sources */,
+				EFFC77CF1D943A6D006FD550 /* smb_session_msg.c in Sources */,
+				EFFC77C41D943A6D006FD550 /* netbios_ns.c in Sources */,
+				EFFC77C21D943A6D006FD550 /* spnego_asn1.c in Sources */,
+				EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */,
+				EFFC77CE1D943A6D006FD550 /* smb_session.c in Sources */,
+				EFFC77CC1D943A6D006FD550 /* smb_message.c in Sources */,
+				EFFC77BC1D943A6D006FD550 /* compat.c in Sources */,
+				EFFC77C91D943A6D006FD550 /* smb_dir.c in Sources */,
+				EFFC77BF1D943A6D006FD550 /* md4.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,11 +477,21 @@
 		EF6319E51C7474D10032F5CC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libtasn1/**",
+					"$(PROJECT_DIR)/include/**",
+					"../**",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1",
+					"$(PROJECT_DIR)/libtasn1/**",
+					"$(PROJECT_DIR)/include/**",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_NAME = dsm;
 				SKIP_INSTALL = YES;
 			};
@@ -482,12 +500,22 @@
 		EF6319E61C7474D10032F5CC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libtasn1/**",
+					"$(PROJECT_DIR)/include/**",
+					"../**",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/libtasn1",
+					"$(PROJECT_DIR)/libtasn1/**",
+					"$(PROJECT_DIR)/include/**",
 				);
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_NAME = dsm;
 				SKIP_INSTALL = YES;
 			};

@@ -36,7 +36,7 @@
  * $FreeBSD: src/sys/crypto/rc4/rc4.c,v 1.2.2.1 2000/04/18 04:48:31 archie Exp $
  */
 
-#include "rc4.h"
+#include "rc4/rc4.h"
 
 static __inline void
 swap_bytes(uint8_t *a, uint8_t *b)

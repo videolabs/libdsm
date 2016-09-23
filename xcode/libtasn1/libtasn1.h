@@ -44,7 +44,7 @@ extern "C"
 {
 #endif
 
-#define ASN1_VERSION "4.7"
+#define ASN1_VERSION "4.8"
 
 #if defined(__GNUC__) && !defined(ASN1_INTERNAL_BUILD)
 # define _ASN1_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)

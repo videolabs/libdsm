@@ -2,7 +2,7 @@
 # include "config.h"
 #endif
 
-#include "libtasn1.h"
+#include <libtasn1.h>
 
 const asn1_static_node spnego_asn1_conf[] = {
   { "SPNEGO", 536872976, NULL },

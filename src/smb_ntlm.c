@@ -49,8 +49,8 @@
 #include "compat.h"
 #endif
 
-#include "md4.h"
-#include "rc4.h"
+#include "mdx/md4.h"
+#include "rc4/rc4.h"
 #include "bdsm_debug.h"
 #include "hmac_md5.h"
 #include "smb_utils.h"
@@ -102,9 +102,9 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh hash)
     sz = smb_to_utf16(password, strlen(password), &ucs2le_pass);
     memset((void *)hash, 0, SMB_NTLM_HASH_SIZE);
 
-    MD4_CTX_Init(&ctx);
-    MD4_CTX_Update(&ctx, (uint8_t *)ucs2le_pass, sz);
-    MD4_CTX_Final((uint8_t *)hash, &ctx);
+    MD4_Init(&ctx);
+    MD4_Update(&ctx, (uint8_t *)ucs2le_pass, sz);
+    MD4_Final((uint8_t *)hash, &ctx);
 
     free(ucs2le_pass);
 }

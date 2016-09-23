@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "spnego_asn1.h"
 #include "bdsm_debug.h"
 #include "smb_session.h"
 #include "smb_session_msg.h"
@@ -77,31 +76,27 @@ smb_session   *smb_session_new()
 
 void            smb_session_destroy(smb_session *s)
 {
-    if (s != NULL)
+    assert(s != NULL);
+
+    smb_session_share_clear(s);
+
+    // FIXME Free smb_share and smb_file
+    if (s->transport.session != NULL)
     {
-        smb_session_share_clear(s);
-
-        // FIXME Free smb_share and smb_file
-        if (s->transport.session != NULL)
-        {
-            s->transport.destroy(s->transport.session);
-            s->transport.session = NULL;
-        }
-
-        if (s->spnego_asn1 != NULL){
-            asn1_lock();
-            asn1_delete_structure(&s->spnego_asn1);
-            asn1_unlock();
-        }
-
-        smb_buffer_free(&s->xsec_target);
-
-        // Free stored credentials.
-        free(s->creds.domain);
-        free(s->creds.login);
-        free(s->creds.password);
-        free(s);
+        s->transport.destroy(s->transport.session);
+        s->transport.session = NULL;
     }
+
+    if (s->spnego_asn1 != NULL)
+        asn1_delete_structure(&s->spnego_asn1);
+
+    smb_buffer_free(&s->xsec_target);
+
+    // Free stored credentials.
+    free(s->creds.domain);
+    free(s->creds.login);
+    free(s->creds.password);
+    free(s);
 }
 
 void            smb_session_set_creds(smb_session *s, const char *domain,
@@ -332,16 +327,14 @@ int             smb_session_is_guest(smb_session *s)
 
 const char      *smb_session_server_name(smb_session *s)
 {
-    if (s == NULL)
-        return NULL;
-    else
-        return s->srv.name;
+    assert(s != NULL);
+
+    return s->srv.name;
 }
 
 int             smb_session_supports(smb_session *s, int what)
 {
-    if (s == NULL)
-        return 0;
+    assert(s != NULL);
 
     switch (what)
     {
