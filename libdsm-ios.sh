@@ -3,7 +3,7 @@
 # Global build settings
 export SDKPATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
 export SIMSDKPATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
-export MIN_IOS_VERSION=7.0
+export MIN_IOS_VERSION=8.0
 export HOST=arm-apple-darwin
 export LDFLAGS_NATIVE="-isysroot $SDKPATH"
 export LDFLAGS_SIMULATOR="-isysroot $SIMSDKPATH"

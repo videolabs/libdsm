@@ -4,6 +4,8 @@
 /* ... */
 #define ASN1_ARRAY_TYPE asn1_static_node
 
+#define BDSM_DEBUG 1
+
 /* Define to 1 if you have the <alloca.h> header file. */
 #define HAVE_ALLOCA_H 1
 
