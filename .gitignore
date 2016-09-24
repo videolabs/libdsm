@@ -30,7 +30,6 @@ config.s*
 config.log
 config.guess
 universal/*.a
-libtasn1/*.a
 config.h.in
 configure
 libtool

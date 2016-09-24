@@ -15,3 +15,4 @@ static void asn1_unlock(){
     pthread_mutex_t mutex = asn1_mutex();
     pthread_mutex_unlock(&mutex);
 }
+
