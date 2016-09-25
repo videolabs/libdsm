@@ -44,6 +44,7 @@
 #include "smb_ntlm.h"
 #include "smb_spnego.h"
 #include "smb_transport.h"
+#include "spnego_asn1_mutex.h"
 
 static int        smb_negotiate(smb_session *s);
 
@@ -87,8 +88,11 @@ void            smb_session_destroy(smb_session *s)
         s->transport.session = NULL;
     }
 
-    if (s->spnego_asn1 != NULL)
+    if (s->spnego_asn1 != NULL){
+        asn1_lock();
         asn1_delete_structure(&s->spnego_asn1);
+        asn1_unlock();
+    }
 
     smb_buffer_free(&s->xsec_target);
 
