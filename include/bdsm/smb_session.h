@@ -105,6 +105,9 @@ int             smb_session_connect(smb_session *s, const char *hostname,
  */
 int             smb_session_login(smb_session *s);
 
+
+int             smb_session_logoff(smb_session *s);
+
 /**
  * @brief Am i logged in as Guest ?
  *

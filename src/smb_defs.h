@@ -68,6 +68,7 @@
 #define SMB_CMD_TREE_DISCONNECT 0x71
 #define SMB_CMD_NEGOTIATE       0x72
 #define SMB_CMD_SETUP           0x73 // Session Setup AndX
+#define SMB_CMD_LOGOFF          0x74 // Session Logoff AndX
 #define SMB_CMD_TREE_CONNECT    0x75 // Tree Connect AndX
 #define SMB_CMD_ECHO            0x2b
 #define SMB_CMD_READ            0x2e // Read AndX

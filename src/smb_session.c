@@ -312,6 +312,52 @@ int             smb_session_login(smb_session *s)
                                        s->creds.password));
 }
 
+static int        smb_session_logoff_andx(smb_session *s, const char *domain,
+                                         const char *user, const char *password)
+{
+    
+    smb_message    *msg = NULL;
+
+    
+    assert(s != NULL);
+    
+    msg = smb_message_new(SMB_CMD_LOGOFF);
+    if (!msg)
+        return DSM_ERROR_GENERIC;
+    
+    smb_message_put8(msg, 0x02);   // wct=2
+    smb_message_put8(msg, 0xff); //andx: no further commands
+    smb_message_put8(msg, 0); //reserved
+    smb_message_put16(msg, 0);  // andx offset
+    smb_message_put16(msg, 0);  // bct
+    
+    if (!smb_session_send_msg(s, msg))
+    {
+        smb_message_destroy(msg);
+        BDSM_dbg("Unable to send Session Logoff AndX message\n");
+        return DSM_ERROR_NETWORK;
+    }
+    smb_message_destroy(msg);
+   
+    s->srv.uid  = 0;
+    s->logged = false;
+    s->guest = false;
+    
+    return DSM_SUCCESS;
+}
+
+int             smb_session_logoff(smb_session *s)
+{
+    assert(s != NULL);
+    
+    if (s->creds.domain == NULL
+        || s->creds.login == NULL
+        || s->creds.password == NULL)
+        return DSM_ERROR_GENERIC;
+    
+    return (smb_session_logoff_andx(s, s->creds.domain, s->creds.login,
+                                       s->creds.password));
+}
 
 int             smb_session_is_guest(smb_session *s)
 {

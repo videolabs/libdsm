@@ -86,7 +86,7 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
     if ((resp->wct != 0) || (resp->bct != 0))
         return DSM_ERROR_NETWORK;
 
-    return 0;
+    return DSM_SUCCESS;
 }
 
 int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
@@ -134,5 +134,5 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
     if ((resp->wct != 0) || (resp->bct != 0))
         return DSM_ERROR_NETWORK;
 
-    return 0;
+    return DSM_SUCCESS;
 }
