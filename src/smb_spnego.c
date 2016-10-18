@@ -52,8 +52,10 @@ static void     asn1_display_error(const char *where, int errcode)
     // Avoids warning when not in debug mode
     (void)where;
     (void)errcode;
-    
-    BDSM_dbg("%s error: %s\n", where, asn1_strerror(errcode));
+    asn1_lock();
+    const char *err = asn1_strerror(errcode);
+    asn1_unlock();
+    BDSM_dbg("%s error: %s\n", where, err);
 }
 
 static int      init_asn1(smb_session *s)
