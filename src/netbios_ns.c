@@ -333,56 +333,62 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
 
     assert(ns != NULL);
 
-    switch (type)
-    {
-        case NAME_QUERY_TYPE_NB:
-            query_type = query_type_nb;
-            break;
-        case NAME_QUERY_TYPE_NBSTAT:
-            query_type = query_type_nbstat; // NBSTAT/IP;
-            break;
-        default:
-            BDSM_dbg("netbios_ns_send_name_query: unknow name_query_type");
-            return -1;
-    }
-
-    // Prepare packet
-    q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
-    if (query_flag)
-        netbios_query_set_flag(q, query_flag, 1);
-
-    // Append the queried name to the packet
-    netbios_query_append(q, name, strlen(name) + 1);
-
-    // Magic footer (i.e. Question type (Netbios) / class (IP)
-    netbios_query_append(q, (const char *)&query_type, 2);
-    netbios_query_append(q, (const char *)&query_class_in, 2);
-    q->packet->queries = htons(1);
-
-    // Increment transaction ID, not to reuse them
-    q->packet->trn_id = htons(ns->last_trn_id + 1);
-
-    if (ip != 0)
-    {
-        ssize_t sent = netbios_ns_send_packet(ns, q, ip);
-        if (sent < 0)
+    if(ns!=NULL){
+        
+        switch (type)
         {
-            BDSM_perror("netbios_ns_send_name_query: ");
-            netbios_query_destroy(q);
-            return -1;
+            case NAME_QUERY_TYPE_NB:
+                query_type = query_type_nb;
+                break;
+            case NAME_QUERY_TYPE_NBSTAT:
+                query_type = query_type_nbstat; // NBSTAT/IP;
+                break;
+            default:
+                BDSM_dbg("netbios_ns_send_name_query: unknow name_query_type");
+                return -1;
+        }
+
+        // Prepare packet
+        q = netbios_query_new(34 + 4, 1, NETBIOS_OP_NAME_QUERY);
+        if (query_flag)
+            netbios_query_set_flag(q, query_flag, 1);
+
+        // Append the queried name to the packet
+        netbios_query_append(q, name, strlen(name) + 1);
+
+        // Magic footer (i.e. Question type (Netbios) / class (IP)
+        netbios_query_append(q, (const char *)&query_type, 2);
+        netbios_query_append(q, (const char *)&query_class_in, 2);
+        q->packet->queries = htons(1);
+
+        // Increment transaction ID, not to reuse them
+        q->packet->trn_id = htons(ns->last_trn_id + 1);
+
+        if (ip != 0)
+        {
+            ssize_t sent = netbios_ns_send_packet(ns, q, ip);
+            if (sent < 0)
+            {
+                BDSM_perror("netbios_ns_send_name_query: ");
+                netbios_query_destroy(q);
+                return -1;
+            }
+            else
+                BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
         }
         else
-            BDSM_dbg("netbios_ns_send_name_query, name query sent for '*'.\n");
-    }
-    else
-    {
-        netbios_ns_broadcast_packet(ns, q);
-    }
+        {
+            netbios_ns_broadcast_packet(ns, q);
+        }
 
-    netbios_query_destroy(q);
+        netbios_query_destroy(q);
 
-    ns->last_trn_id++; // Remember the last transaction id.
-    return 0;
+        ns->last_trn_id++; // Remember the last transaction id.
+        
+        return 0;
+    }
+    
+    return -1;
 }
 
 static int netbios_ns_handle_query(netbios_ns *ns, size_t size,
@@ -502,6 +508,10 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
     int sock;
 
     assert(ns != NULL);
+    
+    if(ns==NULL){
+        return -1;
+    }
 
     sock = ns->socket;
 #ifdef HAVE_PIPE
@@ -633,6 +643,10 @@ static netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_na
 
     assert(ns != NULL);
 
+    if(ns==NULL){
+        return NULL;
+    }
+    
     TAILQ_FOREACH(iter, &ns->entry_queue, next)
     {
         if (by_name != NULL)
@@ -654,6 +668,10 @@ static void netbios_ns_entry_clear(netbios_ns *ns)
     netbios_ns_entry  *entry, *entry_next;
 
     assert(ns != NULL);
+    
+    if(ns==NULL){
+        return;
+    }
 
     for (entry = TAILQ_FIRST(&ns->entry_queue);
          entry != NULL; entry = entry_next)
@@ -715,43 +733,46 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
 
     assert(ns != NULL && !ns->discover_started);
 
-    if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
-    {
-        *addr = cached->address.s_addr;
-        return 0;
-    }
+    if(ns != NULL && !ns->discover_started){
 
-    if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
-        return -1;
-
-    if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
-                                   NETBIOS_FLAG_RECURSIVE |
-                                   NETBIOS_FLAG_BROADCAST) == -1)
-    {
-        free(encoded_name);
-        return -1;
-
-    }
-    free(encoded_name);
-
-    // Now wait for a reply and pray
-    timeout.tv_sec = 2;
-    timeout.tv_usec = 420;
-    recv = netbios_ns_recv(ns, &timeout, NULL, true, 0, &name_query);
-
-    if (recv < 0)
-        BDSM_perror("netbios_ns_resolve:");
-    else
-    {
-        if (name_query.type == NAME_QUERY_TYPE_NB)
+        if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
         {
-            *addr = name_query.u.nb.ip;
-            BDSM_dbg("netbios_ns_resolve, received a reply for '%s', ip: 0x%X!\n", name, *addr);
+            *addr = cached->address.s_addr;
             return 0;
-        } else
-            BDSM_dbg("netbios_ns_resolve, wrong query type received\n");
-    }
+        }
 
+        if ((encoded_name = netbios_name_encode(name, 0, type)) == NULL)
+            return -1;
+
+        if (netbios_ns_send_name_query(ns, 0, NAME_QUERY_TYPE_NB, encoded_name,
+                                       NETBIOS_FLAG_RECURSIVE |
+                                       NETBIOS_FLAG_BROADCAST) == -1)
+        {
+            free(encoded_name);
+            return -1;
+
+        }
+        free(encoded_name);
+
+        // Now wait for a reply and pray
+        timeout.tv_sec = 2;
+        timeout.tv_usec = 420;
+        recv = netbios_ns_recv(ns, &timeout, NULL, true, 0, &name_query);
+
+        if (recv < 0)
+            BDSM_perror("netbios_ns_resolve:");
+        else
+        {
+            if (name_query.type == NAME_QUERY_TYPE_NB)
+            {
+                *addr = name_query.u.nb.ip;
+                BDSM_dbg("netbios_ns_resolve, received a reply for '%s', ip: 0x%X!\n", name, *addr);
+                return 0;
+            } else
+                BDSM_dbg("netbios_ns_resolve, wrong query type received\n");
+        }
+    }
+    
     return -1;
 }
 
@@ -803,8 +824,13 @@ error:
 const char *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
 {
     assert(ns != NULL && ip != 0 && !ns->discover_started);
-    netbios_ns_entry *entry = netbios_ns_inverse_internal(ns, ip);
-    return entry ? entry->name : NULL;
+    
+    if(ns != NULL && ip != 0 && !ns->discover_started){
+        netbios_ns_entry *entry = netbios_ns_inverse_internal(ns, ip);
+        return entry ? entry->name : NULL;
+    }
+    
+    return NULL;
 }
 
 const char *netbios_ns_entry_name(netbios_ns_entry *entry)

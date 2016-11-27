@@ -51,42 +51,47 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
 
     assert(s != NULL && path != NULL);
 
-    utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
-    if (utf_pattern_len == 0)
-        return DSM_ERROR_CHARSET;
+    if(s != NULL && path != NULL){
+    
+        utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
+        if (utf_pattern_len == 0)
+            return DSM_ERROR_CHARSET;
 
-    req_msg = smb_message_new(SMB_CMD_RMDIR);
-    if (!req_msg)
-    {
+        req_msg = smb_message_new(SMB_CMD_RMDIR);
+        if (!req_msg)
+        {
+            free(utf_pattern);
+            return DSM_ERROR_GENERIC;
+        }
+
+        req_msg->packet->header.tid = (uint16_t)tid;
+
+        SMB_MSG_INIT_PKT(req);
+        req.wct              = 0x00; // Must be 0
+        req.bct              = (uint16_t)(utf_pattern_len + 1);
+        req.buffer_format    = 0x04; // Must be 4
+        SMB_MSG_PUT_PKT(req_msg, req);
+        smb_message_append(req_msg, utf_pattern, utf_pattern_len);
+
+        smb_session_send_msg(s, req_msg);
+        smb_message_destroy(req_msg);
+
         free(utf_pattern);
-        return DSM_ERROR_GENERIC;
+
+        if (!smb_session_recv_msg(s, &resp_msg))
+            return DSM_ERROR_NETWORK;
+
+        if (!smb_session_check_nt_status(s, &resp_msg))
+            return DSM_ERROR_NT;
+
+        resp = (smb_directory_rm_resp *)resp_msg.packet->payload;
+        if ((resp->wct != 0) || (resp->bct != 0))
+            return DSM_ERROR_NETWORK;
+
+        return DSM_SUCCESS;
     }
-
-    req_msg->packet->header.tid = (uint16_t)tid;
-
-    SMB_MSG_INIT_PKT(req);
-    req.wct              = 0x00; // Must be 0
-    req.bct              = (uint16_t)(utf_pattern_len + 1);
-    req.buffer_format    = 0x04; // Must be 4
-    SMB_MSG_PUT_PKT(req_msg, req);
-    smb_message_append(req_msg, utf_pattern, utf_pattern_len);
-
-    smb_session_send_msg(s, req_msg);
-    smb_message_destroy(req_msg);
-
-    free(utf_pattern);
-
-    if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
-
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
-
-    resp = (smb_directory_rm_resp *)resp_msg.packet->payload;
-    if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_NETWORK;
-
-    return DSM_SUCCESS;
+    
+    return DSM_ERROR_GENERIC;
 }
 
 int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
@@ -99,40 +104,45 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
 
     assert(s != NULL && path != NULL);
 
-    utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
-    if (utf_pattern_len == 0)
-        return DSM_ERROR_CHARSET;
+    if(s != NULL && path != NULL){
+        
+        utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
+        if (utf_pattern_len == 0)
+            return DSM_ERROR_CHARSET;
 
-    req_msg = smb_message_new(SMB_CMD_MKDIR);
-    if (!req_msg)
-    {
+        req_msg = smb_message_new(SMB_CMD_MKDIR);
+        if (!req_msg)
+        {
+            free(utf_pattern);
+            return DSM_ERROR_GENERIC;
+        }
+
+        req_msg->packet->header.tid = (uint16_t)tid;
+
+        SMB_MSG_INIT_PKT(req);
+        req.wct              = 0x00; // Must be 0
+        req.bct              = (uint16_t)(utf_pattern_len + 1);
+        req.buffer_format    = 0x04; // Must be 4
+        SMB_MSG_PUT_PKT(req_msg, req);
+        smb_message_append(req_msg, utf_pattern, utf_pattern_len);
+
+        smb_session_send_msg(s, req_msg);
+        smb_message_destroy(req_msg);
+
         free(utf_pattern);
-        return DSM_ERROR_GENERIC;
+
+        if (!smb_session_recv_msg(s, &resp_msg))
+            return DSM_ERROR_NETWORK;
+
+        if (!smb_session_check_nt_status(s, &resp_msg))
+            return DSM_ERROR_NT;
+
+        resp = (smb_directory_mk_resp *)resp_msg.packet->payload;
+        if ((resp->wct != 0) || (resp->bct != 0))
+            return DSM_ERROR_NETWORK;
+
+        return DSM_SUCCESS;
+        
     }
-
-    req_msg->packet->header.tid = (uint16_t)tid;
-
-    SMB_MSG_INIT_PKT(req);
-    req.wct              = 0x00; // Must be 0
-    req.bct              = (uint16_t)(utf_pattern_len + 1);
-    req.buffer_format    = 0x04; // Must be 4
-    SMB_MSG_PUT_PKT(req_msg, req);
-    smb_message_append(req_msg, utf_pattern, utf_pattern_len);
-
-    smb_session_send_msg(s, req_msg);
-    smb_message_destroy(req_msg);
-
-    free(utf_pattern);
-
-    if (!smb_session_recv_msg(s, &resp_msg))
-        return DSM_ERROR_NETWORK;
-
-    if (!smb_session_check_nt_status(s, &resp_msg))
-        return DSM_ERROR_NT;
-
-    resp = (smb_directory_mk_resp *)resp_msg.packet->payload;
-    if ((resp->wct != 0) || (resp->bct != 0))
-        return DSM_ERROR_NETWORK;
-
-    return DSM_SUCCESS;
+    return DSM_ERROR_GENERIC;
 }

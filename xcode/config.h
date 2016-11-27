@@ -163,3 +163,10 @@
 
 /* ... */
 /* #undef asn1_static_node */
+
+
+//disable assert in release
+#ifndef __OPTIMIZE__
+#define NDEBUG
+#endif
+

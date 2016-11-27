@@ -64,32 +64,39 @@ static int      init_asn1(smb_session *s)
     
     assert(s != NULL);
     
-    if (s->spnego_asn1 != NULL)
-        return DSM_ERROR_GENERIC;
+    if(s!=NULL){
+        
+        if (s->spnego_asn1 != NULL)
+            return DSM_ERROR_GENERIC;
+        
+        asn1_lock();
+        res = asn1_array2tree(spnego_asn1_conf, &s->spnego_asn1, NULL);
+        asn1_unlock();
+        if (res != ASN1_SUCCESS)
+        {
+            asn1_display_error("init_asn1", res);
+            return DSM_ERROR_GENERIC;
+        }
+        else
+        {
+            BDSM_dbg("init_asn1: ASN.1 parser initialized\n");
+            return DSM_SUCCESS;
+        }
+    }
     
-    asn1_lock();
-    res = asn1_array2tree(spnego_asn1_conf, &s->spnego_asn1, NULL);
-    asn1_unlock();
-    if (res != ASN1_SUCCESS)
-    {
-        asn1_display_error("init_asn1", res);
-        return DSM_ERROR_GENERIC;
-    }
-    else
-    {
-        BDSM_dbg("init_asn1: ASN.1 parser initialized\n");
-        return DSM_SUCCESS;
-    }
+    return DSM_ERROR_GENERIC;
 }
 
 static void     clean_asn1(smb_session *s)
 {
     assert(s != NULL);
     
-    if (s->spnego_asn1 != NULL){
-        asn1_lock();
-        asn1_delete_structure(&s->spnego_asn1);
-        asn1_unlock();
+    if(s!=NULL){
+        if (s->spnego_asn1 != NULL){
+            asn1_lock();
+            asn1_delete_structure(&s->spnego_asn1);
+            asn1_unlock();
+        }
     }
 }
 
@@ -200,60 +207,64 @@ static int      challenge(smb_session *s)
     
     assert(s != NULL);
     
-    if (smb_session_recv_msg(s, &msg) == 0)
-    {
-        BDSM_dbg("spnego challenge(): Unable to receive message\n");
-        return DSM_ERROR_NETWORK;
-    }
-    
-    if (msg.packet->header.status != NT_STATUS_MORE_PROCESSING_REQUIRED)
-    {
-        BDSM_dbg("spnego challenge(): Bad status (0x%x)\n",
-                 msg.packet->header.status);
-        return DSM_ERROR_GENERIC;
-    }
-    
-    resp = (smb_session_xsec_resp *)msg.packet->payload;
-    asn1_lock();
-    asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
-    res = asn1_der_decoding(&token, resp->payload, resp->xsec_blob_size,
-                            err_desc);
-    asn1_unlock();
-    if (res != ASN1_SUCCESS)
-    {
+    if(s!=NULL){
+        
+        if (smb_session_recv_msg(s, &msg) == 0)
+        {
+            BDSM_dbg("spnego challenge(): Unable to receive message\n");
+            return DSM_ERROR_NETWORK;
+        }
+        
+        if (msg.packet->header.status != NT_STATUS_MORE_PROCESSING_REQUIRED)
+        {
+            BDSM_dbg("spnego challenge(): Bad status (0x%x)\n",
+                     msg.packet->header.status);
+            return DSM_ERROR_GENERIC;
+        }
+        
+        resp = (smb_session_xsec_resp *)msg.packet->payload;
         asn1_lock();
+        asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
+        res = asn1_der_decoding(&token, resp->payload, resp->xsec_blob_size,
+                                err_desc);
+        asn1_unlock();
+        if (res != ASN1_SUCCESS)
+        {
+            asn1_lock();
+            asn1_delete_structure(&token);
+            asn1_unlock();
+            asn1_display_error("NegTokenResp parsing", res);
+            BDSM_dbg("Parsing error detail: %s\n", err_desc);
+            return DSM_ERROR_GENERIC;
+        }
+        
+        // XXX Check the value of "negTokenResp.negResult"
+        asn1_lock();
+        res = asn1_read_value(token, "negTokenResp.responseToken", resp_token,
+                              &resp_token_size);
         asn1_delete_structure(&token);
         asn1_unlock();
-        asn1_display_error("NegTokenResp parsing", res);
-        BDSM_dbg("Parsing error detail: %s\n", err_desc);
-        return DSM_ERROR_GENERIC;
+        if (res != ASN1_SUCCESS)
+        {
+            asn1_display_error("NegTokenResp read responseToken", res);
+            return DSM_ERROR_GENERIC;
+        }
+        
+        // We got the server challenge, yeaaah.
+        challenge = (smb_ntlmssp_challenge *)resp_token;
+        if (smb_buffer_alloc(&s->xsec_target, challenge->tgt_len) == 0)
+            return DSM_ERROR_GENERIC;
+        memcpy(s->xsec_target.data,
+               challenge->data + challenge->tgt_offset - sizeof(smb_ntlmssp_challenge),
+               s->xsec_target.size);
+        s->srv.challenge = challenge->challenge;
+        s->srv.uid       = msg.packet->header.uid;
+        
+        BDSM_dbg("Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
+        
+        return DSM_SUCCESS;
     }
-    
-    // XXX Check the value of "negTokenResp.negResult"
-    asn1_lock();
-    res = asn1_read_value(token, "negTokenResp.responseToken", resp_token,
-                          &resp_token_size);
-    asn1_delete_structure(&token);
-    asn1_unlock();
-    if (res != ASN1_SUCCESS)
-    {
-        asn1_display_error("NegTokenResp read responseToken", res);
-        return DSM_ERROR_GENERIC;
-    }
-    
-    // We got the server challenge, yeaaah.
-    challenge = (smb_ntlmssp_challenge *)resp_token;
-    if (smb_buffer_alloc(&s->xsec_target, challenge->tgt_len) == 0)
-        return DSM_ERROR_GENERIC;
-    memcpy(s->xsec_target.data,
-           challenge->data + challenge->tgt_offset - sizeof(smb_ntlmssp_challenge),
-           s->xsec_target.size);
-    s->srv.challenge = challenge->challenge;
-    s->srv.uid       = msg.packet->header.uid;
-    
-    BDSM_dbg("Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
-    
-    return DSM_SUCCESS;
+    return DSM_ERROR_GENERIC;
 }
 
 static int      auth(smb_session *s, const char *domain, const char *user,
@@ -374,26 +385,32 @@ int             smb_session_login_spnego(smb_session *s, const char *domain,
     int           res;
     assert(s != NULL && domain != NULL && user != NULL && password != NULL);
     
-    // Clear User ID that might exists from previous authentication attempt
-    s->srv.uid = 0;
+    if(s != NULL && domain != NULL && user != NULL && password != NULL){
+        
+        // Clear User ID that might exists from previous authentication attempt
+        s->srv.uid = 0;
+        
+        if (init_asn1(s) != DSM_SUCCESS)
+            return DSM_ERROR_GENERIC;
+        
+        if ((res = negotiate(s, domain)) != DSM_SUCCESS)
+            goto error;
+        if ((res = challenge(s)) != DSM_SUCCESS)
+            goto error;
+        
+        res = auth(s, domain, user, password);
+        
+        clean_asn1(s);
+        
+        return res;
+        
+    error:
+        BDSM_dbg("login_spnego Interrupted\n");
+        clean_asn1(s);
+        return res;
+        
+    }
     
-    if (init_asn1(s) != DSM_SUCCESS)
-        return DSM_ERROR_GENERIC;
-    
-    if ((res = negotiate(s, domain)) != DSM_SUCCESS)
-        goto error;
-    if ((res = challenge(s)) != DSM_SUCCESS)
-        goto error;
-    
-    res = auth(s, domain, user, password);
-    
-    clean_asn1(s);
-    
-    return res;
-    
-error:
-    BDSM_dbg("login_spnego Interrupted\n");
-    clean_asn1(s);
-    return res;
+    return DSM_ERROR_GENERIC;
 }
 
