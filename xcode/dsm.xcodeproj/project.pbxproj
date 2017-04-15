@@ -490,6 +490,7 @@
 		EF6319E51C7474D10032F5CC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"../libtasn1/include/**",
@@ -513,6 +514,7 @@
 		EF6319E61C7474D10032F5CC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"../libtasn1/include/**",
