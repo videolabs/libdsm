@@ -436,7 +436,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
     assert(s != NULL && path != NULL);
     
-    if(s != NULL && pattern != NULL){
+    if(s != NULL && path != NULL){
 
         utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
         if (utf_path_len == 0)
