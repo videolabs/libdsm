@@ -31,6 +31,11 @@
 #include "config.h"
 
 #include <stdlib.h>
+
+#ifndef _WIN32
+#include <sys/time.h>
+#endif
+
 #if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
@@ -46,7 +51,7 @@ enum {
     CLOCK_THREAD_CPUTIME_ID
 };
 #endif
-#if !defined HAVE_CLOCK_GETTIME
+#if !defined HAVE_CLOCK_GETTIME && !defined( __APPLE__ )
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 

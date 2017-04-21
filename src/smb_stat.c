@@ -36,11 +36,15 @@
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {
     assert(s != NULL && fd);
-
-    return smb_session_file_get(s, fd);
+    
+    if(s != NULL && fd){
+        return smb_session_file_get(s, fd);
+    }
+    
+    return NULL;
 }
 
-void            smb_stat_destroy(smb_stat stat) 
+void            smb_stat_destroy(smb_stat stat)
 {
     smb_stat_list_destroy((smb_stat_list) stat); 
 }

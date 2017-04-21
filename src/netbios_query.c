@@ -68,9 +68,10 @@ netbios_query   *netbios_query_new(size_t payload_size,
 void              netbios_query_destroy(netbios_query *q)
 {
     assert(q);
-
-    free(q->packet);
-    free(q);
+    if(q!=NULL){
+        free(q->packet);
+        free(q);
+    }
 }
 
 void              netbios_query_set_flag(netbios_query *q,
@@ -78,34 +79,41 @@ void              netbios_query_set_flag(netbios_query *q,
 {
     assert(q && q->packet);
 
-    if (value)
-        q->packet->flags = htons(ntohs(q->packet->flags) | flag);
-    else
-        q->packet->flags = htons(ntohs(q->packet->flags) & ~flag);
+    if(q && q->packet){
+        if (value){
+            q->packet->flags = htons(ntohs(q->packet->flags) | flag);
+        }
+        else{
+            q->packet->flags = htons(ntohs(q->packet->flags) & ~flag);
+        }
+    }
 }
 
 void              netbios_query_print(netbios_query *q)
 {
     assert(q && q->packet);
+    
+    if(q && q->packet){
+    
+        printf("--- netbios_query dump :\n");
+        printf("payload = %zu, cursor = %zu.\n", q->payload_size, q->cursor);
+        printf("Transaction id = %u.\n", q->packet->trn_id);
 
-    printf("--- netbios_query dump :\n");
-    printf("payload = %zu, cursor = %zu.\n", q->payload_size, q->cursor);
-    printf("Transaction id = %u.\n", q->packet->trn_id);
+        printf("-------------------------\n");
+        for (unsigned i = 0; i < sizeof(netbios_query_packet) + q->cursor; i++)
+        {
+            char c;
+            if ((i % 8) == 0 && i != 0)
+                printf("\n");
+            if ((i % 8) == 0)
+                printf("0x");
 
-    printf("-------------------------\n");
-    for (unsigned i = 0; i < sizeof(netbios_query_packet) + q->cursor; i++)
-    {
-        char c;
-        if ((i % 8) == 0 && i != 0)
-            printf("\n");
-        if ((i % 8) == 0)
-            printf("0x");
-
-        c = ((char *)q->packet)[i];
-        printf("%.2hhX ", c);
+            c = ((char *)q->packet)[i];
+            printf("%.2hhX ", c);
+        }
+        printf("\n");
+        printf("-------------------------\n");
     }
-    printf("\n");
-    printf("-------------------------\n");
 }
 
 int               netbios_query_append(netbios_query *q, const char *data,
@@ -113,10 +121,14 @@ int               netbios_query_append(netbios_query *q, const char *data,
 {
     assert(q && q->packet);
 
-    if (q->payload_size - q->cursor < data_size)
-        return -1;
-
-    memcpy(((char *)&q->packet->payload) + q->cursor, data, data_size);
-    q->cursor += data_size;
-    return 0;
+    if(q && q->packet){
+        if (q->payload_size - q->cursor < data_size){
+            return -1;
+        }
+        memcpy(((char *)&q->packet->payload) + q->cursor, data, data_size);
+        q->cursor += data_size;
+        return 0;
+    }
+    
+    return -1;
 }

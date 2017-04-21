@@ -98,26 +98,33 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh hash)
     size_t    sz;
 
     assert(password != NULL && hash != NULL);
+    
+    if(password != NULL && hash != NULL){
 
-    sz = smb_to_utf16(password, strlen(password), &ucs2le_pass);
-    memset((void *)hash, 0, SMB_NTLM_HASH_SIZE);
+        sz = smb_to_utf16(password, strlen(password), &ucs2le_pass);
+        memset((void *)hash, 0, SMB_NTLM_HASH_SIZE);
 
-    MD4_Init(&ctx);
-    MD4_Update(&ctx, (uint8_t *)ucs2le_pass, sz);
-    MD4_Final((uint8_t *)hash, &ctx);
+        MD4_CTX_Init(&ctx);
+        MD4_CTX_Update(&ctx, (uint8_t *)ucs2le_pass, sz);
+        MD4_CTX_Final((uint8_t *)hash, &ctx);
 
-    free(ucs2le_pass);
+        free(ucs2le_pass);
+    }
 }
 
 static void _upcase(char *str)
 {
     assert(str != NULL);
+    
+    if(str != NULL){
 
-    while (*str)
-    {
-        if (isalpha(*str))
-            *str = toupper(*str);
-        str++;
+        while (*str)
+        {
+            if (isalpha(*str))
+                *str = toupper(*str);
+            str++;
+        }
+        
     }
 }
 
@@ -261,20 +268,25 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
     smb_ntlm_blob *blob;
 
     assert(out_blob != NULL && target != NULL);
+    
+    if(out_blob != NULL && target != NULL){
 
-    blob = malloc(target->size + sizeof(smb_ntlm_blob));
-    if (!blob)
-        return 0;
+        blob = malloc(target->size + sizeof(smb_ntlm_blob));
+        if (!blob)
+            return 0;
 
-    memset((void *)blob, 0, sizeof(smb_ntlm_blob));
-    blob->header    = 0x101;
-    blob->timestamp = ts;
-    blob->challenge = user_challenge;
+        memset((void *)blob, 0, sizeof(smb_ntlm_blob));
+        blob->header    = 0x101;
+        blob->timestamp = ts;
+        blob->challenge = user_challenge;
 
-    memcpy(blob->target, target->data, target->size);
+        memcpy(blob->target, target->data, target->size);
 
-    *out_blob = blob;
-    return sizeof(smb_ntlm_blob) + target->size;
+        *out_blob = blob;
+        return sizeof(smb_ntlm_blob) + target->size;
+    }
+    
+    return 0;
 }
 
 void        smb_ntlm2_session_key(smb_ntlmh hash_v2, void *ntlm2,
@@ -296,27 +308,31 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
     smb_ntlmssp_nego  *nego;
 
     assert(host != NULL && domain != NULL && token != NULL);
+    
+    if(host != NULL && domain != NULL && token != NULL){
 
-    token->size = sizeof(smb_ntlmssp_nego) + strlen(host) + strlen(domain);
-    if (token->size % 2) // Align on Word
-        token->size += 1;
-    if (smb_buffer_alloc(token, token->size) == 0)
-        return;
-    // BDSM_dbg("Token size if %ld\n", token->size);
+        token->size = sizeof(smb_ntlmssp_nego) + strlen(host) + strlen(domain);
+        if (token->size % 2) // Align on Word
+            token->size += 1;
+        if (smb_buffer_alloc(token, token->size) == 0)
+            return;
+        // BDSM_dbg("Token size if %ld\n", token->size);
 
 
-    nego      = (smb_ntlmssp_nego *)token->data;
+        nego      = (smb_ntlmssp_nego *)token->data;
 
-    nego->type  = SMB_NTLMSSP_CMD_NEGO;
-    nego->flags = 0x60088215;//0x20080205;
-    nego->domain_len = nego->domain_maxlen = strlen(domain);
-    nego->domain_offset = 32;
-    nego->host_len = nego->host_maxlen = strlen(host);
-    nego->host_offset = 32 + strlen(domain);
+        nego->type  = SMB_NTLMSSP_CMD_NEGO;
+        nego->flags = 0x60088215;//0x20080205;
+        nego->domain_len = nego->domain_maxlen = strlen(domain);
+        nego->domain_offset = 32;
+        nego->host_len = nego->host_maxlen = strlen(host);
+        nego->host_offset = 32 + strlen(domain);
 
-    memcpy(nego->id, "NTLMSSP", 8);
-    memcpy(nego->names, domain, strlen(domain));
-    memcpy(nego->names + strlen(domain), domain, strlen(domain));
+        memcpy(nego->id, "NTLMSSP", 8);
+        memcpy(nego->names, domain, strlen(domain));
+        memcpy(nego->names + strlen(domain), domain, strlen(domain));
+    }
+    
 }
 
 #define __AUTH_APPEND(FIELD, value, size, cursor)           \
@@ -341,60 +357,64 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
 
     assert(host != NULL && domain != NULL && user != NULL && password != NULL);
     assert(token != NULL && target != NULL);
+    
+    if(host != NULL && domain != NULL && user != NULL && password != NULL
+       && token != NULL && target != NULL){
+    
+        //// We compute most of the data first to know the final token size
+        smb_ntlm2_hash(user, password, domain, hash_v2);
+        user_challenge = smb_ntlm_generate_challenge();
+        smb_ntlm_generate_xkey(xkey);
+        blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, target);
 
-    //// We compute most of the data first to know the final token size
-    smb_ntlm2_hash(user, password, domain, hash_v2);
-    user_challenge = smb_ntlm_generate_challenge();
-    smb_ntlm_generate_xkey(xkey);
-    blob_size = smb_ntlm_make_blob(&blob, srv_ts, user_challenge, target);
+        lm2   = smb_lm2_response(hash_v2, srv_challenge, smb_ntlm_generate_challenge());
+        smb_buffer_init(&buf, blob, blob_size);
+        ntlm2 = smb_ntlm2_response(hash_v2, srv_challenge, &buf);
+        smb_ntlm2_session_key(hash_v2, ntlm2, xkey, xkey_crypt);
 
-    lm2   = smb_lm2_response(hash_v2, srv_challenge, smb_ntlm_generate_challenge());
-    smb_buffer_init(&buf, blob, blob_size);
-    ntlm2 = smb_ntlm2_response(hash_v2, srv_challenge, &buf);
-    smb_ntlm2_session_key(hash_v2, ntlm2, xkey, xkey_crypt);
+        smb_buffer_init(&buf, NULL, 0);
+        free(blob);
 
-    smb_buffer_init(&buf, NULL, 0);
-    free(blob);
+        // Compute size of and allocate token
+        token->size = sizeof(smb_ntlmssp_auth)
+                      + strlen(host) * 2
+                      + strlen(domain) * 2
+                      + strlen(user) * 2
+                      + blob_size + 16 // Blob + HMAC
+                      + 8 + 16  // LM2 Response (miniblob=user_challenge + HMAC)
+                      + 16;     // Session Key
+        if (token->size % 2) // Align on Word
+            token->size += 1;
+        if (smb_buffer_alloc(token, token->size) == 0) {
+            free(lm2);
+            free(ntlm2);
+            return;
+        }
 
-    // Compute size of and allocate token
-    token->size = sizeof(smb_ntlmssp_auth)
-                  + strlen(host) * 2
-                  + strlen(domain) * 2
-                  + strlen(user) * 2
-                  + blob_size + 16 // Blob + HMAC
-                  + 8 + 16  // LM2 Response (miniblob=user_challenge + HMAC)
-                  + 16;     // Session Key
-    if (token->size % 2) // Align on Word
-        token->size += 1;
-    if (smb_buffer_alloc(token, token->size) == 0) {
+        auth = (smb_ntlmssp_auth *)token->data;
+        memset(auth, 0, token->size);
+
+        memcpy(auth->id, "NTLMSSP", 8);
+        auth->type  = SMB_NTLMSSP_CMD_AUTH;
+        auth->flags = 0x60088215;
+
+
+        __AUTH_APPEND(lm, lm2, 24, cursor)
+        __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
+
+        utf_sz = smb_to_utf16(domain, strlen(domain), &utf);
+        __AUTH_APPEND(domain, utf, utf_sz, cursor)
+        free(utf);
+        utf_sz = smb_to_utf16(user, strlen(user), &utf);
+        __AUTH_APPEND(user, utf, utf_sz, cursor)
+        free(utf);
+        utf_sz = smb_to_utf16(host, strlen(host), &utf);
+        __AUTH_APPEND(host, utf, utf_sz, cursor)
+        free(utf);
+
+        __AUTH_APPEND(session_key, &xkey_crypt, 16, cursor)
+
         free(lm2);
         free(ntlm2);
-        return;
     }
-
-    auth = (smb_ntlmssp_auth *)token->data;
-    memset(auth, 0, token->size);
-
-    memcpy(auth->id, "NTLMSSP", 8);
-    auth->type  = SMB_NTLMSSP_CMD_AUTH;
-    auth->flags = 0x60088215;
-
-
-    __AUTH_APPEND(lm, lm2, 24, cursor)
-    __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
-
-    utf_sz = smb_to_utf16(domain, strlen(domain), &utf);
-    __AUTH_APPEND(domain, utf, utf_sz, cursor)
-    free(utf);
-    utf_sz = smb_to_utf16(user, strlen(user), &utf);
-    __AUTH_APPEND(user, utf, utf_sz, cursor)
-    free(utf);
-    utf_sz = smb_to_utf16(host, strlen(host), &utf);
-    __AUTH_APPEND(host, utf, utf_sz, cursor)
-    free(utf);
-
-    __AUTH_APPEND(session_key, &xkey_crypt, 16, cursor)
-
-    free(lm2);
-    free(ntlm2);
 }
