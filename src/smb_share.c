@@ -226,9 +226,12 @@ size_t          smb_share_list_count(smb_share_list list)
 const char      *smb_share_list_at(smb_share_list list, size_t index)
 {
     assert(list != NULL);
+    
     if(list!=NULL){
         return list[index];
     }
+    
+    return NULL;
 }
 
 void            smb_share_list_destroy(smb_share_list list)
@@ -454,4 +457,6 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     }
     
     ret = DSM_ERROR_GENERIC;
+    return ret;
+    
 }

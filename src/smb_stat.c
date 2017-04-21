@@ -40,6 +40,8 @@ smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
     if(s != NULL && fd){
         return smb_session_file_get(s, fd);
     }
+    
+    return NULL;
 }
 
 void            smb_stat_destroy(smb_stat stat)

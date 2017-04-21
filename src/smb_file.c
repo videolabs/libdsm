@@ -296,7 +296,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     
     }
     
-    retutn -1;
+    return -1;
 }
 
 ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence)
