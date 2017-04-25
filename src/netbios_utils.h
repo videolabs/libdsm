@@ -33,13 +33,47 @@
 
 #include "netbios_defs.h"
 
+/**
+ * @internal
+ * @brief Encode the machine name part of a netbios name
+ *
+ * @param name The string to encode. Only the first 15 chars are used
+ * @param encoded_name This string will be filled with the encoded name. Must
+ *   be 33 bytes long
+ * @param type In netbios, the name encodes the service type,
+ *   like NETBIOS_FILESERVER
+ */
 void  netbios_name_level1_encode(const char *name, char *encoded_name,
                                  unsigned type);
+/**
+ * @internal
+ * @brief Decode the machine part of a netbios name
+ */
 void  netbios_name_level1_decode(const char *encoded_name, char *name);
 
 // XXX: domain support is not implemented
+
+/**
+ * @internal
+ * @brief Encode a netbios machine name.
+ *
+ * @param name The name of the machine. Only the first 15 bytes are used
+ * @param domain Not implemented yet
+ * @param type The type of service we're talking to. Like NETBIOS_FILESERVER or
+ *   NETBIOS_WORKSTATION
+ */
 char  *netbios_name_encode(const char *name, char *domain,
                            unsigned type);
+
+/**
+ * @internal
+ * @brief Decode a netbios machine name.
+ *
+ * @param encoded_name The encoded name
+ * @param name A 16 bytes long string (including null byte). Will be filled
+ *   with the decoded name
+ * @param domain Not Implemented yet
+ */
 int   netbios_name_decode(const char *encoded_name,
                           char *name, char **domain);
 
