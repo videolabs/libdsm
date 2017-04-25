@@ -1,15 +1,18 @@
 # liBDSM
 
-lib Defective SMb (__libDSM__) is a [SMB protocol](https://en.wikipedia.org/wiki/Server_Message_Block) client implementation in pure old __C__, with
-a _lot_ less features than [Samba](https://www.samba.org/) but is simpler, and
-has with a more permissive license (currently __LGPL__ + __proprietary__).
+lib Defective SMb (__libDSM__) is
+a [SMB protocol](https://en.wikipedia.org/wiki/Server_Message_Block)
+client implementation in pure old __C__, with a _lot_ less features
+than [Samba](https://www.samba.org/) but with a much simpler, and a
+more permissive license (currently __LGPL__ + __proprietary__).
 
-The initial goal of this project is to have a library that can access most SMB shares to
-read files and that has with a license compatible with the iOS/Android/WinRT appstores in
-order to integrate it into _VLC for iOS_ and _VLC for Android_.
+The initial goal of this project is to have a library that can access
+most SMB shares to read files and that has a license compatible
+with the iOS/Android/WinRT appstores in order to integrate it into
+_VLC for iOS_ and _VLC for Android_.
 
-This library is also licensable under a proprietary license, if LGPL is not good enough
-for you.
+This library is also licensable under a proprietary license, if LGPL
+is not good enough for you.
 
 The lib is provided as a static library or as a dynamically linked library.
 A few useless (yet) utils are also provided, mostly for testing purpose.
@@ -45,7 +48,8 @@ liBDSM has been tested/reported to work with the following devices/OSes:
 * QNAP TS-212
 * A cheap NAS whose name i can't remember :)
 
-Feel free to contribute items to this list (or network trace of not working devices)
+Feel free to contribute items to this list (or network trace of not
+working devices)
 
 ## Building
 
