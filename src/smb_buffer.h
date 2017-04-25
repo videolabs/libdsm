@@ -49,14 +49,20 @@ typedef struct
 } smb_buffer;
 
 /**
- * @brief Initialize a buffer structure. It'll contain nothing
+ * @brief Initialize a buffer structure with the provided data
  *
  * @param buf Pointer to a buffer to initialize
+ * @param data Pointer to a memory area to be assigned to the buffer. It'll be
+ *   freed if you call smb_buffer_free
+ @ @param size Size in bytes of the memory pointed by data
  */
 void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
 
 /**
  * @brief Allocate a size long memory area and place it in the buffer structure
+ *
+ * @param buf Pointer to a buffer to initialize
+ * @param size Size in bytes of the memory area to allocate for this buffer.
  */
 int     smb_buffer_alloc(smb_buffer *buf, size_t size);
 

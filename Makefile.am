@@ -116,9 +116,12 @@ dsm_lookup_SOURCES = bin/lookup.c
 if TESTS
 bin_PROGRAMS += all_tests
 
-all_tests_SOURCES = tests/all_tests.c \
+all_tests_SOURCES = $(libdsm_la_SOURCES) \
+	tests/all_tests.c \
 	tests/test_hmac.c \
-	$(libdsm_la_SOURCES)
+	tests/test_smb_utils.c \
+	tests/test_smb_buffer.c \
+	tests/test_netbios_name_encode.c
 
 all_tests_CFLAGS = @CMOCKA_CFLAGS@
 all_tests_LDADD = @CMOCKA_LIBS@ libcompat.la $(TASN1_LIBS) @LTLIBICONV@

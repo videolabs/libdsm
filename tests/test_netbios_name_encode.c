@@ -28,23 +28,32 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef _TESTS_H_
-#define _TESTS_H_
+#include <string.h>
+#include <stdlib.h>
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "tests.h"
 
-#define declare_test(name) void test_ ## name(void **state);
+#include "src/netbios_utils.h"
 
-declare_test(hmac_md5)
+void test_nb_encode(void **s)
+{
+  (void) s; // Unused
 
-declare_test(smb_utf16)
+  const char *name1 = "Lta's Mainframe";
+  const char *name1_encoded = "EMFEEBCHFDCAENEBEJEOEGFCEBENEFCA";
+  const char *name1_decoded = "LTA'S MAINFRAME";
+  const char *name2 = "abcdefghijklmnopqrstuvwxyz";
+  const char *name2_decoded = "ABCDEFGHIJKLMNO";
+  char encoded[33], decoded[16];
 
-declare_test(smb_buffer_init)
-declare_test(smb_buffer_alloc)
+  // Simple
+  netbios_name_level1_encode(name1, (char *)encoded, NETBIOS_FILESERVER);
+  assert_string_equal(name1_encoded, encoded);
+  netbios_name_level1_decode((char *)encoded, (char *)decoded);
+  assert_string_equal(name1_decoded, decoded);
 
-declare_test(nb_encode)
-
-#endif
+  // Truncating at 15 chars
+  netbios_name_level1_encode(name2, (char *)encoded, NETBIOS_FILESERVER);
+  netbios_name_level1_decode((char *)encoded, (char *)decoded);
+  assert_string_equal(name2_decoded, decoded);
+}

@@ -28,23 +28,39 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef _TESTS_H_
-#define _TESTS_H_
+#include <string.h>
+#include <stdlib.h>
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "tests.h"
 
-#define declare_test(name) void test_ ## name(void **state);
+#include "src/smb_utils.h"
 
-declare_test(hmac_md5)
+void test_smb_utf16(void **s)
+{
+  (void) s; // Unused
 
-declare_test(smb_utf16)
+  const char str1[] = "only ascii chars";
+  const char str2[] = "àéïóù";
+  size_t result_size1, result_size2;
+  char *result1, *result2;
 
-declare_test(smb_buffer_init)
-declare_test(smb_buffer_alloc)
+  // Only ASCII
+  result_size1 = smb_to_utf16(str1, strlen(str1), &result1);
+  assert_true(result_size1 == strlen(str1) * 2);
 
-declare_test(nb_encode)
+  result_size2 = smb_from_utf16(result1, result_size1, &result2);
+  assert_memory_equal(str1, result2, result_size2);
 
-#endif
+  free(result1);
+  free(result2);
+
+  // With Noice accents
+  result_size1 = smb_to_utf16(str2, strlen(str2), &result1);
+  result_size2 = smb_from_utf16(result1, result_size1, &result2);
+  assert_memory_equal(str2, result2, result_size2);
+
+  free(result1);
+  free(result2);
+
+
+}

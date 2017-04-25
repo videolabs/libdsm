@@ -28,23 +28,44 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef _TESTS_H_
-#define _TESTS_H_
+#include <string.h>
+#include <stdlib.h>
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "tests.h"
 
-#define declare_test(name) void test_ ## name(void **state);
+#include "src/smb_buffer.h"
 
-declare_test(hmac_md5)
+void test_smb_buffer_init(void **s)
+{
+  (void) s; // Unused
 
-declare_test(smb_utf16)
+  void *data;
+  smb_buffer buf;
 
-declare_test(smb_buffer_init)
-declare_test(smb_buffer_alloc)
+  data = malloc(42);
+  smb_buffer_init(&buf, data, 42);
+  assert_ptr_equal(buf.data, data);
+  assert_true(buf.size == 42);
 
-declare_test(nb_encode)
+  smb_buffer_free(&buf);
+  assert_null(buf.data);
+  assert_true(buf.size == 0);
+}
 
-#endif
+void test_smb_buffer_alloc(void **s)
+{
+  (void) s; // Unused
+
+  smb_buffer buf;
+
+  smb_buffer_alloc(&buf, 42);
+  assert_non_null(buf.data);
+  assert_true(buf.size == 42);
+
+  // Triggers a segfault is alloc is faulty
+  ((char *)buf.data)[0] + 42;
+
+  smb_buffer_free(&buf);
+  assert_null(buf.data);
+  assert_true(buf.size == 0);
+}
