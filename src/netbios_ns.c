@@ -36,7 +36,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <pthread.h>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 
 #include <unistd.h>
 #include <fcntl.h>
