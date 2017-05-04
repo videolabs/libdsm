@@ -162,7 +162,7 @@ static int        smb_negotiate(smb_session *s)
     smb_message         *msg = NULL;
     smb_message         answer;
     smb_nego_resp       *nego;
-    uint16_t *p_payload_size;
+    uint16_t payload_size;
 
     assert(s != NULL);
 
@@ -175,8 +175,8 @@ static int        smb_negotiate(smb_session *s)
 
     for (unsigned i = 0; dialects[i] != NULL; i++)
         smb_message_append(msg, dialects[i], strlen(dialects[i]) + 1);
-    p_payload_size = (uint16_t *)(msg->packet->payload + 1);
-    *p_payload_size = msg->cursor - 3;
+    payload_size = msg->cursor - 3;
+    memcpy(msg->packet->payload + 1, &payload_size, sizeof(payload_size));
 
     if (!smb_session_send_msg(s, msg))
     {
