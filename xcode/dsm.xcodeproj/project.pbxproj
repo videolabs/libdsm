@@ -526,7 +526,10 @@
 					"../libtasn1/**",
 					"../include/**",
 				);
-				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_CFLAGS = (
+					"-DNS_BLOCK_ASSERTIONS=1",
+					"-DNDEBUG",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",

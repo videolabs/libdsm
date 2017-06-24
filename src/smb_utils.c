@@ -45,6 +45,31 @@
 #include "bdsm_debug.h"
 #include "smb_utils.h"
 
+
+
+#import <pthread.h>
+#import <assert.h>
+
+static pthread_mutex_t static_iconv_mutex = PTHREAD_MUTEX_INITIALIZER;
+static char iconv_locked = 0;
+
+#define iconv_lock() {if (pthread_mutex_lock(&static_iconv_mutex)!=0){\
+assert(0);\
+}\
+set_iconv_locked(1);\
+}\
+
+#define iconv_unlock() {if (pthread_mutex_unlock(&static_iconv_mutex)!=0){\
+assert(0);\
+}\
+set_iconv_locked(0);\
+}\
+
+static void set_iconv_locked(char locked){
+    assert(iconv_locked!=locked);
+    iconv_locked = locked;
+}
+
 static const char *current_encoding()
 {
 #if defined( __APPLE__ )
@@ -73,19 +98,21 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
     assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
 
     if(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL){
-    
-        
+
         if (!src_len)
         {
             *dst = NULL;
             return 0;
         }
-
+        
+        iconv_lock();
+        
         if ((ic = iconv_open(dst_enc, src_enc)) == (iconv_t)-1)
         {
             BDSM_dbg("Unable to open iconv to convert from %s to %s\n",
                      src_enc, dst_enc);
             *dst = NULL;
+            iconv_unlock();
             return 0;
         }
         for (unsigned mul = 4; mul < 16; mul++)
@@ -98,22 +125,29 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
             char *outp = out;
             size_t outb = outlen;
 
-            if (!out)
+            if (!out){
                 break;
+            }
             if (iconv(ic, (char **)&inp, &inb, &outp, &outb) != (size_t)(-1)) {
                 ret = outlen - outb;
                 *dst = out;
                 break;
             }
             free(out);
-            if (errno != E2BIG)
+            if (errno != E2BIG){
                 break;
+            }
         }
         iconv_close(ic);
-
-        if (ret == 0)
+        
+        iconv_unlock();
+        
+        if (ret == 0){
             *dst = NULL;
+        }
+        
         return ret;
+        
     }
     
     return 0;
