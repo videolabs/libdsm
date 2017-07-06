@@ -47,9 +47,8 @@
 
 #ifdef HAVE_BSD_STRING_H
 #include <bsd/string.h>
-#else
-#include "compat.h"
 #endif
+#include "compat.h"
 
 #include "mdx/md4.h"
 #include "rc4/rc4.h"
@@ -382,9 +381,15 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
     auth->flags = 0x60088215;
 
 
-    __AUTH_APPEND(lm, lm2, 24, cursor)
-    __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
-
+    if (!*domain && !*user && !*password) {
+        utf_sz = smb_to_utf16("", 0, &utf);
+        __AUTH_APPEND(lm, utf, utf_sz, cursor)
+        __AUTH_APPEND(ntlm, utf, utf_sz, cursor)
+        free(utf);
+    } else {
+        __AUTH_APPEND(lm, lm2, 24, cursor)
+        __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
+    }
     utf_sz = smb_to_utf16(domain, strlen(domain), &utf);
     __AUTH_APPEND(domain, utf, utf_sz, cursor)
     free(utf);
