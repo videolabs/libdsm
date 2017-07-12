@@ -166,8 +166,7 @@
 
 
 //disable assert in release
-#ifndef __OPTIMIZE__
+#ifdef __OPTIMIZE__
 #define NDEBUG      1
 #define	assert(e)	((void)0)
 #endif
-
