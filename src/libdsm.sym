@@ -36,6 +36,7 @@ smb_stat_destroy
 smb_stat_fd
 smb_stat_get
 smb_stat_list_at
+smb_stat_list_next
 smb_stat_list_count
 smb_stat_list_destroy
 smb_stat_name

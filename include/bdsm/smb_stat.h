@@ -109,6 +109,7 @@ void            smb_stat_destroy(smb_stat stat);
  */
 size_t            smb_stat_list_count(smb_stat_list list);
 
+smb_stat        smb_stat_list_next(smb_stat_list stat);
 /**
  * @brief Get the element at the given position.
  *
