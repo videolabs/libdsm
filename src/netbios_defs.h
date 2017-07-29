@@ -36,10 +36,10 @@
 #include "bdsm/netbios_defs.h"
 #include "bdsm_common.h"
 
-#define NETBIOS_PORT_NAME     137 // UDP
-#define NETBIOS_PORT_SESSION  139 // TCP
-#define NETBIOS_PORT_DIRECT   445 // TCP
-#define NETBIOS_PORT_DIRECT_SECONDARY 139 // TCP
+#define NETBIOS_PORT_NAME     "137" // UDP
+#define NETBIOS_PORT_SESSION  "139" // TCP
+#define NETBIOS_PORT_DIRECT   "445" // TCP
+#define NETBIOS_PORT_DIRECT_SECONDARY "139" // TCP
 
 #define NETBIOS_NAME_LENGTH   15
 

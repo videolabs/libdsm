@@ -137,7 +137,7 @@ void            smb_session_set_creds(smb_session *s, const char *domain,
 }
 
 int             smb_session_connect(smb_session *s, const char *name,
-                                    uint32_t ip, int transport)
+                                    const char *ip, int transport)
 {
     assert(s != NULL && name != NULL);
 

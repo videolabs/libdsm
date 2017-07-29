@@ -50,17 +50,48 @@
 #include "compat.h"
 #include "netbios_session.h"
 #include "netbios_utils.h"
+#include <netdb.h>
+#include <fcntl.h>
+
 
 static int open_socket_and_connect(netbios_session *s)
 {
-    if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((s->socket = socket(s->remote_addr->ai_family, SOCK_STREAM, 0)) < 0){
         goto error;
+    }
     
-    //int sock_opt = 1;
-    //setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&sock_opt, sizeof(sock_opt));
+    // Prevent SIGPIPE signals
+    int nosigpipe = 1;
+    setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
     
-    if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
+    // Enable non-blocking IO on the socket
+    int result = fcntl(s->socket, F_SETFL, O_NONBLOCK);
+    if (result < 0){
         goto error;
+    }
+    
+    //if (connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen) <0)
+    //    goto error;
+    
+    connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen);
+
+    fd_set fdset;
+    struct timeval tv;
+    FD_ZERO(&fdset);
+    FD_SET(s->socket, &fdset);
+    tv.tv_sec = 10.0;//10 sec timeout
+    tv.tv_usec = 0;
+    if (select(s->socket + 1, NULL, &fdset, NULL, &tv) == 1){
+        int so_error = 1;
+        socklen_t len = sizeof so_error;
+        getsockopt(s->socket, SOL_SOCKET, SO_ERROR, &so_error, &len);
+        if (so_error != 0) {
+            goto error;
+        }
+    }
+    else{
+        goto error;
+    }
 
     return DSM_SUCCESS;
 
@@ -127,12 +158,48 @@ void              netbios_session_destroy(netbios_session *s)
     free(s);
 }
 
-int netbios_session_connect(uint32_t ip, netbios_session *s,
+/*
+struct addrinfo hints;
+struct addrinfo *rp, *result;
+memset(hints, 0, sizeof hints);
+hints.ai_family = AF_UNSPEC;
+hints.ai_flags = AI_ADDRCONFIG;
+hints.ai_socktype = SOCK_STREAM;
+
+int err = getaddrinfo("10.0.0.21", "25", &hints, &result);
+if (err) {
+    if (err == EAI_SYSTEM) {
+        fprintf(stderr, "10.0.0.21:25: %s\n", strerror(errno));
+    } else {
+        fprintf(stderr, "10.0.0.21:25: %s\n", gai_strerror(err));
+    }
+    return 1;
+}
+
+int sock;
+for (rp = result; rp; rp = rp->ai_next) {
+    sock = socket(rp->ai_family, rp->ai_socktype,
+                  rp->ai_protocol);
+    if (sock == -1)
+        continue;
+    if (connect(sock, rp->ai_addr, rp->ai_addrlen))
+        break;
+    close(sock);
+}
+if (rp == 0) {
+    perror("10.0.0.21:25");
+    return -1;
+}
+freeaddrinfo(result);
+
+*/
+
+int netbios_session_connect(const char *ip, netbios_session *s,
                             const char *name, int direct_tcp)
 {
     ssize_t                   recv_size;
     char                      *encoded_name = NULL;
-    uint16_t                  ports[2];
+    char                      *ports[2];
     unsigned int              nb_ports;
     bool                      opened = false;
 
@@ -142,22 +209,42 @@ int netbios_session_connect(uint32_t ip, netbios_session *s,
     
         if (direct_tcp)
         {
-            ports[0] = htons(NETBIOS_PORT_DIRECT);
-            ports[1] = htons(NETBIOS_PORT_DIRECT_SECONDARY);
+            ports[0] = NETBIOS_PORT_DIRECT;
+            ports[1] = NETBIOS_PORT_DIRECT_SECONDARY;
             nb_ports = 2;
         }
         else
         {
-            ports[0] = htons(NETBIOS_PORT_SESSION);
+            ports[0] = NETBIOS_PORT_SESSION;
             nb_ports = 1;
         }
         for (unsigned int i = 0; i < nb_ports && !opened; ++i)
         {
-            s->remote_addr.sin_port         = ports[i];
-            s->remote_addr.sin_family       = AF_INET;
-            s->remote_addr.sin_addr.s_addr  = ip;
-            opened = open_socket_and_connect(s) == DSM_SUCCESS;
+
+            struct addrinfo hints;
+            struct addrinfo *rp, *result;
+            memset(&hints, 0, sizeof(hints));
+            hints.ai_family = AF_UNSPEC;
+            hints.ai_flags = AI_ADDRCONFIG;
+            hints.ai_socktype = SOCK_STREAM;
+            
+            int getaddrinfoerror = getaddrinfo(ip, ports[i], &hints, &result);
+            if (getaddrinfoerror) {
+                goto error;
+            }
+            
+            for (rp = result; rp; rp = rp->ai_next) {
+                s->remote_addr = rp;
+                opened = (open_socket_and_connect(s) == DSM_SUCCESS);
+                if(opened){
+                    break;
+                }
+            }
+            
+            freeaddrinfo(result);
+            
         }
+
         if (!opened)
             goto error;
 

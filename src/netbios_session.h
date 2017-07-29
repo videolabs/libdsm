@@ -51,7 +51,7 @@
 typedef struct              netbios_session_s
 {
     // The address of the remote peer;
-    struct sockaddr_in          remote_addr;
+    struct addrinfo          *remote_addr;
     // The socket of the TCP connection to the HOST'
     int                         socket;
     // The current sessions state; See macro before (eg. NETBIOS_SESSION_ERROR)
@@ -68,7 +68,7 @@ typedef struct              netbios_session_s
 // Return NULL if unable to open socket/connect
 netbios_session   *netbios_session_new(size_t buf_size);
 void              netbios_session_destroy(netbios_session *);
-int               netbios_session_connect(uint32_t ip,
+int               netbios_session_connect(const char *ip,
         netbios_session *s,
         const char *name,
         int direct_tcp);

@@ -37,14 +37,14 @@
 
 // XXX: This can be simplified, since we have only one function that differs
 
-int               transport_connect_nbt(uint32_t ip,
+int               transport_connect_nbt(const char *ip,
                                         netbios_session *s,
                                         const char *name)
 {
     return netbios_session_connect(ip, s, name, 0);
 }
 
-int               transport_connect_tcp(uint32_t ip,
+int               transport_connect_tcp(const char *ip,
                                         netbios_session *s,
                                         const char *name)
 {
