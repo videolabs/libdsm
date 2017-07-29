@@ -61,35 +61,10 @@ static int open_socket_and_connect(netbios_session *s)
     }
     
     // Prevent SIGPIPE signals
-    int nosigpipe = 1;
-    setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
+    //int nosigpipe = 1;
+    //setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
     
-    // Enable non-blocking IO on the socket
-    int result = fcntl(s->socket, F_SETFL, O_NONBLOCK);
-    if (result < 0){
-        goto error;
-    }
-    
-    //if (connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen) <0)
-    //    goto error;
-    
-    connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen);
-
-    fd_set fdset;
-    struct timeval tv;
-    FD_ZERO(&fdset);
-    FD_SET(s->socket, &fdset);
-    tv.tv_sec = 10.0;//10 sec timeout
-    tv.tv_usec = 0;
-    if (select(s->socket + 1, NULL, &fdset, NULL, &tv) == 1){
-        int so_error = 1;
-        socklen_t len = sizeof so_error;
-        getsockopt(s->socket, SOL_SOCKET, SO_ERROR, &so_error, &len);
-        if (so_error != 0) {
-            goto error;
-        }
-    }
-    else{
+    if (connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen) <0){
         goto error;
     }
 
@@ -157,42 +132,6 @@ void              netbios_session_destroy(netbios_session *s)
     free(s->packet);
     free(s);
 }
-
-/*
-struct addrinfo hints;
-struct addrinfo *rp, *result;
-memset(hints, 0, sizeof hints);
-hints.ai_family = AF_UNSPEC;
-hints.ai_flags = AI_ADDRCONFIG;
-hints.ai_socktype = SOCK_STREAM;
-
-int err = getaddrinfo("10.0.0.21", "25", &hints, &result);
-if (err) {
-    if (err == EAI_SYSTEM) {
-        fprintf(stderr, "10.0.0.21:25: %s\n", strerror(errno));
-    } else {
-        fprintf(stderr, "10.0.0.21:25: %s\n", gai_strerror(err));
-    }
-    return 1;
-}
-
-int sock;
-for (rp = result; rp; rp = rp->ai_next) {
-    sock = socket(rp->ai_family, rp->ai_socktype,
-                  rp->ai_protocol);
-    if (sock == -1)
-        continue;
-    if (connect(sock, rp->ai_addr, rp->ai_addrlen))
-        break;
-    close(sock);
-}
-if (rp == 0) {
-    perror("10.0.0.21:25");
-    return -1;
-}
-freeaddrinfo(result);
-
-*/
 
 int netbios_session_connect(const char *ip, netbios_session *s,
                             const char *name, int direct_tcp)
