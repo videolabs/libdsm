@@ -69,7 +69,7 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 #include <stdint.h>
 #include <time.h>
 
-int clock_gettime(int clk_id, struct timespec *spec) {
+int clock_gettime(clockid_t clk_id, struct timespec *spec) {
     (void)clk_id;
     FILETIME wintime;
     GetSystemTimeAsFileTime(&wintime);
