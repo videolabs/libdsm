@@ -104,7 +104,7 @@ void            smb_session_share_clear(smb_session *s)
 
     iter = s->shares;
     while(iter != NULL)
-    {        
+    {
         fiter = iter->files;
         while(fiter != NULL)
         {
@@ -113,7 +113,7 @@ void            smb_session_share_clear(smb_session *s)
 
             free(ftmp->name);
             free(ftmp);
-        }   
+        }
 
         tmp = iter;
         iter = iter->next;

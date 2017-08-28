@@ -44,9 +44,9 @@ smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
     return smb_session_file_get(s, fd);
 }
 
-void            smb_stat_destroy(smb_stat stat) 
+void            smb_stat_destroy(smb_stat stat)
 {
-    smb_stat_list_destroy((smb_stat_list) stat); 
+    smb_stat_list_destroy((smb_stat_list) stat);
 }
 
 size_t            smb_stat_list_count(smb_stat_list list)
