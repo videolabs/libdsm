@@ -40,7 +40,6 @@
 #include <mach/mach_time.h>
 #include <unistd.h>
 #include <sched.h>
-#include "compat.h"
 
 int clock_gettime(clockid_t clk_id, struct timespec *tp) {
     kern_return_t   ret;
@@ -69,7 +68,6 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 #include <windows.h>
 #include <stdint.h>
 #include <time.h>
-#include "compat.h"
 
 int clock_gettime(int clk_id, struct timespec *spec) {
     (void)clk_id;

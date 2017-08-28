@@ -61,6 +61,8 @@ AX_PTHREAD(,[
     ])
 ])
 
+AH_BOTTOM([#include "compat.h"])
+
 ##############################
 ## Checks for the ASN.1 parser
 PKG_CHECK_MODULES([TASN1], [libtasn1])

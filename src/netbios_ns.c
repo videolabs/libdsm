@@ -75,8 +75,6 @@
 #include "netbios_query.h"
 #include "netbios_utils.h"
 
-#include "compat.h"
-
 enum name_query_type {
     NAME_QUERY_TYPE_INVALID,
     NAME_QUERY_TYPE_NB,
