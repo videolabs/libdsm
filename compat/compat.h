@@ -48,6 +48,8 @@ enum {
 };
 #endif
 #if !defined HAVE_CLOCK_GETTIME
+// We need a proper struct timespec definition
+#include <time.h>
 int clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 
