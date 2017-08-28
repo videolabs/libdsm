@@ -28,6 +28,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#ifndef BDSM_COMPAT_H
+# define BDSM_COMPAT_H
+
 #include <stdlib.h>
 #if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
@@ -75,3 +78,5 @@ struct timespec {
     long    tv_nsec;  /* Nanoseconds */
 };
 #endif /* HAVE_STRUCT_TIMESPEC */
+
+#endif
