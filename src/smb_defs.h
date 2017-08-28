@@ -62,22 +62,53 @@
 //-----------------------------------------------------------------------------/
 // SMB Operations/Commands
 //-----------------------------------------------------------------------------/
+// Current TODO: maybe we do need those, maybe not.
+// 0x05, 0x10, 0x24, 0x26, 0x33, 0x34, 0xA0, 0xA1, 0xA4, 0xC0
+
+#define SMB_CMD_MKDIR           0x00 // Deprecated
+#define SMB_CMD_RMDIR           0x01
+/* 0x02 - 0x03 are deprecated */
 #define SMB_CMD_CLOSE           0x04
+//#define SMB_CMD_FLUSH           0x05
+#define SMB_CMD_RMFILE          0x06
+#define SMB_CMD_MOVE            0x07 // Move or rename
+/* 0x08 - 0x0D are deprecated
+ * 0x0E is obsolescent
+ * 0x0F is deprecated */
+//#define SMB_CMD_CHECK_DIRECTORY 0x10
+/* 0x11 - 0x1F are all obsolescent, deprecated or obsolete */
+/* 0x10 - 0x23 are deprecated */
+//#define SMB_CMD_LOCKING         0x24 // Locking AndX
 #define SMD_CMD_TRANS           0x25
+//#define SMD_CMD_TRANS_SECONDARY 0x26
+/* 0x27 - 0x2A are all obsolescent, deprecated or obsolete */
+#define SMB_CMD_ECHO            0x2b
+/* 0x2c - 0x2d are deprecated */
+#define SMB_CMD_READ            0x2e // Read AndX
+#define SMB_CMD_WRITE           0x2f // Write AndX
+/* 0x30 - 0x31 are not implemented */
 #define SMB_CMD_TRANS2          0x32
+//#define SMB_CMD_TRANS2_SECONDARY 0x33
+//#define SMB_CMD_CLOSE2 0x34
+/* 0x35 - 0x5F are reserved */
+/* 0x6* is xenix1.1 dialect */
+/* 0x70 id deprecated */
 #define SMB_CMD_TREE_DISCONNECT 0x71
 #define SMB_CMD_NEGOTIATE       0x72
 #define SMB_CMD_SETUP           0x73 // Session Setup AndX
 #define SMB_CMD_LOGOFF          0x74 // Session Logoff AndX
 #define SMB_CMD_TREE_CONNECT    0x75 // Tree Connect AndX
-#define SMB_CMD_ECHO            0x2b
-#define SMB_CMD_READ            0x2e // Read AndX
-#define SMB_CMD_WRITE           0x2f // Write AndX
-#define SMB_CMD_CREATE          0xa2 // NT Create AndX
-#define SMB_CMD_MKDIR           0x00 // Depecated
-#define SMB_CMD_RMDIR           0x01
-#define SMB_CMD_RMFILE          0x06
-#define SMB_CMD_MOVE            0x07 // Move or rename
+/* 0x76 - 0x7D are unused, 0x7E is obsolete, 0x7F is unused */
+/* 0x8* - 0x9* are  deprecated or unused */
+//#define SMB_CMD_NT_TRANSACT     0xA0
+//#define SMB_CMD_NT_TRANSACT_SECONDARY     0xA1
+#define SMB_CMD_CREATE          0xA2 // NT Create AndX
+//#define SMB_CMD_CANCEL          0xA4
+/* 0xA3 is unused, 0xA5 is obsolete, 0xA6 - 0xBF are unused */
+//#define SMB_CMD_PRINT_FILE      0xC0
+/* 0xC1 - 0xFD are all obsolete or deprecated */
+/* 0xFE SMB_CMD_INVALID: DO NOT IMPLEMENT */
+/* 0xFF NIL command for AndX */
 
 //-----------------------------------------------------------------------------/
 // SMB FLAGS2 values
