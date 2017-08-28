@@ -31,8 +31,6 @@
 #ifndef _BDSM_DEBUG_H_
 # define _BDSM_DEBUG_H_
 
-# include "config.h"
-
 # ifdef __ANDROID__
 #  define LOG_TAG "libdsm"
 #  include <android/log.h>

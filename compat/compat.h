@@ -28,8 +28,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "config.h"
-
 #include <stdlib.h>
 #if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
