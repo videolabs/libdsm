@@ -49,8 +49,6 @@
 
 #ifdef HAVE_BSD_STRING_H
 #include <bsd/string.h>
-#else
-#include "compat.h"
 #endif
 
 #include "mdx/md4.h"

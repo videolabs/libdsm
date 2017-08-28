@@ -49,7 +49,6 @@
 
 #include "smb_defs.h"
 #include "bdsm_debug.h"
-#include "compat.h"
 #include "netbios_session.h"
 #include "netbios_utils.h"
 
