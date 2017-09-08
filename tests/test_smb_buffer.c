@@ -6,7 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
+ * This file is part of liBDSM. Copyright © 2014-2017 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
  *
@@ -28,49 +28,44 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-/**
- * @file smb_types.h
- * @brief liBDSM types and structures
- */
-
-#ifndef _SMB_BUFFER_H_
-#define _SMB_BUFFER_H_
-
+#include <string.h>
 #include <stdlib.h>
 
-/**
-  * @struct smb_buffer
-  * @brief Hold a pointer and the size of its data
-  */
-typedef struct
+#include "tests.h"
+
+#include "src/smb_buffer.h"
+
+void test_smb_buffer_init(void **s)
 {
-    void      *data;  /// Data pointed
-    size_t    size;   /// Size in byte of the pointed
-} smb_buffer;
+  (void) s; // Unused
 
-/**
- * @brief Initialize a buffer structure with the provided data
- *
- * @param buf Pointer to a buffer to initialize
- * @param data Pointer to a memory area to be assigned to the buffer. It'll be
- *   freed if you call smb_buffer_free
- @ @param size Size in bytes of the memory pointed by data
- */
-void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
+  void *data;
+  smb_buffer buf;
 
-/**
- * @brief Allocate a size long memory area and place it in the buffer structure
- *
- * @param buf Pointer to a buffer to initialize
- * @param size Size in bytes of the memory area to allocate for this buffer.
- */
-int     smb_buffer_alloc(smb_buffer *buf, size_t size);
+  data = malloc(42);
+  smb_buffer_init(&buf, data, 42);
+  assert_ptr_equal(buf.data, data);
+  assert_true(buf.size == 42);
 
-/**
- * @brief Free the data of this buffer if necessary
- *
- * @param buf Pointer to a buffer to free
- */
-void    smb_buffer_free(smb_buffer *buf);
+  smb_buffer_free(&buf);
+  assert_null(buf.data);
+  assert_true(buf.size == 0);
+}
 
-#endif
+void test_smb_buffer_alloc(void **s)
+{
+  (void) s; // Unused
+
+  smb_buffer buf;
+
+  smb_buffer_alloc(&buf, 42);
+  assert_non_null(buf.data);
+  assert_true(buf.size == 42);
+
+  // Triggers a segfault is alloc is faulty
+  ((char *)buf.data)[0] + 42;
+
+  smb_buffer_free(&buf);
+  assert_null(buf.data);
+  assert_true(buf.size == 0);
+}

@@ -44,8 +44,13 @@ AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug], [Additional debugging features [default=no]])
 )
 
+AC_ARG_ENABLE([tests],
+AS_HELP_STRING([--enable-tests], [Build unit tests [default=no]])
+)
+
 AM_CONDITIONAL([DEBUG], [test x"$enable_debug" == x"yes"])
 AM_CONDITIONAL([PROGRAMS], [test x"$enable_programs" != x"no"])
+AM_CONDITIONAL([TESTS], [test x"$enable_tests" != x"no"])
 
 LT_INIT
 
@@ -55,10 +60,18 @@ AC_CONFIG_MACRO_DIR([m4])
 
 dnl Check for pthreads
 AX_PTHREAD(,[
-    AC_CHECK_LIB(pthreadGC2,pthread_join,[
-        AC_SUBST(PTHREAD_LIBS,"-lpthreadGC2")
-        AC_SUBST(PTHREAD_CFLAGS,"-DPTW32_STATIC_LIB"])
-    ])
+  AC_CHECK_LIB(pthreadGC2,pthread_join,[
+    AC_SUBST(PTHREAD_LIBS,"-lpthreadGC2")
+    AC_SUBST(PTHREAD_CFLAGS,"-DPTW32_STATIC_LIB"])
+  ])
+])
+
+##############################
+## Checks for cmocka test framework
+AS_IF([test x"$enable_tests" = x"yes"], [
+  PKG_CHECK_MODULES([CMOCKA], [cmocka])
+  AC_SUBST([CMOCKA_CFLAGS])
+  AC_SUBST([CMOCKA_LIBS])
 ])
 
 AH_BOTTOM([#include "compat.h"])
@@ -112,8 +125,8 @@ AC_CHECK_FUNCS([pipe _pipe getifaddrs])
 AC_CHECK_HEADERS([bsd/string.h langinfo.h alloca.h sys/queue.h arpa/inet.h sys/socket.h sys/time.h ifaddrs.h])
 
 ## Configure random device path
-AC_ARG_WITH([urandom], 
-    [AS_HELP_STRING([--with-urandom=PATH], 
+AC_ARG_WITH([urandom],
+    [AS_HELP_STRING([--with-urandom=PATH],
         [Configure the path of the random generation device used @<:@default=/dev/urandom@:>@ ])],
     [], [with_urandom=/dev/urandom])
 AC_DEFINE_UNQUOTED([URANDOM], ["$with_urandom"], [Path of the random number generation device])

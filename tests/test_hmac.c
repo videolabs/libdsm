@@ -6,7 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
+ * This file is part of liBDSM. Copyright © 2014-2017 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
  *
@@ -28,49 +28,34 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-/**
- * @file smb_types.h
- * @brief liBDSM types and structures
- */
+#include <string.h>
 
-#ifndef _SMB_BUFFER_H_
-#define _SMB_BUFFER_H_
+#include "tests.h"
 
-#include <stdlib.h>
+#include "src/hmac_md5.h"
+#include "src/smb_ntlm.h"
 
-/**
-  * @struct smb_buffer
-  * @brief Hold a pointer and the size of its data
-  */
-typedef struct
+void test_hmac_md5(void **s)
 {
-    void      *data;  /// Data pointed
-    size_t    size;   /// Size in byte of the pointed
-} smb_buffer;
+  (void)s;
 
-/**
- * @brief Initialize a buffer structure with the provided data
- *
- * @param buf Pointer to a buffer to initialize
- * @param data Pointer to a memory area to be assigned to the buffer. It'll be
- *   freed if you call smb_buffer_free
- @ @param size Size in bytes of the memory pointed by data
- */
-void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
+  const char key1[] = "12345678";
+  const char key2[] = "aaaabbbb";
+  const char msg1[] = "'Wut wut' is first message :)";
+  const char msg2[] = "A second awesome message !";
+  smb_ntlmh hash1, hash2;
 
-/**
- * @brief Allocate a size long memory area and place it in the buffer structure
- *
- * @param buf Pointer to a buffer to initialize
- * @param size Size in bytes of the memory area to allocate for this buffer.
- */
-int     smb_buffer_alloc(smb_buffer *buf, size_t size);
+  // Hashing the same things should give the same result
+  HMAC_MD5(key1, strlen(key1), msg1, strlen(msg1), hash1);
+  HMAC_MD5(key1, strlen(key1), msg1, strlen(msg1), hash2);
+  assert_memory_equal(hash1, hash2, sizeof(hash1));
 
-/**
- * @brief Free the data of this buffer if necessary
- *
- * @param buf Pointer to a buffer to free
- */
-void    smb_buffer_free(smb_buffer *buf);
+  // Hashing different stuff gives different results
+  HMAC_MD5(key2, strlen(key2), msg2, strlen(msg2), hash2);
+  assert_memory_not_equal(hash1, hash2, sizeof(hash1));
 
-#endif
+  // Test against a precomputed hmac
+  smb_ntlmh expected_hash1 = { 0xc7, 0x30, 0x7e, 0x75, 0x1b, 0x42, 0xb9, 0x37,
+                               0xc8, 0x01, 0x22, 0xe2, 0x09, 0xda, 0x75, 0x0a };
+  assert_memory_equal(hash1, expected_hash1, sizeof(hash1));
+}

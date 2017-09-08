@@ -8,6 +8,7 @@ dsm
 dsm_discover
 dsm_lookup
 dsm_inverse
+all_tests
 configure
 .*/
 build*/

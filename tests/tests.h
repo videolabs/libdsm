@@ -6,7 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
+ * This file is part of liBDSM. Copyright © 2014-2017 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
  *
@@ -28,49 +28,23 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-/**
- * @file smb_types.h
- * @brief liBDSM types and structures
- */
+#ifndef _TESTS_H_
+#define _TESTS_H_
 
-#ifndef _SMB_BUFFER_H_
-#define _SMB_BUFFER_H_
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <cmocka.h>
 
-#include <stdlib.h>
+#define declare_test(name) void test_ ## name(void **state);
 
-/**
-  * @struct smb_buffer
-  * @brief Hold a pointer and the size of its data
-  */
-typedef struct
-{
-    void      *data;  /// Data pointed
-    size_t    size;   /// Size in byte of the pointed
-} smb_buffer;
+declare_test(hmac_md5)
 
-/**
- * @brief Initialize a buffer structure with the provided data
- *
- * @param buf Pointer to a buffer to initialize
- * @param data Pointer to a memory area to be assigned to the buffer. It'll be
- *   freed if you call smb_buffer_free
- @ @param size Size in bytes of the memory pointed by data
- */
-void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
+declare_test(smb_utf16)
 
-/**
- * @brief Allocate a size long memory area and place it in the buffer structure
- *
- * @param buf Pointer to a buffer to initialize
- * @param size Size in bytes of the memory area to allocate for this buffer.
- */
-int     smb_buffer_alloc(smb_buffer *buf, size_t size);
+declare_test(smb_buffer_init)
+declare_test(smb_buffer_alloc)
 
-/**
- * @brief Free the data of this buffer if necessary
- *
- * @param buf Pointer to a buffer to free
- */
-void    smb_buffer_free(smb_buffer *buf);
+declare_test(nb_encode)
 
 #endif

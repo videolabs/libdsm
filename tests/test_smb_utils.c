@@ -6,7 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
+ * This file is part of liBDSM. Copyright © 2014-2017 VideoLabs SAS
  *
  * Author: Julien 'Lta' BALLET <contact@lta.io>
  *
@@ -28,49 +28,39 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-/**
- * @file smb_types.h
- * @brief liBDSM types and structures
- */
-
-#ifndef _SMB_BUFFER_H_
-#define _SMB_BUFFER_H_
-
+#include <string.h>
 #include <stdlib.h>
 
-/**
-  * @struct smb_buffer
-  * @brief Hold a pointer and the size of its data
-  */
-typedef struct
+#include "tests.h"
+
+#include "src/smb_utils.h"
+
+void test_smb_utf16(void **s)
 {
-    void      *data;  /// Data pointed
-    size_t    size;   /// Size in byte of the pointed
-} smb_buffer;
+  (void) s; // Unused
 
-/**
- * @brief Initialize a buffer structure with the provided data
- *
- * @param buf Pointer to a buffer to initialize
- * @param data Pointer to a memory area to be assigned to the buffer. It'll be
- *   freed if you call smb_buffer_free
- @ @param size Size in bytes of the memory pointed by data
- */
-void    smb_buffer_init(smb_buffer *buf, void *data, size_t size);
+  const char str1[] = "only ascii chars";
+  const char str2[] = "àéïóù";
+  size_t result_size1, result_size2;
+  char *result1, *result2;
 
-/**
- * @brief Allocate a size long memory area and place it in the buffer structure
- *
- * @param buf Pointer to a buffer to initialize
- * @param size Size in bytes of the memory area to allocate for this buffer.
- */
-int     smb_buffer_alloc(smb_buffer *buf, size_t size);
+  // Only ASCII
+  result_size1 = smb_to_utf16(str1, strlen(str1), &result1);
+  assert_true(result_size1 == strlen(str1) * 2);
 
-/**
- * @brief Free the data of this buffer if necessary
- *
- * @param buf Pointer to a buffer to free
- */
-void    smb_buffer_free(smb_buffer *buf);
+  result_size2 = smb_from_utf16(result1, result_size1, &result2);
+  assert_memory_equal(str1, result2, result_size2);
 
-#endif
+  free(result1);
+  free(result2);
+
+  // With Noice accents
+  result_size1 = smb_to_utf16(str2, strlen(str2), &result1);
+  result_size2 = smb_from_utf16(result1, result_size1, &result2);
+  assert_memory_equal(str2, result2, result_size2);
+
+  free(result1);
+  free(result2);
+
+
+}
