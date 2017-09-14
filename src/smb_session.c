@@ -188,6 +188,12 @@ static int        smb_negotiate(smb_session *s)
     if (!smb_session_recv_msg(s, &answer))
         return DSM_ERROR_NETWORK;
 
+    if (answer.payload_size < sizeof(smb_nego_resp))
+    {
+        BDSM_dbg("[smb_negotiate]Malformed message\n");
+        return DSM_ERROR_NETWORK;
+    }
+
     nego = (smb_nego_resp *)answer.packet->payload;
     if (!smb_session_check_nt_status(s, &answer))
         return DSM_ERROR_NT;
@@ -272,6 +278,12 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     if (smb_session_recv_msg(s, &answer) == 0)
     {
         BDSM_dbg("Unable to get Session Setup AndX reply\n");
+        return DSM_ERROR_NETWORK;
+    }
+
+    if (answer.payload_size < sizeof(smb_session_resp))
+    {
+        BDSM_dbg("[smb_negotiate]Malformed message\n");
         return DSM_ERROR_NETWORK;
     }
 

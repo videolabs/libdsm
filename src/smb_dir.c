@@ -42,6 +42,7 @@
 #include "smb_fd.h"
 #include "smb_utils.h"
 #include "smb_dir.h"
+#include "bdsm_debug.h"
 
 int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
 {
@@ -83,6 +84,12 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
 
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
+
+    if (resp_msg.payload_size < sizeof(smb_directory_rm_resp))
+    {
+        BDSM_dbg("[smb_directory_rm]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
 
     resp = (smb_directory_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
@@ -131,6 +138,12 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
 
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
+
+    if (resp_msg.payload_size < sizeof(smb_directory_mk_resp))
+    {
+        BDSM_dbg("[smb_directory_create]Malformed message %s\n", path);
+        return DSM_ERROR_NETWORK;
+    }
 
     resp = (smb_directory_mk_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
