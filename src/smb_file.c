@@ -42,6 +42,7 @@
 #include "smb_fd.h"
 #include "smb_utils.h"
 #include "smb_file.h"
+#include "bdsm_debug.h"
 
 int         smb_fopen(smb_session *s, smb_tid tid, const char *path,
                       uint32_t o_flags, smb_fd *fd)
@@ -114,6 +115,12 @@ int         smb_fopen(smb_session *s, smb_tid tid, const char *path,
         return DSM_ERROR_NETWORK;
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
+
+    if (resp_msg.payload_size < sizeof(smb_create_resp))
+    {
+        BDSM_dbg("[smb_fopen]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
 
     resp = (smb_create_resp *)resp_msg.packet->payload;
     file = calloc(1, sizeof(smb_file));
@@ -222,7 +229,21 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     if (!smb_session_check_nt_status(s, &resp_msg))
         return -1;
 
+    if (resp_msg.payload_size < sizeof(smb_read_resp))
+    {
+        BDSM_dbg("[smb_fread]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
+
     resp = (smb_read_resp *)resp_msg.packet->payload;
+
+    if (resp_msg.packet->payload + resp_msg.payload_size <
+        (uint8_t *)resp_msg.packet + resp->data_offset + resp->data_len)
+    {
+        BDSM_dbg("[smb_fread]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
+
     if (buf)
         memcpy(buf, (char *)resp_msg.packet + resp->data_offset, resp->data_len);
     smb_fseek(s, fd, resp->data_len, SEEK_CUR);
@@ -278,6 +299,12 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
         return -1;
     if (!smb_session_check_nt_status(s, &resp_msg))
         return -1;
+
+    if (resp_msg.payload_size < sizeof(smb_write_resp))
+    {
+        BDSM_dbg("[smb_fwrite]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
 
     resp = (smb_write_resp *)resp_msg.packet->payload;
 
@@ -345,6 +372,12 @@ int  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
 
+    if (resp_msg.payload_size < sizeof(smb_file_rm_resp))
+    {
+        BDSM_dbg("[smb_file_rm]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
+
     resp = (smb_file_rm_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))
         return DSM_ERROR_NETWORK;
@@ -406,6 +439,12 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
 
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
+
+    if (resp_msg.payload_size < sizeof(smb_file_mv_resp))
+    {
+        BDSM_dbg("[smb_file_mv]Malformed message.\n");
+        return DSM_ERROR_NETWORK;
+    }
 
     resp = (smb_file_mv_resp *)resp_msg.packet->payload;
     if ((resp->wct != 0) || (resp->bct != 0))

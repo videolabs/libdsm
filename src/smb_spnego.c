@@ -193,6 +193,12 @@ static int      challenge(smb_session *s)
         return DSM_ERROR_GENERIC;
     }
 
+    if (msg.payload_size < sizeof(smb_session_xsec_resp))
+    {
+        BDSM_dbg("[smb_tree_disconnect]Malformed message\n");
+        return DSM_ERROR_NETWORK;
+    }
+
     resp = (smb_session_xsec_resp *)msg.packet->payload;
 
     asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
@@ -314,17 +320,21 @@ static int      auth(smb_session *s, const char *domain, const char *user,
 
     if (!smb_session_check_nt_status(s, &resp))
         return DSM_ERROR_NT;
-    else
+
+    if (resp.payload_size < sizeof(smb_session_xsec_resp))
     {
-        smb_session_xsec_resp *r = (smb_session_xsec_resp *)resp.packet->payload;
-        if (r->action & 0x0001)
-            s->guest = true;
-
-        s->srv.uid  = resp.packet->header.uid;
-        s->logged = true;
-
-        return DSM_SUCCESS;
+        BDSM_dbg("[smb_tree_disconnect]Malformed message\n");
+        return DSM_ERROR_NETWORK;
     }
+
+    smb_session_xsec_resp *r = (smb_session_xsec_resp *)resp.packet->payload;
+    if (r->action & 0x0001)
+        s->guest = true;
+
+    s->srv.uid  = resp.packet->header.uid;
+    s->logged = true;
+
+    return DSM_SUCCESS;
 
 error:
     asn1_display_error("smb_session_login auth()", res);
