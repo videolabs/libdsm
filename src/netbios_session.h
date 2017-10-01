@@ -69,6 +69,7 @@ typedef struct              netbios_session_s
 netbios_session   *netbios_session_new(size_t buf_size);
 void              netbios_session_destroy(netbios_session *);
 int               netbios_session_connect(const char *ip,
+        const char *user_port,
         netbios_session *s,
         const char *name,
         int direct_tcp);

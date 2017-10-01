@@ -54,26 +54,76 @@
 #include <fcntl.h>
 
 
+//Set blocking IO on the socket
+static void set_blocking_io(netbios_session *s)
+{
+    int arg = fcntl(s->socket, F_GETFL, NULL);
+    arg &= (~O_NONBLOCK);
+    fcntl(s->socket, F_SETFL, arg);
+}
+
 static int open_socket_and_connect(netbios_session *s)
 {
+    
+    const __darwin_time_t timeout = 5;
+    bool restore_blocking_io = false;
+    
     if ((s->socket = socket(s->remote_addr->ai_family, SOCK_STREAM, 0)) < 0){
         goto error;
     }
     
     // Prevent SIGPIPE signals
-    //int nosigpipe = 1;
-    //setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
+    int nosigpipe = 1;
+    setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
     
-    if (connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen) <0){
+    // Enable non-blocking IO on the socket
+    int result = fcntl(s->socket, F_SETFL, O_NONBLOCK);
+    if (result == -1){
         goto error;
     }
-
+    else{
+        restore_blocking_io = true;
+    }
+    
+    connect(s->socket, s->remote_addr->ai_addr , s->remote_addr->ai_addrlen);
+    
+    fd_set fdset;
+    struct timeval tv;
+    FD_ZERO(&fdset);
+    FD_SET(s->socket, &fdset);
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+    
+    if (select((s->socket) + 1, NULL, &fdset, NULL, &tv) == 1){
+        int so_error;
+        socklen_t len = sizeof so_error;
+        getsockopt(s->socket, SOL_SOCKET, SO_ERROR, &so_error, &len);
+        if (so_error == 0) {
+            ;
+        }
+        else{
+            goto error;
+        }
+    }
+    else{
+        goto error;
+    }
+    
+    set_blocking_io(s);
+    
     return DSM_SUCCESS;
 
 error:
+    
+    if(restore_blocking_io){
+        set_blocking_io(s);
+    }
+    
     BDSM_perror("netbios_session_new, open_socket: ");
     return DSM_ERROR_NETWORK;
 }
+
+
 
 static int        session_buffer_realloc(netbios_session *s, size_t new_size)
 {
@@ -133,12 +183,12 @@ void              netbios_session_destroy(netbios_session *s)
     free(s);
 }
 
-int netbios_session_connect(const char *ip, netbios_session *s,
+int netbios_session_connect(const char *ip, const char *user_port, netbios_session *s,
                             const char *name, int direct_tcp)
 {
     ssize_t                   recv_size;
     char                      *encoded_name = NULL;
-    char                      *ports[2];
+    char                      *ports[3];
     unsigned int              nb_ports;
     bool                      opened = false;
 
@@ -151,12 +201,21 @@ int netbios_session_connect(const char *ip, netbios_session *s,
             ports[0] = NETBIOS_PORT_DIRECT;
             ports[1] = NETBIOS_PORT_DIRECT_SECONDARY;
             nb_ports = 2;
+            if(user_port!=NULL){
+                ports[2] = (char *)user_port;
+                nb_ports++;
+            }
         }
         else
         {
             ports[0] = NETBIOS_PORT_SESSION;
             nb_ports = 1;
+            if(user_port!=NULL){
+                ports[1] = (char *)user_port;
+                nb_ports++;
+            }
         }
+        
         for (unsigned int i = 0; i < nb_ports && !opened; ++i)
         {
 

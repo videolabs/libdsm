@@ -88,7 +88,7 @@ void            smb_session_set_creds(smb_session *s, const char *domain,
  * @return 0 on success or a DSM error code in case of error
  */
 int             smb_session_connect(smb_session *s, const char *hostname,
-                                    const char *ip, int transport);
+                                    const char *ip,const char *user_port, int transport);
 /**
  * @brief Authenticate on the remote host with the provided credentials
  * @details Can be called if session state is SMB_STATE_DIALECT_OK.

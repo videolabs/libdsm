@@ -38,17 +38,19 @@
 // XXX: This can be simplified, since we have only one function that differs
 
 int               transport_connect_nbt(const char *ip,
+                                        const char *user_port,
                                         netbios_session *s,
                                         const char *name)
 {
-    return netbios_session_connect(ip, s, name, 0);
+    return netbios_session_connect(ip,user_port, s, name, 0);
 }
 
 int               transport_connect_tcp(const char *ip,
+                                        const char *user_port,
                                         netbios_session *s,
                                         const char *name)
 {
-    return netbios_session_connect(ip, s, name, 1);
+    return netbios_session_connect(ip,user_port, s, name, 1);
 }
 
 void              smb_transport_nbt(smb_transport *tr)
