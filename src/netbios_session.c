@@ -65,7 +65,7 @@ static void set_blocking_io(netbios_session *s)
 static int open_socket_and_connect(netbios_session *s)
 {
     
-    const __darwin_time_t timeout = 5;
+    const __darwin_time_t timeout = 2;
     bool restore_blocking_io = false;
     
     if ((s->socket = socket(s->remote_addr->ai_family, SOCK_STREAM, 0)) < 0){
