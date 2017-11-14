@@ -171,12 +171,12 @@ error:
 static int      challenge(smb_session *s)
 {
     char                  err_desc[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
-    char                  resp_token[256];
+    char                  resp_token[512];
     smb_message           msg;
     smb_session_xsec_resp *resp;
     smb_ntlmssp_challenge *challenge;
     ASN1_TYPE             token;
-    int                   res, resp_token_size = 256;
+    int                   res, resp_token_size = sizeof(resp_token);
 
     assert(s != NULL);
 
