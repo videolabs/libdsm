@@ -38,7 +38,7 @@
 #include <sched.h>
 #include "compat.h"
 
-int clock_gettime(clockid_t clk_id, struct timespec *tp) {
+int dsm_clock_gettime(clockid_t clk_id, struct timespec *tp) {
     kern_return_t   ret;
     clock_serv_t    clk;
     clock_id_t clk_serv_id;
@@ -67,7 +67,7 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 #include <time.h>
 #include "compat.h"
 
-int clock_gettime(int clk_id, struct timespec *spec) {
+int dsm_clock_gettime(int clk_id, struct timespec *spec) {
     (void)clk_id;
     FILETIME wintime;
     GetSystemTimeAsFileTime(&wintime);

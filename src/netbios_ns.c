@@ -867,7 +867,7 @@ static void *netbios_ns_discover_thread(void *opaque)
 
         // check if cached entries timeout, the timeout value is 5 times the
         // broadcast timeout.
-        clock_gettime(CLOCK_REALTIME, &tp);
+        dsm_clock_gettime(CLOCK_REALTIME, &tp);
         for (entry = TAILQ_FIRST(&ns->entry_queue);
              entry != NULL; entry = entry_next)
         {
@@ -913,7 +913,7 @@ static void *netbios_ns_discover_thread(void *opaque)
             if (res == 0)
                 break;
 
-            clock_gettime(CLOCK_REALTIME, &tp);
+            dsm_clock_gettime(CLOCK_REALTIME, &tp);
 
             if (name_query.type == NAME_QUERY_TYPE_NB)
             {

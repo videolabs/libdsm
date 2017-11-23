@@ -51,8 +51,8 @@ enum {
     CLOCK_THREAD_CPUTIME_ID
 };
 #endif
-#if !defined HAVE_CLOCK_GETTIME && !defined( __APPLE__ )
-int clock_gettime(clockid_t clk_id, struct timespec *tp);
+#if !defined HAVE_CLOCK_GETTIME
+int dsm_clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 
 #if !defined HAVE_STRNDUP

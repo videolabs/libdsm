@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EFC842B51DA92F33009A8F8B /* spnego_asn1_mutex.c in Sources */ = {isa = PBXBuildFile; fileRef = EFC842B41DA92F33009A8F8B /* spnego_asn1_mutex.c */; };
+		EFD6E23A1FC7644200A52250 /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EFD6E2391FC7644100A52250 /* clock_gettime.c */; };
 		EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */; };
 		EFFC77BC1D943A6D006FD550 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77641D943A6D006FD550 /* compat.c */; };
 		EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77681D943A6D006FD550 /* strndup.c */; };
@@ -51,6 +52,7 @@
 /* Begin PBXFileReference section */
 		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFC842B41DA92F33009A8F8B /* spnego_asn1_mutex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1_mutex.c; sourceTree = "<group>"; };
+		EFD6E2391FC7644100A52250 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
 		EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
 		EFE0C6CE1D95C66800EFF570 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
 		EFFC77611D943986006FD550 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		EFFC77621D943A6D006FD550 /* compat */ = {
 			isa = PBXGroup;
 			children = (
+				EFD6E2391FC7644100A52250 /* clock_gettime.c */,
 				EFFC77641D943A6D006FD550 /* compat.c */,
 				EFFC77651D943A6D006FD550 /* compat.h */,
 				EFFC77661D943A6D006FD550 /* queue.h */,
@@ -392,6 +395,7 @@
 				EFFC77BC1D943A6D006FD550 /* compat.c in Sources */,
 				EFFC77C91D943A6D006FD550 /* smb_dir.c in Sources */,
 				EFFC77BF1D943A6D006FD550 /* md4.c in Sources */,
+				EFD6E23A1FC7644200A52250 /* clock_gettime.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
