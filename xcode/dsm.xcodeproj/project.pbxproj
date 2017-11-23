@@ -502,10 +502,7 @@
 					"../libtasn1/**",
 					"../include/**",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = dsm;
 				SKIP_INSTALL = YES;
 			};
@@ -530,10 +527,7 @@
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-DNDEBUG",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = dsm;
 				SKIP_INSTALL = YES;
 			};
