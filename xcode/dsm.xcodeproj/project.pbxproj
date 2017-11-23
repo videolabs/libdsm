@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		EFC842B51DA92F33009A8F8B /* spnego_asn1_mutex.c in Sources */ = {isa = PBXBuildFile; fileRef = EFC842B41DA92F33009A8F8B /* spnego_asn1_mutex.c */; };
 		EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */; };
-		EFE0C70B1D95D13A00EFF570 /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EFE0C70A1D95D13A00EFF570 /* clock_gettime.c */; };
 		EFFC77BC1D943A6D006FD550 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77641D943A6D006FD550 /* compat.c */; };
 		EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77681D943A6D006FD550 /* strndup.c */; };
 		EFFC77BF1D943A6D006FD550 /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776B1D943A6D006FD550 /* md4.c */; };
@@ -54,7 +53,6 @@
 		EFC842B41DA92F33009A8F8B /* spnego_asn1_mutex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spnego_asn1_mutex.c; sourceTree = "<group>"; };
 		EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
 		EFE0C6CE1D95C66800EFF570 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
-		EFE0C70A1D95D13A00EFF570 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
 		EFFC77611D943986006FD550 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		EFFC77641D943A6D006FD550 /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
 		EFFC77651D943A6D006FD550 /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
@@ -178,7 +176,6 @@
 		EFFC77621D943A6D006FD550 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				EFE0C70A1D95D13A00EFF570 /* clock_gettime.c */,
 				EFFC77641D943A6D006FD550 /* compat.c */,
 				EFFC77651D943A6D006FD550 /* compat.h */,
 				EFFC77661D943A6D006FD550 /* queue.h */,
@@ -371,7 +368,6 @@
 			files = (
 				EFFC77C81D943A6D006FD550 /* smb_buffer.c in Sources */,
 				EFFC77C11D943A6D006FD550 /* rc4.c in Sources */,
-				EFE0C70B1D95D13A00EFF570 /* clock_gettime.c in Sources */,
 				EFFC77C71D943A6D006FD550 /* netbios_utils.c in Sources */,
 				EFFC77CD1D943A6D006FD550 /* smb_ntlm.c in Sources */,
 				EFFC77DB1D943AD9006FD550 /* spnego_asn1.c in Sources */,
