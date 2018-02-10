@@ -59,7 +59,7 @@ AX_PTHREAD(,[
         AC_SUBST(PTHREAD_LIBS,"-lpthreadGC2")
         AC_SUBST(PTHREAD_CFLAGS,"-DPTW32_STATIC_LIB"])
     ])
-])
+)
 
 AH_BOTTOM([#include "compat.h"])
 
