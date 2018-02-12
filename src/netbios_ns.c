@@ -831,7 +831,6 @@ static void *netbios_ns_discover_thread(void *opaque)
     netbios_ns *ns = (netbios_ns *) opaque;
     while (true)
     {
-        struct timespec tp;
         const int remove_timeout = 5 * ns->discover_broadcast_timeout;
         netbios_ns_entry  *entry, *entry_next;
 
@@ -840,12 +839,12 @@ static void *netbios_ns_discover_thread(void *opaque)
 
         // check if cached entries timeout, the timeout value is 5 times the
         // broadcast timeout.
-        clock_gettime(CLOCK_REALTIME, &tp);
+        time_t now = time(NULL);
         for (entry = TAILQ_FIRST(&ns->entry_queue);
              entry != NULL; entry = entry_next)
         {
             entry_next = TAILQ_NEXT(entry, next);
-            if (tp.tv_sec - entry->last_time_seen > remove_timeout)
+            if (now - entry->last_time_seen > remove_timeout)
             {
                 if (entry->flag & NS_ENTRY_FLAG_VALID_NAME)
                 {
@@ -886,7 +885,7 @@ static void *netbios_ns_discover_thread(void *opaque)
             if (res == 0)
                 break;
 
-            clock_gettime(CLOCK_REALTIME, &tp);
+            time_t now = time(NULL);
 
             if (name_query.type == NAME_QUERY_TYPE_NB)
             {
@@ -899,7 +898,7 @@ static void *netbios_ns_discover_thread(void *opaque)
                     if (!entry)
                         return NULL;
                 }
-                entry->last_time_seen = tp.tv_sec;
+                entry->last_time_seen = now;
 
                 // if entry is already valid, don't send NBSTAT query
                 if (entry->flag & NS_ENTRY_FLAG_VALID_NAME)
@@ -922,7 +921,7 @@ static void *netbios_ns_discover_thread(void *opaque)
                 if (!entry)
                     continue;
 
-                entry->last_time_seen = tp.tv_sec;
+                entry->last_time_seen = now;
 
                 send_callback = !(entry->flag & NS_ENTRY_FLAG_VALID_NAME);
 
