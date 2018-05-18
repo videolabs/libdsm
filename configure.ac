@@ -1,6 +1,6 @@
 AC_PREREQ([2.53])
 
-AC_COPYRIGHT([Copyright 2014-2016 VideoLabs])
+AC_COPYRIGHT([Copyright 2014-2018 VideoLabs])
 
 AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])], [], [libdsm], [])
 AC_CONFIG_HEADER(config.h)

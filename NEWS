@@ -1,10 +1,14 @@
-Changes between 0.2.7 and 0.2.8:
+Changes between 0.2.7 and 0.3.0:
 --------------------------------
 
   * Implement SMB SESSION LOGOFF (0x74)
   * Add smb_stat_list_next() to reduce directory traversal speed
   * Fix guest login
   * Fix compilation when using compatibility layer
+  * Fix crash against malformed packet in smb_fstat
+  * Fix too small buffer in smb_session_login_spnego, leading to failure
+  * Fix payload for smb_negotiate for arm5te
+  * Fix misc crashes
 
 
 Changes between 0.2.6 and 0.2.7:
