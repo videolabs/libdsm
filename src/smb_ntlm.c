@@ -399,18 +399,26 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
         auth->flags = 0x60088215;
 
 
-        __AUTH_APPEND(lm, lm2, 24, cursor)
-        __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
+        if (*domain || *user || *password) {
+            __AUTH_APPEND(lm, lm2, 24, cursor)
+            __AUTH_APPEND(ntlm, ntlm2, blob_size + 16, cursor)
+        }
 
-        utf_sz = smb_to_utf16(domain, strlen(domain), &utf);
-        __AUTH_APPEND(domain, utf, utf_sz, cursor)
-        free(utf);
-        utf_sz = smb_to_utf16(user, strlen(user), &utf);
-        __AUTH_APPEND(user, utf, utf_sz, cursor)
-        free(utf);
-        utf_sz = smb_to_utf16(host, strlen(host), &utf);
-        __AUTH_APPEND(host, utf, utf_sz, cursor)
-        free(utf);
+        if (*domain) {
+            utf_sz = smb_to_utf16(domain, strlen(domain), &utf);
+            __AUTH_APPEND(domain, utf, utf_sz, cursor)
+            free(utf);
+        }
+        if (*user) {
+            utf_sz = smb_to_utf16(user, strlen(user), &utf);
+            __AUTH_APPEND(user, utf, utf_sz, cursor)
+            free(utf);
+        }
+        if (*host) {
+            utf_sz = smb_to_utf16(host, strlen(host), &utf);
+            __AUTH_APPEND(host, utf, utf_sz, cursor)
+            free(utf);
+        }
 
         __AUTH_APPEND(session_key, &xkey_crypt, 16, cursor)
 

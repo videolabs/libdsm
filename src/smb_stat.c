@@ -76,6 +76,11 @@ void            smb_stat_list_destroy(smb_stat_list list)
     }
 }
 
+smb_stat        smb_stat_list_next(smb_stat_list list)
+{
+    return list->next;
+}
+
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index)
 {
     size_t          pos = 0;
