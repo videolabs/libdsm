@@ -98,6 +98,12 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
         if (!smb_session_check_nt_status(s, &resp_msg))
             return DSM_ERROR_NT;
 
+        if (resp_msg.payload_size < sizeof(smb_tree_connect_resp))
+        {
+            BDSM_dbg("[smb_tree_connect]Malformed message\n");
+            return DSM_ERROR_NETWORK;
+        }
+        
         resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
         share = calloc(1, sizeof(smb_share));
         if (!share)
@@ -152,6 +158,12 @@ int           smb_tree_disconnect(smb_session *s, smb_tid tid)
         if (!smb_session_check_nt_status(s, &resp_msg))
             return DSM_ERROR_NT;
 
+        if (resp_msg.payload_size < sizeof(smb_tree_disconnect_resp))
+        {
+            BDSM_dbg("[smb_tree_disconnect]Malformed message\n");
+            return DSM_ERROR_NETWORK;
+        }
+        
         resp  = (smb_tree_disconnect_resp *)resp_msg.packet->payload;
         if ((resp->wct != 0) || (resp->bct != 0))
             return DSM_ERROR_NETWORK;
@@ -190,8 +202,20 @@ static ssize_t  smb_share_parse_enum(smb_message *msg, char ***list)
         {
             uint32_t name_len, com_len;
 
+            if (data + sizeof(uint32_t) > eod)
+            {
+                BDSM_dbg("[smb_share_parse_enum]Malformed message\n");
+                break;
+            }
+            
             name_len = *((uint32_t *)data);   // Read 'Max Count', make it a multiple of 2
             data    += 3 * sizeof(uint32_t);  // Move pointer to beginning of Name.
+
+            if (data +  sizeof(uint32_t) + name_len * 2 + sizeof(uint32_t) > eod)
+            {
+                BDSM_dbg("[smb_share_parse_enum]Malformed message\n");
+                break;
+            }
 
             smb_from_utf16((const char *)data, name_len * 2, (*list) + i);
 
@@ -339,6 +363,14 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
 
         // Is the server throwing pile of shit back at me ?
         res = smb_session_recv_msg(s, &resp);
+        
+        if (resp.payload_size < 71)
+        {
+            BDSM_dbg("[smb_share_get_list]Malformed message\n");
+            ret = DSM_ERROR_NETWORK;
+            goto error;
+        }
+        
         if (!res || resp.packet->payload[68])
         {
             BDSM_dbg("Bind call failed: 0x%hhx (reason = 0x%hhx)\n",
@@ -430,6 +462,13 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
 
         // Is the server throwing pile of shit back at me ?
         res = smb_session_recv_msg(s, &resp);
+        if (resp.payload_size < 4)
+        {
+            BDSM_dbg("[smb_share_get_list]Malformed message\n");
+            ret = DSM_ERROR_NETWORK;
+            goto error;
+        }
+        
         if (!res && (uint32_t)resp.packet->payload[resp.payload_size - 4])
         {
             BDSM_dbg("NetShareEnumAll call failed.\n");

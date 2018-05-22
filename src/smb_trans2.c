@@ -494,8 +494,21 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
             return NULL;
         }
 
+        if (reply.payload_size < sizeof(smb_tr2_path_info))
+        {
+            BDSM_dbg("[smb_fstat]Malformed message %s\n", path);
+            return NULL;
+        }
+        
         tr2_resp  = (smb_trans2_resp *)reply.packet->payload;
         info      = (smb_tr2_path_info *)(tr2_resp->payload + 4); //+4 is padding
+        
+        if (info->name + info->name_len > reply.packet->payload + reply.payload_size)
+        {
+            BDSM_dbg("[smb_fstat]Malformed message %s\n", path);
+            return NULL;
+        }
+        
         file      = calloc(1, sizeof(smb_file));
         if (!file)
             return NULL;
