@@ -278,6 +278,7 @@ static void netbios_ns_broadcast_packet(netbios_ns* ns, netbios_query* q)
         if (a->ifa_addr->sa_family != PF_INET)
             continue;
         struct sockaddr_in* sin = (struct sockaddr_in*)a->ifa_broadaddr;
+        
         if (!sin)
             continue;
         
