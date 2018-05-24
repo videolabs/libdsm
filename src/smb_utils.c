@@ -107,14 +107,15 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
         }
         
         iconv_lock();
+        
         ic = iconv_open(dst_enc, src_enc);
-        iconv_unlock();
         
         if (ic == (iconv_t)-1)
         {
             BDSM_dbg("Unable to open iconv to convert from %s to %s\n",
                      src_enc, dst_enc);
             *dst = NULL;
+            iconv_unlock();
             return 0;
         }
         for (unsigned mul = 4; mul < 16; mul++)
@@ -130,10 +131,8 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
             if (!out){
                 break;
             }
-            
-            iconv_lock();
+
             size_t iconvres = iconv(ic, (char **)&inp, &inb, &outp, &outb);
-            iconv_unlock();
             
             if (iconvres != (size_t)(-1)) {
                 ret = outlen - outb;
@@ -146,13 +145,13 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
             }
         }
         
-        iconv_lock();
         iconv_close(ic);
-        iconv_unlock();
         
         if (ret == 0){
             *dst = NULL;
         }
+        
+        iconv_unlock();
         
         return ret;
         
