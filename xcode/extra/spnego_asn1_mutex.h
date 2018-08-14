@@ -1,10 +1,4 @@
 
-
-//void asn1_lock();
-
-//void asn1_unlock();
-
-
 #include <stdio.h>
 #import <pthread.h>
 #import <assert.h>
@@ -25,6 +19,6 @@ set_asn1_locked(0);\
 }\
 
 static void set_asn1_locked(char locked){
-    assert(asn1_locked!=locked);
+    //assert(asn1_locked!=locked);
     asn1_locked = locked;
 }

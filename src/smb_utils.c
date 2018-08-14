@@ -53,7 +53,6 @@
 static pthread_mutex_t static_iconv_mutex = PTHREAD_MUTEX_INITIALIZER;
 static char iconv_locked = 0;
 
-
 #define iconv_lock() {if (pthread_mutex_lock(&static_iconv_mutex)!=0){\
 assert(0);\
 }\
@@ -67,7 +66,7 @@ set_iconv_locked(0);\
 }\
 
 static void set_iconv_locked(char locked){
-    assert(iconv_locked!=locked);
+    //assert(iconv_locked!=locked);
     iconv_locked = locked;
 }
 
