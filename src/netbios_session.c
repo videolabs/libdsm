@@ -76,8 +76,21 @@ static int open_socket_and_connect(netbios_session *s)
     int nosigpipe = 1;
     setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
     
+    // Set read timeout
+    struct timeval read_tv;
+    read_tv.tv_sec = 5;
+    read_tv.tv_usec = 0;
+    setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&read_tv, sizeof read_tv);
+    
+    // Set write timeout
+    struct timeval write_tv;
+    write_tv.tv_sec = 5;
+    write_tv.tv_usec = 0;
+    setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&write_tv, sizeof write_tv);
+    
     // Enable non-blocking IO on the socket
     int result = fcntl(s->socket, F_SETFL, O_NONBLOCK);
+    
     if (result == -1){
         goto error;
     }
