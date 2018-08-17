@@ -65,7 +65,6 @@ static void set_blocking_io(netbios_session *s)
 static int open_socket_and_connect(netbios_session *s)
 {
     
-    const __darwin_time_t timeout = 2;
     bool restore_blocking_io = false;
     
     if ((s->socket = socket(s->remote_addr->ai_family, SOCK_STREAM, 0)) < 0){
@@ -78,13 +77,13 @@ static int open_socket_and_connect(netbios_session *s)
     
     // Set read timeout
     struct timeval read_tv;
-    read_tv.tv_sec = 5;
+    read_tv.tv_sec = DSM_READ_TIMEOUT;
     read_tv.tv_usec = 0;
     setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&read_tv, sizeof read_tv);
     
     // Set write timeout
     struct timeval write_tv;
-    write_tv.tv_sec = 5;
+    write_tv.tv_sec = DSM_WRITE_TIMEOUT;
     write_tv.tv_usec = 0;
     setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&write_tv, sizeof write_tv);
     
@@ -104,7 +103,7 @@ static int open_socket_and_connect(netbios_session *s)
     struct timeval tv;
     FD_ZERO(&fdset);
     FD_SET(s->socket, &fdset);
-    tv.tv_sec = timeout;
+    tv.tv_sec = DSM_CONNECT_TIMEOUT;
     tv.tv_usec = 0;
     
     if (select((s->socket) + 1, NULL, &fdset, NULL, &tv) == 1){
