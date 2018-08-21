@@ -36,6 +36,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#import <sys/poll.h>
 
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
@@ -74,18 +75,6 @@ static int open_socket_and_connect(netbios_session *s)
     // Prevent SIGPIPE signals
     int nosigpipe = 1;
     setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
-    
-    // Set read timeout
-    struct timeval read_tv;
-    read_tv.tv_sec = DSM_READ_TIMEOUT;
-    read_tv.tv_usec = 0;
-    setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&read_tv, sizeof read_tv);
-    
-    // Set write timeout
-    struct timeval write_tv;
-    write_tv.tv_sec = DSM_WRITE_TIMEOUT;
-    write_tv.tv_usec = 0;
-    setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&write_tv, sizeof write_tv);
     
     // Enable non-blocking IO on the socket
     int result = fcntl(s->socket, F_SETFL, O_NONBLOCK);
@@ -347,7 +336,20 @@ int               netbios_session_packet_send(netbios_session *s)
     
         s->packet->length = htons(s->packet_cursor);
         to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
-        sent              = send(s->socket, (void *)s->packet, to_send, 0);
+        
+        // Set write timeout
+        struct timeval write_tv;
+        write_tv.tv_sec = DSM_WRITE_TIMEOUT;
+        write_tv.tv_usec = 0;
+        ;
+        
+        if(setsockopt(s->socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&write_tv, sizeof write_tv)<0)
+        {
+            BDSM_perror("netbios_session_packet_send: error setting send timeout");
+            return 0;
+        }
+        
+        sent = send(s->socket, (void *)s->packet, to_send, 0);
 
         if (sent != to_send)
         {
@@ -355,9 +357,44 @@ int               netbios_session_packet_send(netbios_session *s)
             return 0;
         }
 
-        return sent;
+        return (int)sent;
          
     }
+    return 0;
+}
+
+int socket_set_recv_timeout(netbios_session *s)
+{
+    //set read timeout
+    struct timeval read_tv;
+    read_tv.tv_sec = DSM_READ_TIMEOUT;
+    read_tv.tv_usec = 0;
+    
+    if(setsockopt(s->socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&read_tv, sizeof read_tv)<0){
+        return -1;
+    }
+    
+    int socketFD = s->socket;
+    int result = -1;
+    
+    struct pollfd pollfd[1];
+    pollfd->fd = socketFD;
+    pollfd->events = POLLIN;
+    pollfd->revents = 0;
+    
+    //pool: wait for available data
+    result = poll(pollfd, 1, DSM_READ_TIMEOUT*1000);
+
+    if(result < 0) {
+        BDSM_perror("netbios_session_packet_recv: error during poll()");
+        return -1;
+    }
+    
+    if(result == 0) {
+        BDSM_perror("netbios_session_packet_recv: timeout during poll()");
+        return -1;
+    }
+    
     return 0;
 }
 
@@ -374,6 +411,11 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
         // needed for the packet. This will prevent losing a part of next packet
         total = sizeof(netbios_session_packet);
         sofar = 0;
+        
+        if(socket_set_recv_timeout(s)==-1){
+            return -1;
+        }
+        
         while (sofar < total)
         {
             res = recv(s->socket, (uint8_t *)(s->packet) + sofar, total - sofar, 0);
@@ -394,7 +436,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
             return -1;
 
         //BDSM_dbg("Total = %ld, sofar = %ld\n", total, sofar);
-
+        
         while (sofar < total)
         {
             res = recv(s->socket, (uint8_t *)(s->packet) + sizeof(netbios_session_packet)
