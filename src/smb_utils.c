@@ -40,7 +40,7 @@
 #include <string.h>
 #include <errno.h>
 
-#if HAVE_LANGINFO_H && !defined( __APPLE__ )
+#if HAVE_NL_LANGINFO && !defined( __APPLE__ )
 # include <langinfo.h>
 #endif
 
@@ -51,7 +51,7 @@ static const char *current_encoding()
 {
 #if defined( __APPLE__ )
     return "UTF8";
-#elif !HAVE_LANGINFO_H
+#elif !HAVE_NL_LANGINFO
     return "UTF-8";
 #else
     static int locale_set = 0;
