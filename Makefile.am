@@ -4,7 +4,6 @@ DISTCLEANFILES = @DOLT_CLEANFILES@
 
 EXTRA_DIST = \
 	abi_version.sh \
-	package_version.sh \
 	contrib/spnego/spnego.asn1 \
 	contrib/spnego/spnego_asn1.c \
 	src/libdsm.sym

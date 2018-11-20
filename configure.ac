@@ -1,8 +1,12 @@
 AC_PREREQ([2.53])
 
+m4_define([BDSM_MAJOR], [0])
+m4_define([BDSM_MINOR], [3])
+m4_define([BDSM_MICRO], [0])
+
 AC_COPYRIGHT([Copyright 2014-2018 VideoLabs])
 
-AC_INIT([libdsm], [m4_esyscmd([./package_version.sh])], [], [libdsm], [])
+AC_INIT([libdsm], [BDSM_MAJOR.BDSM_MINOR.BDSM_MICRO], [], [libdsm], [])
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR([include/bdsm.h])
 AC_CONFIG_LIBOBJ_DIR([compat])
@@ -14,14 +18,11 @@ m4_ifdef([AM_SILENT_RULES], [
 AC_CANONICAL_HOST
 
 BDSM_ABI_VERSION=m4_esyscmd([./abi_version.sh])
-BDSM_PACKAGE_VERSION=m4_esyscmd([./package_version.sh])
 BDSM_LIBTOOL_VERSION=m4_esyscmd([./abi_version.sh -libtool])
 
 AC_SUBST(BDSM_ABI_VERSION)
-AC_SUBST(BDSM_PACKAGE_VERSION)
 AC_SUBST(BDSM_LIBTOOL_VERSION)
 
-AC_MSG_NOTICE([dsm package version: $BDSM_PACKAGE_VERSION])
 AC_MSG_NOTICE([dsm ABI version: $BDSM_ABI_VERSION])
 
 AC_PROG_CC_C99
