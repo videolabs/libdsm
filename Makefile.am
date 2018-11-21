@@ -88,7 +88,7 @@ libdsm_la_SOURCES = \
     src/smb_utils.c
 
 noinst_LTLIBRARIES = libcompat.la
-libcompat_la_SOURCES = compat/compat.c
+libcompat_la_SOURCES = 
 libcompat_la_LIBADD = $(LTLIBOBJS)
 
 pkgconfigdir = $(libdir)/pkgconfig
