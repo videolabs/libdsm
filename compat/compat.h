@@ -66,12 +66,17 @@ char *strndup(const char *str, size_t n);
 #endif
 
 #if !defined(HAVE_PIPE) && defined(HAVE__PIPE)
-#include <fcntl.h>
-#define HAVE_PIPE
+# ifdef _WIN32
+#  include <winapifamily.h>
+# endif
+# if !defined(_WIN32) || WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#  include <fcntl.h>
+#  define HAVE_PIPE
 static inline int pipe(int fds[2])
 {
     return _pipe(fds, 32768, O_NOINHERIT | O_BINARY);
 }
+#endif
 #endif
 
 #ifndef _WIN32
