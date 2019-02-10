@@ -90,6 +90,7 @@ int main()
   getchar();
 
   netbios_ns_discover_stop(ns);
+  netbios_ns_destroy(ns);
 
   return 0;
 }
