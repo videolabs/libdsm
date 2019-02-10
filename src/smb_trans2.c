@@ -141,12 +141,15 @@ static void smb_find_first_parse(smb_message *msg, smb_file **files_p)
         
         // Let's parse the answer we got from server
         tr2     = (smb_trans2_resp *)msg->packet->payload;
-        params  = (smb_tr2_findfirst2_params *)tr2->payload;
-        iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findfirst2_params));
-        eod     = msg->packet->payload + msg->payload_size;
-        count   = params->count;
 
-        smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+        if(tr2->wct>0){
+            params  = (smb_tr2_findfirst2_params *)tr2->payload;
+            iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findfirst2_params));
+            eod     = msg->packet->payload + msg->payload_size;
+            count   = params->count;
+            smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+        }
+        
     }
 }
 
@@ -164,11 +167,15 @@ static void smb_find_next_parse(smb_message *msg, smb_file **files_p)
 
         // Let's parse the answer we got from server
         tr2     = (smb_trans2_resp *)msg->packet->payload;
-        params  = (smb_tr2_findnext2_params *)tr2->payload;
-        iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findnext2_params));
-        eod     = msg->packet->payload + msg->payload_size;
-        count   = params->count;
-        smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+
+        if(tr2->wct>0){
+            params  = (smb_tr2_findnext2_params *)tr2->payload;
+            iter    = (smb_tr2_find2_entry *)(tr2->payload + sizeof(smb_tr2_findnext2_params));
+            eod     = msg->packet->payload + msg->payload_size;
+            count   = params->count;
+            smb_tr2_find2_parse_entries(files_p, iter, count, eod);
+        }
+        
     }
 }
 
@@ -350,6 +357,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 
         // Send FIND_FIRST request
         msg = smb_trans2_find_first(s,tid,pattern);
+        
         if (msg)
         {
             smb_find_first_parse(msg,&files);
