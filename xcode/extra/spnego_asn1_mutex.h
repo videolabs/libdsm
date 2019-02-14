@@ -19,6 +19,6 @@ set_asn1_locked(0);\
 }\
 
 static void set_asn1_locked(char locked){
-    assert(asn1_locked!=locked);
+    //assert(asn1_locked!=locked);
     asn1_locked = locked;
 }

@@ -67,9 +67,7 @@ static int      init_asn1(smb_session *s)
         if (s->spnego_asn1 != NULL)
             return DSM_ERROR_GENERIC;
         
-        asn1_lock();
         res = asn1_array2tree(spnego_asn1_conf, &s->spnego_asn1, NULL);
-        asn1_unlock();
         if (res != ASN1_SUCCESS)
         {
             asn1_display_error("init_asn1", res);
@@ -91,9 +89,7 @@ static void     clean_asn1(smb_session *s)
     
     if(s!=NULL){
         if (s->spnego_asn1 != NULL){
-            asn1_lock();
             asn1_delete_structure(&s->spnego_asn1);
-            asn1_unlock();
         }
     }
 }
@@ -110,8 +106,6 @@ static int      negotiate(smb_session *s, const char *domain)
     msg = smb_message_new(SMB_CMD_SETUP);
     if (!msg)
         return DSM_ERROR_GENERIC;
-    
-    asn1_lock();
     
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
@@ -140,7 +134,6 @@ static int      negotiate(smb_session *s, const char *domain)
     {
         smb_message_destroy(msg);
         BDSM_dbg("Encoding error: %s", err_desc);
-        asn1_unlock();
         return DSM_ERROR_GENERIC;
     }
     
@@ -167,18 +160,15 @@ static int      negotiate(smb_session *s, const char *domain)
     {
         smb_message_destroy(msg);
         BDSM_dbg("Unable to send Session Setup AndX (NTLMSSP_NEGOTIATE) message\n");
-        asn1_unlock();
         return DSM_ERROR_NETWORK;
     }
     
     smb_message_destroy(msg);
-    asn1_unlock();
     return DSM_SUCCESS;
     
 error:
     asn1_display_error("smb_session_login negotiate()", res);
     smb_message_destroy(msg);
-    asn1_unlock();
     return DSM_ERROR_GENERIC;
 }
 
@@ -216,8 +206,6 @@ static int      challenge(smb_session *s)
             return DSM_ERROR_NETWORK;
         }
         
-        asn1_lock();
-        
         resp = (smb_session_xsec_resp *)msg.packet->payload;
         asn1_create_element(s->spnego_asn1, "SPNEGO.NegotiationToken", &token);
         res = asn1_der_decoding(&token, resp->payload, resp->xsec_blob_size,
@@ -228,7 +216,6 @@ static int      challenge(smb_session *s)
             asn1_delete_structure(&token);
             asn1_display_error("NegTokenResp parsing", res);
             BDSM_dbg("Parsing error detail: %s\n", err_desc);
-            asn1_unlock();
             return DSM_ERROR_GENERIC;
         }
         
@@ -239,14 +226,12 @@ static int      challenge(smb_session *s)
         if (res != ASN1_SUCCESS)
         {
             asn1_display_error("NegTokenResp read responseToken", res);
-            asn1_unlock();
             return DSM_ERROR_GENERIC;
         }
         
         // We got the server challenge, yeaaah.
         challenge = (smb_ntlmssp_challenge *)resp_token;
         if (smb_buffer_alloc(&s->xsec_target, challenge->tgt_len) == 0){
-            asn1_unlock();
             return DSM_ERROR_GENERIC;
         }
         memcpy(s->xsec_target.data,
@@ -257,7 +242,6 @@ static int      challenge(smb_session *s)
         
         BDSM_dbg("Server challenge is 0x%"PRIx64"\n", s->srv.challenge);
         
-        asn1_unlock();
         return DSM_SUCCESS;
     }
     return DSM_ERROR_GENERIC;
@@ -276,8 +260,6 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     msg = smb_message_new(SMB_CMD_SETUP);
     if (!msg)
         return DSM_ERROR_GENERIC;
-    
-    asn1_lock();
     
     // this struct will be set at the end when we know the payload size
     SMB_MSG_ADVANCE_PKT(msg, smb_session_xsec_req);
@@ -307,7 +289,6 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     {
         smb_message_destroy(msg);
         BDSM_dbg("Encoding error: %s", err_desc);
-        asn1_unlock();
         return DSM_ERROR_GENERIC;
     }
     
@@ -337,27 +318,23 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     {
         smb_message_destroy(msg);
         BDSM_dbg("Unable to send Session Setup AndX (NTLMSSP_AUTH) message\n");
-        asn1_unlock();
         return DSM_ERROR_NETWORK;
     }
     smb_message_destroy(msg);
     
     if (smb_session_recv_msg(s, &resp) == 0)
     {
-        asn1_unlock();
         return DSM_ERROR_NETWORK;
     }
     
     if (!smb_session_check_nt_status(s, &resp))
     {
-        asn1_unlock();
         return DSM_ERROR_NT;
     }
     
     if (resp.payload_size < sizeof(smb_session_xsec_resp))
     {
         BDSM_dbg("[smb_tree_disconnect]Malformed message\n");
-        asn1_unlock();
         return DSM_ERROR_NETWORK;
     }
     
@@ -369,14 +346,12 @@ static int      auth(smb_session *s, const char *domain, const char *user,
     s->srv.uid  = resp.packet->header.uid;
     s->logged = true;
     
-    asn1_unlock();
     return DSM_SUCCESS;
     
     
 error:
     asn1_display_error("smb_session_login auth()", res);
     smb_message_destroy(msg);
-    asn1_unlock();
     return DSM_ERROR_GENERIC;
 }
 
@@ -391,23 +366,29 @@ int             smb_session_login_spnego(smb_session *s, const char *domain,
         // Clear User ID that might exists from previous authentication attempt
         s->srv.uid = 0;
         
-        if (init_asn1(s) != DSM_SUCCESS)
+        asn1_lock();
+        
+        if (init_asn1(s) != DSM_SUCCESS){
+            asn1_unlock();
             return DSM_ERROR_GENERIC;
+        }
         
         if ((res = negotiate(s, domain)) != DSM_SUCCESS)
             goto error;
+        
         if ((res = challenge(s)) != DSM_SUCCESS)
             goto error;
         
         res = auth(s, domain, user, password);
         
         clean_asn1(s);
-        
+        asn1_unlock();
         return res;
         
     error:
         BDSM_dbg("login_spnego Interrupted\n");
         clean_asn1(s);
+        asn1_unlock();
         return res;
         
     }
