@@ -126,8 +126,10 @@ int main(int ac, char **av)
   fname     = av[argoffset++];
 
   ns = netbios_ns_new();
-  if (netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr))
+  if (netbios_ns_resolve(ns, host, NETBIOS_FILESERVER, &addr.sin_addr.s_addr)) {
+    printf("Unable to resolve %s as a NetBIOS name\n", host);
     exit(-1);
+  }
 
   printf("%s's IP address is : %s\n", host, inet_ntoa(addr.sin_addr));
 
