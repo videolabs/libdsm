@@ -32,7 +32,7 @@
 #define _SMB_SESSION_H_
 
 #include "smb_types.h"
-#include "bdsm/smb_session.h"
+#include "bdsm_smb_session.h"
 
 /**
  * @file smb_session.h

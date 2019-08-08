@@ -35,13 +35,13 @@
 #define BDSM_VERSION_REVISION 0
 #define BDSM_VERSION_AGE      1
 
-#include "bdsm/netbios_ns.h"
-#include "bdsm/netbios_defs.h"
-#include "bdsm/smb_types.h"
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_share.h"
-#include "bdsm/smb_file.h"
-#include "bdsm/smb_stat.h"
-#include "bdsm/smb_dir.h"
+#include "bdsm_netbios_ns.h"
+#include "bdsm_netbios_defs.h"
+#include "bdsm_smb_types.h"
+#include "bdsm_smb_session.h"
+#include "bdsm_smb_share.h"
+#include "bdsm_smb_file.h"
+#include "bdsm_smb_stat.h"
+#include "bdsm_smb_dir.h"
 
 #endif

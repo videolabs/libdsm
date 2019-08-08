@@ -47,7 +47,7 @@
 # include <winsock2.h>
 #endif
 
-#include "bdsm/smb_types.h"
+#include "bdsm_smb_types.h"
 #include "smb_buffer.h"
 #include "smb_packets.h"
 

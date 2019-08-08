@@ -31,8 +31,8 @@
 #ifndef __BDSM_SMB_SHARE_H_
 #define __BDSM_SMB_SHARE_H_
 
-#include "bdsm/smb_session.h"
-#include "bdsm/smb_file.h"
+#include "bdsm_smb_session.h"
+#include "bdsm_smb_file.h"
 
 /**
  * @file smb_share.h

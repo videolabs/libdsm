@@ -33,7 +33,7 @@
 
 #include <stdint.h>
 
-#include "bdsm/netbios_defs.h"
+#include "bdsm_netbios_defs.h"
 #include "bdsm_common.h"
 
 #define NETBIOS_PORT_NAME     "137" // UDP
