@@ -36,6 +36,6 @@
 #ifndef _SMB_STAT_H_
 #define _SMB_STAT_H_
 
-#include "bdsm_smb_stat.h"
+#include "bdsm/smb_stat.h"
 
 #endif

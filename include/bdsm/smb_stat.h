@@ -36,8 +36,8 @@
 #ifndef __BDSM_SMB_STAT_H_
 #define __BDSM_SMB_STAT_H_
 
-#include "bdsm_smb_defs.h"
-#include "bdsm_smb_session.h"
+#include "bdsm/smb_defs.h"
+#include "bdsm/smb_session.h"
 
 /// smb_stat_get() OP: Get file size
 #define SMB_STAT_SIZE         0

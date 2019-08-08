@@ -36,6 +36,6 @@
 #ifndef _SMB_FILE_H_
 #define _SMB_FILE_H_
 
-#include "bdsm_smb_file.h"
+#include "bdsm/smb_file.h"
 
 #endif

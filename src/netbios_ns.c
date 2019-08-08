@@ -65,7 +65,7 @@
 # include <net/if.h>
 #endif
 
-#include <bdsm_netbios_ns.h>
+#include <bdsm/netbios_ns.h>
 
 #include "bdsm_debug.h"
 #include "netbios_query.h"
