@@ -31,7 +31,7 @@
 #ifndef _BDSM_DEBUG_H_
 # define _BDSM_DEBUG_H_
 
-# include "config.h"
+# include "../xcode/config.h"
 
 # ifdef __ANDROID__
 #  define LOG_TAG "libdsm"

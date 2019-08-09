@@ -49,6 +49,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC94AA8322FE10430048E6AC /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
 		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFD6E2391FC7644100A52250 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
 		EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
@@ -76,7 +77,6 @@
 		EFFC77801D943A6D006FD550 /* smb_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb_types.h; sourceTree = "<group>"; };
 		EFFC77811D943A6D006FD550 /* bdsm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm.h; sourceTree = "<group>"; };
 		EFFC77901D943A6D006FD550 /* bdsm_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_common.h; sourceTree = "<group>"; };
-		EFFC77911D943A6D006FD550 /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
 		EFFC77921D943A6D006FD550 /* hmac_md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac_md5.c; sourceTree = "<group>"; };
 		EFFC77931D943A6D006FD550 /* hmac_md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac_md5.h; sourceTree = "<group>"; };
 		EFFC77951D943A6D006FD550 /* netbios_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = netbios_defs.h; sourceTree = "<group>"; };
@@ -254,8 +254,8 @@
 		EFFC778F1D943A6D006FD550 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				AC94AA8322FE10430048E6AC /* bdsm_debug.h */,
 				EFFC77901D943A6D006FD550 /* bdsm_common.h */,
-				EFFC77911D943A6D006FD550 /* bdsm_debug.h */,
 				EFFC77921D943A6D006FD550 /* hmac_md5.c */,
 				EFFC77931D943A6D006FD550 /* hmac_md5.h */,
 				EFFC77951D943A6D006FD550 /* netbios_defs.h */,
@@ -349,6 +349,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = EF6319D21C7474D10032F5CC;
