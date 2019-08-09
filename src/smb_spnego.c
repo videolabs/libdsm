@@ -41,8 +41,8 @@
 #include "smb_session_msg.h"
 #include "smb_message.h"
 #include "smb_ntlm.h"
-#include "spnego/spnego_asn1.h"
-#include "spnego_asn1_mutex.h"
+#include "../contrib/spnego/spnego_asn1.h"
+#include "../xcode/extra/spnego_asn1_mutex.h"
 
 static const char spnego_oid[]  = "1.3.6.1.5.5.2";
 static const char ntlmssp_oid[] = "1.3.6.1.4.1.311.2.2.10";

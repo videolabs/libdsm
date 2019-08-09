@@ -44,7 +44,7 @@
 #include "smb_ntlm.h"
 #include "smb_spnego.h"
 #include "smb_transport.h"
-#include "spnego_asn1_mutex.h"
+#include "../xcode/extra/spnego_asn1_mutex.h"
 
 static int        smb_negotiate(smb_session *s);
 
