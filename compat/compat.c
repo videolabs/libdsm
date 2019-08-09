@@ -1,4 +1,4 @@
-#include "config.h"
+#include "../xcode/config.h"
 
 #if !defined(HAVE_PIPE) && defined(HAVE__PIPE)
 

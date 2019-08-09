@@ -2,7 +2,7 @@
 #ifndef __SPNEGO_ASN1_CONF_H_
 #define __SPNEGO_ASN1_CONF_H_
 
-#include "config.h"
+#include "../../xcode/config.h"
 
 #include <libtasn1.h>
 
