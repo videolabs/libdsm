@@ -49,8 +49,8 @@
 #include "compat.h"
 #endif
 
-#include "mdx/md4.h"
-#include "rc4/rc4.h"
+#include "../contrib/mdx/md4.h"
+#include "../contrib/rc4/rc4.h"
 #include "bdsm_debug.h"
 #include "hmac_md5.h"
 #include "smb_utils.h"
