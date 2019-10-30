@@ -1,3 +1,11 @@
+Changes between 0.3.0 and 0.3.1:
+--------------------------------
+
+  * Fix crash when used from multipe threads
+  * Fix nl_langinfo detection on Android
+  * Fix build for winstore
+
+
 Changes between 0.2.7 and 0.3.0:
 --------------------------------
 

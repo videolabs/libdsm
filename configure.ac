@@ -2,7 +2,7 @@ AC_PREREQ([2.53])
 
 m4_define([BDSM_MAJOR], [0])
 m4_define([BDSM_MINOR], [3])
-m4_define([BDSM_MICRO], [0])
+m4_define([BDSM_MICRO], [1])
 
 AC_COPYRIGHT([Copyright 2014-2018 VideoLabs])
 
