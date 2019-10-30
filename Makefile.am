@@ -88,8 +88,12 @@ libdsm_la_SOURCES = \
     src/smb_utils.c
 
 noinst_LTLIBRARIES = libcompat.la
-libcompat_la_SOURCES = 
+libcompat_la_SOURCES = compat/dummy.c
 libcompat_la_LIBADD = $(LTLIBOBJS)
+
+compat/dummy.c:
+	$(AM_V_at)rm -f $@
+	$(AM_V_GEN)echo '/* Automatically generated */' > $@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libdsm.pc
