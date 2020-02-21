@@ -52,10 +52,19 @@
 #include "netbios_session.h"
 #include "netbios_utils.h"
 
+#if !defined(MSG_NOSIGNAL)
+# define MSG_NOSIGNAL 0
+#endif
+
 static int open_socket_and_connect(netbios_session *s)
 {
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
+#ifdef SO_NOSIGPIPE
+    //Never generate SIGPIPE on broken write
+    if (setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &(int){ 1 }, sizeof(int)))
+        goto error;
+#endif
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
         goto error;
 
@@ -229,7 +238,7 @@ int               netbios_session_packet_send(netbios_session *s)
 
     s->packet->length = htons(s->packet_cursor);
     to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
-    sent              = send(s->socket, (void *)s->packet, to_send, 0);
+    sent              = send(s->socket, (void *)s->packet, to_send, MSG_NOSIGNAL);
 
     if (sent != to_send)
     {
