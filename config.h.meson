@@ -1,0 +1,165 @@
+/* ... */
+#mesondefine ASN1_ARRAY_TYPE
+
+/* Define to 1 if you have the <alloca.h> header file. */
+#mesondefine HAVE_ALLOCA_H
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#mesondefine HAVE_ARPA_INET_H
+
+/* Define to 1 if you have the <bsd/string.h> header file. */
+#mesondefine HAVE_BSD_STRING_H
+
+/* Define to 1 if the system has the type `clockid_t'. */
+#mesondefine HAVE_CLOCKID_T
+
+/* Define to 1 if you have the `clock_gettime' function. */
+#mesondefine HAVE_CLOCK_GETTIME
+
+/* Define to 1 if you have the declaration of `CLOCK_MONOTONIC', and to 0 if
+   you don't. */
+#mesondefine HAVE_DECL_CLOCK_MONOTONIC
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#mesondefine HAVE_DLFCN_H
+
+/* Define to 1 if you have the `getifaddrs' function. */
+#mesondefine HAVE_GETIFADDRS
+
+/* Define if you have the iconv() function and it works. */
+#mesondefine HAVE_ICONV
+
+/* Define to 1 if you have the <ifaddrs.h> header file. */
+#mesondefine HAVE_IFADDRS_H
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#mesondefine HAVE_INTTYPES_H
+
+/* Does this system have libbsd strl*** functions implementation */
+#mesondefine HAVE_LIBBSD
+
+/* Define to 1 if you have the <memory.h> header file. */
+#mesondefine HAVE_MEMORY_H
+
+/* Define to 1 if you have the `nl_langinfo' function. */
+#mesondefine HAVE_NL_LANGINFO
+
+/* Define to 1 if you have the `pipe' function. */
+#mesondefine HAVE_PIPE
+
+/* Define if you have POSIX threads libraries and header files. */
+#mesondefine HAVE_PTHREAD
+
+/* Have PTHREAD_PRIO_INHERIT. */
+#mesondefine HAVE_PTHREAD_PRIO_INHERIT
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#mesondefine HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#mesondefine HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#mesondefine HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#mesondefine HAVE_STRING_H
+
+/* Define to 1 if you have the `strlcpy' function. */
+#mesondefine HAVE_STRLCPY
+
+/* Define to 1 if you have the `strndup' function. */
+#mesondefine HAVE_STRNDUP
+
+/* Define to 1 if the system has the type `struct timespec'. */
+#mesondefine HAVE_STRUCT_TIMESPEC
+
+/* Define to 1 if you have the <sys/queue.h> header file. */
+#mesondefine HAVE_SYS_QUEUE_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#mesondefine HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#mesondefine HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#mesondefine HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#mesondefine HAVE_SYS_TYPES_H
+
+/* libtasn1 has v 3.0 downcase types */
+#mesondefine HAVE_TASN1_3PLUS
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#mesondefine HAVE_UNISTD_H
+
+/* Define to 1 if you have the `_pipe' function. */
+#mesondefine HAVE__PIPE
+
+/* Define as const if the declaration of iconv() needs const. */
+#mesondefine ICONV_CONST
+
+/* Name of package */
+#mesondefine PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#mesondefine PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#mesondefine PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#mesondefine PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#mesondefine PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#mesondefine PACKAGE_URL
+
+/* Define to the version of this package. */
+#mesondefine PACKAGE_VERSION
+
+/* Define to necessary symbol if this constant uses a non-standard name on
+   your system. */
+#mesondefine PTHREAD_CREATE_JOINABLE
+
+/* Define to 1 if you have the ANSI C header files. */
+#mesondefine STDC_HEADERS
+
+/* Define to 1 for Unicode (Wide Chars) APIs. */
+#mesondefine UNICODE
+
+/* Path of the random number generation device */
+#mesondefine URANDOM
+
+/* Version number of package */
+#mesondefine VERSION
+
+/* Define to 64 for large files support. */
+#mesondefine _FILE_OFFSET_BITS
+
+/* Define to 2 to get glibc warnings. */
+#mesondefine _FORTIFY_SOURCE
+
+/* Extensions to ISO C89 from ISO C99. */
+#mesondefine _ISOC99_SOURCE
+
+/* IEEE Std 1003.1. */
+#mesondefine _POSIX_C_SOURCE
+
+/* IEEE Std 1003.1. */
+#mesondefine _POSIX_SOURCE
+
+/* TODO */
+#mesondefine _DEFAULT_SOURCE
+
+/* Define to 1 for Unicode (Wide Chars) APIs. */
+#mesondefine _UNICODE
+
+/* ... */
+#mesondefine asn1_static_node
+
+#include "compat.h"
