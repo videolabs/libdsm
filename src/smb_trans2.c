@@ -523,7 +523,9 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
         file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
                                          &file->name);
-        file->name[info->name_len / 2] = 0;
+        if(file->name_len>0){
+            file->name[info->name_len / 2] = 0;
+        }
 
         file->created     = info->created;
         file->accessed    = info->accessed;
