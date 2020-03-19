@@ -1,4 +1,4 @@
-project('bdsm', ['c'],
+project('libdsm', ['c'],
     version: '0.3.2',
     license: ['LGPL2'],
     default_options: ['c_std=c11',
