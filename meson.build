@@ -5,7 +5,7 @@ project('libdsm', ['c'],
                       'warning_level=2',
                       'buildtype=release',
                       'b_ndebug=if-release'],
-    meson_version: '>= 0.47.0')
+    meson_version: '>= 0.50.0')
 
 conf_data = configuration_data()
 conf_data.set_quoted('URANDOM', '/dev/urandom') #TODO
