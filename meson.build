@@ -181,6 +181,21 @@ libdsm_sources = [
   'src/smb_utils.c' ]
 libdsm_sources += compat_sources
 
+libdsm_headers = [
+  'include/bdsm/netbios_defs.h',
+  'include/bdsm/netbios_ns.h',
+  'include/bdsm/smb_defs.h',
+  'include/bdsm/smb_dir.h',
+  'include/bdsm/smb_file.h',
+  'include/bdsm/smb_session.h',
+  'include/bdsm/smb_share.h',
+  'include/bdsm/smb_stat.h',
+  'include/bdsm/smb_types.h',
+  'include/bdsm.h'
+]
+
+install_headers(libdsm_headers, subdir: 'bdsm')
+
 includes = include_directories('.', 'contrib', 'include', 'compat')
 
 add_project_arguments('-DHAVE_CONFIG_H=1', language: ['c'])
@@ -197,7 +212,9 @@ libdsm = library('dsm',
   libdsm_sources,
   version: meson.project_version(),
   include_directories: includes,
-  dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log])
+  dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log],
+  install: true
+)
 
 pkg_mod = import('pkgconfig')
 pkg_mod.generate(
