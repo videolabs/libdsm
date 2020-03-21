@@ -85,6 +85,17 @@ endif
 
 
 # Check functions
+if host_machine.system() == 'linux'
+    test_args += '-D_GNU_SOURCE'
+    add_project_arguments('-D_GNU_SOURCE', language: 'c')
+elif host_machine.system() == 'darwin'
+    test_args += '-D_DARWIN_C_SOURCE'
+    add_project_arguments('-D_DARWIN_C_SOURCE', language: 'c')
+else
+    test_args += '-D_POSIX_C_SOURCE=200809L'
+    add_project_arguments('-D_POSIX_C_SOURCE=200809L', language: 'c')
+endif
+
 compat_sources = []
 
 if cc.has_function('strlcpy', prefix: '#include <string.h>', args: test_args)
