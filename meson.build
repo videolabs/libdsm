@@ -7,6 +7,14 @@ project('libdsm', ['c'],
                       'b_ndebug=if-release'],
     meson_version: '>= 0.50.0')
 
+#Soname
+dsm_soname_version = '3.1.0'
+if host_machine.system() == 'windows'
+  dsm_soversion = ''
+else
+  dsm_soversion = dsm_soname_version.split('.')[0]
+endif
+
 conf_data = configuration_data()
 conf_data.set_quoted('URANDOM', '/dev/urandom') #TODO
 conf_data.set('_FORTIFY_SOURCE', 2,
@@ -210,7 +218,8 @@ endif
 
 libdsm = library('dsm',
   libdsm_sources,
-  version: meson.project_version(),
+  version: dsm_soname_version,
+  soversion: dsm_soversion,
   include_directories: includes,
   dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log],
   install: true
