@@ -55,7 +55,7 @@ int               transport_connect_tcp(const char *ip,
 
 void              smb_transport_nbt(smb_transport *tr)
 {
-    assert(tr != NULL);
+    bdsm_assert(tr != NULL);
     
     if(tr != NULL){
 
@@ -72,7 +72,7 @@ void              smb_transport_nbt(smb_transport *tr)
 
 void              smb_transport_tcp(smb_transport *tr)
 {
-    assert(tr != NULL);
+    bdsm_assert(tr != NULL);
 
     if(tr != NULL){
         tr->new           = (void *)netbios_session_new;

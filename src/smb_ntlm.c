@@ -97,7 +97,7 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh hash)
     char      *ucs2le_pass;
     size_t    sz;
 
-    assert(password != NULL && hash != NULL);
+    bdsm_assert(password != NULL && hash != NULL);
     
     if(password != NULL && hash != NULL){
 
@@ -114,7 +114,7 @@ void        smb_ntlm_hash(const char *password, smb_ntlmh hash)
 
 static void _upcase(char *str)
 {
-    assert(str != NULL);
+    bdsm_assert(str != NULL);
     
     if(str != NULL){
 
@@ -227,7 +227,7 @@ uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
 //   char    *res;
 //   size_t  res_sz;
 
-//   assert(names != NULL && domain != NULL && host != NULL);
+//   bdsm_assert(names != NULL && domain != NULL && host != NULL);
 
 //   wdomain_sz        = smb_to_utf16(domain, strlen(domain) + 1, &wdomain);
 //   wdomain_camel_sz  = smb_to_utf16(domain, strlen(domain) + 1, &wdomain_camel);
@@ -239,7 +239,7 @@ uint8_t     *smb_lm2_response(smb_ntlmh hash_v2, uint64_t srv_challenge,
 
 //   res_sz = (wdomain_sz - 2) * 2 + (whost_sz - 2) * 2 + 8 + 6 * 4;
 //   *names = res = malloc(res_sz);
-//   assert(res != NULL);
+//   bdsm_assert(res != NULL);
 //   memset(res, 0, res_sz);
 
 //   __NAME_ENCODE_APPEND(2, wdomain)
@@ -267,7 +267,7 @@ size_t      smb_ntlm_make_blob(smb_ntlm_blob **out_blob, uint64_t ts,
 {
     smb_ntlm_blob *blob;
 
-    assert(out_blob != NULL && target != NULL);
+    bdsm_assert(out_blob != NULL && target != NULL);
     
     if(out_blob != NULL && target != NULL){
 
@@ -307,7 +307,7 @@ void        smb_ntlmssp_negotiate(const char *host, const char *domain,
 {
     smb_ntlmssp_nego  *nego;
 
-    assert(host != NULL && domain != NULL && token != NULL);
+    bdsm_assert(host != NULL && domain != NULL && token != NULL);
     
     if(host != NULL && domain != NULL && token != NULL){
 
@@ -355,8 +355,8 @@ void        smb_ntlmssp_response(uint64_t srv_challenge, uint64_t srv_ts,
     uint64_t              user_challenge;
     char                  *utf;
 
-    assert(host != NULL && domain != NULL && user != NULL && password != NULL);
-    assert(token != NULL && target != NULL);
+    bdsm_assert(host != NULL && domain != NULL && user != NULL && password != NULL);
+    bdsm_assert(token != NULL && target != NULL);
     
     if(host != NULL && domain != NULL && user != NULL && password != NULL
        && token != NULL && target != NULL){

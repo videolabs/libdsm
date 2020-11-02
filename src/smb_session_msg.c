@@ -39,9 +39,9 @@ int             smb_session_send_msg(smb_session *s, smb_message *msg)
 {
     size_t        pkt_sz;
 
-    assert(s != NULL);
-    assert(s->transport.session != NULL);
-    assert(msg != NULL && msg->packet != NULL);
+    bdsm_assert(s != NULL);
+    bdsm_assert(s->transport.session != NULL);
+    bdsm_assert(msg != NULL && msg->packet != NULL);
 
     if( s != NULL && s->transport.session != NULL && msg != NULL && msg->packet != NULL){
     
@@ -69,7 +69,7 @@ size_t          smb_session_recv_msg(smb_session *s, smb_message *msg)
     void                      *data;
     ssize_t                   payload_size;
 
-    assert(s != NULL && s->transport.session != NULL);
+    bdsm_assert(s != NULL && s->transport.session != NULL);
     
     if( s != NULL && s->transport.session != NULL ){
 

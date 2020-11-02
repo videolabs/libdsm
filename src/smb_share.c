@@ -53,7 +53,7 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
     size_t                 path_len, utf_path_len;
     char                  *path, *utf_path;
 
-    assert(s != NULL && name != NULL && tid != NULL);
+    bdsm_assert(s != NULL && name != NULL && tid != NULL);
 
     if( s != NULL && name != NULL && tid != NULL ){
     
@@ -130,7 +130,7 @@ int           smb_tree_disconnect(smb_session *s, smb_tid tid)
     smb_message              *req_msg;
     smb_message               resp_msg;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if( s != NULL){
 
@@ -182,7 +182,7 @@ static ssize_t  smb_share_parse_enum(smb_message *msg, char ***list)
     uint8_t           *data, *eod;
     uint32_t          *p_share_count;
 
-    assert(msg != NULL && list != NULL);
+    bdsm_assert(msg != NULL && list != NULL);
     
     if( msg != NULL && list != NULL ){
     
@@ -249,7 +249,7 @@ size_t          smb_share_list_count(smb_share_list list)
 
 const char      *smb_share_list_at(smb_share_list list, size_t index)
 {
-    assert(list != NULL);
+    bdsm_assert(list != NULL);
     
     if(list!=NULL){
         return list[index];
@@ -260,7 +260,7 @@ const char      *smb_share_list_at(smb_share_list list, size_t index)
 
 void            smb_share_list_destroy(smb_share_list list)
 {
-    assert(list != NULL);
+    bdsm_assert(list != NULL);
     if(list!=NULL){
         for (size_t i = 0; list[i] != NULL; i++)
             free(list[i]);
@@ -282,7 +282,7 @@ int             smb_share_get_list(smb_session *s, smb_share_list *list, size_t 
     ssize_t               count;
     int                   ret;
 
-    assert(s != NULL && list != NULL);
+    bdsm_assert(s != NULL && list != NULL);
     
     if(s != NULL && list != NULL){
         

@@ -130,7 +130,7 @@ static int        session_buffer_realloc(netbios_session *s, size_t new_size)
 {
     void        *new_ptr;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s != NULL){
 
@@ -193,7 +193,7 @@ int netbios_session_connect(const char *ip, const char *user_port, netbios_sessi
     unsigned int              nb_ports;
     bool                      opened = false;
 
-    assert(s != NULL && s->packet != NULL);
+    bdsm_assert(s != NULL && s->packet != NULL);
 
     if(s != NULL && s->packet != NULL){
     
@@ -294,7 +294,7 @@ int netbios_session_connect(const char *ip, const char *user_port, netbios_sessi
 
 void              netbios_session_packet_init(netbios_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
         s->packet_cursor  = 0;
@@ -308,7 +308,7 @@ int               netbios_session_packet_append(netbios_session *s,
 {
     char  *start;
 
-    assert(s && s->packet);
+    bdsm_assert(s && s->packet);
 
     if(s && s->packet){
     
@@ -330,7 +330,7 @@ int               netbios_session_packet_send(netbios_session *s)
     ssize_t         to_send;
     ssize_t         sent;
 
-    assert(s && s->packet && s->socket >= 0 && s->state > 0);
+    bdsm_assert(s && s->packet && s->socket >= 0 && s->state > 0);
 
     if(s && s->packet && s->socket >= 0 && s->state > 0){
     
@@ -403,7 +403,7 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     ssize_t         res;
     size_t          total, sofar;
 
-    assert(s != NULL && s->packet != NULL && s->socket >= 0 && s->state > 0);
+    bdsm_assert(s != NULL && s->packet != NULL && s->socket >= 0 && s->state > 0);
 
     if(s != NULL && s->packet != NULL && s->socket >= 0 && s->state > 0){
         

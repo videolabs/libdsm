@@ -77,7 +77,7 @@ smb_session   *smb_session_new()
 
 void            smb_session_destroy(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
         
@@ -109,7 +109,7 @@ void            smb_session_destroy(smb_session *s)
 void            smb_session_set_creds(smb_session *s, const char *domain,
                                       const char *login, const char *password)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
     
@@ -139,7 +139,7 @@ void            smb_session_set_creds(smb_session *s, const char *domain,
 int             smb_session_connect(smb_session *s, const char *name,
                                     const char *ip,const char *user_port, int transport)
 {
-    assert(s != NULL && name != NULL);
+    bdsm_assert(s != NULL && name != NULL);
 
     if(s != NULL && name != NULL){
     
@@ -179,7 +179,7 @@ static int        smb_negotiate(smb_session *s)
     uint16_t payload_size;
 
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
 
@@ -247,7 +247,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
     smb_ntlmh             hash_v2;
     uint64_t              user_challenge;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
 
@@ -331,7 +331,7 @@ static int        smb_session_login_ntlm(smb_session *s, const char *domain,
 
 int             smb_session_login(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
 
@@ -357,7 +357,7 @@ static int        smb_session_logoff_andx(smb_session *s, const char *domain,
     smb_message    *msg = NULL;
 
     
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
     
@@ -391,7 +391,7 @@ static int        smb_session_logoff_andx(smb_session *s, const char *domain,
 
 int             smb_session_logoff(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
     
@@ -409,7 +409,7 @@ int             smb_session_logoff(smb_session *s)
 
 int             smb_session_is_guest(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
 
@@ -430,7 +430,7 @@ int             smb_session_is_guest(smb_session *s)
 
 const char      *smb_session_server_name(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
         return s->srv.name;
@@ -440,7 +440,7 @@ const char      *smb_session_server_name(smb_session *s)
 
 int             smb_session_supports(smb_session *s, int what)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
         
@@ -457,7 +457,7 @@ int             smb_session_supports(smb_session *s, int what)
 
 uint32_t        smb_session_get_nt_status(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s!=NULL){
         return s->nt_status;
@@ -467,7 +467,7 @@ uint32_t        smb_session_get_nt_status(smb_session *s)
 
 bool smb_session_check_nt_status(smb_session *s, smb_message *msg)
 {
-    assert(s != NULL && msg != NULL);
+    bdsm_assert(s != NULL && msg != NULL);
 
     if(s != NULL && msg != NULL){
     

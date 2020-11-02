@@ -135,7 +135,7 @@ static void smb_find_first_parse(smb_message *msg, smb_file **files_p)
     uint8_t               *eod;
     size_t                count;
 
-    assert(msg != NULL);
+    bdsm_assert(msg != NULL);
     
     if(msg != NULL){
         
@@ -161,7 +161,7 @@ static void smb_find_next_parse(smb_message *msg, smb_file **files_p)
     uint8_t               *eod;
     size_t                count;
 
-    assert(msg != NULL);
+    bdsm_assert(msg != NULL);
     
     if(msg != NULL){
 
@@ -189,7 +189,7 @@ static smb_message  *smb_trans2_find_first (smb_session *s, smb_tid tid, const c
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL);
+    bdsm_assert(s != NULL && pattern != NULL);
     
     if(s != NULL && pattern != NULL){
 
@@ -265,7 +265,7 @@ static smb_message  *smb_trans2_find_next (smb_session *s, smb_tid tid, uint16_t
     int                   res;
     unsigned int          padding = 0;
 
-    assert(s != NULL && pattern != NULL);
+    bdsm_assert(s != NULL && pattern != NULL);
     
     if(s != NULL && pattern != NULL){
 
@@ -351,7 +351,7 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
     uint16_t                  resume_key;
     uint16_t                  error_offset;
 
-    assert(s != NULL && pattern != NULL);
+    bdsm_assert(s != NULL && pattern != NULL);
     
     if(s != NULL && pattern != NULL){
 
@@ -442,7 +442,7 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
     char                  *utf_path;
     int                   res, padding = 0;
 
-    assert(s != NULL && path != NULL);
+    bdsm_assert(s != NULL && path != NULL);
     
     if(s != NULL && path != NULL){
 

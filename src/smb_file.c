@@ -55,7 +55,7 @@ int         smb_fopen(smb_session *s, smb_tid tid, const char *path,
     int              res;
     char            *utf_path;
 
-    assert(s != NULL && path != NULL && fd != NULL);
+    bdsm_assert(s != NULL && path != NULL && fd != NULL);
 
     if(s != NULL && path != NULL && fd != NULL){
     
@@ -155,7 +155,7 @@ void        smb_fclose(smb_session *s, smb_fd fd)
     smb_message     *msg;
     smb_close_req   req;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     if (s==NULL || fd==0){
         return;
     }
@@ -199,7 +199,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     size_t          max_read;
     int             res;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     if (s==NULL || fd==0){
         return -1;
     }
@@ -268,7 +268,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size)
     uint16_t        max_write;
     int             res;
 
-    assert(s != NULL && buf != NULL);
+    bdsm_assert(s != NULL && buf != NULL);
     
     if (s != NULL && buf != NULL){
 
@@ -331,7 +331,7 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence)
 {
     smb_file  *file;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
 
@@ -357,7 +357,7 @@ int  smb_file_rm(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    assert(s != NULL && path != NULL);
+    bdsm_assert(s != NULL && path != NULL);
     
     if(s != NULL && path != NULL){
 
@@ -417,7 +417,7 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
     size_t                utf_old_len,utf_new_len;
     char                  *utf_old_path,*utf_new_path;
 
-    assert(s != NULL && old_path != NULL && new_path != NULL);
+    bdsm_assert(s != NULL && old_path != NULL && new_path != NULL);
 
     if(s != NULL && old_path != NULL && new_path != NULL){
     

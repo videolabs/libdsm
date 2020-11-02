@@ -164,9 +164,9 @@
 /* ... */
 /* #undef asn1_static_node */
 
-
 //disable assert in release
-#ifdef __OPTIMIZE__
-#define NDEBUG      1
-#define	assert(e)	((void)0)
+#ifdef DEBUG
+    #define bdsm_assert(e)       assert(e)
+#else
+    #define bdsm_assert(e)       ((void)0)
 #endif

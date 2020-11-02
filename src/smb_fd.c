@@ -38,7 +38,7 @@ void        smb_session_share_add(smb_session *s, smb_share *share)
 {
     smb_share *iter;
 
-    assert(s != NULL && share != NULL);
+    bdsm_assert(s != NULL && share != NULL);
 
     if(s != NULL && share != NULL){
     
@@ -61,7 +61,7 @@ smb_share *smb_session_share_get(smb_session *s, smb_tid tid)
 {
     smb_share *iter;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s != NULL){
         
@@ -78,7 +78,7 @@ smb_share *smb_session_share_remove(smb_session *s, smb_tid tid)
 {
     smb_share *iter, *keep;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s != NULL){
 
@@ -110,7 +110,7 @@ void            smb_session_share_clear(smb_session *s)
     smb_share   *iter, *tmp;
     smb_file    *fiter, *ftmp;
 
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
 
     if(s != NULL){
             
@@ -139,7 +139,7 @@ int         smb_session_file_add(smb_session *s, smb_tid tid, smb_file *f)
     smb_share *share;
     smb_file  *iter;
 
-    assert(s != NULL && f != NULL);
+    bdsm_assert(s != NULL && f != NULL);
 
     if(s != NULL && f != NULL){
         
@@ -167,7 +167,7 @@ smb_file  *smb_session_file_get(smb_session *s, smb_fd fd)
     smb_share *share;
     smb_file  *iter;
 
-    assert(s != NULL && fd);
+    bdsm_assert(s != NULL && fd);
 
     if(s != NULL && fd){
     
@@ -189,7 +189,7 @@ smb_file  *smb_session_file_remove(smb_session *s, smb_fd fd)
     smb_share *share;
     smb_file  *iter, *keep;
 
-    assert(s != NULL && fd);
+    bdsm_assert(s != NULL && fd);
     
     if(s != NULL && fd){
 

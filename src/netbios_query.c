@@ -67,7 +67,7 @@ netbios_query   *netbios_query_new(size_t payload_size,
 
 void              netbios_query_destroy(netbios_query *q)
 {
-    assert(q);
+    bdsm_assert(q);
     if(q!=NULL){
         free(q->packet);
         free(q);
@@ -77,7 +77,7 @@ void              netbios_query_destroy(netbios_query *q)
 void              netbios_query_set_flag(netbios_query *q,
         uint16_t flag, int value)
 {
-    assert(q && q->packet);
+    bdsm_assert(q && q->packet);
 
     if(q && q->packet){
         if (value){
@@ -91,7 +91,7 @@ void              netbios_query_set_flag(netbios_query *q,
 
 void              netbios_query_print(netbios_query *q)
 {
-    assert(q && q->packet);
+    bdsm_assert(q && q->packet);
     
     if(q && q->packet){
     
@@ -119,7 +119,7 @@ void              netbios_query_print(netbios_query *q)
 int               netbios_query_append(netbios_query *q, const char *data,
                                        size_t data_size)
 {
-    assert(q && q->packet);
+    bdsm_assert(q && q->packet);
 
     if(q && q->packet){
         if (q->payload_size - q->cursor < data_size){

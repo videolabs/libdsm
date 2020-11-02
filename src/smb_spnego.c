@@ -60,7 +60,7 @@ static int      init_asn1(smb_session *s)
 {
     int           res;
     
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
         
@@ -85,7 +85,7 @@ static int      init_asn1(smb_session *s)
 
 static void     clean_asn1(smb_session *s)
 {
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
         if (s->spnego_asn1 != NULL){
@@ -183,7 +183,7 @@ static int      challenge(smb_session *s)
     int                   res, resp_token_size = sizeof(resp_token);
 
     
-    assert(s != NULL);
+    bdsm_assert(s != NULL);
     
     if(s!=NULL){
         
@@ -359,7 +359,7 @@ int             smb_session_login_spnego(smb_session *s, const char *domain,
                                          const char *user, const char *password)
 {
     int           res;
-    assert(s != NULL && domain != NULL && user != NULL && password != NULL);
+    bdsm_assert(s != NULL && domain != NULL && user != NULL && password != NULL);
     
     if(s != NULL && domain != NULL && user != NULL && password != NULL){
         

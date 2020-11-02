@@ -51,7 +51,7 @@ int smb_directory_rm(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    assert(s != NULL && path != NULL);
+    bdsm_assert(s != NULL && path != NULL);
 
     if(s != NULL && path != NULL){
     
@@ -110,7 +110,7 @@ int smb_directory_create(smb_session *s, smb_tid tid, const char *path)
     size_t                utf_pattern_len;
     char                  *utf_pattern;
 
-    assert(s != NULL && path != NULL);
+    bdsm_assert(s != NULL && path != NULL);
 
     if(s != NULL && path != NULL){
         

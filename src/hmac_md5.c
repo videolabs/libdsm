@@ -45,7 +45,7 @@ unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,
     uint8_t         *cat, *out;
     MD5_CTX         ctx;
 
-    assert(key != NULL && msg != NULL);
+    bdsm_assert(key != NULL && msg != NULL);
 
     if(key != NULL && msg != NULL){
         

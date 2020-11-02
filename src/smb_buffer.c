@@ -41,7 +41,7 @@
 
 void    smb_buffer_init(smb_buffer *buf, void *data, size_t size)
 {
-    assert(buf != NULL);
+    bdsm_assert(buf != NULL);
     
     if(buf != NULL){
         buf->data = data;
@@ -51,7 +51,7 @@ void    smb_buffer_init(smb_buffer *buf, void *data, size_t size)
 
 int     smb_buffer_alloc(smb_buffer *buf, size_t size)
 {
-    assert(buf != NULL);
+    bdsm_assert(buf != NULL);
 
     if(buf != NULL){
         buf->data = malloc(size);

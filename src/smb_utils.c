@@ -54,19 +54,19 @@ static pthread_mutex_t static_iconv_mutex = PTHREAD_MUTEX_INITIALIZER;
 static char iconv_locked = 0;
 
 #define iconv_lock() {if (pthread_mutex_lock(&static_iconv_mutex)!=0){\
-assert(0);\
+bdsm_assert(0);\
 }\
 set_iconv_locked(1);\
 }\
 
 #define iconv_unlock() {if (pthread_mutex_unlock(&static_iconv_mutex)!=0){\
-assert(0);\
+bdsm_assert(0);\
 }\
 set_iconv_locked(0);\
 }\
 
 static void set_iconv_locked(char locked){
-    //assert(iconv_locked!=locked);
+    //bdsm_assert(iconv_locked!=locked);
     iconv_locked = locked;
 }
 
@@ -95,7 +95,7 @@ static size_t smb_iconv(const char *src, size_t src_len, char **dst,
     iconv_t   ic;
     size_t    ret = 0;
 
-    assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
+    bdsm_assert(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL);
 
     if(src != NULL && dst != NULL && src_enc != NULL && dst_enc != NULL){
 

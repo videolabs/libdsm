@@ -331,7 +331,7 @@ static int netbios_ns_send_name_query(netbios_ns *ns,
     uint16_t            query_type;
     netbios_query       *q;
     
-    assert(ns != NULL);
+    bdsm_assert(ns != NULL);
     
     switch (type)
     {
@@ -501,7 +501,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
 {
     int sock;
     
-    assert(ns != NULL);
+    bdsm_assert(ns != NULL);
     
     if(ns==NULL){
         return -1;
@@ -635,7 +635,7 @@ static netbios_ns_entry *netbios_ns_entry_find(netbios_ns *ns, const char *by_na
 {
     netbios_ns_entry  *iter;
     
-    assert(ns != NULL);
+    bdsm_assert(ns != NULL);
     if(ns==NULL){
         return NULL;
     }
@@ -660,7 +660,7 @@ static void netbios_ns_entry_clear(netbios_ns *ns)
 {
     netbios_ns_entry  *entry, *entry_next;
     
-    assert(ns != NULL);
+    bdsm_assert(ns != NULL);
     
     if(ns==NULL){
         return;
@@ -724,7 +724,7 @@ int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_
     ssize_t             recv;
     netbios_ns_name_query name_query;
     
-    assert(ns != NULL && !ns->discover_started);
+    bdsm_assert(ns != NULL && !ns->discover_started);
     
     if ((cached = netbios_ns_entry_find(ns, name, 0)) != NULL)
     {
@@ -813,7 +813,7 @@ error:
 
 const char *netbios_ns_inverse(netbios_ns *ns, uint32_t ip)
 {
-    assert(ns != NULL && ip != 0 && !ns->discover_started);
+    bdsm_assert(ns != NULL && ip != 0 && !ns->discover_started);
     
     if(ns != NULL && ip != 0 && !ns->discover_started){
         netbios_ns_entry *entry = netbios_ns_inverse_internal(ns, ip);

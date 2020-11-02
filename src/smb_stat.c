@@ -29,13 +29,13 @@
  *****************************************************************************/
 
 #include <assert.h>
-
+#include "config.h"
 #include "smb_stat.h"
 #include "smb_fd.h"
 
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd)
 {
-    assert(s != NULL && fd);
+    bdsm_assert(s != NULL && fd);
     
     if(s != NULL && fd){
         return smb_session_file_get(s, fd);
