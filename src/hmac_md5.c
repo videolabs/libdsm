@@ -28,12 +28,11 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "../xcode/config.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../xcode/config.h"
 #include "hmac_md5.h"
 
 unsigned char *HMAC_MD5(const void *key, size_t key_len, const void *msg,

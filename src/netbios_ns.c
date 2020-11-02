@@ -37,12 +37,10 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <sys/time.h>
-
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
-
 #ifdef HAVE_SYS_QUEUE_H
 # include <sys/queue.h>
 #endif
@@ -56,7 +54,6 @@
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
-
 #ifndef _WIN32
 # include <sys/types.h>
 # ifdef HAVE_IFADDRS_H

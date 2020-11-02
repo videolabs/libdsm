@@ -30,13 +30,14 @@
 
 #include "../xcode/config.h"
 
-#include <assert.h>
 #include <iconv.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#import <pthread.h>
+#import <assert.h>
 
 #if HAVE_LANGINFO_H && !defined( __APPLE__ )
 # include <langinfo.h>
@@ -44,11 +45,6 @@
 
 #include "bdsm_debug.h"
 #include "smb_utils.h"
-
-
-
-#import <pthread.h>
-#import <assert.h>
 
 static pthread_mutex_t static_iconv_mutex = PTHREAD_MUTEX_INITIALIZER;
 static char iconv_locked = 0;

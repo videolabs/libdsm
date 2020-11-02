@@ -3,6 +3,8 @@
 #import <pthread.h>
 #import <assert.h>
 
+#include "../config.h"
+
 static pthread_mutex_t static_mutex = PTHREAD_MUTEX_INITIALIZER;
 static char asn1_locked = 0;
 

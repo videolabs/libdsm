@@ -28,14 +28,13 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "../xcode/config.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 
+#include "../xcode/config.h"
 #include "bdsm_debug.h"
 #include "smb_session_msg.h"
 #include "smb_utils.h"

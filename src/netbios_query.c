@@ -29,6 +29,7 @@
  *****************************************************************************/
 
 #include "../xcode/config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -39,6 +40,7 @@
 #ifdef _WIN32
 # include <winsock2.h>
 #endif
+
 
 #include "netbios_query.h"
 

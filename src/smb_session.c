@@ -28,15 +28,13 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "../xcode/config.h"
-
-#include "compat.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 
+#include "../xcode/config.h"
+#include "../xcode/extra/spnego_asn1_mutex.h"
 #include "bdsm_debug.h"
 #include "smb_session.h"
 #include "smb_session_msg.h"
@@ -44,7 +42,8 @@
 #include "smb_ntlm.h"
 #include "smb_spnego.h"
 #include "smb_transport.h"
-#include "../xcode/extra/spnego_asn1_mutex.h"
+#include "compat.h"
+
 
 static int        smb_negotiate(smb_session *s);
 

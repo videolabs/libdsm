@@ -28,10 +28,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "../xcode/config.h"
-
 #include <assert.h>
 
+#include "../xcode/config.h"
 #include "smb_transport.h"
 #include "netbios_session.h"
 
