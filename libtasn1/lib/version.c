@@ -44,7 +44,7 @@
 const char *
 asn1_check_version (const char *req_version)
 {
-  if (!req_version || strverscmp (req_version, ASN1_VERSION) <= 0)
+  if (!req_version /*|| strverscmp (req_version, ASN1_VERSION) <= 0*/)
     return ASN1_VERSION;
 
   return NULL;

@@ -25,7 +25,9 @@
 /*   functions.                                      */
 /*****************************************************/
 
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <int.h>
 #include "parser_aux.h"
 #include <gstr.h>

@@ -32,6 +32,9 @@
 #include "element.h"
 #include "minmax.h"
 #include <structure.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #define MAX_TAG_LEN 16
 

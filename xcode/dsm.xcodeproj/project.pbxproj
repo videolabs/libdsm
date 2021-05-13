@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC69AC65264D16E100DEEF08 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC69AC62264D15A000DEEF08 /* libtasn1.a */; };
 		EFD6E23A1FC7644200A52250 /* clock_gettime.c in Sources */ = {isa = PBXBuildFile; fileRef = EFD6E2391FC7644100A52250 /* clock_gettime.c */; };
-		EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */; };
 		EFFC77BC1D943A6D006FD550 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77641D943A6D006FD550 /* compat.c */; };
 		EFFC77BE1D943A6D006FD550 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77681D943A6D006FD550 /* strndup.c */; };
 		EFFC77BF1D943A6D006FD550 /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC776B1D943A6D006FD550 /* md4.c */; };
@@ -36,6 +36,16 @@
 		EFFC77DB1D943AD9006FD550 /* spnego_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = EFFC77D71D943AD9006FD550 /* spnego_asn1.c */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		AC69AC61264D15A000DEEF08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC69AC5D264D15A000DEEF08 /* tasn1.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF6319DB1C7474D10032F5CC;
+			remoteInfo = tasn1;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		EF6319D91C7474D10032F5CC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -49,11 +59,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC69AC5D264D15A000DEEF08 /* tasn1.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tasn1.xcodeproj; path = ../libtasn1/xcode/tasn1.xcodeproj; sourceTree = "<group>"; };
 		AC94AA8322FE10430048E6AC /* bdsm_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bdsm_debug.h; sourceTree = "<group>"; };
 		EF6319DB1C7474D10032F5CC /* libdsm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdsm.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFD6E2391FC7644100A52250 /* clock_gettime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = clock_gettime.c; sourceTree = "<group>"; };
-		EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtasn1.a; sourceTree = "<group>"; };
-		EFE0C6CE1D95C66800EFF570 /* libtasn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtasn1.h; sourceTree = "<group>"; };
 		EFFC77611D943986006FD550 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		EFFC77641D943A6D006FD550 /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
 		EFFC77651D943A6D006FD550 /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
@@ -126,17 +135,32 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFE0C6CC1D95C4F200EFF570 /* libtasn1.a in Frameworks */,
+				AC69AC65264D16E100DEEF08 /* libtasn1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AC69AC5E264D15A000DEEF08 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC69AC62264D15A000DEEF08 /* libtasn1.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC69AC64264D16E100DEEF08 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EF6319D21C7474D10032F5CC = {
 			isa = PBXGroup;
 			children = (
-				EFE0C6C91D95C4F200EFF570 /* libtasn1 */,
+				AC69AC5D264D15A000DEEF08 /* tasn1.xcodeproj */,
 				EFFC77D61D943AD9006FD550 /* extra */,
 				EFFC77621D943A6D006FD550 /* compat */,
 				EFFC77691D943A6D006FD550 /* contrib */,
@@ -144,6 +168,7 @@
 				EFFC778F1D943A6D006FD550 /* src */,
 				EFFC77611D943986006FD550 /* config.h */,
 				EF6319DC1C7474D10032F5CC /* Products */,
+				AC69AC64264D16E100DEEF08 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -153,24 +178,6 @@
 				EF6319DB1C7474D10032F5CC /* libdsm.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EFE0C6C91D95C4F200EFF570 /* libtasn1 */ = {
-			isa = PBXGroup;
-			children = (
-				EFE0C6CD1D95C66800EFF570 /* include */,
-				EFE0C6CA1D95C4F200EFF570 /* libtasn1.a */,
-			);
-			name = libtasn1;
-			path = ../libtasn1;
-			sourceTree = "<group>";
-		};
-		EFE0C6CD1D95C66800EFF570 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				EFE0C6CE1D95C66800EFF570 /* libtasn1.h */,
-			);
-			path = include;
 			sourceTree = "<group>";
 		};
 		EFFC77621D943A6D006FD550 /* compat */ = {
@@ -355,12 +362,28 @@
 			mainGroup = EF6319D21C7474D10032F5CC;
 			productRefGroup = EF6319DC1C7474D10032F5CC /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = AC69AC5E264D15A000DEEF08 /* Products */;
+					ProjectRef = AC69AC5D264D15A000DEEF08 /* tasn1.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EF6319DA1C7474D10032F5CC /* dsm */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		AC69AC62264D15A000DEEF08 /* libtasn1.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtasn1.a;
+			remoteRef = AC69AC61264D15A000DEEF08 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EF6319D71C7474D10032F5CC /* Sources */ = {
