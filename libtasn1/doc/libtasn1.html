@@ -1,0 +1,2349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual is for GNU Libtasn1
+(version 4.9, 4 April 2016),
+which is a library for Abstract Syntax Notation One (ASN.1) and
+Distinguished Encoding Rules (DER) manipulation.
+
+Copyright (C) 2001-2015 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License". -->
+<!-- Created by GNU Texinfo 6.1, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>GNU Libtasn1 4.9</title>
+
+<meta name="description" content="GNU Libtasn1 4.9">
+<meta name="keywords" content="GNU Libtasn1 4.9">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="#Top" rel="start" title="Top">
+<link href="#Concept-Index" rel="index" title="Concept Index">
+<link href="#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="dir.html#Top" rel="up" title="(dir)">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+blockquote.smallindentedblock {margin-right: 0em; font-size: smaller}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+body {
+	margin: 2%;
+	padding: 0 5%;
+	background: #ffffff;
+}
+h1,h2,h3,h4,h5 {
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+    background-color: #c2e0ff;
+    color: #336699;
+}
+h1 {
+    padding: 2em 2em 2em 5%;
+    color: white;
+    background: #336699;
+    text-align: center;
+    letter-spacing: 3px;
+}
+h2 { text-decoration: underline; }
+pre {
+  margin: 0 5%;
+  padding: 0.5em;
+}
+pre.example {
+  border: solid 1px;
+  background: #eeeeff;
+  padding-bottom: 1em;
+}
+pre.verbatim {
+  border: solid 1px gray;
+  background: white;
+  padding-bottom: 1em;
+}
+div.node {
+  margin: 0 -5% 0 -2%;
+  padding: 0.5em 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+dd, li {
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<h1 class="settitle" align="center">GNU Libtasn1 4.9</h1>
+
+
+
+
+
+<a name="SEC_Contents"></a>
+<h2 class="contents-heading">Table of Contents</h2>
+
+<div class="contents">
+
+<ul class="no-bullet">
+  <li><a name="toc-Introduction-1" href="#Introduction">1 Introduction</a></li>
+  <li><a name="toc-ASN_002e1-structure-handling-1" href="#ASN_002e1-structure-handling">2 ASN.1 structure handling</a>
+  <ul class="no-bullet">
+    <li><a name="toc-ASN_002e1-syntax-1" href="#ASN_002e1-syntax">2.1 ASN.1 syntax</a></li>
+    <li><a name="toc-Naming-1" href="#Naming">2.2 Naming</a></li>
+    <li><a name="toc-Simple-parsing-1" href="#Simple-parsing">2.3 Simple parsing</a></li>
+    <li><a name="toc-Library-Notes-1" href="#Library-Notes">2.4 Library Notes</a></li>
+    <li><a name="toc-Future-developments-1" href="#Future-developments">2.5 Future developments</a></li>
+  </ul></li>
+  <li><a name="toc-Utilities-1" href="#Utilities">3 Utilities</a>
+  <ul class="no-bullet">
+    <li><a name="toc-Invoking-asn1Parser-1" href="#Invoking-asn1Parser">3.1 Invoking asn1Parser</a></li>
+    <li><a name="toc-Invoking-asn1Coding-1" href="#Invoking-asn1Coding">3.2 Invoking asn1Coding</a></li>
+    <li><a name="toc-Invoking-asn1Decoding-1" href="#Invoking-asn1Decoding">3.3 Invoking asn1Decoding</a></li>
+  </ul></li>
+  <li><a name="toc-Function-reference-1" href="#Function-reference">4 Function reference</a>
+  <ul class="no-bullet">
+    <li><a name="toc-ASN_002e1-schema-functions-1" href="#ASN_002e1-schema-functions">4.1 ASN.1 schema functions</a></li>
+    <li><a name="toc-ASN_002e1-field-functions-1" href="#ASN_002e1-field-functions">4.2 ASN.1 field functions</a></li>
+    <li><a name="toc-DER-functions-1" href="#DER-functions">4.3 DER functions</a></li>
+    <li><a name="toc-Error-handling-functions-1" href="#Error-handling-functions">4.4 Error handling functions</a></li>
+    <li><a name="toc-Auxilliary-functions-1" href="#Auxilliary-functions">4.5 Auxilliary functions</a></li>
+  </ul></li>
+  <li><a name="toc-Copying-Information-1" href="#Copying-Information">Appendix A Copying Information</a>
+  <ul class="no-bullet">
+    <li><a name="toc-GNU-Free-Documentation-License-1" href="#GNU-Free-Documentation-License">A.1 GNU Free Documentation License</a></li>
+  </ul></li>
+  <li><a name="toc-Concept-Index-1" href="#Concept-Index">Concept Index</a></li>
+  <li><a name="toc-Function-and-Data-Index-1" href="#Function-and-Data-Index">Function and Data Index</a></li>
+</ul>
+</div>
+
+
+<a name="Top"></a>
+<div class="header">
+<p>
+Next: <a href="#Introduction" accesskey="n" rel="next">Introduction</a>, Up: <a href="dir.html#Top" accesskey="u" rel="up">(dir)</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Libtasn1"></a>
+<h1 class="top">Libtasn1</h1>
+
+<p>This manual is for GNU Libtasn1
+(version 4.9, 4 April 2016),
+which is a library for Abstract Syntax Notation One (ASN.1) and
+Distinguished Encoding Rules (DER) manipulation.
+</p>
+<p>Copyright &copy; 2001-2015 Free Software Foundation, Inc.
+</p>
+<blockquote>
+<p>Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled &ldquo;GNU Free
+Documentation License&rdquo;.
+</p></blockquote>
+
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#Introduction" accesskey="1">Introduction</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#ASN_002e1-structure-handling" accesskey="2">ASN.1 structure handling</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Utilities" accesskey="3">Utilities</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Function-reference" accesskey="4">Function reference</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Copying-Information" accesskey="5">Copying Information</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+
+Indices
+
+</pre></th></tr><tr><td align="left" valign="top">&bull; <a href="#Concept-Index" accesskey="6">Concept Index</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Index of concepts and programs.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Function-and-Data-Index" accesskey="7">Function and Data Index</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Index of functions, variables and data types.
+</td></tr>
+</table>
+
+<hr>
+<a name="Introduction"></a>
+<div class="header">
+<p>
+Next: <a href="#ASN_002e1-structure-handling" accesskey="n" rel="next">ASN.1 structure handling</a>, Previous: <a href="#Top" accesskey="p" rel="prev">Top</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Introduction-1"></a>
+<h2 class="chapter">1 Introduction</h2>
+
+<p>This document describes the Libtasn1 library that provides
+Abstract Syntax Notation One (ASN.1, as specified by the X.680 ITU-T
+recommendation) parsing and structures management,
+and Distinguished Encoding Rules (DER, as per X.690) encoding and
+decoding functions.
+</p>
+<p>The main features of this library are:
+</p>
+<ul>
+<li> On-line ASN.1 structure management that doesn&rsquo;t require any
+C code file generation.
+
+</li><li> Off-line ASN.1 structure management with C code file generation
+containing an array.
+
+</li><li> Distinguished Encoding Rules (DER) encoding support.
+
+</li><li> No limits for INTEGER and ENUMERATED values.
+
+</li><li> It&rsquo;s Free Software.
+Anybody can use, modify, and redistribute the library under the terms
+of the GNU Lesser General Public License version 2.1 or later.  The
+command line tools, self-tests and build infrastructure are licensed
+under the GNU General Public License version 3.0 or later.
+
+</li><li> Thread-safety.
+<a name="index-threads"></a>
+No global variables are used and multiple library handles and session
+handles may be used in parallel.
+
+</li><li> Portability.
+<a name="index-Porting"></a>
+The code should work on all Unix like operating systems, and Windows.
+The library itself should be portable to any C89 system, not even
+POSIX is required.
+</li></ul>
+
+<hr>
+<a name="ASN_002e1-structure-handling"></a>
+<div class="header">
+<p>
+Next: <a href="#Utilities" accesskey="n" rel="next">Utilities</a>, Previous: <a href="#Introduction" accesskey="p" rel="prev">Introduction</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="ASN_002e1-structure-handling-1"></a>
+<h2 class="chapter">2 ASN.1 structure handling</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#ASN_002e1-syntax" accesskey="1">ASN.1 syntax</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Naming" accesskey="2">Naming</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Simple-parsing" accesskey="3">Simple parsing</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Library-Notes" accesskey="4">Library Notes</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Future-developments" accesskey="5">Future developments</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<a name="ASN_002e1-syntax"></a>
+<div class="header">
+<p>
+Next: <a href="#Naming" accesskey="n" rel="next">Naming</a>, Up: <a href="#ASN_002e1-structure-handling" accesskey="u" rel="up">ASN.1 structure handling</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="ASN_002e1-syntax-1"></a>
+<h3 class="section">2.1 ASN.1 syntax</h3>
+
+<a name="index-ASN_002e1-schema"></a>
+
+<p>The parser is case sensitive.  The comments begin with <code>--</code> and
+end either with another <code>--</code>, or at the end of the respective
+line, whichever comes first.  The C-style <code>/*</code>, <code>*/</code>
+comments are not supported.
+</p>
+<p>For an example of the syntax, check the <samp>pkix.asn</samp> file
+distributed with the library.
+</p>
+<p>ASN.1 definitions must follow the syntax below:
+</p>
+<pre class="verbatim">      definitions_name {&lt;object definition&gt;}
+
+      DEFINITIONS &lt;EXPLICIT or IMPLICIT&gt; TAGS ::=
+
+      BEGIN
+
+      &lt;type and constants definitions&gt;
+
+      END
+</pre>
+<p>The <code>::=</code> token must be separate from other elements, so the
+following declaration is invalid:
+</p>
+<div class="example">
+<pre class="example">   -- INCORRECT
+   Version ::=INTEGER
+</pre></div>
+
+<p>The correct form is:
+</p>
+<div class="example">
+<pre class="example">   Version ::= INTEGER
+</pre></div>
+
+<p>Here is the list of types that the parser can manage:
+</p>
+<a name="index-Supported-ASN_002e1-types_002c-list-of"></a>
+
+<ul>
+<li> <code>INTEGER</code>;
+</li><li> <code>ENUMERATED</code>;
+</li><li> <code>BOOLEAN</code>;
+</li><li> <code>OBJECT IDENTIFIER</code>;
+</li><li> <code>NULL</code>;
+</li><li> <code>BIT STRING</code>;
+</li><li> <code>OCTET STRING</code>;
+</li><li> <code>UTCTime</code>;
+</li><li> <code>GeneralizedTime</code>;
+</li><li> <code>GeneralString</code>;
+</li><li> <code>NumericString</code>;
+</li><li> <code>IA5String</code>;
+</li><li> <code>TeletexString</code>;
+</li><li> <code>PrintableString</code>;
+</li><li> <code>UniversalString</code>;
+</li><li> <code>BMPString</code>;
+</li><li> <code>UTF8String</code>;
+</li><li> <code>VisibleString</code>;
+</li><li> <code>SEQUENCE</code>;
+</li><li> <code>SEQUENCE OF</code>;
+</li><li> <code>SET</code>;
+</li><li> <code>SET OF</code>;
+</li><li> <code>CHOICE</code>;
+</li><li> <code>ANY</code>;
+</li><li> <code>ANY DEFINED BY</code>.
+
+</li></ul>
+
+<p>This version doesn&rsquo;t handle the <code>REAL</code> type.  It doesn&rsquo;t support
+the <code>AUTOMATIC TAGS</code> option, and the <code>EXPORT</code> and
+<code>IMPORT</code> sections, either.
+</p>
+<p>The <code>SIZE</code> constraints are allowed, but no check is done on them.
+</p>
+<hr>
+<a name="Naming"></a>
+<div class="header">
+<p>
+Next: <a href="#Simple-parsing" accesskey="n" rel="next">Simple parsing</a>, Previous: <a href="#ASN_002e1-syntax" accesskey="p" rel="prev">ASN.1 syntax</a>, Up: <a href="#ASN_002e1-structure-handling" accesskey="u" rel="up">ASN.1 structure handling</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Naming-1"></a>
+<h3 class="section">2.2 Naming</h3>
+
+<p>Consider this definition:
+</p>
+<pre class="verbatim">      Example { 1 2 3 4 }
+
+      DEFINITIONS EXPLICIT TAGS ::=
+
+      BEGIN
+
+      Group ::= SEQUENCE {
+         id   OBJECT IDENTIFIER,
+         value  Value
+      }
+
+      Value ::= SEQUENCE {
+         value1  INTEGER,
+         value2  BOOLEAN
+      }
+
+      END
+</pre>
+<p>The notation to access the &lsquo;<samp>Group</samp>&rsquo; type of the &lsquo;<samp>Example</samp>&rsquo;
+definition above is &lsquo;<samp>Example.Group</samp>&rsquo; (as a NUL-terminated string.)
+Such strings are used in the functions described below.
+</p>
+<p>Others examples:
+</p>
+<ul>
+<li> field &lsquo;<samp>id</samp>&rsquo; of the &lsquo;<samp>Group</samp>&rsquo; type: &lsquo;<samp>Example.Group.id</samp>&rsquo;;
+
+</li><li> field &lsquo;<samp>value1</samp>&rsquo; of the &lsquo;<samp>value</samp>&rsquo; field of the &lsquo;<samp>Group</samp>&rsquo;
+type: &lsquo;<samp>Example.Group.value.value1</samp>&rsquo;.
+
+</li></ul>
+
+<p>Elements of structured types unnamed by the respective definition
+receive the names <code>?1</code>, <code>?2</code>, and so on.
+</p>
+<p>The <code>?LAST</code> name indicates the last element of a <code>SET OF</code> or
+<code>SEQUENCE OF</code>.
+</p>
+<hr>
+<a name="Simple-parsing"></a>
+<div class="header">
+<p>
+Next: <a href="#Library-Notes" accesskey="n" rel="next">Library Notes</a>, Previous: <a href="#Naming" accesskey="p" rel="prev">Naming</a>, Up: <a href="#ASN_002e1-structure-handling" accesskey="u" rel="up">ASN.1 structure handling</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Simple-parsing-1"></a>
+<h3 class="section">2.3 Simple parsing</h3>
+
+<p>For simple types like <code>OCTET STRING</code> the simple parsing functions listed
+below may be used instead.
+</p>
+<ul>
+<li> <a href="#asn1_005fdecode_005fsimple_005fder">asn1_decode_simple_der</a>
+</li><li> <a href="#asn1_005fencode_005fsimple_005fder">asn1_encode_simple_der</a>
+</li></ul>
+
+<hr>
+<a name="Library-Notes"></a>
+<div class="header">
+<p>
+Next: <a href="#Future-developments" accesskey="n" rel="next">Future developments</a>, Previous: <a href="#Simple-parsing" accesskey="p" rel="prev">Simple parsing</a>, Up: <a href="#ASN_002e1-structure-handling" accesskey="u" rel="up">ASN.1 structure handling</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Library-Notes-1"></a>
+<h3 class="section">2.4 Library Notes</h3>
+
+<a name="index-Header-file-libtasn1_002eh"></a>
+
+<p>The header file of this library is <samp>libtasn1.h</samp>.
+</p>
+<a name="index-Main-type-asn1_005fnode"></a>
+
+<p>The main type used in it is <code>asn1_node</code>, and it&rsquo;s used to store
+the ASN.1 definitions and structures (instances).
+</p>
+<p>The <code>NULL</code> constant can be used for the variable
+initialization.  For example:
+</p>
+<div class="example">
+<pre class="example"> asn1_node definitions = NULL;
+</pre></div>
+
+<p>Some functions require an <code>errorDescription</code> argument of type
+<code>char *</code>, pointing to a pre-allocated buffer of at least
+<code>ASN1_MAX_ERROR_DESCRIPTION_SIZE</code> bytes size (e.g., as in
+&lsquo;<samp>char description[ASN1_MAX_ERROR_DESCRIPTION_SIZE];</samp>&rsquo;).
+</p>
+<p><code>ASN1_MAX_NAME_SIZE</code> is the maximum number of characters allowed
+for an ASN.1 identifier.
+</p>
+<hr>
+<a name="Future-developments"></a>
+<div class="header">
+<p>
+Previous: <a href="#Library-Notes" accesskey="p" rel="prev">Library Notes</a>, Up: <a href="#ASN_002e1-structure-handling" accesskey="u" rel="up">ASN.1 structure handling</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Future-developments-1"></a>
+<h3 class="section">2.5 Future developments</h3>
+<a name="index-Future-developments"></a>
+
+<ul>
+<li> Add functions for a C code file generation containing equivalent
+data structures (not a single array like now).
+
+</li><li> The <code>REAL</code> type.
+
+</li></ul>
+
+<hr>
+<a name="Utilities"></a>
+<div class="header">
+<p>
+Next: <a href="#Function-reference" accesskey="n" rel="next">Function reference</a>, Previous: <a href="#ASN_002e1-structure-handling" accesskey="p" rel="prev">ASN.1 structure handling</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Utilities-1"></a>
+<h2 class="chapter">3 Utilities</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#Invoking-asn1Parser" accesskey="1">Invoking asn1Parser</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Invoking-asn1Coding" accesskey="2">Invoking asn1Coding</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Invoking-asn1Decoding" accesskey="3">Invoking asn1Decoding</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<a name="Invoking-asn1Parser"></a>
+<div class="header">
+<p>
+Next: <a href="#Invoking-asn1Coding" accesskey="n" rel="next">Invoking asn1Coding</a>, Up: <a href="#Utilities" accesskey="u" rel="up">Utilities</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Invoking-asn1Parser-1"></a>
+<h3 class="section">3.1 Invoking asn1Parser</h3>
+<a name="index-asn1Parser-program"></a>
+
+<p><code>asn1Parser</code> reads a single file with ASN.1 definitions and
+generates a
+file with an array to use with libtasn1 functions.
+</p>
+<pre class="verbatim">Usage:  asn1Parser [options] file
+
+Options:
+ -h : shows the help message.
+ -v : shows version information and exit.
+ -c : checks the syntax only.
+ -o file : output file.
+ -n name : array name.
+</pre>
+<hr>
+<a name="Invoking-asn1Coding"></a>
+<div class="header">
+<p>
+Next: <a href="#Invoking-asn1Decoding" accesskey="n" rel="next">Invoking asn1Decoding</a>, Previous: <a href="#Invoking-asn1Parser" accesskey="p" rel="prev">Invoking asn1Parser</a>, Up: <a href="#Utilities" accesskey="u" rel="up">Utilities</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Invoking-asn1Coding-1"></a>
+<h3 class="section">3.2 Invoking asn1Coding</h3>
+<a name="index-asn1Coding-program"></a>
+
+<p><code>asn1Coding</code> generates a DER encoding from a file with ASN.1
+definitions and another one with assignments.
+</p>
+<p>The file with assignments must have this syntax:
+</p>
+<pre class="verbatim">InstanceName  Asn1Definition
+
+nameString  value
+
+nameString  value
+...
+</pre>
+<p>To specify the field of a <code>CHOICE</code> to be used, specify its name
+as a value to the <code>CHOICE</code> element itself.  Use <code>''</code> to
+denote the root element itself.
+(as in the example below.)
+</p>
+<p>The output file is a binary file with the DER encoding.
+</p>
+<pre class="verbatim">Usage:  asn1Coding [options] file1 file2
+ file1 : file with ASN1 definitions.
+ file2 : file with assignments.
+Options:
+ -h : shows the help message.
+ -v : shows version information and exit.
+ -c : checks the syntax only.
+ -o file : output file.
+</pre>
+<p>For example, consider an ASN.1 definitions file as follows:
+</p>
+<pre class="verbatim">MYPKIX1 { }
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+OtherStruct := SEQUENCE {
+     x       INTEGER,
+     y       CHOICE {
+         y1 INTEGER,
+         y2 OCTET STRING },
+}
+
+Dss-Sig-Value ::= SEQUENCE {
+     r       INTEGER,
+     s       INTEGER,
+     other   OtherStruct
+     z       INTEGER OPTIONAL,
+}
+
+END
+</pre>
+<p>And a assignments file as follows:
+</p>
+<pre class="verbatim">dp MYPKIX1.Dss-Sig-Value
+
+r 42
+s 47
+other.x 66
+other.y y1
+other.y.y1 15
+z (NULL)
+</pre>
+<p>Running the command below will generate a <samp>assign.out</samp> file,
+containing the DER encoding of <code>PKIX1.Dss-Sig-Value</code>.
+</p>
+<pre class="verbatim">$ asn1Coding pkix.asn assign.asn1
+</pre>
+<p>If the root element is of the <code>CHOICE</code> type, the assignment file
+may be like (using the types defined in <samp>pkix.asn</samp>):
+</p><pre class="verbatim">elt PKIX1Implicit88.GeneralName
+
+''      dNSName
+dNSName example.org
+</pre>
+<hr>
+<a name="Invoking-asn1Decoding"></a>
+<div class="header">
+<p>
+Previous: <a href="#Invoking-asn1Coding" accesskey="p" rel="prev">Invoking asn1Coding</a>, Up: <a href="#Utilities" accesskey="u" rel="up">Utilities</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Invoking-asn1Decoding-1"></a>
+<h3 class="section">3.3 Invoking asn1Decoding</h3>
+<a name="index-asn1Decoding-program"></a>
+
+<p><code>asn1Decoding</code> generates an ASN.1 structure from a file with
+ASN.1
+definitions and a binary file with a DER encoding.
+</p>
+<pre class="verbatim">Usage:  asn1Decoding [options] file1 file2 type
+ file1 : file with ASN1 definitions.
+ file2 : binary file with a DER encoding.
+ type : ASN1 definition name.
+Options:
+ -h : shows the help message.
+ -v : shows version information and exit.
+ -o file : output file.
+</pre>
+<p>For example, after generating the <samp>assign.out</samp> file from the
+example section of the <code>asn1Coding</code> command above, the
+following
+invocation will decode the DER data.
+</p>
+<pre class="verbatim">$ asn1Decoding pkix.asn assign.out PKIX1.Dss-Sig-Value
+</pre>
+<hr>
+<a name="Function-reference"></a>
+<div class="header">
+<p>
+Next: <a href="#Copying-Information" accesskey="n" rel="next">Copying Information</a>, Previous: <a href="#Utilities" accesskey="p" rel="prev">Utilities</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Function-reference-1"></a>
+<h2 class="chapter">4 Function reference</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#ASN_002e1-schema-functions" accesskey="1">ASN.1 schema functions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#ASN_002e1-field-functions" accesskey="2">ASN.1 field functions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#DER-functions" accesskey="3">DER functions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Error-handling-functions" accesskey="4">Error handling functions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Auxilliary-functions" accesskey="5">Auxilliary functions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<a name="ASN_002e1-schema-functions"></a>
+<div class="header">
+<p>
+Next: <a href="#ASN_002e1-field-functions" accesskey="n" rel="next">ASN.1 field functions</a>, Up: <a href="#Function-reference" accesskey="u" rel="up">Function reference</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="ASN_002e1-schema-functions-1"></a>
+<h3 class="section">4.1 ASN.1 schema functions</h3>
+
+<a name="asn1_005fparser2tree-1"></a>
+<h4 class="subheading">asn1_parser2tree</h4>
+<a name="asn1_005fparser2tree"></a><dl>
+<dt><a name="index-asn1_005fparser2tree"></a>Function: <em>int</em> <strong>asn1_parser2tree</strong> <em>(const char * <var>file</var>, asn1_node * <var>definitions</var>, char * <var>error_desc</var>)</em></dt>
+<dd><p><var>file</var>: specify the path and the name of file that contains
+ASN.1 declarations.
+</p>
+<p><var>definitions</var>: return the pointer to the structure created from
+&quot;file&quot; ASN.1 declarations.
+</p>
+<p><var>error_desc</var>: return the error description or an empty
+string if success.
+</p>
+<p>Function used to start the parse algorithm.  Creates the structures
+needed to manage the definitions included in  <code>file</code> file.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if the file has a correct syntax and every
+identifier is known, <code>ASN1_ELEMENT_NOT_EMPTY</code>  if  <code>definitions</code> not
+<code>NULL</code> , <code>ASN1_FILE_NOT_FOUND</code>  if an error occured while
+opening  <code>file</code> , <code>ASN1_SYNTAX_ERROR</code>  if the syntax is not
+correct, <code>ASN1_IDENTIFIER_NOT_FOUND</code>  if in the file there is an
+identifier that is not defined, <code>ASN1_NAME_TOO_LONG</code>  if in the
+file there is an identifier whith more than <code>ASN1_MAX_NAME_SIZE</code> 
+characters.
+</p></dd></dl>
+
+<a name="asn1_005fparser2array-1"></a>
+<h4 class="subheading">asn1_parser2array</h4>
+<a name="asn1_005fparser2array"></a><dl>
+<dt><a name="index-asn1_005fparser2array"></a>Function: <em>int</em> <strong>asn1_parser2array</strong> <em>(const char * <var>inputFileName</var>, const char * <var>outputFileName</var>, const char * <var>vectorName</var>, char * <var>error_desc</var>)</em></dt>
+<dd><p><var>inputFileName</var>: specify the path and the name of file that
+contains ASN.1 declarations.
+</p>
+<p><var>outputFileName</var>: specify the path and the name of file that will
+contain the C vector definition.
+</p>
+<p><var>vectorName</var>: specify the name of the C vector.
+</p>
+<p><var>error_desc</var>: return the error description or an empty
+string if success.
+</p>
+<p>Function that generates a C structure from an ASN1 file.  Creates a
+file containing a C vector to use to manage the definitions
+included in  <code>inputFileName</code> file. If  <code>inputFileName</code> is
+&quot;/aa/bb/xx.yy&quot; and  <code>outputFileName</code> is <code>NULL</code> , the file created is
+&quot;/aa/bb/xx_asn1_tab.c&quot;.  If  <code>vectorName</code> is <code>NULL</code>  the vector name
+will be &quot;xx_asn1_tab&quot;.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if the file has a correct syntax and every
+identifier is known, <code>ASN1_FILE_NOT_FOUND</code>  if an error occured
+while opening  <code>inputFileName</code> , <code>ASN1_SYNTAX_ERROR</code>  if the syntax is
+not correct, <code>ASN1_IDENTIFIER_NOT_FOUND</code>  if in the file there is
+an identifier that is not defined, <code>ASN1_NAME_TOO_LONG</code>  if in the
+file there is an identifier whith more than <code>ASN1_MAX_NAME_SIZE</code> 
+characters.
+</p></dd></dl>
+
+
+<hr>
+<a name="ASN_002e1-field-functions"></a>
+<div class="header">
+<p>
+Next: <a href="#DER-functions" accesskey="n" rel="next">DER functions</a>, Previous: <a href="#ASN_002e1-schema-functions" accesskey="p" rel="prev">ASN.1 schema functions</a>, Up: <a href="#Function-reference" accesskey="u" rel="up">Function reference</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="ASN_002e1-field-functions-1"></a>
+<h3 class="section">4.2 ASN.1 field functions</h3>
+
+<a name="asn1_005farray2tree-1"></a>
+<h4 class="subheading">asn1_array2tree</h4>
+<a name="asn1_005farray2tree"></a><dl>
+<dt><a name="index-asn1_005farray2tree"></a>Function: <em>int</em> <strong>asn1_array2tree</strong> <em>(const asn1_static_node * <var>array</var>, asn1_node * <var>definitions</var>, char * <var>errorDescription</var>)</em></dt>
+<dd><p><var>array</var>: specify the array that contains ASN.1 declarations
+</p>
+<p><var>definitions</var>: return the pointer to the structure created by
+*ARRAY ASN.1 declarations
+</p>
+<p><var>errorDescription</var>: return the error description.
+</p>
+<p>Creates the structures needed to manage the ASN.1 definitions.
+ <code>array</code> is a vector created by <code>asn1_parser2array()</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if structure was created correctly,
+<code>ASN1_ELEMENT_NOT_EMPTY</code>  if * <code>definitions</code> not NULL,
+<code>ASN1_IDENTIFIER_NOT_FOUND</code>  if in the file there is an identifier
+that is not defined (see  <code>errorDescription</code> for more information),
+<code>ASN1_ARRAY_ERROR</code>  if the array pointed by  <code>array</code> is wrong.
+</p></dd></dl>
+
+<a name="asn1_005fdelete_005fstructure-1"></a>
+<h4 class="subheading">asn1_delete_structure</h4>
+<a name="asn1_005fdelete_005fstructure"></a><dl>
+<dt><a name="index-asn1_005fdelete_005fstructure"></a>Function: <em>int</em> <strong>asn1_delete_structure</strong> <em>(asn1_node * <var>structure</var>)</em></dt>
+<dd><p><var>structure</var>: pointer to the structure that you want to delete.
+</p>
+<p>Deletes the structure * <code>structure</code> .  At the end, * <code>structure</code> is set
+to NULL.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+* <code>structure</code> was NULL.
+</p></dd></dl>
+
+<a name="asn1_005fdelete_005fstructure2-1"></a>
+<h4 class="subheading">asn1_delete_structure2</h4>
+<a name="asn1_005fdelete_005fstructure2"></a><dl>
+<dt><a name="index-asn1_005fdelete_005fstructure2"></a>Function: <em>int</em> <strong>asn1_delete_structure2</strong> <em>(asn1_node * <var>structure</var>, unsigned int <var>flags</var>)</em></dt>
+<dd><p><var>structure</var>: pointer to the structure that you want to delete.
+</p>
+<p><var>flags</var>: additional flags (see <code>ASN1_DELETE_FLAG</code> )
+</p>
+<p>Deletes the structure * <code>structure</code> .  At the end, * <code>structure</code> is set
+to NULL.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+* <code>structure</code> was NULL.
+</p></dd></dl>
+
+<a name="asn1_005fdelete_005felement-1"></a>
+<h4 class="subheading">asn1_delete_element</h4>
+<a name="asn1_005fdelete_005felement"></a><dl>
+<dt><a name="index-asn1_005fdelete_005felement"></a>Function: <em>int</em> <strong>asn1_delete_element</strong> <em>(asn1_node <var>structure</var>, const char * <var>element_name</var>)</em></dt>
+<dd><p><var>structure</var>: pointer to the structure that contains the element you
+want to delete.
+</p>
+<p><var>element_name</var>: element&rsquo;s name you want to delete.
+</p>
+<p>Deletes the element named * <code>element_name</code> inside * <code>structure</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+the  <code>element_name</code> was not found.
+</p></dd></dl>
+
+<a name="asn1_005fcreate_005felement-1"></a>
+<h4 class="subheading">asn1_create_element</h4>
+<a name="asn1_005fcreate_005felement"></a><dl>
+<dt><a name="index-asn1_005fcreate_005felement"></a>Function: <em>int</em> <strong>asn1_create_element</strong> <em>(asn1_node <var>definitions</var>, const char * <var>source_name</var>, asn1_node * <var>element</var>)</em></dt>
+<dd><p><var>definitions</var>: pointer to the structure returned by &quot;parser_asn1&quot; function
+</p>
+<p><var>source_name</var>: the name of the type of the new structure (must be
+inside p_structure).
+</p>
+<p><var>element</var>: pointer to the structure created.
+</p>
+<p>Creates a structure of type  <code>source_name</code> .  Example using
+&quot;pkix.asn&quot;:
+</p>
+<p>rc = asn1_create_element(cert_def, &quot;PKIX1.Certificate&quot;, certptr);
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if creation OK, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+ <code>source_name</code> is not known.
+</p></dd></dl>
+
+<a name="asn1_005fprint_005fstructure-1"></a>
+<h4 class="subheading">asn1_print_structure</h4>
+<a name="asn1_005fprint_005fstructure"></a><dl>
+<dt><a name="index-asn1_005fprint_005fstructure"></a>Function: <em>void</em> <strong>asn1_print_structure</strong> <em>(FILE * <var>out</var>, asn1_node <var>structure</var>, const char * <var>name</var>, int <var>mode</var>)</em></dt>
+<dd><p><var>out</var>: pointer to the output file (e.g. stdout).
+</p>
+<p><var>structure</var>: pointer to the structure that you want to visit.
+</p>
+<p><var>name</var>: an element of the structure
+</p>
+<p><var>mode</var>: specify how much of the structure to print, can be
+<code>ASN1_PRINT_NAME</code> , <code>ASN1_PRINT_NAME_TYPE</code> ,
+<code>ASN1_PRINT_NAME_TYPE_VALUE</code> , or <code>ASN1_PRINT_ALL</code> .
+</p>
+<p>Prints on the  <code>out</code> file descriptor the structure&rsquo;s tree starting
+from the  <code>name</code> element inside the structure  <code>structure</code> .
+</p></dd></dl>
+
+<a name="asn1_005fnumber_005fof_005felements-1"></a>
+<h4 class="subheading">asn1_number_of_elements</h4>
+<a name="asn1_005fnumber_005fof_005felements"></a><dl>
+<dt><a name="index-asn1_005fnumber_005fof_005felements"></a>Function: <em>int</em> <strong>asn1_number_of_elements</strong> <em>(asn1_node <var>element</var>, const char * <var>name</var>, int * <var>num</var>)</em></dt>
+<dd><p><var>element</var>: pointer to the root of an ASN1 structure.
+</p>
+<p><var>name</var>: the name of a sub-structure of ROOT.
+</p>
+<p><var>num</var>: pointer to an integer where the result will be stored
+</p>
+<p>Counts the number of elements of a sub-structure called NAME with
+names equal to &quot;?1&quot;,&quot;?2&quot;, ...
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+ <code>name</code> is not known, <code>ASN1_GENERIC_ERROR</code>  if pointer  <code>num</code> is <code>NULL</code> .
+</p></dd></dl>
+
+<a name="asn1_005ffind_005fstructure_005ffrom_005foid-1"></a>
+<h4 class="subheading">asn1_find_structure_from_oid</h4>
+<a name="asn1_005ffind_005fstructure_005ffrom_005foid"></a><dl>
+<dt><a name="index-asn1_005ffind_005fstructure_005ffrom_005foid"></a>Function: <em>const char *</em> <strong>asn1_find_structure_from_oid</strong> <em>(asn1_node <var>definitions</var>, const char * <var>oidValue</var>)</em></dt>
+<dd><p><var>definitions</var>: ASN1 definitions
+</p>
+<p><var>oidValue</var>: value of the OID to search (e.g. &quot;1.2.3.4&quot;).
+</p>
+<p>Search the structure that is defined just after an OID definition.
+</p>
+<p><strong>Returns:</strong> <code>NULL</code>  when  <code>oidValue</code> not found, otherwise the pointer to a
+constant string that contains the element name defined just after
+the OID.
+</p></dd></dl>
+
+<a name="asn1_005fcopy_005fnode-1"></a>
+<h4 class="subheading">asn1_copy_node</h4>
+<a name="asn1_005fcopy_005fnode"></a><dl>
+<dt><a name="index-asn1_005fcopy_005fnode"></a>Function: <em>int</em> <strong>asn1_copy_node</strong> <em>(asn1_node <var>dst</var>, const char * <var>dst_name</var>, asn1_node <var>src</var>, const char * <var>src_name</var>)</em></dt>
+<dd><p><var>dst</var>: Destination asn1 node.
+</p>
+<p><var>dst_name</var>: Field name in destination node.
+</p>
+<p><var>src</var>: Source asn1 node.
+</p>
+<p><var>src_name</var>: Field name in source node.
+</p>
+<p>Create a deep copy of a asn1_node variable. That
+function requires  <code>dst</code> to be expanded using <code>asn1_create_element()</code> .
+</p>
+<p><strong>Returns:</strong> Return <code>ASN1_SUCCESS</code>  on success.
+</p></dd></dl>
+
+<a name="asn1_005fdup_005fnode-1"></a>
+<h4 class="subheading">asn1_dup_node</h4>
+<a name="asn1_005fdup_005fnode"></a><dl>
+<dt><a name="index-asn1_005fdup_005fnode"></a>Function: <em>asn1_node</em> <strong>asn1_dup_node</strong> <em>(asn1_node <var>src</var>, const char * <var>src_name</var>)</em></dt>
+<dd><p><var>src</var>: Source asn1 node.
+</p>
+<p><var>src_name</var>: Field name in source node.
+</p>
+<p>Create a deep copy of a asn1_node variable. This function
+will return an exact copy of the provided structure.
+</p>
+<p><strong>Returns:</strong> Return <code>NULL</code>  on failure.
+</p></dd></dl>
+
+<a name="asn1_005fwrite_005fvalue-1"></a>
+<h4 class="subheading">asn1_write_value</h4>
+<a name="asn1_005fwrite_005fvalue"></a><dl>
+<dt><a name="index-asn1_005fwrite_005fvalue"></a>Function: <em>int</em> <strong>asn1_write_value</strong> <em>(asn1_node <var>node_root</var>, const char * <var>name</var>, const void * <var>ivalue</var>, int <var>len</var>)</em></dt>
+<dd><p><var>node_root</var>: pointer to a structure
+</p>
+<p><var>name</var>: the name of the element inside the structure that you want to set.
+</p>
+<p><var>ivalue</var>: vector used to specify the value to set. If len is &gt;0,
+VALUE must be a two&rsquo;s complement form integer.  if len=0 *VALUE
+must be a null terminated string with an integer value.
+</p>
+<p><var>len</var>: number of bytes of *value to use to set the value:
+value[0]..value[len-1] or 0 if value is a null terminated string
+</p>
+<p>Set the value of one element inside a structure.
+</p>
+<p>If an element is OPTIONAL and you want to delete it, you must use
+the value=NULL and len=0.  Using &quot;pkix.asn&quot;:
+</p>
+<p>result=asn1_write_value(cert, &quot;tbsCertificate.issuerUniqueID&quot;,
+NULL, 0);
+</p>
+<p>Description for each type:
+</p>
+<p><strong>INTEGER:</strong> VALUE must contain a two&rsquo;s complement form integer.
+</p>
+<p>value[0]=0xFF ,               len=1 -&gt; integer=-1.
+value[0]=0xFF value[1]=0xFF , len=2 -&gt; integer=-1.
+value[0]=0x01 ,               len=1 -&gt; integer= 1.
+value[0]=0x00 value[1]=0x01 , len=2 -&gt; integer= 1.
+value=&quot;123&quot;                 , len=0 -&gt; integer= 123.
+</p>
+<p><strong>ENUMERATED:</strong> As INTEGER (but only with not negative numbers).
+</p>
+<p><strong>BOOLEAN:</strong> VALUE must be the null terminated string &quot;TRUE&quot; or
+&quot;FALSE&quot; and LEN != 0.
+</p>
+<p>value=&quot;TRUE&quot; , len=1 -&gt; boolean=TRUE.
+value=&quot;FALSE&quot; , len=1 -&gt; boolean=FALSE.
+</p>
+<p>OBJECT IDENTIFIER: VALUE must be a null terminated string with
+each number separated by a dot (e.g. &quot;1.2.3.543.1&quot;).  LEN != 0.
+</p>
+<p>value=&quot;1 2 840 10040 4 3&quot; , len=1 -&gt; OID=dsa-with-sha.
+</p>
+<p><strong>UTCTime:</strong> VALUE must be a null terminated string in one of these
+formats: &quot;YYMMDDhhmmssZ&quot;, &quot;YYMMDDhhmmssZ&quot;,
+&quot;YYMMDDhhmmss+hh&rsquo;mm&rsquo;&quot;, &quot;YYMMDDhhmmss-hh&rsquo;mm&rsquo;&quot;,
+&quot;YYMMDDhhmm+hh&rsquo;mm&rsquo;&quot;, or &quot;YYMMDDhhmm-hh&rsquo;mm&rsquo;&quot;.  LEN != 0.
+</p>
+<p>value=&quot;9801011200Z&quot; , len=1 -&gt; time=Jannuary 1st, 1998
+at 12h 00m Greenwich Mean Time
+</p>
+<p><strong>GeneralizedTime:</strong> VALUE must be in one of this format:
+&quot;YYYYMMDDhhmmss.sZ&quot;, &quot;YYYYMMDDhhmmss.sZ&quot;,
+&quot;YYYYMMDDhhmmss.s+hh&rsquo;mm&rsquo;&quot;, &quot;YYYYMMDDhhmmss.s-hh&rsquo;mm&rsquo;&quot;,
+&quot;YYYYMMDDhhmm+hh&rsquo;mm&rsquo;&quot;, or &quot;YYYYMMDDhhmm-hh&rsquo;mm&rsquo;&quot; where ss.s
+indicates the seconds with any precision like &quot;10.1&quot; or &quot;01.02&quot;.
+LEN != 0
+</p>
+<p>value=&quot;2001010112001.12-0700&quot; , len=1 -&gt; time=Jannuary
+1st, 2001 at 12h 00m 01.12s Pacific Daylight Time
+</p>
+<p>OCTET STRING: VALUE contains the octet string and LEN is the
+number of octets.
+</p>
+<p>value=&quot;$\backslash$x01$\backslash$x02$\backslash$x03&quot; ,
+len=3 -&gt; three bytes octet string
+</p>
+<p><strong>GeneralString:</strong> VALUE contains the generalstring and LEN is the
+number of octets.
+</p>
+<p>value=&quot;$\backslash$x01$\backslash$x02$\backslash$x03&quot; ,
+len=3 -&gt; three bytes generalstring
+</p>
+<p>BIT STRING: VALUE contains the bit string organized by bytes and
+LEN is the number of bits.
+</p>
+<p>value=&quot;$\backslash$xCF&quot; , len=6 -&gt; bit string=&quot;110011&quot; (six
+bits)
+</p>
+<p><strong>CHOICE:</strong> if NAME indicates a choice type, VALUE must specify one of
+the alternatives with a null terminated string. LEN != 0. Using
+&quot;pkix.asn&quot;\:
+</p>
+<p>result=asn1_write_value(cert,
+&quot;certificate1.tbsCertificate.subject&quot;, &quot;rdnSequence&quot;,
+1);
+</p>
+<p><strong>ANY:</strong> VALUE indicates the der encoding of a structure.  LEN != 0.
+</p>
+<p>SEQUENCE OF: VALUE must be the null terminated string &quot;NEW&quot; and
+LEN != 0. With this instruction another element is appended in
+the sequence. The name of this element will be &quot;?1&quot; if it&rsquo;s the
+first one, &quot;?2&quot; for the second and so on.
+</p>
+<p>Using &quot;pkix.asn&quot;\:
+</p>
+<p>result=asn1_write_value(cert,
+&quot;certificate1.tbsCertificate.subject.rdnSequence&quot;, &quot;NEW&quot;, 1);
+</p>
+<p>SET OF: the same as SEQUENCE OF.  Using &quot;pkix.asn&quot;:
+</p>
+<p>result=asn1_write_value(cert,
+&quot;tbsCertificate.subject.rdnSequence.?LAST&quot;, &quot;NEW&quot;, 1);
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if the value was set,
+<code>ASN1_ELEMENT_NOT_FOUND</code>  if  <code>name</code> is not a valid element, and
+<code>ASN1_VALUE_NOT_VALID</code>  if  <code>ivalue</code> has a wrong format.
+</p></dd></dl>
+
+<a name="asn1_005fread_005fvalue-1"></a>
+<h4 class="subheading">asn1_read_value</h4>
+<a name="asn1_005fread_005fvalue"></a><dl>
+<dt><a name="index-asn1_005fread_005fvalue"></a>Function: <em>int</em> <strong>asn1_read_value</strong> <em>(asn1_node <var>root</var>, const char * <var>name</var>, void * <var>ivalue</var>, int * <var>len</var>)</em></dt>
+<dd><p><var>root</var>: pointer to a structure.
+</p>
+<p><var>name</var>: the name of the element inside a structure that you want to read.
+</p>
+<p><var>ivalue</var>: vector that will contain the element&rsquo;s content, must be a
+pointer to memory cells already allocated (may be <code>NULL</code> ).
+</p>
+<p><var>len</var>: number of bytes of *value: value[0]..value[len-1]. Initialy
+holds the sizeof value.
+</p>
+<p>Returns the value of one element inside a structure. 
+If an element is OPTIONAL and this returns
+<code>ASN1_ELEMENT_NOT_FOUND</code> , it means that this element wasn&rsquo;t present
+in the der encoding that created the structure.  The first element
+of a SEQUENCE_OF or SET_OF is named &quot;?1&quot;. The second one &quot;?2&quot; and
+so on. If the  <code>root</code> provided is a node to specific sequence element,
+then the keyword &quot;?CURRENT&quot; is also acceptable and indicates the
+current sequence element of this node.
+</p>
+<p>Note that there can be valid values with length zero. In these case
+this function will succeed and  <code>len</code> will be zero.
+</p>
+<p><strong>INTEGER:</strong> VALUE will contain a two&rsquo;s complement form integer.
+</p>
+<p>integer=-1  -&gt; value[0]=0xFF , len=1.
+integer=1   -&gt; value[0]=0x01 , len=1.
+</p>
+<p><strong>ENUMERATED:</strong> As INTEGER (but only with not negative numbers).
+</p>
+<p><strong>BOOLEAN:</strong> VALUE will be the null terminated string &quot;TRUE&quot; or
+&quot;FALSE&quot; and LEN=5 or LEN=6.
+</p>
+<p>OBJECT IDENTIFIER: VALUE will be a null terminated string with
+each number separated by a dot (i.e. &quot;1.2.3.543.1&quot;).
+</p>
+<p>LEN = strlen(VALUE)+1
+</p>
+<p><strong>UTCTime:</strong> VALUE will be a null terminated string in one of these
+formats: &quot;YYMMDDhhmmss+hh&rsquo;mm&rsquo;&quot; or &quot;YYMMDDhhmmss-hh&rsquo;mm&rsquo;&quot;.
+LEN=strlen(VALUE)+1.
+</p>
+<p><strong>GeneralizedTime:</strong> VALUE will be a null terminated string in the
+same format used to set the value.
+</p>
+<p>OCTET STRING: VALUE will contain the octet string and LEN will be
+the number of octets.
+</p>
+<p><strong>GeneralString:</strong> VALUE will contain the generalstring and LEN will
+be the number of octets.
+</p>
+<p>BIT STRING: VALUE will contain the bit string organized by bytes
+and LEN will be the number of bits.
+</p>
+<p><strong>CHOICE:</strong> If NAME indicates a choice type, VALUE will specify the
+alternative selected.
+</p>
+<p><strong>ANY:</strong> If NAME indicates an any type, VALUE will indicate the DER
+encoding of the structure actually used.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if value is returned,
+<code>ASN1_ELEMENT_NOT_FOUND</code>  if  <code>name</code> is not a valid element,
+<code>ASN1_VALUE_NOT_FOUND</code>  if there isn&rsquo;t any value for the element
+selected, and <code>ASN1_MEM_ERROR</code>  if The value vector isn&rsquo;t big enough
+to store the result, and in this case  <code>len</code> will contain the number of
+bytes needed.
+</p></dd></dl>
+
+<a name="asn1_005fread_005fvalue_005ftype-1"></a>
+<h4 class="subheading">asn1_read_value_type</h4>
+<a name="asn1_005fread_005fvalue_005ftype"></a><dl>
+<dt><a name="index-asn1_005fread_005fvalue_005ftype"></a>Function: <em>int</em> <strong>asn1_read_value_type</strong> <em>(asn1_node <var>root</var>, const char * <var>name</var>, void * <var>ivalue</var>, int * <var>len</var>, unsigned int * <var>etype</var>)</em></dt>
+<dd><p><var>root</var>: pointer to a structure.
+</p>
+<p><var>name</var>: the name of the element inside a structure that you want to read.
+</p>
+<p><var>ivalue</var>: vector that will contain the element&rsquo;s content, must be a
+pointer to memory cells already allocated (may be <code>NULL</code> ).
+</p>
+<p><var>len</var>: number of bytes of *value: value[0]..value[len-1]. Initialy
+holds the sizeof value.
+</p>
+<p><var>etype</var>: The type of the value read (ASN1_ETYPE)
+</p>
+<p>Returns the type and value of one element inside a structure. 
+If an element is OPTIONAL and this returns
+<code>ASN1_ELEMENT_NOT_FOUND</code> , it means that this element wasn&rsquo;t present
+in the der encoding that created the structure.  The first element
+of a SEQUENCE_OF or SET_OF is named &quot;?1&quot;. The second one &quot;?2&quot; and
+so on. If the  <code>root</code> provided is a node to specific sequence element,
+then the keyword &quot;?CURRENT&quot; is also acceptable and indicates the
+current sequence element of this node.
+</p>
+<p>Note that there can be valid values with length zero. In these case
+this function will succeed and  <code>len</code> will be zero.
+</p>
+<p><strong>INTEGER:</strong> VALUE will contain a two&rsquo;s complement form integer.
+</p>
+<p>integer=-1  -&gt; value[0]=0xFF , len=1.
+integer=1   -&gt; value[0]=0x01 , len=1.
+</p>
+<p><strong>ENUMERATED:</strong> As INTEGER (but only with not negative numbers).
+</p>
+<p><strong>BOOLEAN:</strong> VALUE will be the null terminated string &quot;TRUE&quot; or
+&quot;FALSE&quot; and LEN=5 or LEN=6.
+</p>
+<p>OBJECT IDENTIFIER: VALUE will be a null terminated string with
+each number separated by a dot (i.e. &quot;1.2.3.543.1&quot;).
+</p>
+<p>LEN = strlen(VALUE)+1
+</p>
+<p><strong>UTCTime:</strong> VALUE will be a null terminated string in one of these
+formats: &quot;YYMMDDhhmmss+hh&rsquo;mm&rsquo;&quot; or &quot;YYMMDDhhmmss-hh&rsquo;mm&rsquo;&quot;.
+LEN=strlen(VALUE)+1.
+</p>
+<p><strong>GeneralizedTime:</strong> VALUE will be a null terminated string in the
+same format used to set the value.
+</p>
+<p>OCTET STRING: VALUE will contain the octet string and LEN will be
+the number of octets.
+</p>
+<p><strong>GeneralString:</strong> VALUE will contain the generalstring and LEN will
+be the number of octets.
+</p>
+<p>BIT STRING: VALUE will contain the bit string organized by bytes
+and LEN will be the number of bits.
+</p>
+<p><strong>CHOICE:</strong> If NAME indicates a choice type, VALUE will specify the
+alternative selected.
+</p>
+<p><strong>ANY:</strong> If NAME indicates an any type, VALUE will indicate the DER
+encoding of the structure actually used.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if value is returned,
+<code>ASN1_ELEMENT_NOT_FOUND</code>  if  <code>name</code> is not a valid element,
+<code>ASN1_VALUE_NOT_FOUND</code>  if there isn&rsquo;t any value for the element
+selected, and <code>ASN1_MEM_ERROR</code>  if The value vector isn&rsquo;t big enough
+to store the result, and in this case  <code>len</code> will contain the number of
+bytes needed.
+</p></dd></dl>
+
+<a name="asn1_005fread_005ftag-1"></a>
+<h4 class="subheading">asn1_read_tag</h4>
+<a name="asn1_005fread_005ftag"></a><dl>
+<dt><a name="index-asn1_005fread_005ftag"></a>Function: <em>int</em> <strong>asn1_read_tag</strong> <em>(asn1_node <var>root</var>, const char * <var>name</var>, int * <var>tagValue</var>, int * <var>classValue</var>)</em></dt>
+<dd><p><var>root</var>: pointer to a structure
+</p>
+<p><var>name</var>: the name of the element inside a structure.
+</p>
+<p><var>tagValue</var>: variable that will contain the TAG value.
+</p>
+<p><var>classValue</var>: variable that will specify the TAG type.
+</p>
+<p>Returns the TAG and the CLASS of one element inside a structure.
+CLASS can have one of these constants: <code>ASN1_CLASS_APPLICATION</code> ,
+<code>ASN1_CLASS_UNIVERSAL</code> , <code>ASN1_CLASS_PRIVATE</code>  or
+<code>ASN1_CLASS_CONTEXT_SPECIFIC</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful, <code>ASN1_ELEMENT_NOT_FOUND</code>  if
+ <code>name</code> is not a valid element.
+</p></dd></dl>
+
+<a name="asn1_005fread_005fnode_005fvalue-1"></a>
+<h4 class="subheading">asn1_read_node_value</h4>
+<a name="asn1_005fread_005fnode_005fvalue"></a><dl>
+<dt><a name="index-asn1_005fread_005fnode_005fvalue"></a>Function: <em>int</em> <strong>asn1_read_node_value</strong> <em>(asn1_node <var>node</var>, asn1_data_node_st * <var>data</var>)</em></dt>
+<dd><p><var>node</var>: pointer to a node.
+</p>
+<p><var>data</var>: a point to a asn1_data_node_st
+</p>
+<p>Returns the value a data node inside a asn1_node structure.
+The data returned should be handled as constant values.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if the node exists.
+</p></dd></dl>
+
+
+<hr>
+<a name="DER-functions"></a>
+<div class="header">
+<p>
+Next: <a href="#Error-handling-functions" accesskey="n" rel="next">Error handling functions</a>, Previous: <a href="#ASN_002e1-field-functions" accesskey="p" rel="prev">ASN.1 field functions</a>, Up: <a href="#Function-reference" accesskey="u" rel="up">Function reference</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="DER-functions-1"></a>
+<h3 class="section">4.3 DER functions</h3>
+
+<a name="asn1_005flength_005fder-1"></a>
+<h4 class="subheading">asn1_length_der</h4>
+<a name="asn1_005flength_005fder"></a><dl>
+<dt><a name="index-asn1_005flength_005fder"></a>Function: <em>void</em> <strong>asn1_length_der</strong> <em>(unsigned long int <var>len</var>, unsigned char * <var>der</var>, int * <var>der_len</var>)</em></dt>
+<dd><p><var>len</var>: value to convert.
+</p>
+<p><var>der</var>: buffer to hold the returned encoding (may be <code>NULL</code> ).
+</p>
+<p><var>der_len</var>: number of meaningful bytes of ANS (der[0]..der[der_len-1]).
+</p>
+<p>Creates the DER encoding of the provided length value.
+The  <code>der</code> buffer must have enough room for the output. The maximum
+length this function will encode is <code>ASN1_MAX_LENGTH_SIZE</code> .
+</p>
+<p>To know the size of the DER encoding use a <code>NULL</code>  value for  <code>der</code> .
+</p></dd></dl>
+
+<a name="asn1_005foctet_005fder-1"></a>
+<h4 class="subheading">asn1_octet_der</h4>
+<a name="asn1_005foctet_005fder"></a><dl>
+<dt><a name="index-asn1_005foctet_005fder"></a>Function: <em>void</em> <strong>asn1_octet_der</strong> <em>(const unsigned char * <var>str</var>, int <var>str_len</var>, unsigned char * <var>der</var>, int * <var>der_len</var>)</em></dt>
+<dd><p><var>str</var>: the input data.
+</p>
+<p><var>str_len</var>: STR length (str[0]..str[*str_len-1]).
+</p>
+<p><var>der</var>: encoded string returned.
+</p>
+<p><var>der_len</var>: number of meaningful bytes of DER (der[0]..der[der_len-1]).
+</p>
+<p>Creates a length-value DER encoding for the input data.
+The DER encoding of the input data will be placed in the  <code>der</code> variable.
+</p>
+<p>Note that the OCTET STRING tag is not included in the output.
+</p>
+<p>This function does not return any value because it is expected
+that  <code>der_len</code> will contain enough bytes to store the string
+plus the DER encoding. The DER encoding size can be obtained using
+<code>asn1_length_der()</code> .
+</p></dd></dl>
+
+<a name="asn1_005fencode_005fsimple_005fder-1"></a>
+<h4 class="subheading">asn1_encode_simple_der</h4>
+<a name="asn1_005fencode_005fsimple_005fder"></a><dl>
+<dt><a name="index-asn1_005fencode_005fsimple_005fder"></a>Function: <em>int</em> <strong>asn1_encode_simple_der</strong> <em>(unsigned int <var>etype</var>, const unsigned char * <var>str</var>, unsigned int <var>str_len</var>, unsigned char * <var>tl</var>, unsigned int * <var>tl_len</var>)</em></dt>
+<dd><p><var>etype</var>: The type of the string to be encoded (ASN1_ETYPE_)
+</p>
+<p><var>str</var>: the string data.
+</p>
+<p><var>str_len</var>: the string length
+</p>
+<p><var>tl</var>: the encoded tag and length
+</p>
+<p><var>tl_len</var>: the bytes of the  <code>tl</code> field
+</p>
+<p>Creates the DER encoding for various simple ASN.1 types like strings etc.
+It stores the tag and length in  <code>tl</code> , which should have space for at least
+<code>ASN1_MAX_TL_SIZE</code>  bytes. Initially  <code>tl_len</code> should contain the size of  <code>tl</code> .
+</p>
+<p>The complete DER encoding should consist of the value in  <code>tl</code> appended
+with the provided  <code>str</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful or an error value.
+</p></dd></dl>
+
+<a name="asn1_005fbit_005fder-1"></a>
+<h4 class="subheading">asn1_bit_der</h4>
+<a name="asn1_005fbit_005fder"></a><dl>
+<dt><a name="index-asn1_005fbit_005fder"></a>Function: <em>void</em> <strong>asn1_bit_der</strong> <em>(const unsigned char * <var>str</var>, int <var>bit_len</var>, unsigned char * <var>der</var>, int * <var>der_len</var>)</em></dt>
+<dd><p><var>str</var>: BIT string.
+</p>
+<p><var>bit_len</var>: number of meaningful bits in STR.
+</p>
+<p><var>der</var>: string returned.
+</p>
+<p><var>der_len</var>: number of meaningful bytes of DER
+(der[0]..der[ans_len-1]).
+</p>
+<p>Creates a length-value DER encoding for the input data
+as it would have been for a BIT STRING.
+The DER encoded data will be copied in  <code>der</code> .
+</p>
+<p>Note that the BIT STRING tag is not included in the output.
+</p>
+<p>This function does not return any value because it is expected
+that  <code>der_len</code> will contain enough bytes to store the string
+plus the DER encoding. The DER encoding size can be obtained using
+<code>asn1_length_der()</code> .
+</p></dd></dl>
+
+<a name="asn1_005fder_005fcoding-1"></a>
+<h4 class="subheading">asn1_der_coding</h4>
+<a name="asn1_005fder_005fcoding"></a><dl>
+<dt><a name="index-asn1_005fder_005fcoding"></a>Function: <em>int</em> <strong>asn1_der_coding</strong> <em>(asn1_node <var>element</var>, const char * <var>name</var>, void * <var>ider</var>, int * <var>len</var>, char * <var>ErrorDescription</var>)</em></dt>
+<dd><p><var>element</var>: pointer to an ASN1 element
+</p>
+<p><var>name</var>: the name of the structure you want to encode (it must be
+inside *POINTER).
+</p>
+<p><var>ider</var>: vector that will contain the DER encoding. DER must be a
+pointer to memory cells already allocated.
+</p>
+<p><var>len</var>: number of bytes of * <code>ider</code> :  <code>ider</code> [0].. <code>ider</code> [len-1], Initialy
+holds the sizeof of der vector.
+</p>
+<p><var>ErrorDescription</var>: return the error description or an empty
+string if success.
+</p>
+<p>Creates the DER encoding for the NAME structure (inside *POINTER
+structure).
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if DER encoding OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if  <code>name</code> is not a valid element, <code>ASN1_VALUE_NOT_FOUND</code>  if there
+is an element without a value, <code>ASN1_MEM_ERROR</code>  if the  <code>ider</code> vector isn&rsquo;t big enough and in this case  <code>len</code> will contain the
+length needed.
+</p></dd></dl>
+
+<a name="asn1_005fget_005flength_005fder-1"></a>
+<h4 class="subheading">asn1_get_length_der</h4>
+<a name="asn1_005fget_005flength_005fder"></a><dl>
+<dt><a name="index-asn1_005fget_005flength_005fder"></a>Function: <em>long</em> <strong>asn1_get_length_der</strong> <em>(const unsigned char * <var>der</var>, int <var>der_len</var>, int * <var>len</var>)</em></dt>
+<dd><p><var>der</var>: DER data to decode.
+</p>
+<p><var>der_len</var>: Length of DER data to decode.
+</p>
+<p><var>len</var>: Output variable containing the length of the DER length field.
+</p>
+<p>Extract a length field from DER data.
+</p>
+<p><strong>Returns:</strong> Return the decoded length value, or -1 on indefinite
+length, or -2 when the value was too big to fit in a int, or -4
+when the decoded length value plus  <code>len</code> would exceed  <code>der_len</code> .
+</p></dd></dl>
+
+<a name="asn1_005fget_005ftag_005fder-1"></a>
+<h4 class="subheading">asn1_get_tag_der</h4>
+<a name="asn1_005fget_005ftag_005fder"></a><dl>
+<dt><a name="index-asn1_005fget_005ftag_005fder"></a>Function: <em>int</em> <strong>asn1_get_tag_der</strong> <em>(const unsigned char * <var>der</var>, int <var>der_len</var>, unsigned char * <var>cls</var>, int * <var>len</var>, unsigned long * <var>tag</var>)</em></dt>
+<dd><p><var>der</var>: DER data to decode.
+</p>
+<p><var>der_len</var>: Length of DER data to decode.
+</p>
+<p><var>cls</var>: Output variable containing decoded class.
+</p>
+<p><var>len</var>: Output variable containing the length of the DER TAG data.
+</p>
+<p><var>tag</var>: Output variable containing the decoded tag.
+</p>
+<p>Decode the class and TAG from DER code.
+</p>
+<p><strong>Returns:</strong> Returns <code>ASN1_SUCCESS</code>  on success, or an error.
+</p></dd></dl>
+
+<a name="asn1_005fget_005flength_005fber-1"></a>
+<h4 class="subheading">asn1_get_length_ber</h4>
+<a name="asn1_005fget_005flength_005fber"></a><dl>
+<dt><a name="index-asn1_005fget_005flength_005fber"></a>Function: <em>long</em> <strong>asn1_get_length_ber</strong> <em>(const unsigned char * <var>ber</var>, int <var>ber_len</var>, int * <var>len</var>)</em></dt>
+<dd><p><var>ber</var>: BER data to decode.
+</p>
+<p><var>ber_len</var>: Length of BER data to decode.
+</p>
+<p><var>len</var>: Output variable containing the length of the BER length field.
+</p>
+<p>Extract a length field from BER data.  The difference to
+<code>asn1_get_length_der()</code>  is that this function will return a length
+even if the value has indefinite encoding.
+</p>
+<p><strong>Returns:</strong> Return the decoded length value, or negative value when
+the value was too big.
+</p>
+<p><strong>Since:</strong> 2.0
+</p></dd></dl>
+
+<a name="asn1_005fget_005foctet_005fder-1"></a>
+<h4 class="subheading">asn1_get_octet_der</h4>
+<a name="asn1_005fget_005foctet_005fder"></a><dl>
+<dt><a name="index-asn1_005fget_005foctet_005fder"></a>Function: <em>int</em> <strong>asn1_get_octet_der</strong> <em>(const unsigned char * <var>der</var>, int <var>der_len</var>, int * <var>ret_len</var>, unsigned char * <var>str</var>, int <var>str_size</var>, int * <var>str_len</var>)</em></dt>
+<dd><p><var>der</var>: DER data to decode containing the OCTET SEQUENCE.
+</p>
+<p><var>der_len</var>: The length of the  <code>der</code> data to decode.
+</p>
+<p><var>ret_len</var>: Output variable containing the encoded length of the DER data.
+</p>
+<p><var>str</var>: Pre-allocated output buffer to put decoded OCTET SEQUENCE in.
+</p>
+<p><var>str_size</var>: Length of pre-allocated output buffer.
+</p>
+<p><var>str_len</var>: Output variable containing the length of the contents of the OCTET SEQUENCE.
+</p>
+<p>Extract an OCTET SEQUENCE from DER data. Note that this function
+expects the DER data past the tag field, i.e., the length and
+content octets.
+</p>
+<p><strong>Returns:</strong> Returns <code>ASN1_SUCCESS</code>  on success, or an error.
+</p></dd></dl>
+
+<a name="asn1_005fget_005fobject_005fid_005fder-1"></a>
+<h4 class="subheading">asn1_get_object_id_der</h4>
+<a name="asn1_005fget_005fobject_005fid_005fder"></a><dl>
+<dt><a name="index-asn1_005fget_005fobject_005fid_005fder"></a>Function: <em>int</em> <strong>asn1_get_object_id_der</strong> <em>(const unsigned char * <var>der</var>, int <var>der_len</var>, int * <var>ret_len</var>, char * <var>str</var>, int <var>str_size</var>)</em></dt>
+<dd><p><var>der</var>: DER data to decode containing the OBJECT IDENTIFIER
+</p>
+<p><var>der_len</var>: Length of DER data to decode.
+</p>
+<p><var>ret_len</var>: Output variable containing the length of the DER data.
+</p>
+<p><var>str</var>: Pre-allocated output buffer to put the textual object id in.
+</p>
+<p><var>str_size</var>: Length of pre-allocated output buffer.
+</p>
+<p>Converts a DER encoded object identifier to its textual form.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  on success, or an error.
+</p></dd></dl>
+
+<a name="asn1_005fget_005fbit_005fder-1"></a>
+<h4 class="subheading">asn1_get_bit_der</h4>
+<a name="asn1_005fget_005fbit_005fder"></a><dl>
+<dt><a name="index-asn1_005fget_005fbit_005fder"></a>Function: <em>int</em> <strong>asn1_get_bit_der</strong> <em>(const unsigned char * <var>der</var>, int <var>der_len</var>, int * <var>ret_len</var>, unsigned char * <var>str</var>, int <var>str_size</var>, int * <var>bit_len</var>)</em></dt>
+<dd><p><var>der</var>: DER data to decode containing the BIT SEQUENCE.
+</p>
+<p><var>der_len</var>: Length of DER data to decode.
+</p>
+<p><var>ret_len</var>: Output variable containing the length of the DER data.
+</p>
+<p><var>str</var>: Pre-allocated output buffer to put decoded BIT SEQUENCE in.
+</p>
+<p><var>str_size</var>: Length of pre-allocated output buffer.
+</p>
+<p><var>bit_len</var>: Output variable containing the size of the BIT SEQUENCE.
+</p>
+<p>Extract a BIT SEQUENCE from DER data.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  on success, or an error.
+</p></dd></dl>
+
+<a name="asn1_005fder_005fdecoding2-1"></a>
+<h4 class="subheading">asn1_der_decoding2</h4>
+<a name="asn1_005fder_005fdecoding2"></a><dl>
+<dt><a name="index-asn1_005fder_005fdecoding2"></a>Function: <em>int</em> <strong>asn1_der_decoding2</strong> <em>(asn1_node * <var>element</var>, const void * <var>ider</var>, int * <var>max_ider_len</var>, unsigned int <var>flags</var>, char * <var>errorDescription</var>)</em></dt>
+<dd><p><var>element</var>: pointer to an ASN1 structure.
+</p>
+<p><var>ider</var>: vector that contains the DER encoding.
+</p>
+<p><var>max_ider_len</var>: pointer to an integer giving the information about the
+maximal number of bytes occupied by * <code>ider</code> . The real size of the DER
+encoding is returned through this pointer.
+</p>
+<p><var>flags</var>: flags controlling the behaviour of the function.
+</p>
+<p><var>errorDescription</var>: null-terminated string contains details when an
+error occurred.
+</p>
+<p>Fill the structure * <code>element</code> with values of a DER encoding string. The
+structure must just be created with function <code>asn1_create_element()</code> .
+</p>
+<p>If <code>ASN1_DECODE_FLAG_ALLOW_PADDING</code>  flag is set then the function will ignore
+padding after the decoded DER data. Upon a successful return the value of
+* <code>max_ider_len</code> will be set to the number of bytes decoded.
+</p>
+<p>If <code>ASN1_DECODE_FLAG_STRICT_DER</code>  flag is set then the function will
+not decode any BER-encoded elements.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if DER encoding OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if  <code>ELEMENT</code> is <code>NULL</code> , and <code>ASN1_TAG_ERROR</code>  or
+<code>ASN1_DER_ERROR</code>  if the der encoding doesn&rsquo;t match the structure
+name (* <code>ELEMENT</code> deleted).
+</p></dd></dl>
+
+<a name="asn1_005fder_005fdecoding-1"></a>
+<h4 class="subheading">asn1_der_decoding</h4>
+<a name="asn1_005fder_005fdecoding"></a><dl>
+<dt><a name="index-asn1_005fder_005fdecoding"></a>Function: <em>int</em> <strong>asn1_der_decoding</strong> <em>(asn1_node * <var>element</var>, const void * <var>ider</var>, int <var>ider_len</var>, char * <var>errorDescription</var>)</em></dt>
+<dd><p><var>element</var>: pointer to an ASN1 structure.
+</p>
+<p><var>ider</var>: vector that contains the DER encoding.
+</p>
+<p><var>ider_len</var>: number of bytes of * <code>ider</code> :  <code>ider</code> [0].. <code>ider</code> [len-1].
+</p>
+<p><var>errorDescription</var>: null-terminated string contains details when an
+error occurred.
+</p>
+<p>Fill the structure * <code>element</code> with values of a DER encoding
+string. The structure must just be created with function
+<code>asn1_create_element()</code> . 
+</p>
+<p>Note that the * <code>element</code> variable is provided as a pointer for
+historical reasons.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if DER encoding OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if  <code>ELEMENT</code> is <code>NULL</code> , and <code>ASN1_TAG_ERROR</code>  or
+<code>ASN1_DER_ERROR</code>  if the der encoding doesn&rsquo;t match the structure
+name (* <code>ELEMENT</code> deleted).
+</p></dd></dl>
+
+<a name="asn1_005fder_005fdecoding_005felement-1"></a>
+<h4 class="subheading">asn1_der_decoding_element</h4>
+<a name="asn1_005fder_005fdecoding_005felement"></a><dl>
+<dt><a name="index-asn1_005fder_005fdecoding_005felement"></a>Function: <em>int</em> <strong>asn1_der_decoding_element</strong> <em>(asn1_node * <var>structure</var>, const char * <var>elementName</var>, const void * <var>ider</var>, int <var>len</var>, char * <var>errorDescription</var>)</em></dt>
+<dd><p><var>structure</var>: pointer to an ASN1 structure
+</p>
+<p><var>elementName</var>: name of the element to fill
+</p>
+<p><var>ider</var>: vector that contains the DER encoding of the whole structure.
+</p>
+<p><var>len</var>: number of bytes of *der: der[0]..der[len-1]
+</p>
+<p><var>errorDescription</var>: null-terminated string contains details when an
+error occurred.
+</p>
+<p>Fill the element named  <code>ELEMENTNAME</code> with values of a DER encoding
+string.  The structure must just be created with function
+<code>asn1_create_element()</code> .  The DER vector must contain the encoding
+string of the whole  <code>STRUCTURE</code> .  If an error occurs during the
+decoding procedure, the * <code>STRUCTURE</code> is deleted and set equal to
+<code>NULL</code> .
+</p>
+<p>This function is deprecated and may just be an alias to asn1_der_decoding
+in future versions. Use <code>asn1_der_decoding()</code>  instead.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if DER encoding OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if ELEMENT is <code>NULL</code>  or  <code>elementName</code> == NULL, and
+<code>ASN1_TAG_ERROR</code>  or <code>ASN1_DER_ERROR</code>  if the der encoding doesn&rsquo;t
+match the structure  <code>structure</code> (*ELEMENT deleted).
+</p></dd></dl>
+
+<a name="asn1_005fder_005fdecoding_005fstartEnd-1"></a>
+<h4 class="subheading">asn1_der_decoding_startEnd</h4>
+<a name="asn1_005fder_005fdecoding_005fstartEnd"></a><dl>
+<dt><a name="index-asn1_005fder_005fdecoding_005fstartEnd"></a>Function: <em>int</em> <strong>asn1_der_decoding_startEnd</strong> <em>(asn1_node <var>element</var>, const void * <var>ider</var>, int <var>ider_len</var>, const char * <var>name_element</var>, int * <var>start</var>, int * <var>end</var>)</em></dt>
+<dd><p><var>element</var>: pointer to an ASN1 element
+</p>
+<p><var>ider</var>: vector that contains the DER encoding.
+</p>
+<p><var>ider_len</var>: number of bytes of * <code>ider</code> :  <code>ider</code> [0].. <code>ider</code> [len-1]
+</p>
+<p><var>name_element</var>: an element of NAME structure.
+</p>
+<p><var>start</var>: the position of the first byte of NAME_ELEMENT decoding
+( <code>ider</code> [*start])
+</p>
+<p><var>end</var>: the position of the last byte of NAME_ELEMENT decoding
+( <code>ider</code> [*end])
+</p>
+<p>Find the start and end point of an element in a DER encoding
+string. I mean that if you have a der encoding and you have already
+used the function <code>asn1_der_decoding()</code>  to fill a structure, it may
+happen that you want to find the piece of string concerning an
+element of the structure.
+</p>
+<p>One example is the sequence &quot;tbsCertificate&quot; inside an X509
+certificate.
+</p>
+<p>Note that since libtasn1 3.7 the  <code>ider</code> and  <code>ider_len</code> parameters
+can be omitted, if the element is already decoded using <code>asn1_der_decoding()</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if DER encoding OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if ELEMENT is <code>asn1_node</code>  EMPTY or  <code>name_element</code> is not a valid
+element, <code>ASN1_TAG_ERROR</code>  or <code>ASN1_DER_ERROR</code>  if the der encoding
+doesn&rsquo;t match the structure ELEMENT.
+</p></dd></dl>
+
+<a name="asn1_005fexpand_005fany_005fdefined_005fby-1"></a>
+<h4 class="subheading">asn1_expand_any_defined_by</h4>
+<a name="asn1_005fexpand_005fany_005fdefined_005fby"></a><dl>
+<dt><a name="index-asn1_005fexpand_005fany_005fdefined_005fby"></a>Function: <em>int</em> <strong>asn1_expand_any_defined_by</strong> <em>(asn1_node <var>definitions</var>, asn1_node * <var>element</var>)</em></dt>
+<dd><p><var>definitions</var>: ASN1 definitions
+</p>
+<p><var>element</var>: pointer to an ASN1 structure
+</p>
+<p>Expands every &quot;ANY DEFINED BY&quot; element of a structure created from
+a DER decoding process (asn1_der_decoding function). The element
+ANY must be defined by an OBJECT IDENTIFIER. The type used to
+expand the element ANY is the first one following the definition of
+the actual value of the OBJECT IDENTIFIER.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if Substitution OK, <code>ASN1_ERROR_TYPE_ANY</code>  if
+some &quot;ANY DEFINED BY&quot; element couldn&rsquo;t be expanded due to a
+problem in OBJECT_ID -&gt; TYPE association, or other error codes
+depending on DER decoding.
+</p></dd></dl>
+
+<a name="asn1_005fexpand_005foctet_005fstring-1"></a>
+<h4 class="subheading">asn1_expand_octet_string</h4>
+<a name="asn1_005fexpand_005foctet_005fstring"></a><dl>
+<dt><a name="index-asn1_005fexpand_005foctet_005fstring"></a>Function: <em>int</em> <strong>asn1_expand_octet_string</strong> <em>(asn1_node <var>definitions</var>, asn1_node * <var>element</var>, const char * <var>octetName</var>, const char * <var>objectName</var>)</em></dt>
+<dd><p><var>definitions</var>: ASN1 definitions
+</p>
+<p><var>element</var>: pointer to an ASN1 structure
+</p>
+<p><var>octetName</var>: name of the OCTECT STRING field to expand.
+</p>
+<p><var>objectName</var>: name of the OBJECT IDENTIFIER field to use to define
+the type for expansion.
+</p>
+<p>Expands an &quot;OCTET STRING&quot; element of a structure created from a DER
+decoding process (the <code>asn1_der_decoding()</code>  function).  The type used
+for expansion is the first one following the definition of the
+actual value of the OBJECT IDENTIFIER indicated by OBJECTNAME.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if substitution OK, <code>ASN1_ELEMENT_NOT_FOUND</code> 
+if  <code>objectName</code> or  <code>octetName</code> are not correct,
+<code>ASN1_VALUE_NOT_VALID</code>  if it wasn&rsquo;t possible to find the type to
+use for expansion, or other errors depending on DER decoding.
+</p></dd></dl>
+
+<a name="asn1_005fdecode_005fsimple_005fder-1"></a>
+<h4 class="subheading">asn1_decode_simple_der</h4>
+<a name="asn1_005fdecode_005fsimple_005fder"></a><dl>
+<dt><a name="index-asn1_005fdecode_005fsimple_005fder"></a>Function: <em>int</em> <strong>asn1_decode_simple_der</strong> <em>(unsigned int <var>etype</var>, const unsigned char * <var>der</var>, unsigned int <var>_der_len</var>, const unsigned char ** <var>str</var>, unsigned int * <var>str_len</var>)</em></dt>
+<dd><p><var>etype</var>: The type of the string to be encoded (ASN1_ETYPE_)
+</p>
+<p><var>der</var>: the encoded string
+</p>
+<p><var>_der_len</var>: the bytes of the encoded string
+</p>
+<p><var>str</var>: a pointer to the data
+</p>
+<p><var>str_len</var>: the length of the data
+</p>
+<p>Decodes a simple DER encoded type (e.g. a string, which is not constructed).
+The output is a pointer inside the  <code>der</code> .
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful or an error value.
+</p></dd></dl>
+
+<a name="asn1_005fdecode_005fsimple_005fber-1"></a>
+<h4 class="subheading">asn1_decode_simple_ber</h4>
+<a name="asn1_005fdecode_005fsimple_005fber"></a><dl>
+<dt><a name="index-asn1_005fdecode_005fsimple_005fber"></a>Function: <em>int</em> <strong>asn1_decode_simple_ber</strong> <em>(unsigned int <var>etype</var>, const unsigned char * <var>der</var>, unsigned int <var>_der_len</var>, unsigned char ** <var>str</var>, unsigned int * <var>str_len</var>, unsigned int * <var>ber_len</var>)</em></dt>
+<dd><p><var>etype</var>: The type of the string to be encoded (ASN1_ETYPE_)
+</p>
+<p><var>der</var>: the encoded string
+</p>
+<p><var>_der_len</var>: the bytes of the encoded string
+</p>
+<p><var>str</var>: a pointer to the data
+</p>
+<p><var>str_len</var>: the length of the data
+</p>
+<p><var>ber_len</var>: the total length occupied by BER (may be <code>NULL</code> )
+</p>
+<p>Decodes a BER encoded type. The output is an allocated value 
+of the data. This decodes BER STRINGS only. Other types are
+decoded as DER.
+</p>
+<p><strong>Returns:</strong> <code>ASN1_SUCCESS</code>  if successful or an error value.
+</p></dd></dl>
+
+
+<hr>
+<a name="Error-handling-functions"></a>
+<div class="header">
+<p>
+Next: <a href="#Auxilliary-functions" accesskey="n" rel="next">Auxilliary functions</a>, Previous: <a href="#DER-functions" accesskey="p" rel="prev">DER functions</a>, Up: <a href="#Function-reference" accesskey="u" rel="up">Function reference</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Error-handling-functions-1"></a>
+<h3 class="section">4.4 Error handling functions</h3>
+
+<a name="asn1_005fperror-1"></a>
+<h4 class="subheading">asn1_perror</h4>
+<a name="asn1_005fperror"></a><dl>
+<dt><a name="index-asn1_005fperror"></a>Function: <em>void</em> <strong>asn1_perror</strong> <em>(int <var>error</var>)</em></dt>
+<dd><p><var>error</var>: is an error returned by a libtasn1 function.
+</p>
+<p>Prints a string to stderr with a description of an error.  This
+function is like <code>perror()</code> .  The only difference is that it accepts
+an error returned by a libtasn1 function.
+</p>
+<p><strong>Since:</strong> 1.6
+</p></dd></dl>
+
+<a name="asn1_005fstrerror-1"></a>
+<h4 class="subheading">asn1_strerror</h4>
+<a name="asn1_005fstrerror"></a><dl>
+<dt><a name="index-asn1_005fstrerror"></a>Function: <em>const char *</em> <strong>asn1_strerror</strong> <em>(int <var>error</var>)</em></dt>
+<dd><p><var>error</var>: is an error returned by a libtasn1 function.
+</p>
+<p>Returns a string with a description of an error.  This function is
+similar to strerror.  The only difference is that it accepts an
+error (number) returned by a libtasn1 function.
+</p>
+<p><strong>Returns:</strong> Pointer to static zero-terminated string describing error
+code.
+</p>
+<p><strong>Since:</strong> 1.6
+</p></dd></dl>
+
+
+<hr>
+<a name="Auxilliary-functions"></a>
+<div class="header">
+<p>
+Previous: <a href="#Error-handling-functions" accesskey="p" rel="prev">Error handling functions</a>, Up: <a href="#Function-reference" accesskey="u" rel="up">Function reference</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Auxilliary-functions-1"></a>
+<h3 class="section">4.5 Auxilliary functions</h3>
+
+<a name="asn1_005ffind_005fnode-1"></a>
+<h4 class="subheading">asn1_find_node</h4>
+<a name="asn1_005ffind_005fnode"></a><dl>
+<dt><a name="index-asn1_005ffind_005fnode"></a>Function: <em>asn1_node</em> <strong>asn1_find_node</strong> <em>(asn1_node <var>pointer</var>, const char * <var>name</var>)</em></dt>
+<dd><p><var>pointer</var>: NODE_ASN element pointer.
+</p>
+<p><var>name</var>: null terminated string with the element&rsquo;s name to find.
+</p>
+<p>Searches for an element called  <code>name</code> starting from  <code>pointer</code> .  The
+name is composed by differents identifiers separated by dots.  When
+* <code>pointer</code> has a name, the first identifier must be the name of
+* <code>pointer</code> , otherwise it must be the name of one child of * <code>pointer</code> .
+</p>
+<p><strong>Returns:</strong> the search result, or <code>NULL</code>  if not found.
+</p></dd></dl>
+
+<a name="asn1_005fcheck_005fversion-1"></a>
+<h4 class="subheading">asn1_check_version</h4>
+<a name="asn1_005fcheck_005fversion"></a><dl>
+<dt><a name="index-asn1_005fcheck_005fversion"></a>Function: <em>const char *</em> <strong>asn1_check_version</strong> <em>(const char * <var>req_version</var>)</em></dt>
+<dd><p><var>req_version</var>: Required version number, or <code>NULL</code> .
+</p>
+<p>Check that the version of the library is at minimum the
+requested one and return the version string; return <code>NULL</code>  if the
+condition is not satisfied.  If a <code>NULL</code>  is passed to this function,
+no check is done, but the version string is simply returned.
+</p>
+<p>See <code>ASN1_VERSION</code>  for a suitable  <code>req_version</code> string.
+</p>
+<p><strong>Returns:</strong> Version string of run-time library, or <code>NULL</code>  if the
+run-time library does not meet the required version number.
+</p></dd></dl>
+
+
+<hr>
+<a name="Copying-Information"></a>
+<div class="header">
+<p>
+Next: <a href="#Concept-Index" accesskey="n" rel="next">Concept Index</a>, Previous: <a href="#Function-reference" accesskey="p" rel="prev">Function reference</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Copying-Information-1"></a>
+<h2 class="appendix">Appendix A Copying Information</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#GNU-Free-Documentation-License" accesskey="1">GNU Free Documentation License</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">License for copying this manual.
+</td></tr>
+</table>
+
+<hr>
+<a name="GNU-Free-Documentation-License"></a>
+<div class="header">
+<p>
+Up: <a href="#Copying-Information" accesskey="u" rel="up">Copying Information</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="GNU-Free-Documentation-License-1"></a>
+<h3 class="appendixsec">A.1 GNU Free Documentation License</h3>
+
+<a name="index-FDL_002c-GNU-Free-Documentation-License"></a>
+
+<div align="center">Version 1.3, 3 November 2008
+</div>
+
+<div class="display">
+<pre class="display">Copyright &copy; 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
+<a href="http://fsf.org/">http://fsf.org/</a>
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+</pre></div>
+
+<ol>
+<li> PREAMBLE
+
+<p>The purpose of this License is to make a manual, textbook, or other
+functional and useful document <em>free</em> in the sense of freedom: to
+assure everyone the effective freedom to copy and redistribute it,
+with or without modifying it, either commercially or noncommercially.
+Secondarily, this License preserves for the author and publisher a way
+to get credit for their work, while not being considered responsible
+for modifications made by others.
+</p>
+<p>This License is a kind of &ldquo;copyleft&rdquo;, which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft
+license designed for free software.
+</p>
+<p>We have designed this License in order to use it for manuals for free
+software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals;
+it can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.
+</p>
+</li><li> APPLICABILITY AND DEFINITIONS
+
+<p>This License applies to any manual or other work, in any medium, that
+contains a notice placed by the copyright holder saying it can be
+distributed under the terms of this License.  Such a notice grants a
+world-wide, royalty-free license, unlimited in duration, to use that
+work under the conditions stated herein.  The &ldquo;Document&rdquo;, below,
+refers to any such manual or work.  Any member of the public is a
+licensee, and is addressed as &ldquo;you&rdquo;.  You accept the license if you
+copy, modify or distribute the work in a way requiring permission
+under copyright law.
+</p>
+<p>A &ldquo;Modified Version&rdquo; of the Document means any work containing the
+Document or a portion of it, either copied verbatim, or with
+modifications and/or translated into another language.
+</p>
+<p>A &ldquo;Secondary Section&rdquo; is a named appendix or a front-matter section
+of the Document that deals exclusively with the relationship of the
+publishers or authors of the Document to the Document&rsquo;s overall
+subject (or to related matters) and contains nothing that could fall
+directly within that overall subject.  (Thus, if the Document is in
+part a textbook of mathematics, a Secondary Section may not explain
+any mathematics.)  The relationship could be a matter of historical
+connection with the subject or with related matters, or of legal,
+commercial, philosophical, ethical or political position regarding
+them.
+</p>
+<p>The &ldquo;Invariant Sections&rdquo; are certain Secondary Sections whose titles
+are designated, as being those of Invariant Sections, in the notice
+that says that the Document is released under this License.  If a
+section does not fit the above definition of Secondary then it is not
+allowed to be designated as Invariant.  The Document may contain zero
+Invariant Sections.  If the Document does not identify any Invariant
+Sections then there are none.
+</p>
+<p>The &ldquo;Cover Texts&rdquo; are certain short passages of text that are listed,
+as Front-Cover Texts or Back-Cover Texts, in the notice that says that
+the Document is released under this License.  A Front-Cover Text may
+be at most 5 words, and a Back-Cover Text may be at most 25 words.
+</p>
+<p>A &ldquo;Transparent&rdquo; copy of the Document means a machine-readable copy,
+represented in a format whose specification is available to the
+general public, that is suitable for revising the document
+straightforwardly with generic text editors or (for images composed of
+pixels) generic paint programs or (for drawings) some widely available
+drawing editor, and that is suitable for input to text formatters or
+for automatic translation to a variety of formats suitable for input
+to text formatters.  A copy made in an otherwise Transparent file
+format whose markup, or absence of markup, has been arranged to thwart
+or discourage subsequent modification by readers is not Transparent.
+An image format is not Transparent if used for any substantial amount
+of text.  A copy that is not &ldquo;Transparent&rdquo; is called &ldquo;Opaque&rdquo;.
+</p>
+<p>Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, LaTeX input
+format, SGML or XML using a publicly available
+DTD, and standard-conforming simple HTML,
+PostScript or PDF designed for human modification.  Examples
+of transparent image formats include PNG, XCF and
+JPG.  Opaque formats include proprietary formats that can be
+read and edited only by proprietary word processors, SGML or
+XML for which the DTD and/or processing tools are
+not generally available, and the machine-generated HTML,
+PostScript or PDF produced by some word processors for
+output purposes only.
+</p>
+<p>The &ldquo;Title Page&rdquo; means, for a printed book, the title page itself,
+plus such following pages as are needed to hold, legibly, the material
+this License requires to appear in the title page.  For works in
+formats which do not have any title page as such, &ldquo;Title Page&rdquo; means
+the text near the most prominent appearance of the work&rsquo;s title,
+preceding the beginning of the body of the text.
+</p>
+<p>The &ldquo;publisher&rdquo; means any person or entity that distributes copies
+of the Document to the public.
+</p>
+<p>A section &ldquo;Entitled XYZ&rdquo; means a named subunit of the Document whose
+title either is precisely XYZ or contains XYZ in parentheses following
+text that translates XYZ in another language.  (Here XYZ stands for a
+specific section name mentioned below, such as &ldquo;Acknowledgements&rdquo;,
+&ldquo;Dedications&rdquo;, &ldquo;Endorsements&rdquo;, or &ldquo;History&rdquo;.)  To &ldquo;Preserve the Title&rdquo;
+of such a section when you modify the Document means that it remains a
+section &ldquo;Entitled XYZ&rdquo; according to this definition.
+</p>
+<p>The Document may include Warranty Disclaimers next to the notice which
+states that this License applies to the Document.  These Warranty
+Disclaimers are considered to be included by reference in this
+License, but only as regards disclaiming warranties: any other
+implication that these Warranty Disclaimers may have is void and has
+no effect on the meaning of this License.
+</p>
+</li><li> VERBATIM COPYING
+
+<p>You may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies
+to the Document are reproduced in all copies, and that you add no other
+conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further
+copying of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+</p>
+<p>You may also lend copies, under the same conditions stated above, and
+you may publicly display copies.
+</p>
+</li><li> COPYING IN QUANTITY
+
+<p>If you publish printed copies (or copies in media that commonly have
+printed covers) of the Document, numbering more than 100, and the
+Document&rsquo;s license notice requires Cover Texts, you must enclose the
+copies in covers that carry, clearly and legibly, all these Cover
+Texts: Front-Cover Texts on the front cover, and Back-Cover Texts on
+the back cover.  Both covers must also clearly and legibly identify
+you as the publisher of these copies.  The front cover must present
+the full title with all words of the title equally prominent and
+visible.  You may add other material on the covers in addition.
+Copying with changes limited to the covers, as long as they preserve
+the title of the Document and satisfy these conditions, can be treated
+as verbatim copying in other respects.
+</p>
+<p>If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.
+</p>
+<p>If you publish or distribute Opaque copies of the Document numbering
+more than 100, you must either include a machine-readable Transparent
+copy along with each Opaque copy, or state in or with each Opaque copy
+a computer-network location from which the general network-using
+public has access to download using public-standard network protocols
+a complete Transparent copy of the Document, free of added material.
+If you use the latter option, you must take reasonably prudent steps,
+when you begin distribution of Opaque copies in quantity, to ensure
+that this Transparent copy will remain thus accessible at the stated
+location until at least one year after the last time you distribute an
+Opaque copy (directly or through your agents or retailers) of that
+edition to the public.
+</p>
+<p>It is requested, but not required, that you contact the authors of the
+Document well before redistributing any large number of copies, to give
+them a chance to provide you with an updated version of the Document.
+</p>
+</li><li> MODIFICATIONS
+
+<p>You may copy and distribute a Modified Version of the Document under
+the conditions of sections 2 and 3 above, provided that you release
+the Modified Version under precisely this License, with the Modified
+Version filling the role of the Document, thus licensing distribution
+and modification of the Modified Version to whoever possesses a copy
+of it.  In addition, you must do these things in the Modified Version:
+</p>
+<ol>
+<li> Use in the Title Page (and on the covers, if any) a title distinct
+from that of the Document, and from those of previous versions
+(which should, if there were any, be listed in the History section
+of the Document).  You may use the same title as a previous version
+if the original publisher of that version gives permission.
+
+</li><li> List on the Title Page, as authors, one or more persons or entities
+responsible for authorship of the modifications in the Modified
+Version, together with at least five of the principal authors of the
+Document (all of its principal authors, if it has fewer than five),
+unless they release you from this requirement.
+
+</li><li> State on the Title page the name of the publisher of the
+Modified Version, as the publisher.
+
+</li><li> Preserve all the copyright notices of the Document.
+
+</li><li> Add an appropriate copyright notice for your modifications
+adjacent to the other copyright notices.
+
+</li><li> Include, immediately after the copyright notices, a license notice
+giving the public permission to use the Modified Version under the
+terms of this License, in the form shown in the Addendum below.
+
+</li><li> Preserve in that license notice the full lists of Invariant Sections
+and required Cover Texts given in the Document&rsquo;s license notice.
+
+</li><li> Include an unaltered copy of this License.
+
+</li><li> Preserve the section Entitled &ldquo;History&rdquo;, Preserve its Title, and add
+to it an item stating at least the title, year, new authors, and
+publisher of the Modified Version as given on the Title Page.  If
+there is no section Entitled &ldquo;History&rdquo; in the Document, create one
+stating the title, year, authors, and publisher of the Document as
+given on its Title Page, then add an item describing the Modified
+Version as stated in the previous sentence.
+
+</li><li> Preserve the network location, if any, given in the Document for
+public access to a Transparent copy of the Document, and likewise
+the network locations given in the Document for previous versions
+it was based on.  These may be placed in the &ldquo;History&rdquo; section.
+You may omit a network location for a work that was published at
+least four years before the Document itself, or if the original
+publisher of the version it refers to gives permission.
+
+</li><li> For any section Entitled &ldquo;Acknowledgements&rdquo; or &ldquo;Dedications&rdquo;, Preserve
+the Title of the section, and preserve in the section all the
+substance and tone of each of the contributor acknowledgements and/or
+dedications given therein.
+
+</li><li> Preserve all the Invariant Sections of the Document,
+unaltered in their text and in their titles.  Section numbers
+or the equivalent are not considered part of the section titles.
+
+</li><li> Delete any section Entitled &ldquo;Endorsements&rdquo;.  Such a section
+may not be included in the Modified Version.
+
+</li><li> Do not retitle any existing section to be Entitled &ldquo;Endorsements&rdquo; or
+to conflict in title with any Invariant Section.
+
+</li><li> Preserve any Warranty Disclaimers.
+</li></ol>
+
+<p>If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version&rsquo;s license notice.
+These titles must be distinct from any other section titles.
+</p>
+<p>You may add a section Entitled &ldquo;Endorsements&rdquo;, provided it contains
+nothing but endorsements of your Modified Version by various
+parties&mdash;for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.
+</p>
+<p>You may add a passage of up to five words as a Front-Cover Text, and a
+passage of up to 25 words as a Back-Cover Text, to the end of the list
+of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or
+through arrangements made by) any one entity.  If the Document already
+includes a cover text for the same cover, previously added by you or
+by arrangement made by the same entity you are acting on behalf of,
+you may not add another; but you may replace the old one, on explicit
+permission from the previous publisher that added the old one.
+</p>
+<p>The author(s) and publisher(s) of the Document do not by this License
+give permission to use their names for publicity for or to assert or
+imply endorsement of any Modified Version.
+</p>
+</li><li> COMBINING DOCUMENTS
+
+<p>You may combine the Document with other documents released under this
+License, under the terms defined in section 4 above for modified
+versions, provided that you include in the combination all of the
+Invariant Sections of all of the original documents, unmodified, and
+list them all as Invariant Sections of your combined work in its
+license notice, and that you preserve all their Warranty Disclaimers.
+</p>
+<p>The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by
+adding at the end of it, in parentheses, the name of the original
+author or publisher of that section if known, or else a unique number.
+Make the same adjustment to the section titles in the list of
+Invariant Sections in the license notice of the combined work.
+</p>
+<p>In the combination, you must combine any sections Entitled &ldquo;History&rdquo;
+in the various original documents, forming one section Entitled
+&ldquo;History&rdquo;; likewise combine any sections Entitled &ldquo;Acknowledgements&rdquo;,
+and any sections Entitled &ldquo;Dedications&rdquo;.  You must delete all
+sections Entitled &ldquo;Endorsements.&rdquo;
+</p>
+</li><li> COLLECTIONS OF DOCUMENTS
+
+<p>You may make a collection consisting of the Document and other documents
+released under this License, and replace the individual copies of this
+License in the various documents with a single copy that is included in
+the collection, provided that you follow the rules of this License for
+verbatim copying of each of the documents in all other respects.
+</p>
+<p>You may extract a single document from such a collection, and distribute
+it individually under this License, provided you insert a copy of this
+License into the extracted document, and follow this License in all
+other respects regarding verbatim copying of that document.
+</p>
+</li><li> AGGREGATION WITH INDEPENDENT WORKS
+
+<p>A compilation of the Document or its derivatives with other separate
+and independent documents or works, in or on a volume of a storage or
+distribution medium, is called an &ldquo;aggregate&rdquo; if the copyright
+resulting from the compilation is not used to limit the legal rights
+of the compilation&rsquo;s users beyond what the individual works permit.
+When the Document is included in an aggregate, this License does not
+apply to the other works in the aggregate which are not themselves
+derivative works of the Document.
+</p>
+<p>If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one half of
+the entire aggregate, the Document&rsquo;s Cover Texts may be placed on
+covers that bracket the Document within the aggregate, or the
+electronic equivalent of covers if the Document is in electronic form.
+Otherwise they must appear on printed covers that bracket the whole
+aggregate.
+</p>
+</li><li> TRANSLATION
+
+<p>Translation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License, and all the license notices in the
+Document, and any Warranty Disclaimers, provided that you also include
+the original English version of this License and the original versions
+of those notices and disclaimers.  In case of a disagreement between
+the translation and the original version of this License or a notice
+or disclaimer, the original version will prevail.
+</p>
+<p>If a section in the Document is Entitled &ldquo;Acknowledgements&rdquo;,
+&ldquo;Dedications&rdquo;, or &ldquo;History&rdquo;, the requirement (section 4) to Preserve
+its Title (section 1) will typically require changing the actual
+title.
+</p>
+</li><li> TERMINATION
+
+<p>You may not copy, modify, sublicense, or distribute the Document
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense, or distribute it is void, and
+will automatically terminate your rights under this License.
+</p>
+<p>However, if you cease all violation of this License, then your license
+from a particular copyright holder is reinstated (a) provisionally,
+unless and until the copyright holder explicitly and finally
+terminates your license, and (b) permanently, if the copyright holder
+fails to notify you of the violation by some reasonable means prior to
+60 days after the cessation.
+</p>
+<p>Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+</p>
+<p>Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, receipt of a copy of some or all of the same material does
+not give you any rights to use it.
+</p>
+</li><li> FUTURE REVISIONS OF THIS LICENSE
+
+<p>The Free Software Foundation may publish new, revised versions
+of the GNU Free Documentation License from time to time.  Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.  See
+<a href="http://www.gnu.org/copyleft/">http://www.gnu.org/copyleft/</a>.
+</p>
+<p>Each version of the License is given a distinguishing version number.
+If the Document specifies that a particular numbered version of this
+License &ldquo;or any later version&rdquo; applies to it, you have the option of
+following the terms and conditions either of that specified version or
+of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.  If the Document
+specifies that a proxy can decide which future versions of this
+License can be used, that proxy&rsquo;s public statement of acceptance of a
+version permanently authorizes you to choose that version for the
+Document.
+</p>
+</li><li> RELICENSING
+
+<p>&ldquo;Massive Multiauthor Collaboration Site&rdquo; (or &ldquo;MMC Site&rdquo;) means any
+World Wide Web server that publishes copyrightable works and also
+provides prominent facilities for anybody to edit those works.  A
+public wiki that anybody can edit is an example of such a server.  A
+&ldquo;Massive Multiauthor Collaboration&rdquo; (or &ldquo;MMC&rdquo;) contained in the
+site means any set of copyrightable works thus published on the MMC
+site.
+</p>
+<p>&ldquo;CC-BY-SA&rdquo; means the Creative Commons Attribution-Share Alike 3.0
+license published by Creative Commons Corporation, a not-for-profit
+corporation with a principal place of business in San Francisco,
+California, as well as future copyleft versions of that license
+published by that same organization.
+</p>
+<p>&ldquo;Incorporate&rdquo; means to publish or republish a Document, in whole or
+in part, as part of another Document.
+</p>
+<p>An MMC is &ldquo;eligible for relicensing&rdquo; if it is licensed under this
+License, and if all works that were first published under this License
+somewhere other than this MMC, and subsequently incorporated in whole
+or in part into the MMC, (1) had no cover texts or invariant sections,
+and (2) were thus incorporated prior to November 1, 2008.
+</p>
+<p>The operator of an MMC Site may republish an MMC contained in the site
+under CC-BY-SA on the same site at any time before August 1, 2009,
+provided the MMC is eligible for relicensing.
+</p>
+</li></ol>
+
+<a name="ADDENDUM_003a-How-to-use-this-License-for-your-documents"></a>
+<h3 class="heading">ADDENDUM: How to use this License for your documents</h3>
+
+<p>To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+</p>
+<div class="smallexample">
+<pre class="smallexample">  Copyright (C)  <var>year</var>  <var>your name</var>.
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.3
+  or any later version published by the Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+  Texts.  A copy of the license is included in the section entitled ``GNU
+  Free Documentation License''.
+</pre></div>
+
+<p>If you have Invariant Sections, Front-Cover Texts and Back-Cover Texts,
+replace the &ldquo;with&hellip;Texts.&rdquo; line with this:
+</p>
+<div class="smallexample">
+<pre class="smallexample">    with the Invariant Sections being <var>list their titles</var>, with
+    the Front-Cover Texts being <var>list</var>, and with the Back-Cover Texts
+    being <var>list</var>.
+</pre></div>
+
+<p>If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.
+</p>
+<p>If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License,
+to permit their use in free software.
+</p>
+
+<hr>
+<a name="Concept-Index"></a>
+<div class="header">
+<p>
+Next: <a href="#Function-and-Data-Index" accesskey="n" rel="next">Function and Data Index</a>, Previous: <a href="#Copying-Information" accesskey="p" rel="prev">Copying Information</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Concept-Index-1"></a>
+<h2 class="unnumbered">Concept Index</h2>
+
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Concept-Index_cp_letter-A"><b>A</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-F"><b>F</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-H"><b>H</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-M"><b>M</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-P"><b>P</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-S"><b>S</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-T"><b>T</b></a>
+ &nbsp; 
+</td></tr></table>
+<table class="index-cp" border="0">
+<tr><td></td><th align="left">Index Entry</th><td>&nbsp;</td><th align="left"> Section</th></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-A">A</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ASN_002e1-schema">ASN.1 schema</a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-syntax">ASN.1 syntax</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1Coding-program">asn1Coding program</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Invoking-asn1Coding">Invoking asn1Coding</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1Decoding-program">asn1Decoding program</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Invoking-asn1Decoding">Invoking asn1Decoding</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1Parser-program">asn1Parser program</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Invoking-asn1Parser">Invoking asn1Parser</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-F">F</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-FDL_002c-GNU-Free-Documentation-License">FDL, GNU Free Documentation License</a>:</td><td>&nbsp;</td><td valign="top"><a href="#GNU-Free-Documentation-License">GNU Free Documentation License</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Future-developments">Future developments</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Future-developments">Future developments</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-H">H</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Header-file-libtasn1_002eh">Header file libtasn1.h</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Library-Notes">Library Notes</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-M">M</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Main-type-asn1_005fnode">Main type asn1_node</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Library-Notes">Library Notes</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-P">P</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Porting">Porting</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Introduction">Introduction</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-S">S</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Supported-ASN_002e1-types_002c-list-of">Supported ASN.1 types, list of</a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-syntax">ASN.1 syntax</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Concept-Index_cp_letter-T">T</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-threads">threads</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Introduction">Introduction</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Concept-Index_cp_letter-A"><b>A</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-F"><b>F</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-H"><b>H</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-M"><b>M</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-P"><b>P</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-S"><b>S</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Concept-Index_cp_letter-T"><b>T</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr>
+<a name="Function-and-Data-Index"></a>
+<div class="header">
+<p>
+Previous: <a href="#Concept-Index" accesskey="p" rel="prev">Concept Index</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<a name="Function-and-Data-Index-1"></a>
+<h2 class="unnumbered">Function and Data Index</h2>
+
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Function-and-Data-Index_fn_letter-A"><b>A</b></a>
+ &nbsp; 
+</td></tr></table>
+<table class="index-fn" border="0">
+<tr><td></td><th align="left">Index Entry</th><td>&nbsp;</td><th align="left"> Section</th></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th><a name="Function-and-Data-Index_fn_letter-A">A</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005farray2tree"><code>asn1_array2tree</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fbit_005fder"><code>asn1_bit_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fcheck_005fversion"><code>asn1_check_version</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#Auxilliary-functions">Auxilliary functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fcopy_005fnode"><code>asn1_copy_node</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fcreate_005felement"><code>asn1_create_element</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdecode_005fsimple_005fber"><code>asn1_decode_simple_ber</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdecode_005fsimple_005fder"><code>asn1_decode_simple_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdelete_005felement"><code>asn1_delete_element</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdelete_005fstructure"><code>asn1_delete_structure</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdelete_005fstructure2"><code>asn1_delete_structure2</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fder_005fcoding"><code>asn1_der_coding</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fder_005fdecoding"><code>asn1_der_decoding</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fder_005fdecoding2"><code>asn1_der_decoding2</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fder_005fdecoding_005felement"><code>asn1_der_decoding_element</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fder_005fdecoding_005fstartEnd"><code>asn1_der_decoding_startEnd</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fdup_005fnode"><code>asn1_dup_node</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fencode_005fsimple_005fder"><code>asn1_encode_simple_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fexpand_005fany_005fdefined_005fby"><code>asn1_expand_any_defined_by</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fexpand_005foctet_005fstring"><code>asn1_expand_octet_string</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005ffind_005fnode"><code>asn1_find_node</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#Auxilliary-functions">Auxilliary functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005ffind_005fstructure_005ffrom_005foid"><code>asn1_find_structure_from_oid</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005fbit_005fder"><code>asn1_get_bit_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005flength_005fber"><code>asn1_get_length_ber</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005flength_005fder"><code>asn1_get_length_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005fobject_005fid_005fder"><code>asn1_get_object_id_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005foctet_005fder"><code>asn1_get_octet_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fget_005ftag_005fder"><code>asn1_get_tag_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005flength_005fder"><code>asn1_length_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fnumber_005fof_005felements"><code>asn1_number_of_elements</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005foctet_005fder"><code>asn1_octet_der</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#DER-functions">DER functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fparser2array"><code>asn1_parser2array</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-schema-functions">ASN.1 schema functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fparser2tree"><code>asn1_parser2tree</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-schema-functions">ASN.1 schema functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fperror"><code>asn1_perror</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#Error-handling-functions">Error handling functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fprint_005fstructure"><code>asn1_print_structure</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fread_005fnode_005fvalue"><code>asn1_read_node_value</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fread_005ftag"><code>asn1_read_tag</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fread_005fvalue"><code>asn1_read_value</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fread_005fvalue_005ftype"><code>asn1_read_value_type</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fstrerror"><code>asn1_strerror</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#Error-handling-functions">Error handling functions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-asn1_005fwrite_005fvalue"><code>asn1_write_value</code></a>:</td><td>&nbsp;</td><td valign="top"><a href="#ASN_002e1-field-functions">ASN.1 field functions</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Function-and-Data-Index_fn_letter-A"><b>A</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr>
+
+
+
+</body>
+</html>
