@@ -183,8 +183,8 @@ enum smb_session_supports_what
 #define DSM_ERROR_NETWORK   (-3)
 #define DSM_ERROR_CHARSET   (-4)
 
-#define DSM_READ_TIMEOUT     5
-#define DSM_WRITE_TIMEOUT    5
-#define DSM_CONNECT_TIMEOUT  2
+#define DSM_READ_TIMEOUT     15
+#define DSM_WRITE_TIMEOUT    15
+#define DSM_CONNECT_TIMEOUT  5
 
 #endif
