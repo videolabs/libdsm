@@ -80,7 +80,10 @@ smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
  * @return An opaque smb_stat or NULL in case of error. You need to
  * destory this object with smb_stat_destroy after usage.
  */
-smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
+
+smb_stat        smb_fstat_basic(smb_session *s, smb_tid tid, const char *path);
+
+smb_stat        smb_fstat_standard(smb_session *s, smb_tid tid, const char *path);
 
 /**
  * @brief Get the status of an open file from it's file descriptor

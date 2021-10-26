@@ -394,9 +394,29 @@ SMB_PACKED_START typedef struct
     uint8_t       payload[];
 } SMB_PACKED_END   smb_trans_req;
 
-
-
-
+//-> Fstat
+SMB_PACKED_START typedef struct
+{
+    uint8_t       wct;                // 15
+    uint16_t      total_param_count;
+    uint16_t      total_data_count;
+    uint16_t      max_param_count;
+    uint16_t      max_data_count;
+    uint8_t       max_setup_count;
+    uint8_t       reserved;
+    uint16_t      flags;
+    uint32_t      timeout;
+    uint16_t      reserve2;
+    uint16_t      param_count;
+    uint16_t      param_offset;
+    uint16_t      data_count;
+    uint16_t      data_offset;
+    uint8_t       setup_count;
+    uint8_t       reserved3;
+    uint16_t      cmd;
+    uint16_t      bct;
+    uint8_t       reserved4;
+} SMB_PACKED_END   smb_trans2_query_path_info_req;
 
 //-> Trans2
 SMB_PACKED_START typedef struct
@@ -534,6 +554,26 @@ SMB_PACKED_START typedef struct
     uint32_t      name_len;
     uint8_t       name[];
 } SMB_PACKED_END   smb_tr2_path_info;
+
+//// <- QueryBasicPathInfo
+SMB_PACKED_START typedef struct
+{
+    uint64_t      created;
+    uint64_t      accessed;
+    uint64_t      written;
+    uint64_t      changed;
+    uint32_t      attr;
+} SMB_PACKED_END   smb_tr2_basic_path_info;
+
+//// <- QueryStandardPathInfo
+SMB_PACKED_START typedef struct
+{
+    uint64_t      alloc_size;
+    uint64_t      size;
+    uint32_t      link_count;
+    uint8_t       rm_pending;
+    uint8_t       is_dir;
+} SMB_PACKED_END   smb_tr2_standard_path_info;
 
 //-> Example
 SMB_PACKED_START typedef struct

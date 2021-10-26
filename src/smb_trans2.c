@@ -428,14 +428,15 @@ smb_file  *smb_find(smb_session *s, smb_tid tid, const char *pattern)
 /*
  * Query management
  */
-
-smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
+    
+smb_file  *smb_fstat_interest(smb_session *s, smb_tid tid, uint16_t interest, const char *path)
 {
     smb_message           *msg, reply;
-    smb_trans2_req        tr2;
+    smb_trans2_query_path_info_req tr2;
     smb_trans2_resp       *tr2_resp;
     smb_tr2_query         query;
-    smb_tr2_path_info     *info;
+    smb_tr2_basic_path_info     *info_basic;
+    smb_tr2_standard_path_info  *info_standard;
     smb_file              *file;
     size_t                utf_path_len, msg_len;
     char                  *utf_path;
@@ -443,6 +444,14 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
 
     bdsm_assert(s != NULL && path != NULL);
     
+    bdsm_assert(interest == SMB_FIND2_QUERY_FILE_BASIC_INFO || interest == SMB_FIND2_QUERY_FILE_STANDARD_INFO);
+
+    bdsm_assert(smb_session_supports(s, SMB_SESSION_NTSMB));
+    if (smb_session_supports(s, SMB_SESSION_NTSMB) == false)
+    {
+        return NULL;
+    }
+
     if(s != NULL && path != NULL){
 
         utf_path_len = smb_to_utf16(path, strlen(path) + 1, &utf_path);
@@ -466,17 +475,17 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
         tr2.total_param_count  = utf_path_len + sizeof(smb_tr2_query);
         tr2.param_count        = tr2.total_param_count;
         tr2.max_param_count    = 2; // ?? Why not the same or 12 ?
-        tr2.max_data_count     = 0xffff;
-        tr2.param_offset       = 68; // Offset of find_first_params in packet;
+        tr2.max_data_count     = 40;
+        tr2.param_offset       = 66; // Offset of find_first_params in packet;
         tr2.data_count         = 0;
-        tr2.data_offset        = 96; // Offset of pattern in packet
+        tr2.data_offset        = 0; // Offset of pattern in packet
         tr2.setup_count        = 1;
         tr2.cmd                = SMB_TR2_QUERY_PATH;
-        tr2.bct                = sizeof(smb_tr2_query) + utf_path_len + padding;
+        tr2.bct                = sizeof(smb_tr2_query) + utf_path_len + padding + 1; // 1 - reserved
         SMB_MSG_PUT_PKT(msg, tr2);
-
+        
         SMB_MSG_INIT_PKT(query);
-        query.interest   = SMB_FIND2_QUERY_FILE_ALL_INFO;
+        query.interest   = interest;
         SMB_MSG_PUT_PKT(msg, query);
 
         smb_message_append(msg, utf_path, utf_path_len);
@@ -494,49 +503,69 @@ smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
             return NULL;
         }
 
-        if (!smb_session_recv_msg(s, &reply)
-            || !smb_session_check_nt_status(s, &reply))
+        if (!smb_session_recv_msg(s, &reply) ||
+            !smb_session_check_nt_status(s, &reply))
         {
             BDSM_dbg("Unable to recv msg or failure for %s\n", path);
             return NULL;
         }
+        
+        file      = calloc(1, sizeof(smb_file));
+        if (!file) {
+            return NULL;
+        }
+        
+        bool isBasicFileInfo = (query.interest == SMB_FIND2_QUERY_FILE_BASIC_INFO);
+        bool isStandardFileInfo = (query.interest == SMB_FIND2_QUERY_FILE_STANDARD_INFO);
 
-        if (reply.payload_size < sizeof(smb_tr2_path_info))
+        if (isBasicFileInfo && reply.payload_size < sizeof(smb_tr2_basic_path_info))
+        {
+            BDSM_dbg("[smb_fstat]Malformed message %s\n", path);
+            return NULL;
+        }
+        
+        if (isStandardFileInfo && reply.payload_size < sizeof(smb_tr2_standard_path_info))
         {
             BDSM_dbg("[smb_fstat]Malformed message %s\n", path);
             return NULL;
         }
         
         tr2_resp  = (smb_trans2_resp *)reply.packet->payload;
-        info      = (smb_tr2_path_info *)(tr2_resp->payload + 4); //+4 is padding
         
-        if (info->name + info->name_len > reply.packet->payload + reply.payload_size)
-        {
-            BDSM_dbg("[smb_fstat]Malformed message %s\n", path);
-            return NULL;
+        if (isBasicFileInfo) {
+            info_basic = (smb_tr2_basic_path_info *)(tr2_resp->payload + 4); //+4 is padding
+            
+            file->created     = info_basic->created;
+            file->accessed    = info_basic->accessed;
+            file->written     = info_basic->written;
+            file->changed     = info_basic->changed;
+            file->attr        = info_basic->attr;
+            file->is_dir      = info_basic->attr & SMB_ATTR_DIR;
         }
-        
-        file      = calloc(1, sizeof(smb_file));
-        if (!file)
-            return NULL;
-
-        file->name_len  = smb_from_utf16((const char *)info->name, info->name_len,
-                                         &file->name);
-        if(file->name_len>0){
-            file->name[info->name_len / 2] = 0;
+        else if (isStandardFileInfo) {
+            info_standard = (smb_tr2_standard_path_info *)(tr2_resp->payload + 4); //+4 is padding
+            
+            file->alloc_size     = info_standard->alloc_size;
+            file->size           = info_standard->size;
+            //file->link_count     = info_standard->link_count;
+            //file->rm_pending     = info_standard->rm_pending;
+            file->is_dir         = info_standard->is_dir;
         }
-
-        file->created     = info->created;
-        file->accessed    = info->accessed;
-        file->written     = info->written;
-        file->changed     = info->changed;
-        file->alloc_size  = info->alloc_size;
-        file->size        = info->size;
-        file->attr        = info->attr;
-        file->is_dir      = info->is_dir;
+        else{
+            BDSM_dbg("[smb_fstat]Unknown file info %s\n", path);
+        }
 
         return file;
-        
     }
     return NULL;
+}
+
+smb_file  *smb_fstat_basic(smb_session *s, smb_tid tid, const char *path)
+{
+    return smb_fstat_interest(s, tid, SMB_FIND2_QUERY_FILE_BASIC_INFO, path);
+}
+
+smb_file  *smb_fstat_standard(smb_session *s, smb_tid tid, const char *path)
+{
+    return smb_fstat_interest(s, tid, SMB_FIND2_QUERY_FILE_STANDARD_INFO, path);
 }

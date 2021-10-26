@@ -447,6 +447,8 @@ int             smb_session_supports(smb_session *s, int what)
         {
             case SMB_SESSION_XSEC:
                 return s->srv.caps & SMB_CAPS_XSEC;
+            case SMB_SESSION_NTSMB:
+                return s->srv.caps & SMB_CAPS_NTSMB;
             default:
                 return 0;
         }

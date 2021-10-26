@@ -78,6 +78,7 @@ enum
 enum smb_session_supports_what
 {
     SMB_SESSION_XSEC            = 0,
+    SMB_SESSION_NTSMB           = 1,
 };
 
 //-----------------------------------------------------------------------------/
