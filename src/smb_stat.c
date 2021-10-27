@@ -121,6 +121,8 @@ uint64_t          smb_stat_get(smb_stat info, int what)
             return info->accessed;
         case SMB_STAT_WTIME:
             return info->written;
+        case SMB_STAT_WTIME_DEP:
+            return info->written_dep;
         case SMB_STAT_MTIME:
             return info->changed;
         case SMB_STAT_ISDIR:

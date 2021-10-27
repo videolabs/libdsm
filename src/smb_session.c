@@ -221,6 +221,7 @@ static int        smb_negotiate(smb_session *s)
         s->srv.security_mode  = nego->security_mode;
         s->srv.caps           = nego->caps;
         s->srv.ts             = nego->ts;
+        s->srv.tz             = nego->tz;
         s->srv.session_key    = nego->session_key;
 
         // Copy SPNEGO supported mechanisms  token for later usage (login_gss())
@@ -435,6 +436,26 @@ const char      *smb_session_server_name(smb_session *s)
         return s->srv.name;
     }
     return NULL;
+}
+
+uint64_t       smb_session_server_time_stamp(smb_session *s)
+{
+    bdsm_assert(s != NULL);
+
+    if(s!=NULL){
+        return s->srv.ts;
+    }
+    return 0;
+}
+
+uint16_t       smb_session_server_time_zone(smb_session *s)
+{
+    bdsm_assert(s != NULL);
+
+    if(s!=NULL){
+        return s->srv.tz;
+    }
+    return 0;
 }
 
 int             smb_session_supports(smb_session *s, int what)

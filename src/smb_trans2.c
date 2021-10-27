@@ -512,6 +512,7 @@ smb_file  *smb_fstat_interest(smb_session *s, smb_tid tid, uint16_t interest, co
         
         file      = calloc(1, sizeof(smb_file));
         if (!file) {
+            BDSM_dbg("Unable to create file for %s\n", path);
             return NULL;
         }
         
@@ -569,3 +570,142 @@ smb_file  *smb_fstat_standard(smb_session *s, smb_tid tid, const char *path)
 {
     return smb_fstat_interest(s, tid, SMB_FIND2_QUERY_FILE_STANDARD_INFO, path);
 }
+
+//https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-cifs/847573c9-cbe6-4dcb-a0db-9b5af815759b
+smb_file  *smb_fstat_query_info(smb_session *s, smb_tid tid, const char *path)
+{
+    smb_message           *req_msg, resp_msg;
+    smb_query_path_info_req  req;
+    smb_query_path_info_resp *resp;
+    size_t                utf_pattern_len;
+    char                  *utf_pattern;
+    smb_file              *file;
+
+    bdsm_assert(s != NULL && path != NULL);
+
+    if(s != NULL && path != NULL){
+        
+        utf_pattern_len = smb_to_utf16(path, strlen(path) + 1, &utf_pattern);
+        if (utf_pattern_len == 0)
+            return NULL;
+
+        req_msg = smb_message_new(SMB_CMD_QUERY_INFO);
+        if (!req_msg)
+        {
+            free(utf_pattern);
+            return NULL;
+        }
+
+        req_msg->packet->header.tid = (uint16_t)tid;
+
+        SMB_MSG_INIT_PKT(req);
+        req.wct              = 0x00; // Must be 0
+        req.bct              = (uint16_t)(utf_pattern_len + 1);
+        req.buffer_format    = 0x04; // Must be 4
+        SMB_MSG_PUT_PKT(req_msg, req);
+        smb_message_append(req_msg, utf_pattern, utf_pattern_len);
+
+        smb_session_send_msg(s, req_msg);
+        smb_message_destroy(req_msg);
+
+        free(utf_pattern);
+
+        if (!smb_session_recv_msg(s, &resp_msg)){
+            BDSM_dbg("Unable to recv msg or failure for %s\n", path);
+            return NULL;
+        }
+
+        if (!smb_session_check_nt_status(s, &resp_msg)){
+            BDSM_dbg("Unable to recv msg or failure for %s\n", path);
+            return NULL;
+        }
+        
+        if (resp_msg.payload_size < sizeof(smb_query_path_info_resp))
+        {
+            BDSM_dbg("[smb_query_path_info]Malformed message %s\n", path);
+            return NULL;
+        }
+
+        resp = (smb_query_path_info_resp *)resp_msg.packet->payload;
+        if ((resp->wct) == 0) {
+            BDSM_dbg("[smb_query_path_info]Malformed message wct == 0 %s\n", path);
+            return NULL;
+        }
+
+        file = calloc(1, sizeof(smb_file));
+        if (!file) {
+            BDSM_dbg("Unable to create file for %s\n", path);
+            return NULL;
+        }
+        
+        uint64_t time_zone = smb_session_server_time_zone(s);
+        
+        file->written_dep = resp->written + time_zone;
+        file->attr        = resp->attr;
+        file->is_dir      = resp->attr & SMB_ATTR_DIR;
+        file->size        = resp->size;
+        file->alloc_size  = resp->size;
+        
+        return file;
+    }
+    return NULL;
+}
+
+
+smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path)
+{
+   
+    if (smb_session_supports(s, SMB_SESSION_NTSMB) == false)
+    {
+        //return deprecated query_info (needed for old NAS)
+        return smb_fstat_query_info(s,tid,path);
+    }
+
+    smb_file *file      = calloc(1, sizeof(smb_file));
+    if (!file) {
+        BDSM_dbg("Unable to create file for %s\n", path);
+        return NULL;
+    }
+    
+    smb_stat statBasic = smb_fstat_basic(s, tid, path);
+    
+    if (statBasic != NULL) {
+        file->created     = statBasic->created;
+        file->accessed    = statBasic->accessed;
+        file->written     = statBasic->written;
+        file->changed     = statBasic->changed;
+        file->attr        = statBasic->attr;
+        file->is_dir      = statBasic->is_dir;
+        
+        smb_stat_destroy(statBasic);
+    }
+    else {
+        BDSM_dbg("Unable to recv basic info for file %s\n", path);
+        smb_stat_destroy(file);
+        
+        return NULL;
+    }
+    
+    smb_stat statStandard = smb_fstat_standard(s, tid, path);
+    
+    if (statStandard != NULL) {
+        file->alloc_size     = statStandard->alloc_size;
+        file->size           = statStandard->size;
+
+        smb_stat_destroy(statStandard);
+    }
+    
+//#ifdef DEBUG
+//    smb_stat statDeprecated =  smb_fstat_query_info(s,tid,path);
+//    if (statDeprecated != NULL) {
+//        bdsm_assert(statDeprecated->attr == file->attr);
+//        bdsm_assert(statDeprecated->is_dir == file->is_dir);
+//        bdsm_assert(statDeprecated->alloc_size == file->alloc_size);
+//        smb_stat_destroy(statDeprecated);
+//    }
+//#endif
+    
+    return file;
+}
+
+

@@ -72,6 +72,7 @@ struct smb_file
     uint32_t            attr;
     off_t               offset;          // Current position pointer
     int                 is_dir;         // 0 -> file, 1 -> directory
+    uint64_t            written_dep;
 };
 
 typedef struct smb_share smb_share;
@@ -108,7 +109,8 @@ struct smb_srv_info
     uint32_t            session_key;    // The session key sent by the server on protocol negotiate
     uint32_t            caps;           // Server caps replyed during negotiate
     uint64_t            challenge;      // For challenge response security
-    uint64_t            ts;             // It seems Win7 requires it :-/
+    uint64_t            ts;             // Server time
+    uint16_t            tz;             // Server time zone
 };
 
 /**

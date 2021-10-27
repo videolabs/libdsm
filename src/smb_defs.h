@@ -78,6 +78,7 @@
 #define SMB_CMD_RMDIR           0x01
 #define SMB_CMD_RMFILE          0x06
 #define SMB_CMD_MOVE            0x07 // Move or rename
+#define SMB_CMD_QUERY_INFO      0x08 // Query Information
 
 //-----------------------------------------------------------------------------/
 // SMB FLAGS2 values

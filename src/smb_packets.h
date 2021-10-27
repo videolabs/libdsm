@@ -97,8 +97,8 @@ SMB_PACKED_START typedef struct
   uint32_t        max_rawbuffer;  /* Max raw buffer size requested by serv. */ \
   uint32_t        session_key;    /* 'MUST' be returned to server */           \
   uint32_t        caps;                                                        \
-  uint64_t        ts;             /* I don't give a fuck (or do i?) */         \
-  uint16_t        tz;             /* Even less fuck given */                   \
+  uint64_t        ts;             /* Server time */                            \
+  uint16_t        tz;             /* Server time zone */                       \
   uint8_t         key_length;     /* Size of challenge key // GSS blob */      \
   uint16_t        bct;
 
@@ -574,6 +574,23 @@ SMB_PACKED_START typedef struct
     uint8_t       rm_pending;
     uint8_t       is_dir;
 } SMB_PACKED_END   smb_tr2_standard_path_info;
+
+//// <- QueryPathInfo Response
+SMB_PACKED_START typedef struct
+{
+    uint8_t       wct;
+    uint16_t      attr;
+    uint32_t      written;
+    uint32_t      size;
+} SMB_PACKED_END   smb_query_path_info_resp;
+
+//// <- QueryPathInfo Request
+SMB_PACKED_START typedef struct
+{
+    uint8_t         wct;
+    uint16_t        bct;
+    uint8_t         buffer_format;
+} SMB_PACKED_END   smb_query_path_info_req;
 
 //-> Example
 SMB_PACKED_START typedef struct

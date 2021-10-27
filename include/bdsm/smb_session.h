@@ -144,5 +144,8 @@ int             smb_session_supports(smb_session *s, int what);
  */
 uint32_t        smb_session_get_nt_status(smb_session *s);
 
+uint64_t       smb_session_server_time_stamp(smb_session *s);
+
+uint16_t       smb_session_server_time_zone(smb_session *s);
 
 #endif

@@ -53,7 +53,7 @@
 #define SMB_STAT_WTIME        5
 /// smb_stat_get() OP: Get file last moditification time
 #define SMB_STAT_MTIME        6
-
+#define SMB_STAT_WTIME_DEP    7
 /**
  * @brief Returns infos about files matching a pattern
  * @details This functions uses the FIND_FIRST2 SMB operations to list files
@@ -79,11 +79,10 @@ smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
  *
  * @return An opaque smb_stat or NULL in case of error. You need to
  * destory this object with smb_stat_destroy after usage.
+ * FYI name is not returned
  */
 
-smb_stat        smb_fstat_basic(smb_session *s, smb_tid tid, const char *path);
-
-smb_stat        smb_fstat_standard(smb_session *s, smb_tid tid, const char *path);
+smb_file  *smb_fstat(smb_session *s, smb_tid tid, const char *path);
 
 /**
  * @brief Get the status of an open file from it's file descriptor
