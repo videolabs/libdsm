@@ -223,7 +223,8 @@ static bool   netbios_ns_is_aborted(netbios_ns *ns)
 static void netbios_ns_abort(netbios_ns *ns)
 {
     uint8_t buf = '\0';
-    write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+    ssize_t ret = write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
+    (void) ret;
 }
 
 #else
