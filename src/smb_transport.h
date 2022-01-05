@@ -33,6 +33,10 @@
 
 #include "smb_types.h"
 
+
+void *            smb_transport_new_session(size_t buf_size);
+void              smb_transport_destroy_session(void *s);
+
 /**
  * @internal
  * @brief Fill the smb_transport structure with the fun pointers for using

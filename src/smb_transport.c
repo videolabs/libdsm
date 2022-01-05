@@ -53,14 +53,23 @@ int               transport_connect_tcp(uint32_t ip,
     return netbios_session_connect(ip, s, name, 1);
 }
 
+void *            smb_transport_new_session(size_t buf_size)
+{
+    return netbios_session_new(buf_size);
+}
+
+void              smb_transport_destroy_session(void *s)
+{
+    netbios_session_destroy(s);
+}
+
 void              smb_transport_nbt(smb_transport *tr)
 {
     assert(tr != NULL);
 
     // Sorry for the dirty cast.
-    tr->new           = (void *)netbios_session_new;
     tr->connect       = (void *)transport_connect_nbt;
-    tr->destroy       = (void *)netbios_session_destroy;
+    tr->disconnect    = (void *)netbios_session_disconnect;
     tr->pkt_init      = (void *)netbios_session_packet_init;
     tr->pkt_append    = (void *)netbios_session_packet_append;
     tr->send          = (void *)netbios_session_packet_send;
@@ -71,9 +80,8 @@ void              smb_transport_tcp(smb_transport *tr)
 {
     assert(tr != NULL);
 
-    tr->new           = (void *)netbios_session_new;
     tr->connect       = (void *)transport_connect_tcp;
-    tr->destroy       = (void *)netbios_session_destroy;
+    tr->disconnect    = (void *)netbios_session_disconnect;
     tr->pkt_init      = (void *)netbios_session_packet_init;
     tr->pkt_append    = (void *)netbios_session_packet_append;
     tr->send          = (void *)netbios_session_packet_send;

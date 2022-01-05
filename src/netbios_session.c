@@ -117,12 +117,22 @@ netbios_session *netbios_session_new(size_t buf_size)
     return session;
 }
 
+void              netbios_session_disconnect(netbios_session *s)
+{
+    if (!s)
+        return;
+
+    if (s->socket != -1)
+    {
+        closesocket(s->socket);
+        s->socket = -1;
+    }
+}
+
 void              netbios_session_destroy(netbios_session *s)
 {
     if (!s)
         return;
-    if (s->socket != -1)
-        closesocket(s->socket);
 
     free(s->packet);
     free(s);
