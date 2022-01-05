@@ -1,5 +1,5 @@
 project('libdsm', ['c'],
-    version: '0.3.2',
+    version: '0.3.3',
     license: ['LGPL2'],
     default_options: ['c_std=c11',
                       'warning_level=2',
@@ -8,7 +8,7 @@ project('libdsm', ['c'],
     meson_version: '>= 0.53.0')
 
 #Soname
-dsm_soname_version = '3.1.0'
+dsm_soname_version = '3.2.0'
 if host_machine.system() == 'windows'
   dsm_soversion = ''
 else

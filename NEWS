@@ -1,3 +1,10 @@
+Changes between 0.3.1 and 0.3.3:
+--------------------------------
+  * Switch to meson buildsystem
+  * add smb_session_abort() and netbios_ns_abort() that allow interrupting any
+    I/O operations
+
+
 Changes between 0.3.0 and 0.3.1:
 --------------------------------
 
