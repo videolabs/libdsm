@@ -687,13 +687,14 @@ netbios_ns  *netbios_ns_new()
         return NULL;
     }
 
+    TAILQ_INIT(&ns->entry_queue);
+
     if (!ns_open_socket(ns))
     {
         netbios_ns_destroy(ns);
         return NULL;
     }
 
-    TAILQ_INIT(&ns->entry_queue);
     ns->last_trn_id   = rand();
 
     return ns;
