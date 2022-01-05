@@ -32,6 +32,7 @@
 #define _NETBIOS_UTILS_H_
 
 #include "netbios_defs.h"
+#include <stdbool.h>
 
 void  netbios_name_level1_encode(const char *name, char *encoded_name,
                                  unsigned type);
@@ -42,5 +43,25 @@ char  *netbios_name_encode(const char *name, char *domain,
                            unsigned type);
 int   netbios_name_decode(const char *encoded_name,
                           char *name, char **domain);
+
+#if defined (HAVE_PIPE) && !defined (_WIN32)
+#define NS_ABORT_USE_PIPE
+#else
+#include <stdatomic.h>
+#endif
+
+struct netbios_abort_ctx
+{
+#ifdef NS_ABORT_USE_PIPE
+    int                 pipe[2];
+#else
+    atomic_bool         aborted;
+#endif
+};
+
+int netbios_abort_ctx_init(struct netbios_abort_ctx *ctx);
+void netbios_abort_ctx_destroy(struct netbios_abort_ctx *ctx);
+bool netbios_abort_ctx_is_aborted(struct netbios_abort_ctx *ctx);
+void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx);
 
 #endif
