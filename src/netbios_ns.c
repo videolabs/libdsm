@@ -75,12 +75,6 @@
 #include "netbios_query.h"
 #include "netbios_utils.h"
 
-#if defined (HAVE_PIPE) && !defined (_WIN32)
-#define NS_ABORT_USE_PIPE
-#else
-#include <stdatomic.h>
-#endif
-
 enum name_query_type {
     NAME_QUERY_TYPE_INVALID,
     NAME_QUERY_TYPE_NB,
@@ -115,11 +109,7 @@ struct netbios_ns
     uint16_t            last_trn_id;  // Last transaction id used;
     NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
-#ifdef NS_ABORT_USE_PIPE
-    int                 abort_pipe[2];
-#else
-    atomic_bool         aborted;
-#endif
+    struct netbios_abort_ctx abort_ctx;
     unsigned int        discover_broadcast_timeout;
     pthread_t           discover_thread;
     bool                discover_started;
@@ -171,86 +161,6 @@ error:
     BDSM_perror("netbios_ns_new, open_socket: ");
     return 0;
 }
-
-#ifdef NS_ABORT_USE_PIPE
-
-static void   ns_close_abort_pipe(netbios_ns *ns)
-{
-    if (ns->abort_pipe[0] != -1 && ns->abort_pipe[1] != -1)
-    {
-        close(ns->abort_pipe[0]);
-        close(ns->abort_pipe[1]);
-        ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
-    }
-}
-
-static int    ns_open_abort_pipe(netbios_ns *ns)
-{
-    int flags;
-
-    if (pipe(ns->abort_pipe) == -1)
-        return -1;
-
-    if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
-    {
-        ns_close_abort_pipe(ns);
-        return -1;
-    }
-
-    if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
-    {
-        ns_close_abort_pipe(ns);
-        return -1;
-    }
-
-    return 0;
-}
-
-static bool   netbios_ns_is_aborted(netbios_ns *ns)
-{
-    fd_set        read_fds;
-    int           res;
-    struct timeval timeout = {0, 0};
-
-    FD_ZERO(&read_fds);
-    FD_SET(ns->abort_pipe[0], &read_fds);
-
-    res = select(ns->abort_pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
-
-    return (res < 0 || FD_ISSET(ns->abort_pipe[0], &read_fds));
-}
-
-static void netbios_ns_abort(netbios_ns *ns)
-{
-    uint8_t buf = '\0';
-    ssize_t ret = write(ns->abort_pipe[1], &buf, sizeof(uint8_t));
-    (void) ret;
-}
-
-#else
-
-static int    ns_open_abort_pipe(netbios_ns *ns)
-{
-    atomic_init(&ns->aborted, false);
-    return 0;
-}
-
-static void   ns_close_abort_pipe(netbios_ns *ns)
-{
-    (void) ns;
-}
-
-static bool   netbios_ns_is_aborted(netbios_ns *ns)
-{
-    return atomic_load(&ns->aborted);
-}
-
-static void netbios_ns_abort(netbios_ns *ns)
-{
-    atomic_store(&ns->aborted, true);
-}
-
-#endif
 
 static uint16_t query_type_nb = 0x2000;
 static uint16_t query_type_nbstat = 0x2100;
@@ -512,7 +422,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
 
     sock = ns->socket;
 #ifdef NS_ABORT_USE_PIPE
-    int abort_fd =  ns->abort_pipe[0];
+    int abort_fd =  ns->abort_ctx.pipe[0];
 #else
     int abort_fd = -1;
 #endif
@@ -545,7 +455,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         if (FD_ISSET(abort_fd, &read_fds))
             return -1;
 #else
-        if (netbios_ns_is_aborted(ns))
+        if (netbios_abort_ctx_is_aborted(&ns->abort_ctx))
             return -1;
 #endif
 
@@ -679,7 +589,7 @@ netbios_ns  *netbios_ns_new()
     if (!ns)
         return NULL;
 
-    if (ns_open_abort_pipe(ns) == -1)
+    if (netbios_abort_ctx_init(&ns->abort_ctx) == -1)
     {
         free(ns);
         return NULL;
@@ -708,7 +618,7 @@ void          netbios_ns_destroy(netbios_ns *ns)
     if (ns->socket != -1)
         closesocket(ns->socket);
 
-    ns_close_abort_pipe(ns);
+    netbios_abort_ctx_destroy(&ns->abort_ctx);
 
     free(ns);
 }
@@ -843,7 +753,7 @@ static void *netbios_ns_discover_thread(void *opaque)
         const int remove_timeout = 5 * ns->discover_broadcast_timeout;
         netbios_ns_entry  *entry, *entry_next;
 
-        if (netbios_ns_is_aborted(ns))
+        if (netbios_abort_ctx_is_aborted(&ns->abort_ctx))
             return NULL;
 
         // check if cached entries timeout, the timeout value is 5 times the
@@ -969,7 +879,7 @@ int netbios_ns_discover_stop(netbios_ns *ns)
 {
     if (ns->discover_started)
     {
-        netbios_ns_abort(ns);
+        netbios_abort_ctx_abort(&ns->abort_ctx);
         pthread_join(ns->discover_thread, NULL);
         ns->discover_started = false;
 

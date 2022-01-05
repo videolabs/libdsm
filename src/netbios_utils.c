@@ -38,6 +38,11 @@
 
 #include "netbios_utils.h"
 
+#ifdef NS_ABORT_USE_PIPE
+#include <unistd.h>
+#include <fcntl.h>
+#endif
+
 static short  nibble_encode(char c)
 {
     short n1, n2;
@@ -139,4 +144,82 @@ int             netbios_name_decode(const char *encoded_name,
     return 32;
 }
 
+#ifdef NS_ABORT_USE_PIPE
 
+void netbios_abort_ctx_destroy(struct netbios_abort_ctx *ctx)
+{
+    if (ctx->pipe[0] != -1 && ctx->pipe[1] != -1)
+    {
+        close(ctx->pipe[0]);
+        close(ctx->pipe[1]);
+        ctx->pipe[0] = ctx->pipe[1] = -1;
+    }
+}
+
+int netbios_abort_ctx_init(struct netbios_abort_ctx *ctx)
+{
+    int flags;
+
+    if (pipe(ctx->pipe) == -1)
+        return -1;
+
+    if ((flags = fcntl(ctx->pipe[0], F_GETFL, 0)) == -1)
+    {
+        netbios_abort_ctx_destroy(ctx);
+        return -1;
+    }
+
+    if (fcntl(ctx->pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        netbios_abort_ctx_destroy(ctx);
+        return -1;
+    }
+
+    return 0;
+}
+
+bool netbios_abort_ctx_is_aborted(struct netbios_abort_ctx *ctx)
+{
+    fd_set        read_fds;
+    int           res;
+    struct timeval timeout = {0, 0};
+
+    FD_ZERO(&read_fds);
+    FD_SET(ctx->pipe[0], &read_fds);
+
+    res = select(ctx->pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
+
+    return (res < 0 || FD_ISSET(ctx->pipe[0], &read_fds));
+}
+
+void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx)
+{
+    uint8_t buf = '\0';
+    ssize_t ret = write(ctx->pipe[1], &buf, sizeof(uint8_t));
+    (void) ret;
+}
+
+#else
+
+int netbios_abort_ctx_init(struct netbios_abort_ctx *ctx)
+{
+    atomic_init(&ctx->aborted, false);
+    return 0;
+}
+
+void netbios_abort_ctx_destroy(struct netbios_abort_ctx *ctx)
+{
+    (void) ctx;
+}
+
+bool netbios_abort_ctx_is_aborted(struct netbios_abort_ctx *ctx)
+{
+    return atomic_load(&ctx->aborted);
+}
+
+void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx)
+{
+    atomic_store(&ctx->aborted, true);
+}
+
+#endif
