@@ -681,13 +681,13 @@ netbios_ns  *netbios_ns_new()
     if (!ns)
         return NULL;
 
-#ifdef NS_ABORT_USE_PIPE
-    // Don't initialize this in ns_open_abort_pipe, as it would lead to
-    // fd 0 to be closed (twice) in case of ns_open_socket error
-    ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
-#endif
+    if (ns_open_abort_pipe(ns) == -1)
+    {
+        free(ns);
+        return NULL;
+    }
 
-    if (!ns_open_socket(ns) || ns_open_abort_pipe(ns) == -1)
+    if (!ns_open_socket(ns))
     {
         netbios_ns_destroy(ns);
         return NULL;
