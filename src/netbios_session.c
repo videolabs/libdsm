@@ -45,6 +45,7 @@
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
+#include <fcntl.h>
 #include <errno.h>
 
 #include "smb_defs.h"
@@ -60,6 +61,9 @@ static int open_socket_and_connect(netbios_session *s)
 {
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
+
+    fcntl(s->socket, F_SETFL, fcntl(s->socket, F_GETFL, 0) | O_NONBLOCK);
+
 #ifdef SO_NOSIGPIPE
     //Never generate SIGPIPE on broken write
     if (setsockopt(s->socket, SOL_SOCKET, SO_NOSIGPIPE, &(int){ 1 }, sizeof(int)))
@@ -105,10 +109,17 @@ netbios_session *netbios_session_new(size_t buf_size)
     if (!session)
         return NULL;
 
+    if (netbios_abort_ctx_init(&session->abort_ctx) != 0)
+    {
+        free(session);
+        return NULL;
+    }
+
     session->packet_payload_size = buf_size;
     packet_size = sizeof(netbios_session_packet) + session->packet_payload_size;
     session->packet = (netbios_session_packet *)malloc(packet_size);
     if (!session->packet) {
+        netbios_abort_ctx_destroy(&session->abort_ctx);
         free(session);
         return NULL;
     }
@@ -135,7 +146,13 @@ void              netbios_session_destroy(netbios_session *s)
         return;
 
     free(s->packet);
+    netbios_abort_ctx_destroy(&s->abort_ctx);
     free(s);
+}
+
+void              netbios_session_abort(netbios_session *s)
+{
+    netbios_abort_ctx_abort(&s->abort_ctx);
 }
 
 int netbios_session_connect(uint32_t ip, netbios_session *s,
@@ -242,31 +259,101 @@ int               netbios_session_packet_append(netbios_session *s,
 int               netbios_session_packet_send(netbios_session *s)
 {
     ssize_t         to_send;
-    ssize_t         sent;
 
     assert(s && s->packet && s->socket >= 0 && s->state > 0);
 
     s->packet->length = htons(s->packet_cursor);
     to_send           = sizeof(netbios_session_packet) + s->packet_cursor;
-    sent              = send(s->socket, (void *)s->packet, to_send, MSG_NOSIGNAL);
 
-    if (sent != to_send)
+    while (true)
     {
-        BDSM_perror("netbios_session_packet_send: Unable to send (full?) packet");
-        return 0;
+        fd_set read_fds, write_fds;
+        int nfds, ret;
+
+        FD_ZERO(&read_fds);
+        FD_ZERO(&write_fds);
+        FD_SET(s->socket, &write_fds);
+#ifdef NS_ABORT_USE_PIPE
+        FD_SET(s->abort_ctx.pipe[0], &read_fds);
+        nfds = (s->socket > s->abort_ctx.pipe[0] ? s->socket : s->abort_ctx.pipe[0]) + 1;
+#else
+        nfds = s->socket + 1;
+#endif
+
+        ret = select(nfds, &read_fds, &write_fds, NULL, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_session_packet_send: select: ");
+            return 0;
+        }
+
+#ifdef NS_ABORT_USE_PIPE
+        if (FD_ISSET(s->abort_ctx.pipe[0], &read_fds))
+            return 0;
+#else
+        if (netbios_abort_ctx_is_aborted(&s->abort_ctx))
+            return 0;
+#endif
+
+        if (FD_ISSET(s->socket, &write_fds))
+        {
+            ssize_t sent = send(s->socket, (void *)s->packet, to_send, MSG_NOSIGNAL);
+
+            if (sent != to_send)
+            {
+                BDSM_perror("netbios_session_packet_send: Unable to send (full?) packet");
+                return 0;
+            }
+
+            return sent;
+        }
     }
 
-    return sent;
+    return 0;
 }
 
 static ssize_t netbios_session_recv(netbios_session *s, void *buf, size_t len)
 {
-    ssize_t res = recv(s->socket, buf, len, 0);
+    while (true)
+    {
+        fd_set read_fds;
+        int nfds, ret;
 
-    if (res <= 0)
-        BDSM_perror("netbios_session_packet_recv: ");
+        FD_ZERO(&read_fds);
+        FD_SET(s->socket, &read_fds);
+#ifdef NS_ABORT_USE_PIPE
+        FD_SET(s->abort_ctx.pipe[0], &read_fds);
+        nfds = (s->socket > s->abort_ctx.pipe[0] ? s->socket : s->abort_ctx.pipe[0]) + 1;
+#else
+        nfds = s->socket + 1;
+#endif
 
-    return res;
+        ret = select(nfds, &read_fds, NULL, NULL, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_session_recv: select: ");
+            return -1;
+        }
+
+#ifdef NS_ABORT_USE_PIPE
+        if (FD_ISSET(s->abort_ctx.pipe[0], &read_fds))
+            return -1;
+#else
+        if (netbios_abort_ctx_is_aborted(&s->abort_ctx))
+            return -1;
+#endif
+
+        if (FD_ISSET(s->socket, &read_fds))
+        {
+            ssize_t res = recv(s->socket, buf, len, 0);
+
+            if (res <= 0)
+                BDSM_perror("netbios_session_recv: recv: ");
+            return res;
+        }
+    }
+
+    return -1;
 }
 
 static ssize_t    netbios_session_get_next_packet(netbios_session *s)

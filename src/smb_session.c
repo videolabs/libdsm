@@ -44,6 +44,7 @@
 #include "smb_ntlm.h"
 #include "smb_spnego.h"
 #include "smb_transport.h"
+#include "netbios_utils.h"
 
 static int        smb_negotiate(smb_session *s);
 
@@ -101,7 +102,14 @@ void            smb_session_destroy(smb_session *s)
     free(s->creds.domain);
     free(s->creds.login);
     free(s->creds.password);
+
     free(s);
+}
+
+void            smb_session_abort(smb_session *s)
+{
+    assert(s != NULL && s->transport.session != NULL);
+    smb_transport_abort_session(s->transport.session);
 }
 
 void            smb_session_set_creds(smb_session *s, const char *domain,

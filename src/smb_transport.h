@@ -36,6 +36,7 @@
 
 void *            smb_transport_new_session(size_t buf_size);
 void              smb_transport_destroy_session(void *s);
+void              smb_transport_abort_session(void *);
 
 /**
  * @internal
