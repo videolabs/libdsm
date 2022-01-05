@@ -32,6 +32,7 @@
 #define __BDSM_NETBIOS_NS_H_
 
 #include <stdint.h>
+#include "bdsm/export.h"
 
 /**
  * @file netbios_ns.h
@@ -48,6 +49,7 @@ typedef struct netbios_ns netbios_ns;
  *
  * @return A null-terminated ASCII string representing the name of a netbios machine.
  */
+BDSM_EXPORT
 const char          *netbios_ns_entry_name(netbios_ns_entry *entry);
 
 /**
@@ -57,6 +59,7 @@ const char          *netbios_ns_entry_name(netbios_ns_entry *entry);
  *
  * @return A null-terminated ASCII string representing the group of a netbios machine.
  */
+BDSM_EXPORT
 const char          *netbios_ns_entry_group(netbios_ns_entry *entry);
 
 /**
@@ -64,6 +67,7 @@ const char          *netbios_ns_entry_group(netbios_ns_entry *entry);
  *
  * @return The ip address of this entry, in network byte order.
  */
+BDSM_EXPORT
 uint32_t            netbios_ns_entry_ip(netbios_ns_entry *entry);
 
 /**
@@ -73,6 +77,7 @@ uint32_t            netbios_ns_entry_ip(netbios_ns_entry *entry);
  * 0 for workstation, etc.) or a value < 0 if the iterator is invalid or an
  * error occured.
  */
+BDSM_EXPORT
 char                netbios_ns_entry_type(netbios_ns_entry *entry);
 
 /**
@@ -80,12 +85,14 @@ char                netbios_ns_entry_type(netbios_ns_entry *entry);
  * @return A newly allocated netbios_ns ready for querying.
  * Deallocate with netbios_ns_destroy().
  */
+BDSM_EXPORT
 netbios_ns    *netbios_ns_new();
 
 /**
  * @brief Destroy the netbios name service object
  * @param[in] ns A pointer on the netbios_ns to destroy and deallocate
  */
+BDSM_EXPORT
 void          netbios_ns_destroy(netbios_ns *ns);
 
 /**
@@ -100,6 +107,7 @@ void          netbios_ns_destroy(netbios_ns *ns);
  * @param[out] addr The IP address in network byte order of the machine if found.
  * @return 0 on success or -1 on failure
  */
+BDSM_EXPORT
 int           netbios_ns_resolve(netbios_ns *ns, const char *name,
                                  char type, uint32_t *addr);
 
@@ -115,6 +123,7 @@ int           netbios_ns_resolve(netbios_ns *ns, const char *name,
  * @return A null-terminated ASCII string containing the NETBIOS name. You don't
  * own the it (it'll be freed when destroying/clearing the name service)
  */
+BDSM_EXPORT
 const char          *netbios_ns_inverse(netbios_ns *ns, uint32_t ip);
 
 typedef struct
@@ -141,6 +150,7 @@ typedef struct
  *
  * @return 0 on success or -1 on failure
  */
+BDSM_EXPORT
 int netbios_ns_discover_start(netbios_ns *ns, unsigned int broadcast_timeout,
                               netbios_ns_discover_callbacks *callbacks);
 
@@ -149,6 +159,7 @@ int netbios_ns_discover_start(netbios_ns *ns, unsigned int broadcast_timeout,
  * @param ns The name service object.
  * @return 0 on success or -1 on failure
  */
+BDSM_EXPORT
 int netbios_ns_discover_stop(netbios_ns *ns);
 
 #endif

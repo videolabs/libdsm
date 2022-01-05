@@ -67,6 +67,7 @@
  * 'afolder' directory.
  * @return An opaque list of smb_stat or NULL in case of error
  */
+BDSM_EXPORT
 smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
 
 /**
@@ -80,6 +81,7 @@ smb_stat_list   smb_find(smb_session *s, smb_tid tid, const char *pattern);
  * @return An opaque smb_stat or NULL in case of error. You need to
  * destory this object with smb_stat_destroy after usage.
  */
+BDSM_EXPORT
 smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
 
 /**
@@ -92,6 +94,7 @@ smb_stat        smb_fstat(smb_session *s, smb_tid tid, const char *path);
  * @return An opaque smb_stat or NULL in case of error. You don't own
  * this object memory, and then don't have to destory it
  */
+BDSM_EXPORT
 smb_stat        smb_stat_fd(smb_session *s, smb_fd fd);
 
 /**
@@ -99,6 +102,7 @@ smb_stat        smb_stat_fd(smb_session *s, smb_fd fd);
  *
  * @param stat A smb_stat object returned by smb_fstat. 
  */
+BDSM_EXPORT
 void            smb_stat_destroy(smb_stat stat);
 
 /**
@@ -107,8 +111,10 @@ void            smb_stat_destroy(smb_stat stat);
  * @param list The list you want the length of
  * @return The length of the list. It returns 0 if the list is invalid
  */
+BDSM_EXPORT
 size_t            smb_stat_list_count(smb_stat_list list);
 
+BDSM_EXPORT
 smb_stat        smb_stat_list_next(smb_stat_list stat);
 /**
  * @brief Get the element at the given position.
@@ -118,6 +124,7 @@ smb_stat        smb_stat_list_next(smb_stat_list stat);
  *
  * @return An opaque smb_stat or NULL in case of error
  */
+BDSM_EXPORT
 smb_stat        smb_stat_list_at(smb_stat_list list, size_t index);
 
 /**
@@ -125,6 +132,7 @@ smb_stat        smb_stat_list_at(smb_stat_list list, size_t index);
  *
  * @param list The stat_list to free
  */
+BDSM_EXPORT
 void            smb_stat_list_destroy(smb_stat_list list);
 
 /**
@@ -133,6 +141,7 @@ void            smb_stat_list_destroy(smb_stat_list list);
  * @param info A file status
  * @return A null-terminated string in you current locale encoding or NULL.
  */
+BDSM_EXPORT
 const char        *smb_stat_name(smb_stat info);
 
 /**
@@ -149,6 +158,7 @@ const char        *smb_stat_name(smb_stat info);
  * @return The meaning of the returned value depends on the 'what' parameter.
  * See each item documentation.
  */
+BDSM_EXPORT
 uint64_t          smb_stat_get(smb_stat info, int what);
 
 #endif

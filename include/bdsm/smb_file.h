@@ -53,6 +53,7 @@
  *
  * @see smb_tree_connect
  */
+BDSM_EXPORT
 int       smb_fopen(smb_session *s, smb_tid tid, const char *path,
                     uint32_t mod, smb_fd *fd);
 
@@ -64,6 +65,7 @@ int       smb_fopen(smb_session *s, smb_tid tid, const char *path,
  * @param s The session object
  * @param fd The SMB file descriptor
  */
+BDSM_EXPORT
 void      smb_fclose(smb_session *s, smb_fd fd);
 
 /**
@@ -79,6 +81,7 @@ void      smb_fclose(smb_session *s, smb_fd fd);
  * @param[in] buf_size [description]
  * @return The number of bytes read or -1 in case of error.
  */
+BDSM_EXPORT
 ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
 
 /**
@@ -93,6 +96,7 @@ ssize_t   smb_fread(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
  * @param[in] buf_size [description]
  * @return The number of bytes written or -1 in case of error.
  */
+BDSM_EXPORT
 ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
 
 /**
@@ -113,6 +117,7 @@ ssize_t   smb_fwrite(smb_session *s, smb_fd fd, void *buf, size_t buf_size);
  * #SMB_SEEK_SET and #SMB_SEEK_CUR
  * @return The current read pointer position or -1 on error
  */
+BDSM_EXPORT
 ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence);
 
 /**
@@ -124,6 +129,7 @@ ssize_t   smb_fseek(smb_session *s, smb_fd fd, off_t offset, int whence);
  * @param path The path of the file to delete
  * @return 0 if delete OK or "NT" error code
  */
+BDSM_EXPORT
 int  smb_file_rm(smb_session *s, smb_tid tid, const char *path);
 
 /**
@@ -136,6 +142,7 @@ int  smb_file_rm(smb_session *s, smb_tid tid, const char *path);
  * @param new_path The new path of the file/directory
  * @return 0 if move OK or -1 in case of error
  */
+BDSM_EXPORT
 int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const char *new_path);
 
 #endif

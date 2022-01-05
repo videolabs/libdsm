@@ -52,6 +52,10 @@ else
     warning('Compiler does not support -fvisibility=hidden, all symbols will be public!')
 endif
 
+if get_option('default_library') != 'static'
+    conf_data.set('DLL_EXPORT', true)
+endif
+
 test_args = ''
 
 # Check headers
@@ -201,6 +205,7 @@ libdsm_sources = [
 libdsm_sources += compat_sources
 
 libdsm_headers = [
+  'include/bdsm/export.h',
   'include/bdsm/netbios_defs.h',
   'include/bdsm/netbios_ns.h',
   'include/bdsm/smb_defs.h',

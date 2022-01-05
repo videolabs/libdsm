@@ -6,9 +6,7 @@
  *   |______  /_______  /_______  \____|__  / /\   \____|__  |__|\___ |   __
  *          \/        \/        \/        \/  )/           \/        \/   \/
  *
- * This file is part of liBDSM. Copyright © 2014-2015 VideoLabs SAS
- *
- * Author: Sylver Bruneau <sylver.bruneau@gmail.com>
+ * This file is part of liBDSM. Copyright © 2014-2022 VideoLabs SAS
  *
  * liBDSM is released under LGPLv2.1 (or later) and is also available
  * under a commercial license.
@@ -28,39 +26,15 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-/**
- * @file smb_dir.h
- * @brief Directory operations
- */
+#ifndef __BDSM_EXPORT_H_
+#define __BDSM_EXPORT_H_
 
-#ifndef __BDSM_SMB_DIR_H_
-#define __BDSM_SMB_DIR_H_
-
-#include "bdsm/smb_session.h"
-
-
-/**
- * @brief remove a directory on a share.
- * @details Use this function to delete an empty directory
- *
- * @param s The session object
- * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
- * @param path The path of the file to delete
- * @return 0 on success or a DSM error code in case of error
- */
-BDSM_EXPORT
-int smb_directory_rm(smb_session *s, smb_tid tid, const char *path);
-
-/**
- * @brief create a directory on a share.
- * @details Use this function to create a directory
- *
- * @param s The session object
- * @param tid The tid of the share the file is in, obtained via smb_tree_connect()
- * @param path The path of the directory to create
- * @return 0 on success or a DSM error code in case of error
- */
-BDSM_EXPORT
-int smb_directory_create(smb_session *s, smb_tid tid, const char *path);
+#if defined (_WIN32) && defined (DLL_EXPORT)
+# define BDSM_EXPORT __declspec(dllexport)
+#elif defined (__GNUC__)
+# define BDSM_EXPORT __attribute__((visibility("default")))
+#else
+# define BDSM_EXPORT
+#endif
 
 #endif
