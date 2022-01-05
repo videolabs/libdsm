@@ -55,11 +55,16 @@ smb_session   *smb_session_new()
     if (!s)
         return NULL;
 
+    if ((s->transport.session = smb_transport_new_session(SMB_DEFAULT_BUFSIZE)) == NULL)
+    {
+        free(s);
+        return NULL;
+    }
+
     s->guest              = false;
 
     // Explicitly sets pointer to NULL, insted of 0
     s->spnego_asn1        = NULL;
-    s->transport.session  = NULL;
     s->shares             = NULL;
 
     s->creds.domain       = NULL;
@@ -81,11 +86,11 @@ void            smb_session_destroy(smb_session *s)
     smb_session_share_clear(s);
 
     // FIXME Free smb_share and smb_file
-    if (s->transport.session != NULL)
-    {
-        s->transport.destroy(s->transport.session);
-        s->transport.session = NULL;
-    }
+    assert(s->transport.session != NULL);
+
+    if (s->transport.disconnect != NULL)
+        s->transport.disconnect(s->transport.session);
+    smb_transport_destroy_session(s->transport.session);
 
     if (s->spnego_asn1 != NULL)
         asn1_delete_structure(&s->spnego_asn1);
@@ -131,8 +136,8 @@ int             smb_session_connect(smb_session *s, const char *name,
 {
     assert(s != NULL && name != NULL);
 
-    if (s->transport.session != NULL)
-        s->transport.destroy(s->transport.session);
+    if (s->transport.disconnect != NULL)
+        s->transport.disconnect(s->transport.session);
 
     switch (transport)
     {
@@ -146,8 +151,6 @@ int             smb_session_connect(smb_session *s, const char *name,
             return DSM_ERROR_GENERIC;
     }
 
-    if ((s->transport.session = s->transport.new(SMB_DEFAULT_BUFSIZE)) == NULL)
-        return DSM_ERROR_GENERIC;
     if (!s->transport.connect(ip, s->transport.session, name))
         return DSM_ERROR_NETWORK;
 

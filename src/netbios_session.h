@@ -72,6 +72,7 @@ int               netbios_session_connect(uint32_t ip,
         netbios_session *s,
         const char *name,
         int direct_tcp);
+void              netbios_session_disconnect(netbios_session *);
 void              netbios_session_packet_init(netbios_session *s);
 int               netbios_session_packet_append(netbios_session *s,
         const char *data, size_t size);

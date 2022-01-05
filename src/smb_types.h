@@ -89,9 +89,8 @@ typedef struct smb_transport smb_transport;
 struct smb_transport
 {
     void              *session;
-    void              *(*new)(size_t buf_size);
     int               (*connect)(uint32_t ip, void *s, const char *name);
-    void              (*destroy)(void *s);
+    void              (*disconnect)(void *s);
     void              (*pkt_init)(void *s);
     int               (*pkt_append)(void *s, void *data, size_t size);
     int               (*send)(void *s);
