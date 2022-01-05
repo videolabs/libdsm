@@ -259,6 +259,16 @@ int               netbios_session_packet_send(netbios_session *s)
     return sent;
 }
 
+static ssize_t netbios_session_recv(netbios_session *s, void *buf, size_t len)
+{
+    ssize_t res = recv(s->socket, buf, len, 0);
+
+    if (res <= 0)
+        BDSM_perror("netbios_session_packet_recv: ");
+
+    return res;
+}
+
 static ssize_t    netbios_session_get_next_packet(netbios_session *s)
 {
     ssize_t         res;
@@ -272,12 +282,9 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
     sofar = 0;
     while (sofar < total)
     {
-        res = recv(s->socket, (uint8_t *)(s->packet) + sofar, total - sofar, 0);
+        res = netbios_session_recv(s, (uint8_t *)(s->packet) + sofar, total - sofar);
         if (res <= 0)
-        {
-            BDSM_perror("netbios_session_packet_recv: ");
             return -1;
-        }
         sofar += res;
     }
 
@@ -293,15 +300,12 @@ static ssize_t    netbios_session_get_next_packet(netbios_session *s)
 
     while (sofar < total)
     {
-        res = recv(s->socket, (uint8_t *)(s->packet) + sizeof(netbios_session_packet)
-                   + sofar, total - sofar, 0);
+        res = netbios_session_recv(s, (uint8_t *)(s->packet) + sizeof(netbios_session_packet)
+                                   + sofar, total - sofar);
         //BDSM_dbg("Total = %ld, sofar = %ld, res = %ld\n", total, sofar, res);
 
         if (res <= 0)
-        {
-            BDSM_perror("netbios_session_packet_recv: ");
             return -1;
-        }
         sofar += res;
     }
 
