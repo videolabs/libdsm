@@ -41,6 +41,7 @@
 #endif
 
 #include "netbios_defs.h"
+#include "netbios_utils.h"
 
 #define NETBIOS_SESSION_NEW         0
 #define NETBIOS_SESSION_CONNECTING  1
@@ -50,6 +51,8 @@
 
 typedef struct              netbios_session_s
 {
+    struct netbios_abort_ctx    abort_ctx;
+
     // The address of the remote peer;
     struct sockaddr_in          remote_addr;
     // The socket of the TCP connection to the HOST'
@@ -68,6 +71,7 @@ typedef struct              netbios_session_s
 // Return NULL if unable to open socket/connect
 netbios_session   *netbios_session_new(size_t buf_size);
 void              netbios_session_destroy(netbios_session *);
+void              netbios_session_abort(netbios_session *);
 int               netbios_session_connect(uint32_t ip,
         netbios_session *s,
         const char *name,

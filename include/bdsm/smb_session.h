@@ -60,6 +60,17 @@ BDSM_EXPORT
 void            smb_session_destroy(smb_session *s);
 
 /**
+ * @brief Interrupt any I/O smb_session functions (smb_session_connect,
+ * smb_fread...)
+ * @details This function can be called from any threads. The session is
+ * unusable after this call, only smb_session_destroy() should be called after.
+ *
+ * @param s The session to abort
+ */
+BDSM_EXPORT
+void            smb_session_abort(smb_session *s);
+
+/**
  * @brief Set the credentials for this session.
  * @details Any of the params except s can be NULL.
  *

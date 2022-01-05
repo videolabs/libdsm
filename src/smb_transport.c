@@ -63,6 +63,11 @@ void              smb_transport_destroy_session(void *s)
     netbios_session_destroy(s);
 }
 
+void              smb_transport_abort_session(void *s)
+{
+    netbios_session_abort(s);
+}
+
 void              smb_transport_nbt(smb_transport *tr)
 {
     assert(tr != NULL);
