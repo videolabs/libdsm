@@ -75,6 +75,10 @@
 #include "netbios_query.h"
 #include "netbios_utils.h"
 
+#if defined (HAVE_PIPE) && !defined (_WIN32)
+#define NS_ABORT_USE_PIPE
+#endif
+
 enum name_query_type {
     NAME_QUERY_TYPE_INVALID,
     NAME_QUERY_TYPE_NB,
@@ -109,7 +113,7 @@ struct netbios_ns
     uint16_t            last_trn_id;  // Last transaction id used;
     NS_ENTRY_QUEUE      entry_queue;
     uint8_t             buffer[RECV_BUFFER_SIZE];
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
     int                 abort_pipe[2];
 #else
     pthread_mutex_t     abort_lock;
@@ -167,7 +171,7 @@ error:
     return 0;
 }
 
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
 
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {
@@ -176,13 +180,11 @@ static int    ns_open_abort_pipe(netbios_ns *ns)
     if (pipe(ns->abort_pipe) == -1)
         return -1;
 
-#ifndef _WIN32
     if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
         return -1;
 
     if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
         return -1;
-#endif
 
     return 0;
 }
@@ -505,7 +507,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
     assert(ns != NULL);
 
     sock = ns->socket;
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
     int abort_fd =  ns->abort_pipe[0];
 #else
     int abort_fd = -1;
@@ -522,7 +524,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         FD_ZERO(&read_fds);
         FD_ZERO(&error_fds);
         FD_SET(sock, &read_fds);
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
         FD_SET(abort_fd, &read_fds);
 #endif
         FD_SET(sock, &error_fds);
@@ -535,7 +537,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
         if (FD_ISSET(sock, &error_fds))
             goto error;
 
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
         if (FD_ISSET(abort_fd, &read_fds))
             return -1;
 #else
@@ -673,7 +675,7 @@ netbios_ns  *netbios_ns_new()
     if (!ns)
         return NULL;
 
-#ifdef HAVE_PIPE
+#ifdef NS_ABORT_USE_PIPE
     // Don't initialize this in ns_open_abort_pipe, as it would lead to
     // fd 0 to be closed (twice) in case of ns_open_socket error
     ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
