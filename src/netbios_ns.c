@@ -173,22 +173,6 @@ error:
 
 #ifdef NS_ABORT_USE_PIPE
 
-static int    ns_open_abort_pipe(netbios_ns *ns)
-{
-    int flags;
-
-    if (pipe(ns->abort_pipe) == -1)
-        return -1;
-
-    if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
-        return -1;
-
-    if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
-        return -1;
-
-    return 0;
-}
-
 static void   ns_close_abort_pipe(netbios_ns *ns)
 {
     if (ns->abort_pipe[0] != -1 && ns->abort_pipe[1] != -1)
@@ -197,6 +181,28 @@ static void   ns_close_abort_pipe(netbios_ns *ns)
         close(ns->abort_pipe[1]);
         ns->abort_pipe[0] = ns->abort_pipe[1] = -1;
     }
+}
+
+static int    ns_open_abort_pipe(netbios_ns *ns)
+{
+    int flags;
+
+    if (pipe(ns->abort_pipe) == -1)
+        return -1;
+
+    if ((flags = fcntl(ns->abort_pipe[0], F_GETFL, 0)) == -1)
+    {
+        ns_close_abort_pipe(ns);
+        return -1;
+    }
+
+    if (fcntl(ns->abort_pipe[0], F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        ns_close_abort_pipe(ns);
+        return -1;
+    }
+
+    return 0;
 }
 
 static bool   netbios_ns_is_aborted(netbios_ns *ns)
