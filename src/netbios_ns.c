@@ -77,6 +77,8 @@
 
 #if defined (HAVE_PIPE) && !defined (_WIN32)
 #define NS_ABORT_USE_PIPE
+#else
+#include <stdatomic.h>
 #endif
 
 enum name_query_type {
@@ -116,8 +118,7 @@ struct netbios_ns
 #ifdef NS_ABORT_USE_PIPE
     int                 abort_pipe[2];
 #else
-    pthread_mutex_t     abort_lock;
-    bool                aborted;
+    atomic_bool         aborted;
 #endif
     unsigned int        discover_broadcast_timeout;
     pthread_t           discover_thread;
@@ -229,27 +230,23 @@ static void netbios_ns_abort(netbios_ns *ns)
 
 static int    ns_open_abort_pipe(netbios_ns *ns)
 {
-    return pthread_mutex_init(&ns->abort_lock, NULL);
+    atomic_init(&ns->aborted, false);
+    return 0;
 }
 
 static void   ns_close_abort_pipe(netbios_ns *ns)
 {
-    pthread_mutex_destroy(&ns->abort_lock);
+    (void) ns;
 }
 
 static bool   netbios_ns_is_aborted(netbios_ns *ns)
 {
-    pthread_mutex_lock(&ns->abort_lock);
-    bool res = ns->aborted;
-    pthread_mutex_unlock(&ns->abort_lock);
-    return res;
+    return atomic_load(&ns->aborted);
 }
 
 static void netbios_ns_abort(netbios_ns *ns)
 {
-    pthread_mutex_lock(&ns->abort_lock);
-    ns->aborted = true;
-    pthread_mutex_unlock(&ns->abort_lock);
+    atomic_store(&ns->aborted, true);
 }
 
 #endif
