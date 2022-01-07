@@ -661,6 +661,11 @@ void          netbios_ns_destroy(netbios_ns *ns)
     free(ns);
 }
 
+void          netbios_ns_abort(netbios_ns *ns)
+{
+    netbios_abort_ctx_abort(&ns->abort_ctx);
+}
+
 int      netbios_ns_resolve(netbios_ns *ns, const char *name, char type, uint32_t *addr)
 {
     netbios_ns_entry    *cached;
