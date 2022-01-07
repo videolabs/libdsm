@@ -176,10 +176,46 @@ static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t
     addr.sin_family       = AF_INET;
     addr.sin_port         = htons(NETBIOS_PORT_NAME);
 
-    BDSM_dbg("Sending netbios packet to %s\n", inet_ntoa(addr.sin_addr));
-    return sendto(ns->socket, (void *)q->packet,
-                  sizeof(netbios_query_packet) + q->cursor, 0,
-                  (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    while (true)
+    {
+        fd_set read_fds, write_fds;
+        int nfds, ret;
+
+        FD_ZERO(&read_fds);
+        FD_ZERO(&write_fds);
+        FD_SET(ns->socket, &write_fds);
+#ifdef NS_ABORT_USE_PIPE
+        FD_SET(ns->abort_ctx.pipe[0], &read_fds);
+        nfds = (ns->socket > ns->abort_ctx.pipe[0] ? ns->socket : ns->abort_ctx.pipe[0]) + 1;
+#else
+        nfds = ns->socket + 1;
+#endif
+
+        ret = select(nfds, &read_fds, &write_fds, NULL, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_ns_send_packet: select: ");
+            return -1;
+        }
+
+#ifdef NS_ABORT_USE_PIPE
+        if (FD_ISSET(ns->abort_ctx.pipe[0], &read_fds))
+            return -1;
+#else
+        if (netbios_abort_ctx_is_aborted(&ns->abort_ctx))
+            return -1;
+#endif
+
+        if (FD_ISSET(ns->socket, &write_fds))
+        {
+            BDSM_dbg("Sending netbios packet to %s\n", inet_ntoa(addr.sin_addr));
+            return sendto(ns->socket, (void *)q->packet,
+                          sizeof(netbios_query_packet) + q->cursor, 0,
+                          (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+        }
+    }
+
+    return -1;
 }
 
 #ifndef _WIN32
