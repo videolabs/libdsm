@@ -96,6 +96,17 @@ BDSM_EXPORT
 void          netbios_ns_destroy(netbios_ns *ns);
 
 /**
+ * @brief Interrupt any I/O netbios_ns functions (netbios_ns_resolve,
+ * netbios_ns_inverse...)
+ * @details This function can be called from any threads. The ns object is
+ * unusable after this call, only netbios_ns_destroy() should be called after.
+ *
+ * @param ns the netbios name service object to abort
+ */
+BDSM_EXPORT
+void          netbios_ns_abort(netbios_ns *ns);
+
+/**
  * @brief Resolve a Netbios name
  * @details This function tries to resolves the given NetBIOS name with the
  * given type on the LAN, using broadcast queries. No WINS server is called.
