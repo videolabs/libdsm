@@ -5,7 +5,7 @@ project('libdsm', ['c'],
                       'warning_level=2',
                       'buildtype=release',
                       'b_ndebug=if-release'],
-    meson_version: '>= 0.50.0')
+    meson_version: '>= 0.53.0')
 
 #Soname
 dsm_soname_version = '3.1.0'
@@ -167,12 +167,17 @@ config_header = configure_file(
   output: 'config.h',
   configuration: conf_data)
 
-asn1parser_prog = find_program('asn1Parser')
-spnego_asn1_target = custom_target('spnego_asn1.c',
-  input: 'contrib/spnego/spnego.asn1',
-  output: 'spnego_asn1.c',
-  command: [asn1parser_prog, '-o', '@OUTPUT@', '-n', 'spnego_asn1_conf',
-            '@INPUT@'])
+fs_module = import('fs')
+if fs_module.is_file('spnego_asn1.c')
+  spnego_asn1_target = files('spnego_asn1.c')
+else
+  asn1parser_prog = find_program('asn1Parser')
+  spnego_asn1_target = custom_target('spnego_asn1.c',
+    input: 'contrib/spnego/spnego.asn1',
+    output: 'spnego_asn1.c',
+    command: [asn1parser_prog, '-o', '@OUTPUT@', '-n', 'spnego_asn1_conf',
+              '@INPUT@'])
+endif
 
 libdsm_sources = [
   'contrib/mdx/md4.c',
