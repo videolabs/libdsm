@@ -172,8 +172,10 @@ config_header = configure_file(
   configuration: conf_data)
 
 fs_module = import('fs')
+package_generated = true
 if fs_module.is_file('spnego_asn1.c')
   spnego_asn1_target = files('spnego_asn1.c')
+  package_generated = false
 else
   asn1parser_prog = find_program('asn1Parser')
   spnego_asn1_target = custom_target('spnego_asn1.c',
@@ -276,4 +278,8 @@ if doxygen.found()
              install_dir: doc_dir)
 else
   warning('Doxygen not found - continuing without Doxygen support')
+endif
+
+if package_generated
+  meson.add_dist_script('dist_generated.py', spnego_asn1_target.full_path())
 endif
