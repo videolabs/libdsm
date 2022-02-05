@@ -48,7 +48,6 @@
 int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
 {
     smb_tree_connect_req  req;
-    smb_tree_connect_resp *resp;
     smb_message            resp_msg;
     smb_message           *req_msg;
     smb_share             *share;
@@ -98,21 +97,47 @@ int smb_tree_connect(smb_session *s, const char *name, smb_tid *tid)
     if (!smb_session_check_nt_status(s, &resp_msg))
         return DSM_ERROR_NT;
 
-    if (resp_msg.payload_size < sizeof(smb_tree_connect_resp))
-    {
-        BDSM_dbg("[smb_tree_connect]Malformed message\n");
-        return DSM_ERROR_NETWORK;
-    }
-
-    resp  = (smb_tree_connect_resp *)resp_msg.packet->payload;
     share = calloc(1, sizeof(smb_share));
     if (!share)
         return DSM_ERROR_GENERIC;
 
-    share->tid          = resp_msg.packet->header.tid;
-    share->opts         = resp->opt_support;
-    share->rights       = resp->max_rights;
-    share->guest_rights = resp->guest_rights;
+    uint8_t wct = resp_msg.packet->payload[0];
+    switch (wct)
+    {
+        case 3:
+        {
+            if (resp_msg.payload_size < sizeof(smb_tree_connect_resp))
+            {
+                free(share);
+                BDSM_dbg("[smb_tree_connect]Malformed message\n");
+                return DSM_ERROR_NETWORK;
+            }
+            smb_tree_connect_resp* resp = (smb_tree_connect_resp *)resp_msg.packet->payload;
+            share->tid          = resp_msg.packet->header.tid;
+            share->opts         = resp->opt_support;
+            break;
+        }
+        case 7:
+        {
+            if (resp_msg.payload_size < sizeof(smb_tree_connect_respx))
+            {
+                free(share);
+                BDSM_dbg("[smb_tree_connect]Malformed message\n");
+                return DSM_ERROR_NETWORK;
+            }
+            smb_tree_connect_respx *respx  = (smb_tree_connect_respx *)resp_msg.packet->payload;
+            share->tid          = resp_msg.packet->header.tid;
+            share->opts         = respx->opt_support;
+            share->rights       = respx->max_rights;
+            share->guest_rights = respx->guest_rights;
+            break;
+        }
+        
+        default:
+            free(share);
+            BDSM_dbg("[smb_tree_connect]Malformed message\n");
+            return DSM_ERROR_NETWORK;
+    }
 
     smb_session_share_add(s, share);
 

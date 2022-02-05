@@ -185,6 +185,19 @@ SMB_PACKED_START typedef struct
 } SMB_PACKED_END   smb_tree_connect_req;
 
 //<- Tree Connect
+// See: [MS-CIFS] §2.2.4.55.2
+// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-cifs/3286744b-5b58-4ad5-b62e-c4f29a2492f1
+SMB_PACKED_START typedef struct
+{
+    uint8_t         wct;              // 3
+    SMB_ANDX_MEMBERS
+    uint16_t        opt_support;
+    uint16_t        bct;
+    uint8_t         payload[];
+} SMB_PACKED_END   smb_tree_connect_resp;
+
+// See [MS-SMB] §2.2.4.7.2
+// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-smb/087860d5-3919-41d5-a753-1b330d651196
 SMB_PACKED_START typedef struct
 {
     uint8_t         wct;              // 7
@@ -194,7 +207,7 @@ SMB_PACKED_START typedef struct
     uint32_t        guest_rights;
     uint16_t        bct;
     uint8_t         payload[];
-} SMB_PACKED_END   smb_tree_connect_resp;
+} SMB_PACKED_END   smb_tree_connect_respx;
 
 //-> Tree Disconnect / <- Tree Disconnect
 typedef smb_simple_struct smb_tree_disconnect_req;
