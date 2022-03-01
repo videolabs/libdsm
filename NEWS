@@ -1,8 +1,15 @@
-Changes between 0.3.1 and 0.3.3:
+Changes between 0.3.2 and 0.4.0:
 --------------------------------
   * Switch to meson buildsystem
+  * Add support for older CIFS tree connect response
   * add smb_session_abort() and netbios_ns_abort() that allow interrupting any
     I/O operations
+
+
+Changes between 0.3.1 and 0.3.2:
+--------------------------------
+
+  * Disable sigpipe to avoid crash when network goes down
 
 
 Changes between 0.3.0 and 0.3.1:
