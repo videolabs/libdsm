@@ -281,6 +281,10 @@ else
   warning('Doxygen not found - continuing without Doxygen support')
 endif
 
+if get_option('binaries')
+  subdir('bin')
+endif
+
 if package_generated
   meson.add_dist_script('dist_generated.py', spnego_asn1_target.full_path())
 endif

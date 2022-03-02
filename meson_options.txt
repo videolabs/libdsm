@@ -1,0 +1,1 @@
+option('binaries', type: 'boolean', value: 'true')
