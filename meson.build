@@ -152,6 +152,7 @@ if cc.has_type('clockid_t', prefix: '#include<time.h>\n#include<pthread.h>')
   conf_data.set('HAVE_CLOCKID_T', 1)
 endif
 
+conf_data.set_quoted('VERSION', meson.project_version())
 
 have_iconv = cc.has_function('iconv_open', prefix: '#include <iconv.h>')
 dep_iconv = []
