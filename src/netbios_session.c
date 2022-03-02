@@ -62,7 +62,11 @@ static int open_socket_and_connect(netbios_session *s)
     if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         goto error;
 
+#ifndef _WIN32
     fcntl(s->socket, F_SETFL, fcntl(s->socket, F_GETFL, 0) | O_NONBLOCK);
+#else
+    ioctlsocket(s->socket, FIONBIO, &(unsigned long){ 1 });
+#endif
 
 #ifdef SO_NOSIGPIPE
     //Never generate SIGPIPE on broken write

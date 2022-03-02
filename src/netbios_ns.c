@@ -139,7 +139,11 @@ static int    ns_open_socket(netbios_ns *ns)
     if ((ns->socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         goto error;
 
+#ifndef _WIN32
     fcntl(ns->socket, F_SETFL, fcntl(ns->socket, F_GETFL, 0) | O_NONBLOCK);
+#else
+     ioctlsocket(ns->socket, FIONBIO, &(unsigned long){ 1 });
+#endif
 
     sock_opt = 1;
     if (setsockopt(ns->socket, SOL_SOCKET, SO_BROADCAST,
