@@ -40,7 +40,8 @@ optional_arguments = [
   '-Wsign-compare',
   '-Wextra',
   '-Wstrict-aliasing',
-  '-Wstrict-overflow' ]
+  '-Wstrict-overflow',
+  '-Wundef' ]
 
 add_project_arguments(
   cc.get_supported_arguments(optional_arguments),
