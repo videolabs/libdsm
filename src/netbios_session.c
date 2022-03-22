@@ -74,8 +74,50 @@ static int open_socket_and_connect(netbios_session *s)
         goto error;
 #endif
     if (connect(s->socket, (struct sockaddr *)&s->remote_addr, sizeof(s->remote_addr)) <0)
-        goto error;
+    {
+        if (errno != EINPROGRESS && errno != EINTR)
+            goto error;
 
+        /* Wait for connection, cf. EINPROGRESS in man connect(2) */
+        while (true)
+        {
+            fd_set read_fds, write_fds;
+            int nfds, ret;
+
+            FD_ZERO(&read_fds);
+            FD_ZERO(&write_fds);
+            FD_SET(s->socket, &write_fds);
+#ifdef NS_ABORT_USE_PIPE
+            FD_SET(s->abort_ctx.pipe[0], &read_fds);
+            nfds = (s->socket > s->abort_ctx.pipe[0] ? s->socket : s->abort_ctx.pipe[0]) + 1;
+#else
+            nfds = s->socket + 1;
+#endif
+
+            ret = select(nfds, &read_fds, &write_fds, NULL, NULL);
+            if (ret < 0)
+                goto error;
+
+#ifdef NS_ABORT_USE_PIPE
+            if (FD_ISSET(s->abort_ctx.pipe[0], &read_fds))
+                return DSM_ERROR_GENERIC;
+#else
+            if (netbios_abort_ctx_is_aborted(&s->abort_ctx))
+                return DSM_ERROR_GENERIC;
+#endif
+
+            if (FD_ISSET(s->socket, &write_fds))
+            {
+                if (getsockopt(s->socket, SOL_SOCKET, SO_ERROR, &ret,
+                               &(socklen_t){ sizeof (ret) }) || ret)
+                {
+                    errno = ret;
+                    goto error;
+                }
+                break; /* Success */
+            }
+        }
+    }
     return DSM_SUCCESS;
 
 error:
