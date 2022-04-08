@@ -260,23 +260,7 @@ pkg_mod.generate(
 # We only add the doc target if doxygen is found
 doxygen = find_program('doxygen', required: false)
 if doxygen.found()
-  doxygen_data = configuration_data()
-  doxygen_data.set('PACKAGE_NAME', 'libdsm')
-  doxygen_data.set('BDSM_PACKAGE_VERSION', meson.project_version())
-  doxygen_data.set('abs_top_srcdir', meson.source_root())
-
-  doxyfile = configure_file(
-    input: 'doc/Doxyfile.in',
-    output: 'Doxyfile',
-    configuration: doxygen_data,
-    install: false)
-  doc_dir = join_paths(get_option('datadir'), 'doc', 'libdsm')
-  custom_target('doc',
-             command: [doxygen, doxyfile],
-             input: doxyfile,
-             output: 'html',
-             install: true,
-             install_dir: doc_dir)
+  subdir('doc')
 else
   warning('Doxygen not found - continuing without Doxygen support')
 endif
