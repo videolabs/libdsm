@@ -1,3 +1,8 @@
+Changes between 0.4.0 and 0.4.1:
+--------------------------------
+  * Fix socket connect() on some OSes (Apple and more)
+  * Fix build with recent meson version
+
 Changes between 0.3.2 and 0.4.0:
 --------------------------------
   * Switch to meson buildsystem
