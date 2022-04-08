@@ -266,12 +266,12 @@ if doxygen.found()
   doxygen_data.set('abs_top_srcdir', meson.source_root())
 
   doxyfile = configure_file(
-    input: meson.source_root() + '/doc/Doxyfile.in',
+    input: 'doc/Doxyfile.in',
     output: 'Doxyfile',
     configuration: doxygen_data,
     install: false)
   doc_dir = join_paths(get_option('datadir'), 'doc', 'libdsm')
-  run_target('doc',
+  custom_target('doc',
              command: [doxygen, doxyfile],
              input: doxyfile,
              output: 'html',
