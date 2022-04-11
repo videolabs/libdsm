@@ -50,6 +50,10 @@ int   netbios_name_decode(const char *encoded_name,
 #include <stdatomic.h>
 #endif
 
+#ifdef _WIN32
+typedef int socklen_t;
+#endif
+
 struct netbios_abort_ctx
 {
 #ifdef NS_ABORT_USE_PIPE
