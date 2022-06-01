@@ -59,12 +59,27 @@
 
 static int open_socket_and_connect(netbios_session *s)
 {
-    if ((s->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        goto error;
+    int pf = AF_INET;
+    int type = SOCK_STREAM;
 
 #ifndef _WIN32
+#ifdef SOCK_NONBLOCK
+    /* Linux specific */
+    type |= SOCK_NONBLOCK;
+#endif
+    if ((s->socket = socket(pf, type, 0)) < 0)
+        goto error;
+
+#ifndef SOCK_NONBLOCK
+    /* Posix */
     fcntl(s->socket, F_SETFL, fcntl(s->socket, F_GETFL, 0) | O_NONBLOCK);
+#endif
+
 #else
+    /* Windows */
+    if ((s->socket = socket(pf, type, 0)) < 0)
+        goto error;
+
     ioctlsocket(s->socket, FIONBIO, &(unsigned long){ 1 });
 #endif
 
