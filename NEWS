@@ -1,3 +1,7 @@
+Changes between 0.4.2 and 0.4.3
+--------------------------------
+ * Fix connect() not interruptible on Linux
+
 Changes between 0.4.1 and 0.4.2
 --------------------------------
  * Fix build on win32
