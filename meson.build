@@ -240,12 +240,18 @@ if host_machine.system() == 'android'
   dep_log = [cc.find_library('log', required: true)]
 endif
 
+# Windows use ws2_32
+dep_ws2_32 = []
+if host_machine.system() == 'windows'
+  dep_ws2_32 = [cc.find_library('ws2_32', required : true)]
+endif
+
 libdsm = library('dsm',
   libdsm_sources,
   version: dsm_soname_version,
   soversion: dsm_soversion,
   include_directories: includes,
-  dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log],
+  dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log, dep_ws2_32],
   install: true
 )
 
