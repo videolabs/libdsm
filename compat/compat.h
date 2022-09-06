@@ -31,6 +31,10 @@
 #ifndef BDSM_COMPAT_H
 # define BDSM_COMPAT_H
 
+#ifdef _WIN32
+# define _CRT_RAND_S    /* needed before including stdlib.h !!! */
+#endif
+
 #include <stdlib.h>
 #if !defined HAVE_STRLCPY && !defined HAVE_LIBBSD
 size_t strlcpy(char *dst, const char *src, size_t siz);
