@@ -79,7 +79,11 @@ smb_message   *smb_message_new(uint8_t cmd)
     for (unsigned i = 0; i < 4; i++)
         msg->packet->header.magic[i] = magic[i];
     msg->packet->header.command   = cmd;
+#ifdef _WIN32
+    msg->packet->header.pid       = GetCurrentProcessId();
+#else
     msg->packet->header.pid       = getpid();
+#endif
 
     return msg;
 }
