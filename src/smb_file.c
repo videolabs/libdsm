@@ -424,8 +424,8 @@ int       smb_file_mv(smb_session *s, smb_tid tid, const char *old_path, const c
     SMB_MSG_PUT_PKT(req_msg, req);
     smb_message_put8(req_msg, 0x04); // Buffer format 1, must be 4
     smb_message_append(req_msg, utf_old_path, utf_old_len);
-    smb_message_put8(req_msg, 0x00); // padding to have next byte 16 bits aligned
     smb_message_put8(req_msg, 0x04); // Buffer format 2, must be 4
+    smb_message_put8(req_msg, 0x00); // padding to have next byte 16 bits aligned
     smb_message_append(req_msg, utf_new_path, utf_new_len);
 
     smb_session_send_msg(s, req_msg);
