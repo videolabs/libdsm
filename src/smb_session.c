@@ -48,7 +48,7 @@
 
 static int        smb_negotiate(smb_session *s);
 
-smb_session   *smb_session_new()
+smb_session   *smb_session_new(void)
 {
     smb_session *s;
 

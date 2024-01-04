@@ -47,7 +47,7 @@
  * @return A new Session object.
  */
 BDSM_EXPORT
-smb_session     *smb_session_new();
+smb_session     *smb_session_new(void);
 
 /**
  * @brief Close a session and deallocate its ressources
