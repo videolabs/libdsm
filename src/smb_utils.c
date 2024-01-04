@@ -47,7 +47,7 @@
 #include "bdsm_debug.h"
 #include "smb_utils.h"
 
-static const char *current_encoding()
+static const char *current_encoding(void)
 {
 #if defined( __APPLE__ )
     return "UTF8";

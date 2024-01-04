@@ -623,7 +623,7 @@ static void netbios_ns_entry_clear(netbios_ns *ns)
     }
 }
 
-netbios_ns  *netbios_ns_new()
+netbios_ns  *netbios_ns_new(void)
 {
     netbios_ns  *ns;
 

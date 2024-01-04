@@ -54,7 +54,7 @@
 #include "smb_utils.h"
 #include "smb_ntlm.h"
 
-uint64_t    smb_ntlm_generate_challenge()
+uint64_t    smb_ntlm_generate_challenge(void)
 {
 #if !defined(_WIN32)
     uint64_t        result;

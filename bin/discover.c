@@ -67,7 +67,7 @@ static void on_entry_removed(void *p_opaque, netbios_ns_entry *entry)
   print_entry("removed", p_opaque, entry);
 }
 
-int main()
+int main(void)
 {
   netbios_ns *ns;
   netbios_ns_discover_callbacks callbacks;

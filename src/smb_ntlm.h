@@ -98,7 +98,7 @@ SMB_PACKED_START typedef struct
     uint8_t     data[];
 } SMB_PACKED_END smb_ntlmssp_auth;
 
-uint64_t    smb_ntlm_generate_challenge();
+uint64_t    smb_ntlm_generate_challenge(void);
 void        smb_ntlm_generate_xkey(smb_ntlmh cli_session_key);
 void        smb_ntlm_hash(const char *password, smb_ntlmh hash);
 void        smb_ntlm2_hash(const char *username, const char *password,
