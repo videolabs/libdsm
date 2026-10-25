@@ -182,6 +182,7 @@ static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t
 
     while (true)
     {
+#ifdef _WIN32
         fd_set read_fds, write_fds;
         int nfds, ret;
 
@@ -211,6 +212,16 @@ static ssize_t netbios_ns_send_packet(netbios_ns* ns, netbios_query* q, uint32_t
 #endif
 
         if (FD_ISSET(ns->socket, &write_fds))
+#else
+        int ret = netbios_wait(&ns->abort_ctx, ns->socket, true, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_ns_send_packet: wait: ");
+            return -1;
+        }
+
+        if (ret > 0)
+#endif
         {
             BDSM_dbg("Sending netbios packet to %s\n", inet_ntoa(addr.sin_addr));
             return sendto(ns->socket, (void *)q->packet,
@@ -463,9 +474,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
     assert(ns != NULL);
 
     sock = ns->socket;
-#ifdef NS_ABORT_USE_PIPE
-    int abort_fd =  ns->abort_ctx.pipe[0];
-#else
+#ifdef _WIN32
     int abort_fd = -1;
 #endif
 
@@ -474,6 +483,7 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
 
     while (true)
     {
+#ifdef _WIN32
         fd_set read_fds, error_fds;
         int res, nfds;
 
@@ -502,6 +512,13 @@ static ssize_t netbios_ns_recv(netbios_ns *ns,
 #endif
 
         else if (FD_ISSET(sock, &read_fds))
+#else
+        int res = netbios_wait(&ns->abort_ctx, sock, false, timeout);
+        if (res < 0)
+            goto error;
+
+        if (res > 0)
+#endif
         {
             struct sockaddr_in addr;
             socklen_t addr_len = sizeof(struct sockaddr_in);

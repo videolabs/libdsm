@@ -251,7 +251,7 @@ libdsm = library('dsm',
   version: dsm_soname_version,
   soversion: dsm_soversion,
   include_directories: includes,
-  dependencies: [dep_tasn1, dep_thread, dep_iconv, dep_log, dep_ws2_32],
+  dependencies: [dep_tasn1, dep_thread, dep_rt, dep_iconv, dep_log, dep_ws2_32],
   install: true
 )
 
@@ -277,4 +277,22 @@ endif
 
 if package_generated
   meson.add_dist_script('dist_generated.py', spnego_asn1_target.full_path())
+endif
+
+# Compile the NetBIOS sources directly to exercise internal wait/cancel paths.
+if host_machine.system() != 'windows' and conf_data.has('HAVE_PIPE')
+  netbios_fd_test = executable('netbios-high-fd',
+    'tests/netbios-high-fd.c',
+    'src/netbios_ns.c',
+    'src/netbios_query.c',
+    'src/netbios_session.c',
+    'src/netbios_utils.c',
+    compat_sources,
+    include_directories: [includes, include_directories('src')],
+    dependencies: [dep_thread, dep_rt, dep_log],
+    c_args: ['-UNDEBUG'],
+    build_by_default: false,
+    install: false)
+  test('netbios-low-fd', netbios_fd_test, args: ['32'])
+  test('netbios-high-fd', netbios_fd_test, args: ['1100'])
 endif

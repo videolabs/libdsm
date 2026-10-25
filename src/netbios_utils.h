@@ -68,4 +68,12 @@ void netbios_abort_ctx_destroy(struct netbios_abort_ctx *ctx);
 bool netbios_abort_ctx_is_aborted(struct netbios_abort_ctx *ctx);
 void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx);
 
+#ifndef _WIN32
+struct timeval;
+/* Returns 1 for socket readiness, 0 for timeout, or -1 for error/abort.
+ * A finite timeout is reduced by the elapsed wait, including spurious replies. */
+int netbios_wait(struct netbios_abort_ctx *ctx, int fd, bool writing,
+                 struct timeval *timeout);
+#endif
+
 #endif
