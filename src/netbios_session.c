@@ -96,6 +96,7 @@ static int open_socket_and_connect(netbios_session *s)
         /* Wait for connection, cf. EINPROGRESS in man connect(2) */
         while (true)
         {
+#ifdef _WIN32
             fd_set read_fds, write_fds;
             int nfds, ret;
 
@@ -122,6 +123,13 @@ static int open_socket_and_connect(netbios_session *s)
 #endif
 
             if (FD_ISSET(s->socket, &write_fds))
+#else
+            int ret = netbios_wait(&s->abort_ctx, s->socket, true, NULL);
+            if (ret < 0)
+                goto error;
+
+            if (ret > 0)
+#endif
             {
                 if (getsockopt(s->socket, SOL_SOCKET, SO_ERROR, &ret,
                                &(socklen_t){ sizeof (ret) }) || ret)
@@ -328,6 +336,7 @@ int               netbios_session_packet_send(netbios_session *s)
 
     while (true)
     {
+#ifdef _WIN32
         fd_set read_fds, write_fds;
         int nfds, ret;
 
@@ -357,6 +366,16 @@ int               netbios_session_packet_send(netbios_session *s)
 #endif
 
         if (FD_ISSET(s->socket, &write_fds))
+#else
+        int ret = netbios_wait(&s->abort_ctx, s->socket, true, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_session_packet_send: wait: ");
+            return 0;
+        }
+
+        if (ret > 0)
+#endif
         {
             ssize_t sent = send(s->socket, (void *)s->packet, to_send, MSG_NOSIGNAL);
 
@@ -377,6 +396,7 @@ static ssize_t netbios_session_recv(netbios_session *s, void *buf, size_t len)
 {
     while (true)
     {
+#ifdef _WIN32
         fd_set read_fds;
         int nfds, ret;
 
@@ -405,6 +425,16 @@ static ssize_t netbios_session_recv(netbios_session *s, void *buf, size_t len)
 #endif
 
         if (FD_ISSET(s->socket, &read_fds))
+#else
+        int ret = netbios_wait(&s->abort_ctx, s->socket, false, NULL);
+        if (ret < 0)
+        {
+            BDSM_perror("netbios_session_recv: wait: ");
+            return -1;
+        }
+
+        if (ret > 0)
+#endif
         {
             ssize_t res = recv(s->socket, buf, len, 0);
 

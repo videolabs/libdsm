@@ -35,6 +35,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#ifndef _WIN32
+#include <errno.h>
+#include <limits.h>
+#include <time.h>
+#include <poll.h>
+#include <sys/time.h>
+#endif
 
 #include "netbios_utils.h"
 
@@ -180,16 +187,9 @@ int netbios_abort_ctx_init(struct netbios_abort_ctx *ctx)
 
 bool netbios_abort_ctx_is_aborted(struct netbios_abort_ctx *ctx)
 {
-    fd_set        read_fds;
-    int           res;
-    struct timeval timeout = {0, 0};
-
-    FD_ZERO(&read_fds);
-    FD_SET(ctx->pipe[0], &read_fds);
-
-    res = select(ctx->pipe[0] + 1, &read_fds, NULL, NULL, &timeout);
-
-    return (res < 0 || FD_ISSET(ctx->pipe[0], &read_fds));
+    struct pollfd fd = { .fd = ctx->pipe[0], .events = POLLIN };
+    int res = poll(&fd, 1, 0);
+    return res < 0 || fd.revents != 0;
 }
 
 void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx)
@@ -222,4 +222,72 @@ void netbios_abort_ctx_abort(struct netbios_abort_ctx *ctx)
     atomic_store(&ctx->aborted, true);
 }
 
+#endif
+
+#ifndef _WIN32
+int netbios_wait(struct netbios_abort_ctx *ctx, int fd, bool writing,
+                 struct timeval *timeout)
+{
+    if (fd < 0)
+    {
+        errno = EBADF;
+        return -1;
+    }
+    struct pollfd fds[2] = {
+        { .fd = fd, .events = writing ? POLLOUT : POLLIN },
+        { .fd = -1, .events = POLLIN },
+    };
+#ifdef NS_ABORT_USE_PIPE
+    fds[1].fd = ctx->pipe[0];
+#else
+    if (netbios_abort_ctx_is_aborted(ctx))
+    {
+        errno = EINTR;
+        return -1;
+    }
+#endif
+    int milliseconds = -1;
+    int64_t remaining = 0;
+    struct timespec before;
+    if (timeout != NULL)
+    {
+        remaining = (int64_t)timeout->tv_sec * 1000000 + timeout->tv_usec;
+        int64_t rounded = (remaining + 999) / 1000;
+        milliseconds = rounded > INT_MAX ? INT_MAX : (int)rounded;
+        if (clock_gettime(CLOCK_MONOTONIC, &before) != 0)
+            return -1;
+    }
+    int res = poll(fds, 2, milliseconds);
+    int saved_errno = errno;
+    if (timeout != NULL)
+    {
+        struct timespec after;
+        if (clock_gettime(CLOCK_MONOTONIC, &after) != 0)
+            return -1;
+        int64_t elapsed = (int64_t)(after.tv_sec - before.tv_sec) * 1000000
+                         + (after.tv_nsec - before.tv_nsec) / 1000;
+        remaining = elapsed >= remaining ? 0 : remaining - elapsed;
+        timeout->tv_sec = remaining / 1000000;
+        timeout->tv_usec = remaining % 1000000;
+    }
+    errno = saved_errno;
+    if (res < 0)
+        return -1;
+#ifdef NS_ABORT_USE_PIPE
+    if (fds[1].revents != 0)
+#else
+    if (netbios_abort_ctx_is_aborted(ctx))
+#endif
+    {
+        errno = EINTR;
+        return -1;
+    }
+    if (fds[0].revents & POLLNVAL)
+    {
+        errno = EBADF;
+        return -1;
+    }
+    /* Let the subsequent send/recv/getsockopt report EOF or socket errors. */
+    return fds[0].revents != 0 ? 1 : 0;
+}
 #endif
